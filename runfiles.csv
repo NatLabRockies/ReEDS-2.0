@@ -101,7 +101,7 @@ dac_elec.csv,inputs/consume/dac_elec_{dacscen}.csv,GSw_DAC,~0,ignore,ignore,,,,1
 dac_gas.csv,inputs/consume/dac_gas_{GSw_DAC_Gas_Case}.csv,GSw_DAC,~0,ignore,ignore,,,,1,0,,1,,,,
 deflator.csv,inputs/financials/deflator.csv,,,ignore,ignore,,,,,0,,,,,,
 degradation_annual.csv,inputs/degradation/degradation_annual_{degrade_suffix}.csv,,,ignore,ignore,,,,,0,,,,,,
-demonstration_plants.csv,inputs/capacity_exogenous/demonstration_plants.csv,GSw_NuclearDemo,~0,sum,ignore,r,"t,i,coolingwatertech,ctt,wst,notes",i,0,0,,,,,,
+demonstration_plants.csv,inputs/userinput/demonstration_files/{GSw_demoFile}.csv,GSw_NuclearDemo,~0,sum,ignore,r,"t,i,coolingwatertech,ctt,wst,notes",i,0,0,,,,,,
 depreciation_schedules.csv,inputs/financials/depreciation_schedules_{depreciation_schedules_suffix}.csv,,,ignore,ignore,,,,1,0,,,,,,
 diagnose.gms,postprocessing/diagnose/diagnose.gms,,,ignore,ignore,,,,,,,,,,,
 disagg_geosize.csv,,,,ignore,ignore,,,,,0,,,,,,

@@ -2819,7 +2819,10 @@ def map_capacity_techs(
         **{f'upv_{i}':'Utility PV' for i in range(20)},
         **{f'wind-ons_{i}':'Land-based wind' for i in range(20)},
         **{f'wind-ofs_{i}':'Offshore wind' for i in range(20)},
-        **dict(zip(['nuclear','nuclear-smr'], ['Nuclear']*20)),
+        # **dict(zip(['nuclear','nuclear-smr', 'nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear']*20)),
+        **dict(zip(['nuclear'], ['Nuclear']*20)),
+        **dict(zip(['nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear-Stor']*20)),
+        **dict(zip(['nuclear-smr'], ['Nuclear-SMR']*20)),
         **dict(zip(
             ['h2-cc', 'h2-ct', 'gas-cc_h2-cc', 'gas-ct_h2-ct'],
             ['H2 turbine']*20)),
@@ -7011,19 +7014,19 @@ if __name__ == '__main__':
     year = input("Enter the year to plot (default 2050): ").strip()
     year = int(year) if year else 2050
 
-    fig, ax, _ = plot_storage_hybrid_dispatch_yearbymonth(
-        case=case_dir, t=year, periodtype='pcm_d1h', net=True, highlight_rep_periods=0, legend=True)
-    fig.savefig(f"dispatch_yearbymonth_{year}.png", dpi=1000, bbox_inches='tight')
-    plt.show()
+    # fig, ax, _ = plot_storage_hybrid_dispatch_yearbymonth(
+    #     case=case_dir, t=year, periodtype='pcm_d1h', net=True, highlight_rep_periods=0, legend=True)
+    # fig.savefig(f"dispatch_yearbymonth_{year}.png", dpi=1000, bbox_inches='tight')
+    # plt.show()
 
     # fig, ax, _ = plot_dispatch_yearbymonth(
     #     case=case_dir, t=year, plottype='soc', techs='nuclear-stor', highlight_rep_periods=0)
     # plt.show()
 
-    fig, ax, _ = plot_dispatch_yearbymonth(
-        case=case_dir, t=year, plottype='gen', net=True, highlight_rep_periods=0, legend=True)
-    fig.savefig(f"dispatch_yearbymonth_gen_{year}.png", dpi=1000, bbox_inches='tight')
-    plt.show()
+    # fig, ax, _ = plot_dispatch_yearbymonth(
+    #     case=case_dir, t=year, plottype='gen', net=True, highlight_rep_periods=0, legend=True)
+    # fig.savefig(f"dispatch_yearbymonth_gen_{year}.png", dpi=1000, bbox_inches='tight')
+    # plt.show()
 
     # fig, ax, _ = plot_bytech_annual(
     #     case=case_dir, plottype='gen', periodtype='rep',
@@ -7034,7 +7037,15 @@ if __name__ == '__main__':
     #     case=case_dir, t=year)
     # plt.show()
 
-    fig, ax, = plot_dispatch_weightwidth(
-        case=case_dir)
+    # fig, ax, = plot_dispatch_weightwidth(
+    #     case=case_dir)
+    # plt.show()
+
+    fig, ax = map_capacity_techs(
+        case=case_dir, year=year, 
+        techs=["Nuclear-Stor", "Nuclear-SMR", "Nuclear"], 
+        ncols=2,
+        vmax=""
+    )
     plt.show()
 # %%

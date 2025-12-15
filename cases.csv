@@ -231,6 +231,7 @@ GSw_NG_CRF_penalty,Specify the scenario used for the natural gas CRF penalty,non
 GSw_NoFossilOffsetCDR,If on (=1) then CO2 removal from DAC/BECCS is only allowed to offset emissions from fossil+CCS and methane leakage,0; 1,0,
 GSw_Nuclear,Turn on/off new nuclear (existing nuclear still remains),0; 1,1,
 GSw_NuclearDemo,Turn on or off nuclear demonstration plants,0; 1,0,
+GSw_demoFile,Nuclear demo projects file to use,N/A,default,
 GSw_NuclearSMR,Turn on [1] / off [0] Nuclear-SMR,0; 1,1,
 GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor,0; 1,1,
 GSw_NuclearStor_Types,'_'-delimited nuclear+storage types to include (i.e. 1 or 1_2 or 1_2_3 or 1_2_3_4),N/A,1,
