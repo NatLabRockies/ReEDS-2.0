@@ -206,14 +206,14 @@ $endif
 * Now that cost_cap_fin_mult is done, calculate cost_growth, which is
 * the minimum cost of that technology within a state
 if(Sw_GrowthPenalties > 0,
-*rsc_fin_mult holds the multipliers for hydro, psh, and geo techs, so don't include them here
-    cost_growth(i,st,t)$[tmodel(t)$sum{r$[r_st(r,st)], valinv_irt(i,r,t) }$stfeas(st)$(not (geo(i) or hydro(i) or psh(i)))] = 
-        smin{r$[valinv_irt(i,r,t)$r_st(r,st)$cost_cap_fin_mult(i,r,t)$cost_cap(i,t)],
+*rsc_fin_mult holds the multipliers for sccapcosttech, so don't include them here
+    cost_growth(i,st,t)$[tmodel(t)$sum{r$[r_st(r,st)], valinv_irt(i,r,t) }$stfeas(st)$(not sccapcosttech(i))] = 
+        smin{r$[valinv_irt(i,r,t)$r_st(r,st)$cost_cap_fin_mult(i,r,t)],
             cost_cap_fin_mult(i,r,t) * cost_cap(i,t) } ;
 
-*rsc_fin_mult holds the multipliers for hydro, psh, geo, and dr_shed techs
-    cost_growth(i,st,t)$[tmodel(t)$sum{r$[r_st(r,st)], valinv_irt(i,r,t) }$stfeas(st)$(geo(i) or hydro(i) or psh(i) or dr_shed(i))] = 
-        smin{(r,rscbin)$[valinv_irt(i,r,t)$r_st(r,st)$rsc_fin_mult(i,r,t)$m_rsc_dat(r,i,rscbin,"cost")],
+*rsc_fin_mult holds the capital costs for sccapcosttech
+    cost_growth(i,st,t)$[tmodel(t)$sum{r$[r_st(r,st)], valinv_irt(i,r,t) }$stfeas(st)$sccapcosttech(i)] = 
+        smin{(r,rscbin)$[valinv_irt(i,r,t)$r_st(r,st)$rsc_fin_mult(i,r,t)],
             rsc_fin_mult(i,r,t) * m_rsc_dat(r,i,rscbin,"cost") } ;
 
     cost_growth(i,st,t)$cost_growth(i,st,t) = round(cost_growth(i,st,t),3) ;

@@ -131,13 +131,13 @@ techmap = {
     **{f'upv_{i}':'Utility PV' for i in range(20)},
     **{f'wind-ons_{i}':'Land-based wind' for i in range(20)},
     **{f'wind-ofs_{i}':'Offshore wind' for i in range(20)},
-    **dict(zip(['nuclear','nuclear-smr'], ['Nuclear']*20)),
+    **dict(zip(['nuclear','nuclear-smr', 'nuclear-stor'], ['Nuclear']*20)),
     **dict(zip(
         ['gas-cc_re-cc','gas-ct_re-ct','re-cc','re-ct',
          'gas-ct_h2-ct','h2-ct','gas-cc_h2-cc','h2-cc'],
         ['H2 turbine']*20)),
     **{f'battery_{i}':'Battery/PSH' for i in range(20)},
-    **{'battery_li':'Battery/PSH', 'pumped-hydro':'Battery/PSH'},
+    **{'battery_li':'Battery/PSH', 'tes_ms':'Battery/PSH', 'pumped-hydro':'Battery/PSH'},
     **dict(zip(
         ['coal-igcc', 'coaloldscr', 'coalolduns', 'gas-cc', 'gas-ct', 'coal-new', 'o-g-s',],
         ['Fossil']*20)),
@@ -628,7 +628,7 @@ if detailed:
         ## Separate charge and discharge
         dictin_gen_h_stress[case].loc[dictin_gen_h_stress[case].GW < 0,'i'] += '|charge'
         dictin_gen_h_stress[case].loc[dictin_gen_h_stress[case].i.isin(
-            ['battery_li','pumped-hydro']),'i'] += '|discharge'
+            ['battery_li','tes_ms','pumped-hydro']),'i'] += '|discharge'
 
     ### Stress period flows
     dictin_tran_flow_stress = {}
@@ -721,14 +721,14 @@ aggtechsplot = {
     'Offshore\nwind': ['wind-ofs'],
     # 'Wind': ['wind-ons', 'wind-ofs'],
     'Solar': ['upv', 'distpv', 'csp', 'pvb'],
-    'Battery': ['battery_{}'.format(i) for i in [2,4,6,8,10]] + ['battery_li'],
+    'Battery': ['battery_{}'.format(i) for i in [2,4,6,8,10]] + ['battery_li','tes_ms'],
     'Pumped\nstorage\nhydro': ['pumped-hydro'],
     # 'Storage': ['battery_{}'.format(i) for i in [2,4,6,8,10]] + ['battery_li', 'pumped-hydro'],
     'Hydro, geo, bio': [
         'hydro','geothermal',
         'biopower','lfill-gas','cofire','beccs_mod','beccs'
     ],
-    'Nuclear': ['nuclear', 'nuclear-smr'],
+    'Nuclear': ['nuclear', 'nuclear-smr', 'nuclear-stor'],
     'Hydrogen\nturbine': ['h2-cc', 'h2-cc-upgrade', 'h2-ct', 'h2-ct-upgrade'],
     'Gas CCS': ['gas-cc-ccs_mod'],
     'Coal CCS': ['coal-ccs_mod'],
@@ -978,8 +978,11 @@ aggstack = {
     **{f'battery_{i}|charge':'Storage|charge' for i in [2,4,6,8,10]},
     **{f'battery_{i}|discharge':'Storage|discharge' for i in [2,4,6,8,10]},
     'battery_li':'Storage',
+    'tes_ms':'Storage',
     'battery_li|charge':'Storage|charge',
+    'tes_ms|charge':'Storage|charge',
     'battery_li|discharge':'Storage|discharge',
+    'tes_ms|discharge':'Storage|discharge',
 
     'pumped-hydro':'Storage',
     'pumped-hydro|charge':'Storage|charge',
@@ -1016,6 +1019,7 @@ aggstack = {
 
     'nuclear':'Nuclear',
     'nuclear-smr':'Nuclear',
+    'nuclear-stor':'Nuclear',
 }
 aggcolors = {
     'Nuclear':'C3',
@@ -1844,12 +1848,12 @@ if interactive:
 
 #%%### Generation fraction
 ycol = 'Generation (TWh)'
-stortechs = [f'battery_{i}' for i in [2,4,6,8,10]] + ['battery_li', 'pumped-hydro']
+stortechs = [f'battery_{i}' for i in [2,4,6,8,10]] + ['battery_li','tes_ms', 'pumped-hydro']
 vretechs = ['upv','wind-ons','wind-ofs','distpv','csp']
 retechs = vretechs + ['hydro','geothermal','biopower']
-zctechs = vretechs + ['hydro','geothermal','nuclear','nuclear-smr']
+zctechs = vretechs + ['hydro','geothermal','nuclear','nuclear-smr', 'nuclear-stor']
 fossiltechs = ['coal','coal-ccs_mod','gas-cc','gas-cc-ccs_mod','gas-ct','o-g-s','cofire']
-reccsnuctechs = retechs + ['coal-ccs_mod','gas-cc-ccs_mod','nuclear','nuclear-smr']
+reccsnuctechs = retechs + ['coal-ccs_mod','gas-cc-ccs_mod','nuclear','nuclear-smr', 'nuclear-stor']
 
 dftotal = pd.concat({
     case:
@@ -1971,7 +1975,7 @@ if len(capcreditcases) == len(cases):
         for _col, tech in enumerate(capcredittechs):
             col = _col + len(ccseasons)
             if tech == 'storage':
-                techs = [f'battery_{i}' for i in [2,4,6,8,10]] + ['battery_li', 'pumped-hydro']
+                techs = [f'battery_{i}' for i in [2,4,6,8,10]] + ['battery_li','tes_ms', 'pumped-hydro']
             else:
                 techs = [tech]
             for case in capcreditcases:

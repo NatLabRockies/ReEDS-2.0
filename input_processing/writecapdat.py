@@ -74,21 +74,21 @@ TECH = {
     'capnonrsc': [
         'coaloldscr', 'coalolduns', 'biopower', 'coal-igcc',
         'coal-new', 'gas-cc', 'gas-ct', 'lfill-gas',
-        'nuclear', 'o-g-s', 'battery_li', 'pumped-hydro'
+        'nuclear', 'nuclear_stor', 'o-g-s', 'battery_li', 'tes_ms', 'pumped-hydro'
     ],
     'capnonrsc_energy': [
-        'battery_li'
+        'battery_li', 'tes_ms'
     ],
     'prescribed_nonRSC': [
         'coal-new', 'lfill-gas', 'gas-ct', 'o-g-s', 'gas-cc', 
         'hydED', 'hydEND', 'hydND', 'hydNPND', 'hydUD', 'hydUND',
-        'geothermal', 'biopower', 'coal-igcc', 'nuclear',
-        'battery_li','pumped-hydro','coaloldscr',
+        'geothermal', 'biopower', 'coal-igcc', 'nuclear', 'nuclear_stor',
+        'battery_li','tes_ms','pumped-hydro','coaloldscr',
     ],
     'prescribed_nonRSC_energy': [
-        'battery_li',
+        'battery_li','tes_ms',
     ],
-    'storage'  : ['battery_li', 'pumped-hydro'
+    'storage'  : ['battery_li','tes_ms', 'pumped-hydro'
     ],
     'rsc_all': ['upv','pvb','csp-ns'],
     'rsc_csp': ['csp-ns'],
@@ -102,10 +102,10 @@ TECH = {
     'retirements': [
         'coalolduns', 'o-g-s', 'hydED', 'hydEND', 'gas-ct', 'lfill-gas',
         'coaloldscr', 'biopower', 'gas-cc', 'coal-new',
-        'battery_li','nuclear', 'pumped-hydro', 'coal-igcc',
+        'battery_li','tes_ms','nuclear', 'nuclear_stor', 'pumped-hydro', 'coal-igcc',
     ],
     'retirements_energy': [
-        'battery_li'
+        'battery_li','tes_ms'
     ],
     'windret': ['wind-ons'],
     'georet': ['geohydro_allkm','egs_allkm'],
@@ -113,7 +113,7 @@ TECH = {
     # that are (or could be) in the plant database.
     'no_cooling': [
         'upv', 'pvb', 'gas-ct', 'geohydro_allkm','egs_allkm',
-        'battery_li', 'pumped-hydro', 'pumped-hydro-flex', 
+        'battery_li', 'tes_ms', 'pumped-hydro', 'pumped-hydro-flex', 
         'hydUD', 'hydUND', 'hydD', 'hydND', 'hydSD', 'hydSND', 'hydNPD',
         'hydNPND', 'hydED', 'hydEND', 'wind-ons', 'wind-ofs', 'caes',
     ],

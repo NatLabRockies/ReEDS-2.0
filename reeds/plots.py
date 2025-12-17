@@ -1343,7 +1343,7 @@ def sparkline(ax, dsplot, endlabels=True,
             horizontalalignment='left', verticalalignment='center')
 
 
-def plotyearbymonth(dfs, plotcols=None, colors=None, 
+def plotyearbymonth(dfs, plotcols=None, colors=None, net=False,
     style='fill', lwforline=1, ls='-', figsize=(12,6), dpi=None,
     normalize=False, alpha=1, f=None, ax=None):
     """
@@ -1402,6 +1402,25 @@ def plotyearbymonth(dfs, plotcols=None, colors=None,
                     elif style in ['line', 'l']:
                         ax[i].plot(dfplot.index, dfplot[plotcol].values, 
                                    lw=lwforline, alpha=alpha, ls=ls, color=colors[j], label=plotcol)
+        
+        if net:
+            if plotcols is None:
+                cols = dfs.columns.tolist()
+            elif isinstance(plotcols, str):
+                cols = [plotcols]
+            else:
+                cols = plotcols
+            year = dfs.index[0].year
+            month_num = i + 1
+            mask = (dfs.index.year == year) & (dfs.index.month == month_num)
+            dfmonth = dfs.loc[mask, cols]
+            if dfmonth.empty:
+                continue
+            if normalize:
+                dfmonth = dfmonth / dfmonth.max()
+            net_series = dfmonth.iloc[:,0] + dfmonth.iloc[:,-1]
+            net_series.index = net_series.index.map(monthifier)
+            ax[i].plot(net_series.index, net_series.values, color='k', lw=1, zorder=1000, label='Net Generation')
                                         
         ax[i].set_ylabel(month, rotation=0, ha='right', va='top')
         for which in ['left', 'right', 'top', 'bottom']:

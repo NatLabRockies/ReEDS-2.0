@@ -1,6 +1,7 @@
 order,color
 nuclear,#820000
 nuclear-smr,#D40000
+nuclear-stor,#FF0000
 coal,#000000
 coal-ccs-flex,#666666
 coal-ccs_mod,#666666
@@ -46,6 +47,8 @@ battery_48,#CC015C
 battery_72,#CC015C
 battery_100,#CC015C
 battery_li,#FF4A88
+tes,#FF3000
+tes_ms,#FF3000
 dr_shed,#B9CBF5
 evmc_storage,#a55194
 evmc_shape,#ce6dbd

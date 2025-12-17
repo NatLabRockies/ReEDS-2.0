@@ -56,4 +56,4 @@ dependencies:
     - myst-parser==2.0.0 # for building documentation
     - sphinx_rtd_theme==2.0.0 # for documentation
     - sphinxcontrib-bibtex==2.6.2 # for documentation
-    - gamspy_base==45.7.0 # for running automated tests
+    - gamspy_base==50.5.0 # for running automated tests

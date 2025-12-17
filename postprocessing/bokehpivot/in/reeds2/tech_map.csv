@@ -57,6 +57,7 @@ gas-ct,gas-ct
 geothermal,geothermal
 nuclear,nuclear
 nuclear-smr,nuclear-smr
+nuclear-stor*,nuclear-stor
 storage-h2,storage-h2
 caes,caes
 pumped-hydro,pumped-hydro
@@ -89,6 +90,7 @@ battery_48,battery_48
 battery_72,battery_72
 battery_100,battery_100
 battery_li,battery_li
+tes_ms,tes_ms
 pumped-hydro_n*,pumped-hydro
 pumped-hydro-flex*,pumped-hydro-flex
 upv*,upv
@@ -101,6 +103,7 @@ dr_shed*,dr_shed
 evmc_storage*,evmc_storage
 evmc_shape*,evmc_shape
 hyd*,hydro
+hyded,hydro
 egs_allkm_*,geothermal
 geohydro_allkm_*,geothermal
 egs_nearfield_*,geothermal

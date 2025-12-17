@@ -35,6 +35,7 @@ function reeds_to_pras(
     hydro_energylim::Bool = false,
     pras_agg_ogs_lfillgas::Bool = false,
     pras_existing_unit_size::Bool = true,
+    pras_max_unitsize_prm::Bool = true,
 )
     ReEDS_data = ReEDSdatapaths(reedscase, solve_year)
 
@@ -49,6 +50,7 @@ function reeds_to_pras(
         hydro_energylim = hydro_energylim,
         pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
         pras_existing_unit_size = pras_existing_unit_size,
+        pras_max_unitsize_prm = pras_max_unitsize_prm,
     )
     lines, regions, gens, storages, genstors = out
     

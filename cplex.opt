@@ -35,6 +35,7 @@ memoryemphasis 0
 *** barepcomp (float): tolerance on complementarity for convergence of the barrier algorithm [default 1e-8]
 barepcomp = 1e-8
 
+
 *############################################################################################
 *## The settings below can reduce solve time substantially, but their impacts on the solution
 *## have not yet been fully characterized, and some of them might do nothing. Use at your own risk.

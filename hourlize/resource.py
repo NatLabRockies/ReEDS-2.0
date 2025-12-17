@@ -75,7 +75,7 @@ def aggregate_supply_curves_by_lowest_lcoe(rev_cases_path, rev_sc_file_path):
     df_sc_lowest_lcoe.to_csv(rev_sc_file_path)
 
 
-def match_to_counties(sc, profile_id_col, outpath, tech):
+def match_to_counties(sc, profile_id_col, outpath, tech, offshore_meshed=False):
     """adds county FIPS code to reV supply curve
 
     Parameters
@@ -90,11 +90,16 @@ def match_to_counties(sc, profile_id_col, outpath, tech):
         pandas dataframe with columns for county FIPS code and county name
     """
     print("Adding county FIPS code")
-    sitemap_fpath = os.path.join(
-        reeds.io.reeds_path, 'inputs', 'supply_curve',
-        ('interconnection_offshore.h5' if tech == 'wind-ofs' else 'sitemap.h5')
-    )
-    sitemap = reeds.io.read_h5_groups(sitemap_fpath)
+    offshore = True if tech == 'wind-ofs' else False
+    ## Get mapping from sc_point_gid to FIPS
+    sitemap = reeds.io.get_sitemap(offshore=offshore, geo=False)
+    if offshore and offshore_meshed:
+        ## Replace FIPS with offshore zone for sites that can be meshed
+        sitemap.loc[sitemap.always_radial == False, 'FIPS'] = (
+            sitemap.loc[sitemap.always_radial == False, 'ba']
+        )
+    else:
+        sitemap['always_radial'] = True
     assert sitemap.index.name == 'sc_point_gid', 'sitemap index must be sc_point_gid'
     dfout = sc.copy()
     dfout['FIPS'] = dfout['sc_point_gid'].map(sitemap.FIPS)
@@ -103,13 +108,24 @@ def match_to_counties(sc, profile_id_col, outpath, tech):
         ## which we drop because they'll cause issues with interconnection cost
         dfout = dfout.dropna(subset='FIPS')
     ## Get state
-    fips2state = pd.read_csv(
+    state_fips_codes = pd.read_csv(
         os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'state_fips_codes.csv'),
         index_col='state_fips',
         dtype={'state_fips':str}
-    ).state
+    )
+    fips2state = state_fips_codes.state
+    st2state = state_fips_codes.set_index('state_code').state
     ## State code is first two digits of full FIPS code
-    dfout['STATE'] = dfout.FIPS.map(lambda x: str(x)[:2]).map(fips2state)
+    dfout['STATE'] = dfout.FIPS.map(lambda x: fips2state.get(x[:2],x))
+    if offshore and offshore_meshed:
+        ## Map the meshed-only sites to states using ReEDS hierarchy
+        ba2st = pd.read_csv(
+            os.path.join(reeds.io.reeds_path, 'inputs', 'hierarchy_offshore.csv'),
+            index_col='ba',
+        ).st
+        ba2state = ba2st.map(st2state)
+        dfout['STATE'] = dfout.STATE.map(lambda x: ba2state.get(x,x))
+
     ## Check if any regional info is missing
     missing_counties = dfout['FIPS'].isnull()
     missing_states = dfout['STATE'].isnull()
@@ -117,6 +133,7 @@ def match_to_counties(sc, profile_id_col, outpath, tech):
         print(dfout.loc[missing_counties | missing_states])
         err = f"Missing FIPS for {missing_counties.sum()} sites and missing states for {missing_states.sum()} sites"
         raise ValueError(err)
+    assert dfout.STATE.isin(fips2state.values).all(), 'Mismatched states'
 
     return dfout
 
@@ -294,7 +311,8 @@ def add_ilr(tech, df, reeds_path, casename):
 def get_supply_curve_and_preprocess(tech, original_sc_file, reeds_path, hourlize_path, outpath,
                                     reg_out_col, reg_map_file, min_cap, capacity_col,
                                     existing_sites, state_abbrev, start_year, casename,
-                                    filter_cols={}, profile_id_col="sc_point_gid"):
+                                    filter_cols={}, profile_id_col="sc_point_gid",
+                                    offshore_meshed=False):
     """processes reV supply curve file; output is a dataframe with a row for each supply curve point
 
     Parameters
@@ -346,6 +364,7 @@ def get_supply_curve_and_preprocess(tech, original_sc_file, reeds_path, hourlize
         profile_id_col=profile_id_col,
         outpath=outpath,
         tech=tech,
+        offshore_meshed=offshore_meshed,
     )
 
     # add land cost using fair market value information from reV
@@ -372,7 +391,8 @@ def get_supply_curve_and_preprocess(tech, original_sc_file, reeds_path, hourlize
     df['county'] = 'p' + df.FIPS.astype(str).map('{:>05}'.format)
     # map the regions from county to zone using the mapping file supplied
     county2zone = pd.read_csv(reg_map_file, dtype={'FIPS':str}, index_col='FIPS').ba
-    df['ba'] = df.FIPS.map(county2zone)
+    ## Offshore zones have ba in FIPS column, so fall back to FIPS value if not in county2zone
+    df['ba'] = df.FIPS.map(lambda x: county2zone.get(x,x))
     if reg_out_col.lower() in ['fips', 'county', 'cnty_fips', 'county_fips']:
         df['region'] = 'p' + df[reg_out_col]
     else:
@@ -383,8 +403,15 @@ def get_supply_curve_and_preprocess(tech, original_sc_file, reeds_path, hourlize
         print('Assigning existing sites...')
         #Read in existing sites and filter
         df_exist = pd.read_csv(existing_sites, low_memory=False)
+        ## Assign BA based on county
+        df_exist['reeds_ba'] = df_exist.FIPS.str.strip('p').map(county2zone)
+        assert df_exist.reeds_ba.isnull().sum() == 0, f'Unmatched counties in {existing_sites}'
+        ## If meshed, assign existing offshore wind to offshore zones
+        if (tech == 'wind-ofs') and (offshore_meshed):
+            df_exist = reeds.spatial.assign_to_offshore_zones(df_exist)
+
         df_exist = df_exist[
-            ['tech','TSTATE','reeds_ba','resource_region','Unique ID',
+            ['tech','TSTATE','reeds_ba','Unique ID',
             'T_LONG','T_LAT','summer_power_capacity_MW','StartYear','RetireYear']
         ].rename(columns={
             'TSTATE':'STATE', 'T_LAT':'LAT', 'T_LONG':'LONG', 'summer_power_capacity_MW':'cap', 'reeds_ba':'pca',
@@ -825,17 +852,33 @@ def save_time_outputs(df_prof_out, df_rep, outpath, tech,
     print('Done saving time-dependent outputs: '+ str(datetime.datetime.now() - startTime))
 
 
-def copy_outputs(outpath, reeds_path, sc_path, casename, reg_out_col,
-                 copy_to_reeds, copy_to_shared, rev_jsons, configpath):
+def copy_outputs(
+    outpath,
+    reeds_path,
+    sc_path,
+    casename,
+    reg_out_col,
+    copy_to_reeds,
+    copy_to_shared,
+    rev_jsons,
+    configpath,
+    tech,
+    access_case,
+    offshore_meshed,
+):
     #Save outputs to the shared drive and to this reeds repo.
     print('Copying outputs to shared drive and/or reeds repo')
     startTime = datetime.datetime.now()
 
-    # tech should be the first part of the case name
-    tech = casename.split("_")[0]
-    # case is the rest of the case (usually access case + regionality)
-    case = casename.replace(tech+"_", "")
-    access = case.split('_')[0]
+    ## Parse filename components
+    if tech != 'wind-ofs':
+        techlabel = tech
+    else:
+        techlabel = f"{tech}_{'meshed' if offshore_meshed else 'radial'}"
+    level = (
+        'county' if reg_out_col.lower() in ['fips', 'county', 'cnty_fips', 'county_fips']
+        else reg_out_col
+    )
 
     resultspath = os.path.join(outpath, 'results')
     inputspath = os.path.join(reeds_path, 'inputs')
@@ -844,14 +887,17 @@ def copy_outputs(outpath, reeds_path, sc_path, casename, reg_out_col,
         #Supply curve
         shutil.copy2(
             os.path.join(resultspath, f'supplycurve_{tech}.csv'),
-            os.path.join(inputspath, 'supply_curve', f'supplycurve_{tech}-{access}.csv')
+            os.path.join(inputspath, 'supply_curve', f'supplycurve_{tech}-{access_case}.csv')
         )
 
         #Prescribed builds and exogenous capacity (if they exist)
         try:
             shutil.copy2(
                 os.path.join(resultspath, f'{tech}_prescribed_builds.csv'),
-                os.path.join(inputspath,'capacity_exogenous',f'prescribed_builds_{tech}_{case}.csv')
+                os.path.join(
+                    inputspath, 'capacity_exogenous',
+                    f'prescribed_builds_{techlabel}_{access_case}_{level}.csv',
+                )
             )
         except Exception:
             print('WARNING: No prescribed builds')
@@ -860,7 +906,7 @@ def copy_outputs(outpath, reeds_path, sc_path, casename, reg_out_col,
             df = pd.read_csv(os.path.join(resultspath,f'{tech}_exog_cap.csv'))
             df.rename(columns={df.columns[0]: '*'+str(df.columns[0])}, inplace=True)
             df.to_csv(
-                os.path.join(inputspath,'capacity_exogenous',f'exog_cap_{tech}_{access}.csv'),
+                os.path.join(inputspath,'capacity_exogenous',f'exog_cap_{tech}_{access_case}.csv'),
                 index=False
             )
         except Exception:
@@ -874,7 +920,9 @@ def copy_outputs(outpath, reeds_path, sc_path, casename, reg_out_col,
             try:
                 shutil.copy2(
                     os.path.join(resultspath, f'{tech}.h5'),
-                    os.path.join(inputspath,'variability','multi_year',f'{tech}-{case}.h5')
+                    os.path.join(
+                        inputspath, 'variability', 'multi_year',
+                        f'{techlabel}-{access_case}_{level}.h5')
                 )
             except Exception:
                 print('WARNING: No hourly profiles')
@@ -992,6 +1040,7 @@ if __name__== '__main__':
         casename=cf.casename,
         filter_cols=cf.filter_cols,
         profile_id_col=cf.profile_id_col,
+        offshore_meshed=cf.offshore_meshed,
     )
 
     #%% Add classes
@@ -1034,6 +1083,17 @@ if __name__== '__main__':
 
     #%% Copy outputs to ReEDS and/or the shared drive
     copy_outputs(
-        cf.outpath, cf.reeds_path, cf.sc_path, cf.casename,
-        cf.reg_out_col, cf.copy_to_reeds, cf.copy_to_shared, rev_jsons, configpath)
+        outpath=cf.outpath,
+        reeds_path=cf.reeds_path,
+        sc_path=cf.sc_path,
+        casename=cf.casename,
+        reg_out_col=cf.reg_out_col,
+        copy_to_reeds=cf.copy_to_reeds,
+        copy_to_shared=cf.copy_to_shared,
+        rev_jsons=rev_jsons,
+        configpath=configpath,
+        tech=cf.tech,
+        access_case=cf.access_case,
+        offshore_meshed=cf.offshore_meshed,
+    )
     print('All done! total time: '+ str(datetime.datetime.now() - startTime))

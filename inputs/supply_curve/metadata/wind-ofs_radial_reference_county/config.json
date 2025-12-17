@@ -1,0 +1,92 @@
+{
+    "access_case": "reference",
+    "bin_group_cols": [
+        "region",
+        "class"
+    ],
+    "bin_method": "equal_cap_cut",
+    "capacity_col": "capacity_ac_mw",
+    "casename": "wind-ofs_radial_reference_county",
+    "class_bin": true,
+    "class_bin_col": "ncf_2035",
+    "class_bin_method": "kmeans",
+    "class_bin_num": 5,
+    "class_path": "/Users/pbrown/github3/ReEDS-2.0/hourlize/inputs/resource/wind-ofs_resource_classes.csv",
+    "compression_opts": 4,
+    "copy_to_reeds": true,
+    "copy_to_shared": true,
+    "cost_out": "combined_off_ons_trans",
+    "crs": "EPSG:5070",
+    "decimals": 4,
+    "driver": "H5FD_CORE",
+    "dtype": "np.float16",
+    "existing_sites": "/Users/pbrown/github3/ReEDS-2.0/inputs/capacity_exogenous/ReEDS_generator_database_final_EIA-NEMS.csv",
+    "filetype": "h5",
+    "filter_cols": {
+        "capacity_ac_mw": [
+            ">",
+            0
+        ],
+        "mean_depth": [
+            ">",
+            -1300
+        ],
+        "offshore": [
+            ":",
+            1
+        ]
+    },
+    "gather_method": "smart",
+    "hierarchy_path": "/Users/pbrown/github3/ReEDS-2.0/inputs/hierarchy.csv",
+    "hourlize_path": "/Users/pbrown/github3/ReEDS-2.0/hourlize",
+    "hourly_out_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+    ],
+    "inputfiles": [
+        "reg_map_file",
+        "class_path"
+    ],
+    "min_cap": 15,
+    "offshore_meshed": false,
+    "original_sc_file": "/Volumes/ReEDS/Supply_Curve_Data/OFFSHORE/2025_08_11_NewSites/reV/reference/reference_supply-curve_post_proc.csv",
+    "outpath": "/Users/pbrown/github3/ReEDS-2.0/hourlize/out/wind-ofs_radial_reference_county",
+    "output_timezone": "Etc/GMT+6",
+    "process_profiles": true,
+    "profile_dir": "",
+    "profile_dset": "rep_profiles_0",
+    "profile_file_format": "reference_rep-profiles",
+    "profile_id_col": "sc_point_gid",
+    "profile_weight_col": "capacity",
+    "reeds_path": "/Users/pbrown/github3/ReEDS-2.0",
+    "reg_map_file": "/Users/pbrown/github3/ReEDS-2.0/inputs/county2zone.csv",
+    "reg_out_col": "FIPS",
+    "rev_case": "reference",
+    "rev_path": "/Volumes/ReEDS/Supply_Curve_Data/OFFSHORE/2025_08_11_NewSites/reV/reference",
+    "rev_paths_file": "/Users/pbrown/github3/ReEDS-2.0/inputs/supply_curve/rev_paths.csv",
+    "sc_file": "/Users/pbrown/github3/ReEDS-2.0/hourlize/out/wind-ofs_radial_reference_county/results/wind-ofs_supply_curve_raw.csv",
+    "sc_path": "/Volumes/ReEDS/Supply_Curve_Data/OFFSHORE/2025_08_11_NewSites",
+    "select_year": 2012,
+    "single_profile": false,
+    "start_year": 2010,
+    "state_abbrev": "/Users/pbrown/github3/ReEDS-2.0/hourlize/inputs/resource/state_abbrev.csv",
+    "subsetvars": [
+        "tech",
+        "access_case"
+    ],
+    "subtract_exog": false,
+    "tech": "wind-ofs"
+}

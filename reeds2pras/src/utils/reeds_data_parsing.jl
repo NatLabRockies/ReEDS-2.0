@@ -22,7 +22,7 @@ function process_regions_and_load(ReEDS_data)
     regions = names(load_data)
 
     return [
-        Region(r, size(load_data, 1), floor.(Int, load_data[!, r]))
+        Region(r, size(load_data, 1), Int.(round.(load_data[!, r])))
         for r in regions
     ]
 end
@@ -249,6 +249,7 @@ function process_thermals_with_disaggregation(
     mttr_dict::Dict;
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
+    pras_max_unitsize_prm = true,
 )
     all_generators = Generator[]
     # csp-ns is not a thermal; just drop in for now
@@ -257,6 +258,11 @@ function process_thermals_with_disaggregation(
     thermal_builds =
         DataFrames.combine(DataFrames.groupby(thermal_builds, ["i", "r"]), :MW => sum)
     unitdata = get_unitdata(ReEDS_data)
+
+    # Get the PRM [MW] in case we use it to set the max unit size
+    if pras_max_unitsize_prm
+        max_unitsize = get_max_unitsize(ReEDS_data)
+    end
 
     # Get the FOR for each build/tech
     for row in eachrow(thermal_builds)
@@ -282,7 +288,7 @@ function process_thermals_with_disaggregation(
         generator_array = disagg_existing_capacity(
             unitdata,
             unitsize_dict,
-            floor(Int, row.MW_sum),
+            Int(round(row.MW_sum)),
             String(row.i),
             String(row.r),
             gen_for,
@@ -291,6 +297,8 @@ function process_thermals_with_disaggregation(
             mttr,
             pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
             pras_existing_unit_size = pras_existing_unit_size,
+            # Use PRM MW if pras_max_unitsize_prm switch is on; otherwise ignore by setting to 0
+            max_unit_mw = (pras_max_unitsize_prm ? max_unitsize[row.r] : 0),
         )
         append!(all_generators, generator_array)
     end
@@ -362,7 +370,7 @@ function process_hd_as_generator!(
         generator_array = disagg_existing_capacity(
             unitdata,
             unitsize_dict,
-            floor(Int, row.MW_sum),
+            Int(round(row.MW_sum)),
             String(row.i),
             String(row.r),
             gen_for,
@@ -698,6 +706,7 @@ function process_storages(
     ## Read {case}/inputs_case/tech-subset-table.csv
     tech_subset_table = get_technology_types(ReEDS_data)
     battery_types = DataFrames.dropmissing(tech_subset_table, :BATTERY)[:, "Column1"]
+    tes_types = DataFrames.dropmissing(tech_subset_table, :TES)[:, "Column1"]
 
     storages_array = Storage[]
     for (idx, row) in enumerate(eachrow(storage_builds))
@@ -707,7 +716,7 @@ function process_storages(
         mttr = Int64(mttr_dict[string(row.i)])
 
         storage_duration = energy_capacity_df[idx, "MWh_sum"] / row.MW
-        if string(row.i) in battery_types
+        if string(row.i) in battery_types || string(row.i) in tes_types
             push!(
                 storages_array,
                 Battery(
@@ -734,8 +743,8 @@ function process_storages(
                 storage_duration,
                 efficiency["charge"][string(row.i)],
                 efficiency["discharge"][string(row.i)],
-                0,
-                unitsize_dict,
+                # Always use the characteristic unit size
+                unitsize_dict[row.i],
                 row.i,
                 row.r,
                 gen_for,
@@ -779,6 +788,8 @@ end
     pras_existing_unit_size : bool
         If true, use average existing unit size by (tech,region) when disaggregating new
         capacity. Applies to new capacity so does not interact with pras_agg_ogs_lfillgas.
+    max_unit_mw: int
+        If nonzero, caps the upper bound of disaggregated unit size
 
     Returns
     -------
@@ -798,6 +809,7 @@ function disagg_existing_capacity(
     mttr::Int;
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
+    max_unit_mw = 0,
 )
     if pras_agg_ogs_lfillgas == true
         group_existing_techs = ["lfill-gas", "o-g-s"]
@@ -814,12 +826,14 @@ function disagg_existing_capacity(
     )
 
     generators_array = []
+    # If there is no existing capacity, use the characteristic unit size
     if size(tech_ba_year_existing, 1) == 0 && gen_for != 0.0
         add_new_capacity!(
             generators_array,
             built_capacity,
-            0,
-            unitsize_dict,
+            # If max_unit_mw is provided and is smaller than the characteristic unit size,
+            # use max_unit_mw; otherwise use the characteristic unit size from unitsize_dict
+            ((max_unit_mw > 0) ? min(max_unit_mw, unitsize_dict[tech]) : unitsize_dict[tech]),
             tech,
             pca,
             gen_for,
@@ -827,8 +841,8 @@ function disagg_existing_capacity(
             mttr,
         )
         return generators_array
+    # If the FOR is zero, no need to disaggregate, so put all capacity in one unit
     elseif size(tech_ba_year_existing, 1) == 0 && gen_for == 0.0
-        #not necessary to disagg if generator never fails
         return [
             Thermal_Gen(
                 name = "$(tech)|$(pca)|1",
@@ -854,13 +868,20 @@ function disagg_existing_capacity(
     end
 
     if pras_existing_unit_size == true
-        unit_capacity = floor.(Int, Statistics.mean(existing_capacity))
+        # If the average integer unit size rounds to 0 MW, use 1 MW
+        unit_capacity = max(Int(round(Statistics.mean(existing_capacity))), 1)
+        # If max_unit_mw is provided and is smaller than the mean, use max_unit_mw instead
+        if max_unit_mw > 0
+            unit_capacity = min(unit_capacity, max_unit_mw)
+        end
     else
         unit_capacity = 0
     end
 
+    @info "$tech $pca: unit capacity = $unit_capacity MW"
+
     for (idx, built_cap) in enumerate(existing_capacity)
-        int_built_cap = floor(Int, built_cap)
+        int_built_cap = Int(round(built_cap))
         if int_built_cap < remaining_capacity
             gen_cap = int_built_cap
             remaining_capacity -= int_built_cap
@@ -886,8 +907,7 @@ function disagg_existing_capacity(
         add_new_capacity!(
             generators_array,
             remaining_capacity,
-            unit_capacity,
-            unitsize_dict,
+            (if (unit_capacity > 0) unit_capacity else unitsize_dict[tech] end),
             tech,
             pca,
             gen_for,
@@ -938,18 +958,12 @@ function add_new_capacity!(
     generators_array::Vector{<:Any},
     new_capacity::Int,
     unit_capacity::Int,
-    unitsize_dict::Dict,
     tech::AbstractString,
     pca::AbstractString,
     gen_for::Vector{Float32},
     timesteps::Int,
     MTTR::Int,
 )
-    # if there are no existing units to determine size of new unit(s), use ATB
-    if unit_capacity == 0
-        unit_capacity = unitsize_dict[tech]
-    end
-
     n_gens = floor(Int, new_capacity / unit_capacity)
     if n_gens == 0
         return push!(
@@ -1017,18 +1031,12 @@ function add_new_capacity!(
     charge_eff::Float64,
     discharge_eff::Float64,
     unit_capacity::Int,
-    unitsize_dict::Dict,
     tech::AbstractString,
     pca::AbstractString,
     gen_for::Float64,
     timesteps::Int,
     MTTR::Int,
 )
-    # if there are no existing units to determine size of new unit(s), use ATB
-    if unit_capacity == 0
-        unit_capacity = unitsize_dict[tech]
-    end
-
     n_gens = floor(Int, new_capacity / unit_capacity)
     if n_gens == 0
         return push!(

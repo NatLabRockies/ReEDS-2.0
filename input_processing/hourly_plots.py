@@ -255,14 +255,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
     else:
         GSw_HourlyWeatherYears = sw.GSw_HourlyWeatherYears
 
-    hierarchy = reeds.io.get_hierarchy(
-        os.path.abspath(os.path.join(inputs_case,'..')),
-        original=True,
-    )
-    if sw.GSw_RegionResolution == 'aggreg':
-        r2aggreg = hierarchy.aggreg
-    else:
-        r2aggreg = pd.Series(hierarchy.index, hierarchy.index)
+    hierarchy = reeds.io.get_hierarchy(os.path.abspath(os.path.join(inputs_case,'..')))
     dfmap = reeds.io.get_dfmap(os.path.abspath(os.path.join(inputs_case,'..')))
 
     ### Get the CF data over all years, take the mean over weather years
@@ -280,7 +273,6 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
         dfsc = pd.read_csv(
             os.path.join(inputs_case, f'supplycurve_{tech}.csv')
         ).rename(columns={'region':'r'})
-        dfsc.r = dfsc.r.map(r2aggreg)
         dfsc['i'] = tech + '_' + dfsc['class'].astype(str)
         ### Add geographic and CF information
         sitemap = reeds.io.get_sitemap(offshore=(True if tech == 'wind-ofs' else False))

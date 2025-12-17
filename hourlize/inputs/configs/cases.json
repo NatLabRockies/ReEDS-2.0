@@ -49,35 +49,53 @@
         "access_case": "reference",
         "reg_out_col": "FIPS"
     },
-    "wind-ofs_limited_ba": {
+    "wind-ofs_radial_limited_ba": {
         "tech" : "wind-ofs",
         "access_case": "limited",
         "reg_out_col": "ba"
     },
-    "wind-ofs_open_ba": {
+    "wind-ofs_radial_open_ba": {
         "tech": "wind-ofs",
         "access_case": "open",
         "reg_out_col": "ba"
     },
-    "wind-ofs_reference_ba": {
+    "wind-ofs_radial_reference_ba": {
         "tech": "wind-ofs",
         "access_case": "reference",
         "reg_out_col": "ba"
     },
-    "wind-ofs_open_county": {
+    "wind-ofs_radial_open_county": {
         "tech": "wind-ofs",
         "access_case": "open",
         "reg_out_col": "FIPS"
     },
-    "wind-ofs_limited_county": {
+    "wind-ofs_radial_limited_county": {
         "tech" : "wind-ofs",
         "access_case": "limited",
         "reg_out_col": "FIPS"
     },
-    "wind-ofs_reference_county": {
+    "wind-ofs_radial_reference_county": {
         "tech": "wind-ofs",
         "access_case": "reference",
         "reg_out_col": "FIPS"
+    },
+    "wind-ofs_meshed_limited_ba": {
+        "tech" : "wind-ofs",
+        "access_case": "limited",
+        "reg_out_col": "ba",
+        "offshore_meshed": true
+    },
+    "wind-ofs_meshed_open_ba": {
+        "tech": "wind-ofs",
+        "access_case": "open",
+        "reg_out_col": "ba",
+        "offshore_meshed": true
+    },
+    "wind-ofs_meshed_reference_ba": {
+        "tech": "wind-ofs",
+        "access_case": "reference",
+        "reg_out_col": "ba",
+        "offshore_meshed": true
     },
     "wind-ons_limited_ba": {
         "tech": "wind-ons", 

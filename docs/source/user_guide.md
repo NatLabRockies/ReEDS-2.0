@@ -46,6 +46,33 @@
 
 
 
+## Hourly Resolution
+The model can be run at hourly resolution using the following switch settings:
+* `GSw_Hourly = 1`
+  * Turn on hourly resolution
+* `GSw_Canada = 2`
+  * Turn on hourly resolution for Canadian imports/exports
+* `GSw_AugurCurtailment = 0`
+  * Turn off the Augur calculation of curtailment
+* `GSw_StorageArbitrageMult = 0`
+  * Turn off the Augur calculation of storage arbitrage value
+* `GSw_Storage_in_Min = 0`
+  * Turn off the Augur calculation of storage charging
+* `capcredit_szn_hours = 3`
+  * The current default hourly representation is 18 representative 5-day weeks. Each representative period is treated as a 'season' and is thus active in the planning-reserve margin constraint. In h17 ReEDS we set `capcredit_szn_hours = 10`, giving 40 total hours considered for planning reserves (the top 10 hours in each of the 4 quarterly seasons). 18 'seasons' with 10 hours each would give 180 hours, so we switch to 3 hours per 'season' (for 54 hours total).
+
+To further reduce solve time, you can make the following changes:
+* `yearset_suffix = fiveyear`
+  * Solve in 5-year steps
+* `GSw_OpRes = 0`
+  * Turn off operating reserves
+* `GSw_MinLoading = 0`
+  * Turn off the sliding-window representation of minimum-generation limits
+* `GSw_PVB = 0`
+  * Turn off PV-battery hybrids
+* `GSw_calc_powfrac = 0`
+  * Turn off a post-processing calculation of power flows
+
 
 
 ## Electricity Demand Profiles
@@ -56,8 +83,7 @@ These files are stored in `inputs/load/{switch_name}_load_hourly.h5`.
 
 | Switch Name    | Description of Profile | Origin | Weather year included |
 | ------------- | ------------- | ------------- | ------------- |
-| historic | Historic demand from 2007-2013. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team from a compilation of data sources. More detail can be found [here](https://github.nrel.gov/ReEDS/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme). | 2007-2013 |
-| historic_post2015 | Historic demand from 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team. See [PR 1601](https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1601) and the scripts linked there for information about how this data was compiled. | 2016-2023 |
+| historic | Detrended historic demand from 2007-2013 and 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team from a compilation of data sources. More detail can be found [here](https://github.nrel.gov/ReEDS/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme) and in [PR 1601](https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1601). | 2007-2013 & 2016-2023 |
 | Clean2035_LTS | Net-zero emissions, economy wide, by 2050 based on the White House's Long Term Strategy as shown here: <https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf> | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
 | Clean2035    | Accelerated Demand Electrification (ADE) profile. This profile was custom made for the 100% Clean Electricity by 2035 study. More information about how it was formed can be found in <https://www.nrel.gov/docs/fy22osti/81644.pdf> Appendix C. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
 | Clean2035clip1pct | Same as Clean2035 but clips off the top 1% of load hours. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
@@ -84,24 +110,6 @@ These files are stored in `inputs/load/{switch_name}_load_hourly.h5`.
 ### Different weather years
 
 For EER’s load profiles, “weather” includes everything considered by NREL's [ResStock](https://resstock.nrel.gov/) and [ComStock](https://comstock.nrel.gov/) building models (i.e., temperature, humidity, insolation, and wind speed). This information gets translated into variations in load through regressions and benchmarking with historical system load data for the weather year in question.
-
-### Historic Load Data
-
-We have three historic load files, all of which were produced by the ReEDS team from a bottom-up compilation of different load data sources (see table above for more info). We sent these historical demand data to EER, who uses them to project future demand.
-
- They are the following:
-
-1. historic_load_hourly.h5 (contains historic demand from 2007-2013)
-2. historic_post2015_load_hourly.h5 (contains historic demand from 2016-2023)
-3. historic_full_load_hourly.h5 (combines files 1 & 2 to contain historic demand from 2007-2013 + 2016-2023)
-Files 1 & 2 are kept separate in the repository because their state and BA level magnitudes vary due to the slight differences in collecting the hourly historical data. These profiles were produced at different times and hence were produced in slightly different ways, which are described in the table below.
-
-|               | Historic_load_hourly.h5 (2007-2013) | historic_post2015_load_hourly.h5 (2016-2023) |
-| ------------- | ------------- | ------------- |
-| When were they produced/added to the repo? | ~ 2020, see [original file](https://github.nrel.gov/ReEDS/ReEDS-2.0/blob/7a8c6733786dbb407a9e1d8d49a24e18b691d650/inputs/variability/LDC_static_inputs_multiple_years/load.csv.gz) | Added in January 2025 in [PR 1601](https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1601) |
-| Does each year have a unique hourly shape? | Yes | Yes |
-| Does each model year have a unique magnitude? How are the data normalized? | No, 2007-2013 are normalized to 2010 demand (3738 TWh). | Yes, EER detrended the 2016-2023 data by doing a linear regression across that span of years and then adding/subtracting the linear trend across the years. This maintains the internal weather variability while separating the load growth. EER scaled the 2007-2013 data to match the average of my detrended 2016-2023 data. |
-| Time zone of the file | Central Standard Time (CST) | Central Standard Time (CST) |
 
 ### Demand Response
 
@@ -361,8 +369,8 @@ Most transmission input files are in the `inputs/transmission/` folder.
 1. *transmission_capacity_init_AC_NARIS2024.csv*: Initial AC transmission capacities between 134 US ReEDS zones. Calculated using the code available at <https://github.nrel.gov/pbrown/TSC> and nodal network data from <https://www.nrel.gov/docs/fy21osti/79224.pdf>. The method is described by Brown, P.R. et al 2023, "A general method for estimating zonal transmission interface limits from nodal network data", in prep.
 1. *transmission_capacity_init_AC_REFS2009.csv*: Initial AC transmission capacities between 134 US ReEDS zones. Calculated for <https://www.nrel.gov/analysis/re-futures.html>.
 1. *transmission_capacity_init_nonAC.csv*: Initial DC transmission capacities between 134 US ReEDS zones.
-1. *transmission_distance_cost_500kVac.csv*: Distance and cost for a representative transmission route between each pair of 134 US ReEDS zones, assuming a 500 kV single-circuit line. Routes are determined by the reV model using a least-cost-path algorithm accounting for terrain and land type multipliers. Costs represent the appropriate base cost from rev_transmission_basecost.csv multiplied by the appropriate terrain and land type multipliers for each 90m pixel crossed by the path. Endpoints are in inputs/shapefiles/transmission_endpoints and represent a point within the largest urban area in each of the 134 ReEDS zones.
-1. *transmission_distance_cost_500kVdc.csv*: Same as transmission_distance_cost_500kVdc.csv except assuming a 500 kV bipole DC line.
+1. *transmission_cost_ac_500kv_ba.csv* and *transmission_distance_ba.csv*: Distance and cost for a representative transmission route between each pair of 134 US ReEDS zones, assuming a 500 kV single-circuit line. Routes are determined by the reV model using a least-cost-path algorithm accounting for terrain and land type multipliers. Costs represent the appropriate base cost from rev_transmission_basecost.csv multiplied by the appropriate terrain and land type multipliers for each 90m pixel crossed by the path. Endpoints are in inputs/shapefiles/transmission_endpoints and represent a point within the largest urban area in each of the 134 ReEDS zones.
+1. *transmission_cost_dc_ba.csv*: Same as transmission_cost_ac_500kv_ba.csv except assuming a 500 kV bipole DC line.
 
 
 ### Relevant switches
@@ -378,7 +386,6 @@ Most transmission input files are in the `inputs/transmission/` folder.
 1. `GSw_TransHurdleLevel`: Indicate the level of hierarchy.csv between which to apply the hurdle rate specified by `GSw_TransHurdle`. i.e. if set to ‘st’, intra-state flows will have no hurdle rates but inter-state flows will have hurdle rates specified by `GSw_TransHurdle`.
 1. `GSw_TransRestrict`: Indicate the level of hierarchy.csv within which to allow transmission expansion. i.e. if set to ‘st’, no inter-state expansion is allowed.
 1. `GSw_TransScen`: Indicate the inputs/transmission/transmission_capacity_future_{`GSw_TransScen`}.csv file to use, which includes the list of interfaces that can be expanded. Note that the full list of expandable interfaces is indicated by this file plus transmission_capacity_future_default.csv (currently planned additions) plus transmission_capacity_init_AC_NARIS2024.csv (existing AC interfaces, which can be expanded by default) plus transmission_capacity_init_nonAC.csv (existing DC connections, which can be expanded by default). Applies to AC, LCC, and VSC.
-1. `GSw_VSC`: Indicate whether to allow VSC expansion. Will only have an effect if paired with a `GSw_TransScen` that includes VSC interfaces.
 1. `GSw_PRM_hierarchy_level`: Level of hierarchy.csv within which to calculate net load, used for capacity credit. Larger levels indicate more planning coordination between regions.
 1. `GSw_PRMTRADE_level`: Level of hierarchy.csv within which to allow PRM trading. By default it’s set to ‘country’, indicating no limits. If set to ‘r’, no PRM trading is allowed.
 
@@ -400,6 +407,7 @@ Some of the behavior of ReEDS2PRAS and PRAS (used for the stress periods resourc
   aggregating these small individual units can reduce the PRAS problem size without significantly affecting the results.
   - `pras_existing_unit_size` (default 1): If set to 1, use the average size of existing units by tech/region when disaggregating new capacity.
   Otherwise, if set to 0, use characteristic capacities from `inputs/plant_characteristics/unitsize_{pras_unitsize_source}.csv` for all new units.
+  - `pras_max_unitsize_prm` (default 1): If set to 1, cap the upper bound of disaggregated unit size by zone at the zonal PRM in MW
   - `pras_unitsize_source` (default `atb`; choices are `r2x` or `atb`): Data source for characteristic unit sizes in ReESD2PRAS
   - `pras_vre_combine` (default 0): If set to 1, combine VRE into a single VRE tech in ReEDS2PRAS
 - ReEDS2PRAS technology representation
@@ -666,6 +674,14 @@ MCS Example: Share of generation by technology.
 :width: 80%
 MCS Example: Total transmission capacity by interface.
 ```
+
+<!-- ## Hourlize -->
+```{include} ../../hourlize/README.md
+:relative-images: true
+:heading-offset: 1
+```
+
+For additional information on using Hourlize, you can watch the training video: [Hourlize wind/solar resource preprocessing tutorial](https://nrel-my.sharepoint.com/:v:/r/personal/bsergi_nrel_gov/Documents/Misc/Recordings/Hourlize%20wind_solar%20resource%20preprocessing%20tutorial-20240212_150245-Meeting%20Recording.mp4?csf=1&web=1&e=vIds6r&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
 
 ## Troubleshooting

@@ -25,6 +25,10 @@ Hydro,1.62,0,0
 lfill-gas,3.24,0,0
 nuclear,10.13,0,0
 nuclear-SMR,10.13,0,0
+nuclear-stor1,10.13,0,0
+nuclear-stor2,10.13,0,0
+nuclear-stor3,10.13,0,0
+nuclear-stor4,10.13,0,0
 o-g-s,3.24,0,0
 pumped-hydro,1.62,0,0
 pumped-hydro-flex,1.62,0,0

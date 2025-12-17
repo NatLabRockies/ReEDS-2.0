@@ -99,6 +99,11 @@ function parse_commandline()
             arg_type = Int
             default = 1
             required = false
+        "--pras_max_unitsize_prm"
+            help = "Cap the upper bound of disaggregated unit size by zone at the zonal PRM in MW"
+            arg_type = Int
+            default = 1
+            required = false
         "--pras_seed"
             help = "Random seed for PRAS (positive integer; ignored and set randomly if 0)"
             arg_type = Int
@@ -198,8 +203,11 @@ function run_pras(pras_system_path::String, args::Dict)
     @info "$(PRAS.EUE(results["short"])) MWh"
     @info "NEUE = $(1e6 * PRAS.EUE(results["short"]).eue.estimate / sum(sys.regions.load)) ppm"
 
+    ## Filter out DC regions used for VSC HVDC transmission
+    regions = [r for r in sys.regions.names if !(occursin("|", r))]
+
     #%% Print some more detailed results if debugging
-    for (i, reg) in enumerate(sys.regions.names)
+    for (i, reg) in enumerate(regions)
         @debug "$reg: $(round(PRAS.LOLE(results["short"],reg).lole.estimate)) event-h"
         @debug "$reg: $(round(PRAS.EUE(results["short"],reg).eue.estimate)) MWh"
         @debug "$reg: NEUE = $(round(
@@ -219,7 +227,7 @@ function run_pras(pras_system_path::String, args::Dict)
         USA_EUE=[PRAS.EUE(results["short"],h).eue.estimate for h in sys.timestamps],
     )
     ## Now for each constituent region
-    for (i,r) in enumerate(sys.regions.names)
+    for (i,r) in enumerate(regions)
         dfout[!, "$(r)_LOLE"] = [PRAS.LOLE(results["short"],r,h).lole.estimate for h in sys.timestamps]
         dfout[!, "$(r)_EUE"] = [PRAS.EUE(results["short"],r,h).eue.estimate for h in sys.timestamps]
     end
@@ -258,7 +266,7 @@ function run_pras(pras_system_path::String, args::Dict)
     ### Surplus
     if args["write_surplus"] == 1
         dfsurplus = DF.DataFrame()
-        for r in sys.regions.names
+        for r in regions
             ## Surplus results are tuples of (mean, standard deviation). Keep the mean.
             dfsurplus[!, "$(r)"] = [results["surplus"][r,h][1] for h in sys.timestamps]
         end
@@ -294,7 +302,7 @@ function run_pras(pras_system_path::String, args::Dict)
         for s in range(1, args["samples"])
             dictshort[s] = DF.DataFrame(
                 transpose(getindex.(results["short_samples"][:, :], s)),
-                sys.regions.names
+                regions
             )
         end
         ## Write it
@@ -402,6 +410,7 @@ function main(args::Dict)
                 args["hydro_energylim"] == 1,
                 args["pras_agg_ogs_lfillgas"] == 1,
                 args["pras_existing_unit_size"] == 1,
+                args["pras_max_unitsize_prm"] == 1,
             ),
             pras_system_path,
             verbose=true,
@@ -444,6 +453,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     #     "include_samples" => 0,
     #     "pras_agg_ogs_lfillgas" => 0,
     #     "pras_existing_unit_size" => 1,
+    #     "pras_max_unitsize_prm" => 1,
     #     "pras_seed" => 1,
     # )
     # reedscase = args["reedscase"]

@@ -39,7 +39,7 @@ eq_ObjFn_inv(t)$tmodel(t)..
                        cost_cap_fin_mult(i,r,t) * cost_cap(i,t) * INV(i,v,r,t)
                       }
 
-                  + sum{(i,v,r)$[valinv(i,v,r,t)$battery(i)],
+                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i))],
                        cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t) 
                       }
 * slack for req builds equations
@@ -102,22 +102,30 @@ eq_ObjFn_inv(t)$tmodel(t)..
                       cost_cap_fin_mult(i,r,t) * cost_cap(i,t) * INV_REFURB(i,v,r,t)
                       }
 
-* --- cost of transmission---
-*costs of transmission lines
-                  + sum{(r,rr,trtype)$routes_inv(r,rr,trtype,t),
-                        trans_cost_cap_fin_mult(t) * transmission_line_capcost(r,rr,trtype) * INVTRAN(r,rr,trtype,t) }
+* --- cost of interzonal AC transmission---
+                  + sum{(r,rr,tscbin)$[routes_inv(r,rr,"AC",t)$tsc_binwidth(r,rr,tscbin)],
+                        trans_cost_cap_fin_mult(t) * TRAN_CAPEX_BINS(r,rr,tscbin,t) }
 
-* LCC and B2B AC/DC converter stations (each interface has two, one on either side of the interface)
+* --- cost of interzonal HVDC transmission---
+* transmission lines: 1 MW adds 1 MW to both INVTRAN(r,rr) and INVTRAN(rr,r) so divide by 2
+                  + sum{(r,rr,trtype)$[routes_inv(r,rr,trtype,t)$(not aclike(trtype))],
+                        trans_cost_cap_fin_mult(t)
+                        * transmission_cost_nonac(r,rr,trtype)
+                        * INVTRAN(r,rr,trtype,t)
+                        / 2 }
+
+* LCC and B2B AC/DC converter stations: each interface has two, one on either side of the interface,
+* but each interface shows up in both INVTRAN(r,rr) and INVTRAN(rr,r) so don't multiply by 2
                   + sum{(r,rr,trtype)$[lcclike(trtype)$routes_inv(r,rr,trtype,t)],
-                        trans_cost_cap_fin_mult(t) * cost_acdc_lcc * 2 * INVTRAN(r,rr,trtype,t) }
+                        trans_cost_cap_fin_mult(t) * cost_acdc_lcc * INVTRAN(r,rr,trtype,t) }
 
-*cost of VSC AC/DC converter stations
+* VSC AC/DC converter stations
                   + sum{r,
                         trans_cost_cap_fin_mult(t) * cost_acdc_vsc * INV_CONVERTER(r,t) }
 
 * --- storage capacity credit---
 *small cost penalty to incentivize solver to fill shorter-duration bins first
-                  + sum{(i,v,r,ccseason,sdbin)$[valcap(i,v,r,t)$(storage(i) or hyd_add_pump(i))$(not csp(i))$Sw_PRM_CapCredit$Sw_StorageBinPenalty],
+                  + sum{(i,v,r,ccseason,sdbin)$[valcap(i,v,r,t)$(storage(i) or hyd_add_pump(i))$(not thermal_storage(i))$Sw_PRM_CapCredit$Sw_StorageBinPenalty],
                          bin_penalty(sdbin) * CAP_SDBIN(i,v,r,ccseason,sdbin,t) }
 
 * cost of capacity upsizing
@@ -159,23 +167,31 @@ eq_Objfn_op(t)$tmodel(t)..
 
 * --- variable O&M costs---
 * all technologies except hybrid plant and DAC
-              sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)$(not storage_hybrid(i)$(not csp(i)))],
+              sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)$(not storage_hybrid(i))],
                    hours(h) * cost_vom(i,v,r,t) * GEN(i,v,r,h,t) }
 
 * hybrid plant (plant)
-            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom_pvb_p(i,v,r,t)$storage_hybrid(i)$(not csp(i))],
+            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom_pvb_p(i,v,r,t)$pvb(i)],
                    hours(h) * cost_vom_pvb_p(i,v,r,t) * GEN_PLANT(i,v,r,h,t) }$Sw_HybridPlant
 
 * hybrid plant (Battery)
-            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom_pvb_b(i,v,r,t)$storage_hybrid(i)$(not csp(i))],
+            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom_pvb_b(i,v,r,t)$pvb(i)],
                    hours(h) * cost_vom_pvb_b(i,v,r,t) * GEN_STORAGE(i,v,r,h,t) }$Sw_HybridPlant
+
+* hybrid nuclear (plant)
+            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)$nuclear_stor(i)],
+                   hours(h) * cost_vom(i,v,r,t) * GEN_PLANT(i,v,r,h,t) }$Sw_HybridPlant
+
+* hybrid nuclear (storage)
+            + sum{(i,v,r,h)$[valgen(i,v,r,t)$cost_vom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i)],
+                   hours(h) * cost_vom_nuclear_stor_s(i,v,r,t) * GEN_STORAGE(i,v,r,h,t) }$Sw_HybridPlant
 
 * --- fixed O&M costs---
 * generation
               + sum{(i,v,r)$[valcap(i,v,r,t)],
                    cost_fom(i,v,r,t) * CAP(i,v,r,t) }
 
-              + sum{(i,v,r)$[valcap(i,v,r,t)$battery(i)],
+              + sum{(i,v,r)$[valcap(i,v,r,t)$(battery(i) or tes(i))],
                    cost_fom_energy(i,v,r,t) * CAP_ENERGY(i,v,r,t) }
 
 * transmission lines

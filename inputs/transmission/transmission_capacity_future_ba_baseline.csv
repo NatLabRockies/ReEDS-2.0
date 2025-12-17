@@ -62,3 +62,59 @@ p5,p15,Possible,AC,2026,1100
 ### ^^^
 p80,p104,Possible,AC,0,100000,Allows Chicago to connect to rest of PJM
 p104,p111,Possible,AC,0,100000,Allows SW Michigan to connect to rest of PJM
+### vvv Candidate offshore links
+## Land-to-offshore links (these are only built for offshore wind delivery
+## so they won't be built early unless there's exogenous offshore wind)
+oWA,p1,Possible,VSC,2010,100000
+oOR_N,p5,Possible,VSC,2010,100000
+oOR_S,p6,Possible,VSC,2010,100000
+oCA_NNN,p9,Possible,VSC,2010,100000
+oCA_NN,p9,Possible,VSC,2010,100000
+oCA_N,p9,Possible,VSC,2010,100000
+oCA_S,p9,Possible,VSC,2010,100000
+oTX,p67,Possible,VSC,2010,100000
+oLA,p58,Possible,VSC,2010,100000
+oMS,p87,Possible,VSC,2010,100000
+oAL,p90,Possible,VSC,2010,100000
+oFL_W,p101,Possible,VSC,2010,100000
+oFL_E,p102,Possible,VSC,2010,100000
+oGA,p94,Possible,VSC,2010,100000
+oSC,p96,Possible,VSC,2010,100000
+oNC_S,p98,Possible,VSC,2010,100000
+oNC_N,p98,Possible,VSC,2010,100000
+oVA,p99,Possible,VSC,2010,100000
+oMD,p123,Possible,VSC,2010,100000
+oDE,p125,Possible,VSC,2010,100000
+oNJ,p126,Possible,VSC,2010,100000
+oNY,p128,Possible,VSC,2010,100000
+oCT,p132,Possible,VSC,2010,100000
+oRI,p133,Possible,VSC,2010,100000
+oMA,p131,Possible,VSC,2010,100000
+oNH,p130,Possible,VSC,2010,100000
+oME,p134,Possible,VSC,2010,100000
+## Offshore-to-offshore links
+oWA,oOR_N,Possible,VSC,0,100000
+oOR_N,oOR_S,Possible,VSC,0,100000
+oOR_S,oCA_NNN,Possible,VSC,0,100000
+oCA_NNN,oCA_NN,Possible,VSC,0,100000
+oCA_NN,oCA_N,Possible,VSC,0,100000
+oCA_N,oCA_S,Possible,VSC,0,100000
+oTX,oLA,Possible,VSC,0,100000
+oLA,oMS,Possible,VSC,0,100000
+oMS,oAL,Possible,VSC,0,100000
+oAL,oFL_W,Possible,VSC,0,100000
+oFL_E,oGA,Possible,VSC,0,100000
+oGA,oSC,Possible,VSC,0,100000
+oSC,oNC_S,Possible,VSC,0,100000
+oNC_S,oNC_N,Possible,VSC,0,100000
+oNC_N,oVA,Possible,VSC,0,100000
+oVA,oMD,Possible,VSC,0,100000
+oMD,oDE,Possible,VSC,0,100000
+oDE,oNJ,Possible,VSC,0,100000
+oNJ,oNY,Possible,VSC,0,100000
+oNY,oCT,Possible,VSC,0,100000
+oCT,oRI,Possible,VSC,0,100000
+oRI,oMA,Possible,VSC,0,100000
+oMA,oNH,Possible,VSC,0,100000
+oNY,oMA,Possible,VSC,0,100000
+oNH,oME,Possible,VSC,0,100000

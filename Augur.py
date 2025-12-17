@@ -77,6 +77,7 @@ def run_pras(
         f"--include_samples={int(include_samples)}",
         f"--pras_agg_ogs_lfillgas={int(sw['pras_agg_ogs_lfillgas'])}",
         f"--pras_existing_unit_size={int(sw['pras_existing_unit_size'])}",
+        f"--pras_max_unitsize_prm={int(sw.get('pras_max_unitsize_prm',1))}",
         f"--pras_seed={int(sw['pras_seed'])}",
     ])
     print(command)
@@ -101,7 +102,7 @@ def main(t, tnext, casedir, iteration=0):
     # #%% To debug, uncomment these lines and update the run path
     # t = 2026
     # tnext = 2029
-    # reeds_path = os.path.dirname(__file__)
+    # reeds_path = reeds.io.reeds_path
     # casedir = os.path.join(
     #     reeds_path,'runs','v20250521_prasM0_Pacific')
     # iteration = 0

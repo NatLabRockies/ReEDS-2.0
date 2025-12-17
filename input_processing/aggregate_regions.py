@@ -28,6 +28,7 @@ import sys
 import datetime
 from glob import glob
 from warnings import warn
+import h5py
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
 ## Time the operation of this script
@@ -583,6 +584,11 @@ def agg_disagg(filepath, r2aggreg_glob, r_ba_glob, runfiles_row):
         except pd.errors.EmptyDataError:
             return
     elif filetype == 'h5':
+        # Skip empty files
+        with h5py.File(os.path.join(inputs_case, filepath), 'r') as f:
+            if len(f.keys()) == 0:
+                return
+
         dfin = reeds.io.read_file(os.path.join(inputs_case, filepath)).copy()
         if header == 'keepindex':
             indexnames = (dfin.index.names)
@@ -1035,8 +1041,7 @@ if 'aggreg' in agglevel:
         aggreg2anchorreg = load.groupby('aggreg').idxmax()['MW'].rename('rb')
     elif anchortype in ['size','km2','area']:
         ### Take the "anchor" zone as the zone with the largest area [km2]
-        import geopandas as gpd
-        dfba = gpd.read_file(os.path.join(reeds_path,'inputs','shapefiles','US_PCA')).set_index('rb')
+        dfba = reeds.io.get_zonemap(os.path.dirname(inputs_case))
         dfba['km2'] = dfba.area / 1e6
         ## Add column for new regions
         dfba['aggreg'] = dfba.index.map(r_ba)
@@ -1165,11 +1170,11 @@ if any(missingfiles):
 mapsfile = os.path.join(inputs_case, 'maps.gpkg')
 if os.path.exists(mapsfile):
     os.remove(mapsfile)
-dfmap = reeds.io.get_dfmap(os.path.join(inputs_case,'..'))
+dfmap = reeds.io.get_dfmap(os.path.dirname(inputs_case))
 for level in dfmap:
     dfmap[level].rename_axis(level).to_file(mapsfile, layer=level)
 
-dfmap = reeds.io.get_dfmap(os.path.join(inputs_case,'..'))
+dfmap = reeds.io.get_dfmap(os.path.dirname(inputs_case))
 
 ### Aggregate or disaggregate the 'r' map; none of the rest should change
 # Mixed resolution maps are patched together in the get_zonemap() function

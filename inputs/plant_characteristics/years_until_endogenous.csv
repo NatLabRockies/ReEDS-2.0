@@ -1,5 +1,6 @@
 tech,years_from_now
 battery_li,0
+tes_ms,0
 biopower,2
 beccs_mod,4
 beccs_max,4
@@ -52,6 +53,10 @@ MHKwave,2
 egs_nearfield_1*egs_nearfield_10,2
 Nuclear,8
 Nuclear-SMR,8
+nuclear-stor1,8
+nuclear-stor2,8
+nuclear-stor3,8
+nuclear-stor4,8
 Ocean,500
 o-g-s,500
 pumped-hydro,3

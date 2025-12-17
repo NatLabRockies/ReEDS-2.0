@@ -166,6 +166,14 @@ def main(t, casedir, iteration=0):
             [re.sub('\d?_\d+$', '', i) for i in techs_vre]
         ))
 
+    try:
+        offshore = pd.read_csv(
+            os.path.join(casedir, 'inputs_case', 'offshore.csv'),
+            header=None,
+        ).squeeze(1).tolist()
+    except pd.errors.EmptyDataError:
+        offshore = []
+
     #%%### Set up the output containers and a few other inputs
     csvout, h5out = {}, {}
 
@@ -247,6 +255,7 @@ def main(t, casedir, iteration=0):
 
     ### Multiply derated capacity by CF to get generation
     gen_vre_ir = recf.multiply(cap_vre_derated, axis=1).dropna(axis=1)
+    ### Check for missing data
     if gen_vre_ir.shape[1] != cap_vre_derated.shape[0]:
         missing_in_gen_vre_ir = set(cap_vre_derated.index) - set(gen_vre_ir.columns)
         missing_in_cap_vre_derated = set(gen_vre_ir.columns) - set(cap_vre_derated.index)
@@ -369,6 +378,10 @@ def main(t, casedir, iteration=0):
     else:
         pras_load = load_year.copy()
 
+    ### Add zeros for offshore zones
+    for r in offshore:
+        pras_load[r] = 0
+
     ### Subtract dr-shed load
     if int(sw.GSw_DRShed) and not gen_shed_combined.empty:
         print(f'Subtracted shed load from PRAS load since GSw_DRShed = {sw.GSw_DRShed}')
@@ -406,8 +419,6 @@ def main(t, casedir, iteration=0):
     )
 
     #%%### Collect some csv's for ReEDS2PRAS
-    csvout['cap_converter'] = (
-        gdxreeds['cap_converter_filt'].set_index('r').rename(columns={'Value':'MW'}))
     ### Transmission capacity: Subset for RA according to GSw_PRMTRADE_level switch
     tran_cap = (
         trancap_reeds.set_index(['r','rr','trtype']).rename(columns={'Value':'MW'}))
@@ -424,6 +435,19 @@ def main(t, casedir, iteration=0):
             .drop(['level','levell'], axis=1)
         )
     csvout['tran_cap'] = tran_cap
+
+    ### Converter capacity: Offshore zones don't need converters since offshore generation
+    ## exports are assumed to be in DC, so add converter capacity to each offshore zone
+    ## equal to the VSC transmission capacity into / out of the zone.
+    ## Transmission capacity is defined in both directions and VSC is the same in both,
+    ## so we can just keep offshore transmission in one direction.
+    offshore_with_transmission = [
+        r for r in offshore if r in tran_cap.index.get_level_values('r').unique()
+    ]
+    csvout['cap_converter'] = pd.concat([
+        gdxreeds['cap_converter_filt'].set_index('r').rename(columns={'Value':'MW'}),
+        tran_cap.loc[offshore_with_transmission].groupby('r').sum(),
+    ])
 
     ### Nameplate capacity
     max_cap = cap_nonloadtechs.set_index(['i','v','r']).Value.rename('MW')
@@ -488,6 +512,20 @@ def main(t, casedir, iteration=0):
     ## As in ReEDS LP, storage losses are applied to charging side (none for discharging)
     csvout['charge_eff'] = storage_eff
     csvout['discharge_eff'] = pd.Series(index=storage_eff.index, data=1., name='fraction')
+
+    #%% Planning reserve margin in MW (sometimes used during unit disaggregation)
+    csvout['max_unitsize'] = (
+        gdxreeds['prm'].loc[gdxreeds['prm'].t == t].set_index('r').Value
+        * h5out['pras_load'].max()
+    ).round().astype(int).rename_axis('r').rename('mw')
+    ## Turn off for counties by setting to zero (zeros in this file mean the max unit
+    ## size is not enforced for that region in ReEDS2PRAS)
+    agglevel_variables = reeds.spatial.get_agglevel_variables(
+        reeds.io.reeds_path, os.path.join(casedir, 'inputs_case')
+    )
+    counties = agglevel_variables['county_regions']
+    if len(counties):
+        csvout['max_unitsize'].loc[counties] = 0
 
     #%% Strip water tech suffixes from water-dependent technologies
     ### and change upgrade techs to the tech they are upgraded FROM.

@@ -1,4 +1,5 @@
 {
+    "dynamicMainFile": false,
     "expand": false,
     "file": "c_supplyobjective.gms",
     "name": "c_supplyobjective",
@@ -14,6 +15,7 @@
     "options": [
         ""
     ],
+    "ownBaseDir": false,
     "path": ".",
     "projectType": 1,
     "workDir": "."

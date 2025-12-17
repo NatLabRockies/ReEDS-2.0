@@ -31,6 +31,7 @@ GSw_HourlyChunkLengthRep,Length of representative-period dispatch timeslices in 
 GSw_HourlyChunkLengthStress,Length of stress-period dispatch timeslices in hours,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 GSw_NoFossilOffsetCDR,If on (=1) then CO2 removal from DAC/BECCS is only allowed to offset emissions from fossil+CCS,0,,,,,,,,,,,,,,,,,,,,,,1,,,1,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,
 GSw_NuclearSMR,Turn on [1] / off [0] Nuclear-SMR,1,,0,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,0,,,,,0,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor1,1,,0,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,0,,,,,0,,,,,,,,,,,,,,,,,,,,
 GSw_NukeNoRetireYear,If GSw_NukeNoRetire is enabled nuclear cannot retire through the end of this year,2032,,,,,,,,,,,,,,,,2060,,,,,,,,,,,,,,,,,,,,,,,,2060,,,,,,,,,,,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2060,2026,,2026,2026
 GSw_Precombustion,Include both precombustion and combustion emissions in CO2 and CO2e calculation,1,,,,,,,,,,,,,,,,,,,,,1,1,,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,,1,1,,,,,,,,,,,,,,,,,,,,,,,,,,
 GSw_PRM_NetImportLimit,Turn on [1] / off [0] eq_firm_transfer_limit constraint on max firm net imports,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,,
@@ -48,4 +49,3 @@ GSw_TransRestrict,hierarchy level within which to allow new transmission lines,c
 GSw_TransScen,"Select Transmission Scenario [default, LCC_all, LCC_SeamsD3_certain, etc]",default,,,,,,,,,,,,,VSC_all,,,,,,,,,,,,,,,,,,,,,,,,VSC_all,,,,,,,,,,,,,,,,,,,,,,,,,,VSC_all,,,,,,,,,
 GSw_UpgradeCost_Mult,CCS upgrade cost scenario: 0=mid 1=adv 2=con,0,,,,,,,,,,,2,1,,,,,,,,,,,,,,,,,,,,,,,2,1,,,,,,,,,,,,,,,,,,,,,,,,,2,1,,,,,,,,,,
 GSw_Upgrades,Turn on/off upgrades,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0
-GSw_VSC,Switch to turn on/off multi-terminal VSC HVDC macrogrid as an investment option,0,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,

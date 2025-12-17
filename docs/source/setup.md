@@ -323,9 +323,36 @@ Screenshot of initiating "runbatch.py" from the command line
       * As each case finishes, it will start a new one until all cases have been run
    * **WARNING! Be mindful about the amount of CPU and RAM usage needed for each case**
 
+### Checking the outputs
+To check if a run was successful, you can look in the following two places: 
+- The 'runs/[batchname_scenario]/outputs' folder should have csv files, if it doesn't, something went wrong.
+- There should be a 'reeds-report' and reeds-report-reduced' folder in the outputs folder for a specific run.
+
 
 ### Special Case Setup Requirements
 
 For non-NREL users, some additional data is required to run the ReEDS model at the 'county' spatial resolution. This is currently considered a special case and some data was required to be kept outside the ReEDS repository because the data is simply too large. The hourly renewable capacity factor data is now available to all at : [https://data.openei.org/submissions/5986](https://data.openei.org/submissions/5986).
 
 If you would like to run the model at county resolution, you are requested to download the files available from the link provided, unzip each folder, and place the files obtained into inputs/variability/multi-year in your locally cloned ReEDS repository. The input_processing scripts have also been updated to check for these files for any county-level runs. The 'cases_spatialflex.csv' file provides examples of specific switch settings to run ReEDS at county-level.
+
+## NREL Specific Setup
+For more information on NREL specific setup, refer to the [Internal ReEDS Documentation](https://nrel.sharepoint.com/:w:/s/ReEDS/Efathg8KjjtCkxW44vZpWQQBA2KsU3RadSsVauBMskEfUA?e=YaSIqc). You can find information there on Yampa and HPC setup, as well as the onboarding guide.
+
+## Additional Resources
+NREL has a YouTube channel that contains tutorial videos for ReEDS. The following are recommended videos for getting started with ReEDS: 
+- Overview of ReEDS
+  - [Introduction to the ReEDS Model: 2023 Version](https://www.youtube.com/watch?v=6SNxMWoBVr0&amp;list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC&amp;index=11)
+  - [Powered by ReEDS](https://www.youtube.com/watch?v=qLHdWh3uoHk)
+- Getting started with ReEDS: [2023 ReEDS Training for User Group Meeting](https://www.youtube.com/watch?v=tDLwqH6YZ_E&amp;list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC&amp;index=12)
+- How to change inputs: [Training on Changing and Adding Inputs](https://www.youtube.com/watch?v=QxwEs0ZC5ns&amp;list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC&amp;index=9)
+- Debugging of ReEDS: [Training on Debugging ReEDS](https://www.youtube.com/watch?v=4I0V5F8fzDU&amp;list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC&amp;index=8)
+
+If you'd like practice with running a specific ReEDS scenario, you can walk through the [ReEDS Training Homework](reeds_training_homework).
+
+Additional resources and learning:
+* [General information on ReEDS](https://www.nrel.gov/analysis/reeds/)
+* [ReEDS POC list](https://nrel.sharepoint.com/:w:/s/ReEDS/ES6GQTyzXo1DnnCPlnAhg5QB8cPY--_01HkQkiOnrPskxw?e=flEAtY)
+* [GitHub README](https://github.nrel.gov/ReEDS/ReEDS-2.0/blob/main/README.md)
+* [YouTube tutorials](https://www.youtube.com/playlist?list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC)
+* [GAMS language information](https://www.gams.com/latest/docs/UG_MAIN.html#UG_Language_Environment)
+* [Tips and tricks for the bash shell](https://nrel-my.sharepoint.com/:p:/r/personal/ssundar_nrel_gov/Documents/Microsoft%20Teams%20Chat%20Files/02062024_what_the_shell.pptx?d=wa7aea3514f814d51924bf2dfa737d414&csf=1&web=1&e=qr1YuP)

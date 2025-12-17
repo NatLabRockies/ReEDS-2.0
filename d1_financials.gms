@@ -70,6 +70,26 @@ cost_cap_fin_mult_no_credits(i,r,t)$pvb(i) =
     + bcr(i) * (cost_cap_fin_mult_pvb_b_no_credits(i,r,t) - 1) * cost_cap_pvb_b(i,t))
     / (cost_cap_pvb_p(i,t) + bcr(i) * cost_cap_pvb_b(i,t)) + 1 ;
 
+* Assign "cost_cap_fin_mult" for nuclear_stor to be the weighted average of the nuclear and storage portions
+* The weighting is based on:
+*   (1) the cost of each portion: nuclear=cost_cap_nuclear_stor_p; storage=cost_cap_nuclear_stor_s
+*   (2) the relative size of each portion: nuclear=1; storage=bcr
+* The "-1" and "+1" values are needed because the multipliers are adjustments off of 1.0
+* cost_cap_fin_mult(i,r,t)$nuclear_stor(i) =
+*     ( (cost_cap_fin_mult_nuclear_stor_p(i,r,t) - 1) * cost_cap_nuclear_stor_p(i,t)
+*     + bcr(i) * (cost_cap_fin_mult_nuclear_stor_s(i,r,t) - 1) * cost_cap_nuclear_stor_s(i,t) )
+*     / (cost_cap_nuclear_stor_p(i,t) + bcr(i) * cost_cap_nuclear_stor_s(i,t)) + 1 ;
+
+* cost_cap_fin_mult_noITC(i,r,t)$nuclear_stor(i) =
+*     ( (cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t) - 1) * cost_cap_nuclear_stor_p(i,t)
+*     + bcr(i) * (cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t) - 1) * cost_cap_nuclear_stor_s(i,t) )
+*     / (cost_cap_nuclear_stor_p(i,t) + bcr(i) * cost_cap_nuclear_stor_s(i,t)) + 1 ;
+
+* cost_cap_fin_mult_no_credits(i,r,t)$nuclear_stor(i) =
+*     ((cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t) - 1) * cost_cap_nuclear_stor_p(i,t)
+*     + bcr(i) * (cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t) - 1) * cost_cap_nuclear_stor_s(i,t))
+*     / (cost_cap_nuclear_stor_p(i,t) + bcr(i) * cost_cap_nuclear_stor_s(i,t)) + 1 ;
+
 * --- Upgrades ---
 * Assign upgraded techs the same multipliers as the techs they are upgraded from
 * This assignment must take place after expanding for water techs, if applicable.
@@ -152,5 +172,21 @@ cost_cap_fin_mult(i,r,t)$[gas(i)$valcap_irt(i,r,t)] =
     cost_cap_fin_mult(i,r,t) 
     * max(sum{st$r_st(r,st), ng_crf_penalty_st(t,st) }$(not ccs(i))$Sw_StateRPS$(yeart(t)>=firstyear_RPS), 
           ng_crf_penalty_nat(i,t) ) ;
+
+
+* Assign the nuclear portion of nuclear_stor the value of nuclear
+cost_cap_fin_mult_nuclear_stor_p(i,r,t)$nuclear_stor(i) =
+    cost_cap_fin_mult('nuclear',r,t) ;
+
+cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t)$nuclear_stor(i) =
+    cost_cap_fin_mult_noITC('nuclear',r,t) ;
+
+cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t)$nuclear_stor(i) =
+    cost_cap_fin_mult_no_credits('nuclear',r,t) ;
+
+* Assign the storage portion of nuclear_stor the storage tech multiplier
+cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult(ii,r,t)};
+cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_noITC(ii,r,t)} ;
+cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_no_credits(ii,r,t)} ;
 
 * --- End calculations of cost_cap_fin_mult family of parameters --- *

@@ -2,6 +2,7 @@
 * Non-rounded parameters can sometimes cause numerical issues when summing over tfix in model equations  
 if(Sw_RemoveSmallNumbers = 1,
     CAP.l(i,v,r,tfix)$[abs(CAP.l(i,v,r,tfix)) < rhs_tolerance] = 0 ;
+    CAP_ENERGY.l(i,v,r,tfix)$[abs(CAP_ENERGY.l(i,v,r,tfix)) < rhs_tolerance] = 0 ;
     UPGRADES.l(i,v,r,tfix)$[abs(UPGRADES.l(i,v,r,tfix)) < rhs_tolerance] = 0 ;
     CAP_ABOVE_LIM.l(tg,r,tfix)$[abs(CAP_ABOVE_LIM.l(tg,r,tfix)) < rhs_tolerance] = 0 ;
     INV.l(i,v,r,tfix)$[abs(INV.l(i,v,r,tfix)) < rhs_tolerance] = 0 ;
@@ -23,15 +24,15 @@ if(Sw_RemoveSmallNumbers = 1,
 
 * capacity and investment variables
     CAP.fx(i,v,r,tfix)$[valcap(i,v,r,tfix)] = CAP.l(i,v,r,tfix) ;
-    CAP_ENERGY.fx(i,v,r,tfix)$[valcap(i,v,r,tfix)$battery(i)] = CAP_ENERGY.l(i,v,r,tfix) ;
+    CAP_ENERGY.fx(i,v,r,tfix)$[valcap(i,v,r,tfix)$(battery(i) or tes(i) or nuclear_stor(i))] = CAP_ENERGY.l(i,v,r,tfix) ;
     CAP_ABOVE_LIM.fx(tg,r,tfix)$[(yeart(tfix)>=model_builds_start_yr)
                                  $(sum{(tgg,rr), cap_limit(tgg,rr,tfix)})
                                  $sum{(i,newv)$tg_i(tg,i), valinv(i,newv,r,tfix)}] = CAP_ABOVE_LIM.l(tg,r,tfix) ;
     CAP_SDBIN.fx(i,v,r,ccseason,sdbin,tfix)$[valcap(i,v,r,tfix)$(storage(i) or hyd_add_pump(i))$(not csp(i))$Sw_PRM_CapCredit] = CAP_SDBIN.l(i,v,r,ccseason,sdbin,tfix) ;
-    CAP_SDBIN_ENERGY.fx(i,v,r,ccseason,sdbin,tfix)$[valcap(i,v,r,tfix)$battery(i)$Sw_PRM_CapCredit] = CAP_SDBIN_ENERGY.l(i,v,r,ccseason,sdbin,tfix) ;
+    CAP_SDBIN_ENERGY.fx(i,v,r,ccseason,sdbin,tfix)$[valcap(i,v,r,tfix)$(battery(i) or tes(i) or nuclear_stor(i))$Sw_PRM_CapCredit] = CAP_SDBIN_ENERGY.l(i,v,r,ccseason,sdbin,tfix) ;
     GROWTH_BIN.fx(gbin,i,st,tfix)$[sum{r$[r_st(r,st)], valinv_irt(i,r,tfix) }$stfeas(st)$Sw_GrowthPenalties$(yeart(tfix)<=Sw_GrowthPenLastYear)] = GROWTH_BIN.l(gbin,i,st,tfix) ;
     INV.fx(i,v,r,tfix)$[valinv(i,v,r,tfix)] = INV.l(i,v,r,tfix) ;
-    INV_ENERGY.fx(i,v,r,tfix)$[valinv(i,v,r,tfix)$battery(i)] = INV_ENERGY.l(i,v,r,tfix) ;
+    INV_ENERGY.fx(i,v,r,tfix)$[valinv(i,v,r,tfix)$(battery(i) or tes(i) or nuclear_stor(i))] = INV_ENERGY.l(i,v,r,tfix) ;
     INV_REFURB.fx(i,v,r,tfix)$[valinv(i,v,r,tfix)$refurbtech(i)] = INV_REFURB.l(i,v,r,tfix) ;
     INV_RSC.fx(i,v,r,rscbin,tfix)$[valinv(i,v,r,tfix)$rsc_i(i)$m_rscfeas(r,i,rscbin)] = INV_RSC.l(i,v,r,rscbin,tfix) ;
     CAP_RSC.fx(i,v,r,rscbin,tfix)$[valcap(i,v,r,tfix)$rsc_i(i)$m_rscfeas(r,i,rscbin)] = CAP_RSC.l(i,v,r,rscbin,tfix) ;
@@ -89,6 +90,7 @@ if(Sw_RemoveSmallNumbers = 1,
     CAPTRAN_PRM.fx(r,rr,trtype,tfix)$[routes(r,rr,trtype,tfix)$routes_prm(r,rr)] = CAPTRAN_PRM.l(r,rr,trtype,tfix) ;
     CAPTRAN_GRP.fx(transgrp,transgrpp,tfix)$trancap_init_transgroup(transgrp,transgrpp,"AC") = CAPTRAN_GRP.l(transgrp,transgrpp,tfix) ;
     INVTRAN.fx(r,rr,trtype,tfix)$routes_inv(r,rr,trtype,tfix) = INVTRAN.l(r,rr,trtype,tfix) ;
+    INVTRAN_AC.fx(r,rr,tscbin,tfix)$routes_inv(r,rr,"AC",tfix) = INVTRAN_AC.l(r,rr,tscbin,tfix) ;
     INV_CONVERTER.fx(r,tfix)$Sw_VSC = INV_CONVERTER.l(r,tfix) ;
     CAP_CONVERTER.fx(r,tfix)$Sw_VSC = CAP_CONVERTER.l(r,tfix) ;
     CONVERSION.fx(r,h,intype,outtype,tfix)$Sw_VSC = CONVERSION.l(r,h,intype,outtype,tfix) ;
@@ -96,6 +98,7 @@ if(Sw_RemoveSmallNumbers = 1,
     CAP_SPUR.fx(x,tfix)$[Sw_SpurScen$xfeas(x)] = CAP_SPUR.l(x,tfix) ;
     INV_SPUR.fx(x,tfix)$[Sw_SpurScen$xfeas(x)] = INV_SPUR.l(x,tfix) ;
     INV_POI.fx(r,tfix)$Sw_TransIntraCost = INV_POI.l(r,tfix) ;
+    TRAN_CAPEX_BINS.fx(r,rr,tscbin,tfix)$[routes_inv(r,rr,"AC",tfix)$tsc_binwidth(r,rr,tscbin)] = TRAN_CAPEX_BINS.l(r,rr,tscbin,tfix) ;
 
 * water climate variables
     WATCAP.fx(i,v,r,tfix)$[valcap(i,v,r,tfix)$Sw_WaterMain$Sw_WaterCapacity] = WATCAP.l(i,v,r,tfix) ;

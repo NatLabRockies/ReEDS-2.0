@@ -32,7 +32,7 @@ class MCSConstants:
     Contains synonyms, file names for special treatment, and valid distribution identifiers.
     """
     ### --- Synonyms
-    TECH_DESCRIPTOR = ['i', 'type', 'Tech', 'Geo class', 'Depth', 'Turbine', 'tech', '*tech', 'class']
+    TECH_DESCRIPTOR = ['i', '*i', 'type', 'Tech', 'Geo class', 'Depth', 'Turbine', 'tech', '*tech', 'class']
     YEAR_SYNONYMS = ['t', 'Year', 'year']
     REGION_SYNONYMS = ['r', 'region', 'cendiv', 'sc_point_gid', 'FIPS']
 

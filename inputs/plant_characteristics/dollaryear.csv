@@ -5,6 +5,10 @@ battery_ATB_2023_moderate,2021
 battery_ATB_2024_advanced,2022
 battery_ATB_2024_conservative,2022
 battery_ATB_2024_moderate,2022
+tes_ATB_2024_advanced,2022
+tes_ATB_2024_conservative,2022
+tes_ATB_2024_moderate,2022
+tes_ATB_2024_dirtcheap,2022
 beccs_BVRE_2021_high,2019
 beccs_BVRE_2021_low,2019
 beccs_BVRE_2021_mid,2019
@@ -42,9 +46,12 @@ nuclear_ATB_2024_advanced,2022
 nuclear_ATB_2024_conservative,2022
 nuclear_ATB_2024_moderate,2022
 nuclear_ATB_2024_lowcost,2022
+nuclear_ATB_2024_natrium,2023
+nuclear_ATB_2024_dirtcheap,2022
 nuclear-smr_ATB_2024_advanced,2022
 nuclear-smr_ATB_2024_conservative,2022
 nuclear-smr_ATB_2024_moderate,2022
+nuclear_stor_chars,2022
 ofs-wind_ATB_2023_advanced,2021
 ofs-wind_ATB_2023_conservative,2021
 ofs-wind_ATB_2023_moderate_noFloating,2021

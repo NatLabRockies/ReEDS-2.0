@@ -6,6 +6,10 @@ beccs_mod,1,1
 beccs_max,1,1
 Nuclear,1,1
 Nuclear-SMR,1,1
+nuclear-stor1,1,1
+nuclear-stor2,1,1
+nuclear-stor3,1,1
+nuclear-stor4,1,1
 gas-CT ,1,1.039104223
 gas-CC ,1,1.076422072
 Gas-CC-CCS_mod,1,1.076422072

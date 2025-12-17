@@ -24,6 +24,10 @@ CofireOld,0.02
 CofireNew,0.02
 nuclear,0.02
 nuclear-SMR,0.02
+nuclear-stor1,0.02
+nuclear-stor2,0.02
+nuclear-stor3,0.02
+nuclear-stor4,0.02
 lfill-gas,0.04
 H2-CT,0.08
 H2-CC,0.08
@@ -32,6 +36,7 @@ csp2_1*csp2_12,0.1
 csp3_1*csp3_12,0.1
 csp4_1*csp4_12,0.1
 battery_li,1
+tes_ms,0.1
 caes,1
 pumped-hydro,1
 pvb1_1*pvb1_10,1

@@ -215,6 +215,8 @@ def calc_systemcost(
         c for c in cap_type_ls if c in [
             'inv_converter_costs',
             'inv_transmission_line_investment',
+            'inv_transmission_interzone_ac_investment',
+            'inv_transmission_interzone_dc_investment',
         ]
     ]
     nontrans_cap_type_ls = [c for c in cap_type_ls if c not in trans_cap_type_ls]

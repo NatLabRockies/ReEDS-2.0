@@ -1,6 +1,7 @@
 i,region_type
 ice,p
 battery_li,p
+tes_ms,p
 biopower,p
 beccs_mod,p
 beccs_max,p
@@ -29,6 +30,10 @@ lfill-gas,p
 MHKwave,p
 Nuclear,p
 Nuclear-SMR,p
+nuclear-stor1,p
+nuclear-stor2,p
+nuclear-stor3,p
+nuclear-stor4,p
 Ocean,p
 o-g-s,p
 pumped-hydro,p

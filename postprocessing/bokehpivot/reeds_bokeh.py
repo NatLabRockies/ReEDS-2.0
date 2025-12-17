@@ -65,6 +65,7 @@ def reeds_static(data_type, data_source, scenario_filter, diff, base, static_pre
 
     #First, add difference sections to static_presets if diff is not 'No' and 'modify' is not already set for that preset
     if diff != 'No':
+        print("Adding difference sections to static_presets")
         i = 0
         while i < len(static_presets):
             if 'modify' not in static_presets[i]:
@@ -99,6 +100,7 @@ def reeds_static(data_type, data_source, scenario_filter, diff, base, static_pre
 
     #Now convert each static_preset into a core_preset for use in core.static_report()
     for static_preset in static_presets:
+        print("Building HTML and excel report for preset: " + static_preset['name'])
         #build the full widget configuration for each preset.
         config = {'filter':{}}
         if 'result' in static_preset:

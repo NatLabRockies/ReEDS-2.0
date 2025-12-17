@@ -27,6 +27,8 @@ STORAGE_IN_GRID.lo(i,v,r,h,t_unfix)$[valgen(i,v,r,t_unfix)$storage_hybrid(i)$(no
 STORAGE_IN_GRID.up(i,v,r,h,t_unfix)$[valgen(i,v,r,t_unfix)$storage_hybrid(i)$(not csp(i))$Sw_HybridPlant] = +inf ;
 STORAGE_LEVEL.lo(i,v,r,h,t_unfix)$[valgen(i,v,r,t_unfix)$storage(i)] = 0 ;
 STORAGE_LEVEL.up(i,v,r,h,t_unfix)$[valgen(i,v,r,t_unfix)$storage(i)] = +inf ;
+STORAGE_INTERDAY_LEVEL.lo(i,v,r,allszn,t_unfix)$[valgen(i,v,r,t_unfix)$storage_interday(i)$numpartitions(allszn)] = 0 ;
+STORAGE_INTERDAY_LEVEL.up(i,v,r,allszn,t_unfix)$[valgen(i,v,r,t_unfix)$storage_interday(i)$numpartitions(allszn)] = +inf ;
 AVAIL_SITE.lo(x,h,t_unfix)$[Sw_SpurScen$xfeas(x)] = 0 ;
 AVAIL_SITE.up(x,h,t_unfix)$[Sw_SpurScen$xfeas(x)] = +inf ;
 RAMPUP.lo(i,r,h,hh,t_unfix)$[Sw_StartCost$startcost(i)$numhours_nexth(h,hh)$valgen_irt(i,r,t_unfix)] = 0 ;
@@ -67,8 +69,6 @@ RECS.lo(RPSCat,i,st,ast,t_unfix)$[stfeas(st)$RecMap(i,RPSCat,st,ast,t_unfix)$(st
 RECS.up(RPSCat,i,st,ast,t_unfix)$[stfeas(st)$RecMap(i,RPSCat,st,ast,t_unfix)$(stfeas(ast) or sameas(ast,"voluntary"))$Sw_StateRPS] = +inf ;
 ACP_PURCHASES.lo(RPSCat,st,t_unfix)$[(stfeas(st) or sameas(st,"voluntary"))$Sw_StateRPS] = 0 ;
 ACP_PURCHASES.up(RPSCat,st,t_unfix)$[(stfeas(st) or sameas(st,"voluntary"))$Sw_StateRPS] = +inf ;
-EMIT.lo(etype,e,r,t_unfix)$emit_modeled(e,r,t_unfix) = -inf ;
-EMIT.up(etype,e,r,t_unfix)$emit_modeled(e,r,t_unfix) = +inf ;
 
 * transmission
 CONVERSION.lo(r,h,intype,outtype,t_unfix)$Sw_VSC = 0 ;
@@ -93,6 +93,8 @@ H2_STOR_LEVEL.lo(h2_stor,r,actualszn,h,t_unfix)$[(h2_stor_r(h2_stor,r))$(Sw_H2=2
 H2_STOR_LEVEL.up(h2_stor,r,actualszn,h,t_unfix)$[(h2_stor_r(h2_stor,r))$(Sw_H2=2)$(Sw_H2_StorTimestep=2)] = +inf ;
 H2_STOR_LEVEL_SZN.lo(h2_stor,r,actualszn,t_unfix)$[(h2_stor_r(h2_stor,r))$(Sw_H2=2)$(Sw_H2_StorTimestep=1)] = 0 ;
 H2_STOR_LEVEL_SZN.up(h2_stor,r,actualszn,t_unfix)$[(h2_stor_r(h2_stor,r))$(Sw_H2=2)$(Sw_H2_StorTimestep=1)] = +inf ;
+CREDIT_H2PTC.lo(i,v,r,h,t_unfix)$[valgen_h2ptc(i,v,r,t_unfix)$h_rep(h)$Sw_H2_PTC$h2_ptc_years(t_unfix)$(yeart(t_unfix)>=h2_demand_start)] = 0 ;
+CREDIT_H2PTC.up(i,v,r,h,t_unfix)$[valgen_h2ptc(i,v,r,t_unfix)$h_rep(h)$Sw_H2_PTC$h2_ptc_years(t_unfix)$(yeart(t_unfix)>=h2_demand_start)] = +inf ;
 
 * CO2 capture and storage
 CO2_CAPTURED.lo(r,h,t_unfix)$Sw_CO2_Detail = 0 ;
@@ -101,3 +103,13 @@ CO2_STORED.lo(r,cs,h,t_unfix)$[Sw_CO2_Detail$r_cs(r,cs)] = 0 ;
 CO2_STORED.up(r,cs,h,t_unfix)$[Sw_CO2_Detail$r_cs(r,cs)] = +inf ;
 CO2_FLOW.lo(r,rr,h,t_unfix)$[Sw_CO2_Detail$co2_routes(r,rr)] = 0 ;
 CO2_FLOW.up(r,rr,h,t_unfix)$[Sw_CO2_Detail$co2_routes(r,rr)] = +inf ;
+
+* Positive/negative variables
+EMIT.lo(etype,e,r,t_unfix)$emit_modeled(e,r,t_unfix) = -inf ;
+EMIT.up(etype,e,r,t_unfix)$emit_modeled(e,r,t_unfix) = +inf ;
+STORAGE_INTERDAY_DISPATCH.lo(i,v,r,h,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = -inf ;
+STORAGE_INTERDAY_DISPATCH.up(i,v,r,h,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = +inf ;
+STORAGE_INTERDAY_LEVEL_MAX_DAY.lo(i,v,r,allszn,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = -inf ;
+STORAGE_INTERDAY_LEVEL_MAX_DAY.up(i,v,r,allszn,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = +inf ;
+STORAGE_INTERDAY_LEVEL_MIN_DAY.lo(i,v,r,allszn,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = -inf ;
+STORAGE_INTERDAY_LEVEL_MIN_DAY.up(i,v,r,allszn,t_unfix)$[storage_interday(i)$valgen(i,v,r,t_unfix)] = +inf ;

@@ -3,8 +3,11 @@
 #%% Imports
 import os
 import sys
+import shapely
 import datetime
 import numpy as np
+import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import patheffects as pe
 from tqdm import tqdm
@@ -252,3 +255,142 @@ plt.savefig(
     bbox_inches='tight',
 )
 plt.show()
+
+
+#%%### Offshore zones and transmission links
+offshore_zones = gpd.read_file(
+    os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'offshore_zones.gpkg')
+).set_index('zone').to_crs(dfmap['r'].crs).drop(columns=['zone_old'], errors='ignore')
+## Get node x/y for consistency with land-based zones
+xy = reeds.plots.df2gdf(
+    offshore_zones.drop(columns='geometry'),
+    lat='node_latitude',
+    lon='node_longitude',
+    crs=offshore_zones.crs,
+)
+offshore_zones['x'] = xy.geometry.x
+offshore_zones['y'] = xy.geometry.y
+offshore_zones['centroid_x'] = offshore_zones.centroid.x
+offshore_zones['centroid_y'] = offshore_zones.centroid.y
+
+offshore = offshore_zones.index.values
+
+dfzones = pd.concat([dfmap['r'], offshore_zones])
+
+### Get transmission links
+trans_files = {
+    'init_ac': 'transmission_capacity_init_AC_ba_NARIS2024.csv',
+    'init_nonac': 'transmission_capacity_init_nonAC_ba.csv',
+    'fut': 'transmission_capacity_future_ba_baseline.csv',
+}
+trans_links = {
+    key:
+    pd.read_csv(
+        os.path.join(
+            reeds.io.reeds_path, 'inputs', 'transmission', trans_files[key],
+        ),
+        comment='#',
+    )
+    for key in trans_files
+}
+
+### Get interconnection seams
+seam_buffer = 5000
+seams = gpd.GeoSeries([
+    shapely.intersection_all(dfmap['interconnect'].loc[['eastern','western']].buffer(seam_buffer)),
+    shapely.intersection_all(dfmap['interconnect'].loc[['eastern','ercot']].buffer(seam_buffer)),
+    shapely.intersection_all(dfmap['interconnect'].loc[['western','ercot']].buffer(seam_buffer)),
+]).to_frame().dissolve()
+
+### Get map colors
+onshore_colors = mapclassify.greedy(dfmap['r'], strategy='smallest_last')
+offshore_colors = mapclassify.greedy(offshore_zones, strategy='smallest_last')
+
+### Set up the plot
+alpha_zones_min = 0.15
+alpha_zones_mult = 0.05
+lw_zones = 0.3
+colors = {
+    'AC': 'C2',
+    'LCC': 'C1',
+    'VSC': 'C3',
+    'B2B': 'C4',
+    'land':'C5',
+    'offshore':'C0',
+}
+lw_lines = 1.5
+alpha_lines = 1.0
+prefix = 'centroid_'
+prefix = ''
+fontsize = 0
+fontsize = 7
+
+### Plot it
+plt.close()
+f,ax = plt.subplots(figsize=(12,9))
+## Zones
+for r, row in offshore_zones.iterrows():
+    offshore_zones.loc[[r]].plot(
+        ax=ax, facecolor=colors['offshore'], lw=0,
+        alpha=alpha_zones_min+alpha_zones_mult*offshore_colors[r],
+    )
+    if fontsize:
+        ax.annotate(
+            r, (row['centroid_x'], row['centroid_y']), ha='center', va='center',
+            color='k', fontsize=fontsize, zorder=1e10,
+            path_effects=[pe.withStroke(linewidth=1.5, foreground='w', alpha=0.75)],
+        )
+for r, row in dfmap['r'].iterrows():
+    dfmap['r'].loc[[r]].plot(
+        ax=ax, facecolor=colors['land'], lw=0,
+        alpha=alpha_zones_min+alpha_zones_mult*onshore_colors[r],
+    )
+    if fontsize:
+        ax.annotate(
+            r, (row['centroid_x'], row['centroid_y']), ha='center', va='center',
+            color='k', fontsize=fontsize, zorder=1e10,
+            path_effects=[pe.withStroke(linewidth=1.5, foreground='w', alpha=0.75)],
+        )
+offshore_zones.plot(ax=ax, facecolor='none', edgecolor=colors['offshore'], lw=lw_zones, zorder=1e5)
+dfmap['r'].plot(ax=ax, facecolor='none', edgecolor=colors['land'], lw=lw_zones, zorder=1e6)
+seams.plot(ax=ax, facecolor='k', edgecolor='w', lw=0.6, zorder=1.1e6)
+## Links
+for i, row in trans_links['init_ac'].iterrows():
+    ax.plot(
+        [dfmap['r'].loc[row.r, f'{prefix}x'], dfmap['r'].loc[row.rr, f'{prefix}x']],
+        [dfmap['r'].loc[row.r, f'{prefix}y'], dfmap['r'].loc[row.rr, f'{prefix}y']],
+        color=colors['AC'], lw=lw_lines, zorder=1e7,
+    )
+for i, row in trans_links['init_nonac'].iterrows():
+    ax.plot(
+        [dfmap['r'].loc[row.r, f'{prefix}x'], dfmap['r'].loc[row.rr, f'{prefix}x']],
+        [dfmap['r'].loc[row.r, f'{prefix}y'], dfmap['r'].loc[row.rr, f'{prefix}y']],
+        color=colors[row['trtype']], lw=lw_lines, zorder=1e8,
+    )
+for i, row in trans_links['fut'].iterrows():
+    ax.plot(
+        [dfzones.loc[row.r, f'{prefix}x'], dfzones.loc[row.rr, f'{prefix}x']],
+        [dfzones.loc[row.r, f'{prefix}y'], dfzones.loc[row.rr, f'{prefix}y']],
+        color=colors[row['trtype']], lw=lw_lines, zorder=1e9,
+        alpha=(0.4 if (row.r in offshore and row.rr in offshore) else 1),
+    )
+## Legend
+handles = [
+    mpl.lines.Line2D([], [], color=colors[i], label=i, lw=lw_lines)
+    for i in ['AC', 'B2B', 'LCC', 'VSC']
+]
+ax.legend(
+    handles=handles,
+    loc='lower left', bbox_to_anchor=(0.15, 0.1), frameon=False, fontsize=12,
+    handletextpad=0.4, handlelength=0.8,
+)
+
+## Formatting
+ax.axis('off')
+savepath = os.path.join(
+    reeds.io.reeds_path, 'docs', 'source', 'figs', 'docs',
+    'transmission-offshore.png'
+)
+plt.savefig(savepath)
+if interactive:
+    plt.show()

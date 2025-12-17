@@ -183,6 +183,7 @@ def main(casepath, t, switch_mods=switch_mods_default, label='', overwrite=False
         scriptname=__file__,
         logpath=os.path.join(casepath, f'gamslog_pcm_{label}_{_t}.txt'),
     )
+    
 
     # %% Get and modify the switch settings
     sw_pcm = sw.copy()
@@ -197,7 +198,6 @@ def main(casepath, t, switch_mods=switch_mods_default, label='', overwrite=False
             inputs_case=os.path.join(casepath, 'inputs_case'),
             periodtype=f'pcm_{label}',
             minimal=1,
-            make_plots=0,
         )
         hourly_writetimeseries.main(
             sw=sw_pcm,
@@ -265,6 +265,10 @@ def main(casepath, t, switch_mods=switch_mods_default, label='', overwrite=False
     result = subprocess.run(cmd_report, shell=True)
     if result.returncode:
         raise Exception(f'e_report.gms failed with return code {result.returncode}')
+    
+    # cmd_dump = f"python e_report_dump.py {casepath} -c"
+    # print(cmd_dump)
+    # subprocess.run(cmd_dump, shell=True)
 
     # %% Dump gdx to h5
     ## Get new file names if applicable
@@ -288,6 +292,13 @@ def main(casepath, t, switch_mods=switch_mods_default, label='', overwrite=False
     e_report_dump.write_dfdict(
         dfdict=dict_out,
         outputs_path=outputs_path,
+        rename=rename,
+    )
+
+    #%% Dump all variaables in e_report_params.csv to their own csv files
+    e_report_dump.dfdict_to_csv(
+        dict_out,
+        filepath=outputs_path,
         rename=rename,
     )
 
@@ -368,8 +379,12 @@ if __name__ == '__main__':
     # overwrite = False
     # bigmem = True
 
+    # %% Set up logger
+    log = reeds.log.makelog(scriptname=__file__, logpath=os.path.join(casepath, "gamslog.txt"))
+
     # %% Determine whether to submit slurm job
     hpc = check_slurm(forcelocal=forcelocal)
+    print(f'Running pcm {"on HPC" if hpc else "locally"}')
 
     ### Run it
     if not hpc:
@@ -392,3 +407,5 @@ if __name__ == '__main__':
             joblabel=joblabel,
             bigmem=bigmem,
         )
+    
+    print('PCM run complete')

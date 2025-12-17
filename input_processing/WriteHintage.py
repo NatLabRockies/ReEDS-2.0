@@ -318,7 +318,7 @@ def main(reeds_path, inputs_case):
     # This is not all technologies that do not having cooling, but technologies
     # that are (or could be) in the plant database.
     'no_cooling':['upv', 'pvb', 'gas-ct', 'geohydro_allkm',
-                    'battery_li', 'pumped-hydro', 'pumped-hydro-flex', 
+                    'battery_li', 'tes_ms', 'pumped-hydro', 'pumped-hydro-flex', 
                     'hydUD', 'hydUND', 'hydD', 'hydND', 'hydSD', 'hydSND', 'hydNPD',
                     'hydNPND', 'hydED', 'hydEND', 'wind-ons', 'wind-ofs', 'caes'
                     ]

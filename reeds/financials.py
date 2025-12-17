@@ -225,7 +225,16 @@ def import_data(
         df = read_regional_cap_cost_diff(os.path.join(scen_settings.inputs_case))
     else:
         df = pd.read_csv(os.path.join(scen_settings.inputs_case, f'{file_root}.csv'))
-
+    print(1)
+    df_index_check = df[indices].copy()
+    if len(df_index_check) != len(df_index_check.drop_duplicates()):
+        print('Error: Duplicate entries for', file_root, file_suffix, 'on indices', indices)
+        # for each column in indices, print the unique values that are duplicated
+        df_dups = df_index_check[df_index_check.duplicated(keep=False)]
+        for col in indices:
+            dups = df_dups[df_dups.duplicated(subset=[col], keep=False)]
+            if len(dups) > 0:
+                print('Duplicate values for column', col, ':', dups[col].unique())
     # Expand tech groups, if there is an 'i' column and the argument is True
     if 'i' in df.columns and expand_tech_groups is True:
         for tech_group in scen_settings.tech_groups.keys():
@@ -245,6 +254,17 @@ def import_data(
     # Check if a currency_file_root file exists - it should exist if there are
     # any columns with currency data. If currency data exists, adjust the dollar
     # year of the input data to the scen_settings's dollar year
+    print(2)
+    df_index_check = df[indices].copy()
+    if len(df_index_check) != len(df_index_check.drop_duplicates()):
+        print('Error: Duplicate entries for', file_root, file_suffix, 'on indices', indices)
+        # for each column in indices, print the unique values that are duplicated
+        df_dups = df_index_check[df_index_check.duplicated(keep=False)]
+        for col in indices:
+            dups = df_dups[df_dups.duplicated(subset=[col], keep=False)]
+            if len(dups) > 0:
+                print('Duplicate values for column', col, ':', dups[col].unique())
+    
     if os.path.isfile(
         os.path.join(scen_settings.inputs_case, file_root, f'currency_{file_root}.csv')
     ) and (adjust_units is True):
@@ -285,12 +305,18 @@ def import_data(
                 inflation_adjust = 1.0
 
             df[col] = df[col] * inflation_adjust
-
+    print(3)
     # Check to see if there are any duplicate entries for the given indices
     if check_for_dups is True:
         df_index_check = df[indices].copy()
         if len(df_index_check) != len(df_index_check.drop_duplicates()):
             print('Error: Duplicate entries for', file_root, file_suffix, 'on indices', indices)
+            # for each column in indices, print the unique values that are duplicated
+            df_dups = df_index_check[df_index_check.duplicated(keep=False)]
+            for col in indices:
+                dups = df_dups[df_dups.duplicated(subset=[col], keep=False)]
+                if len(dups) > 0:
+                    print('Duplicate values for column', col, ':', dups[col].unique())
             sys.exit()
 
     return df
@@ -338,6 +364,55 @@ def append_pvb_parameters(dfin, tech_to_copy='battery_li', column_scaler=None, p
             append_pvb_params[col] = (append_pvb_params[col] * scaler).round(5)
     ### Append to the original dataframe and return
     dfout = pd.concat([dfin, append_pvb_params], ignore_index=True)
+
+    return dfout
+
+
+def append_nuclear_stor_parameters(dfin, tech_to_copy='tes_ms', column_scaler=None, nuclear_storage_types=[1, 2, 3, 4]):
+    """
+    Copies the parameters for tech_to_copy (typically nuclear, except for the degradation where we copy from the storage) 
+    for storage in nuclear+storage systems and returns a copy of the input
+    dataframe with the nuclear+storage parameters appended.
+
+    Inputs
+    ------
+    dfin: Original inputs dataframe.
+        Must have a column labeled i containing entries for tech_to_copy.
+    tech_to_copy: default='tes_ms'. Technology from which to copy parameters for nuclear+storage.
+    column_scaler: None or dict. If dict, format should be {column_to_scale: scaler}.
+    nuclear_storage_types: default=[1,2,3,4]. Set of nuclear storage technology types.
+        NOTE: If nuclear+storage techs are added to set i "generation technologies" in b_inputs,
+        make sure to adjust the nuclear_storage_types list here.
+
+    Outputs
+    -------
+    dfout: pd.DataFrame consisting of nuclear+storage parameters appended to input dataframe.
+    """
+    ### Get values for tech_to_copy
+    copy_params = dfin.set_index('i').loc[[tech_to_copy]].reset_index(drop=True).copy()
+    ### Create output dataframe, copying tech_to_copy assumptions for nuclear+storage
+    append_nuclear_params = (
+        pd.concat(
+            {
+                'nuclear-stor{}'.format(nuclear_stor_type): copy_params
+                for nuclear_stor_type in nuclear_storage_types
+            }
+        )
+        .reset_index(level=0)
+        .rename(columns={'level_0': 'i'})
+    )
+    ### Scale the columns in columns_scaler if necessary
+    if column_scaler is not None:
+        for col, scaler in column_scaler.items():
+            append_nuclear_params[col] = (append_nuclear_params[col] * scaler).round(5)
+    ### Check for duplicates
+    if len(append_nuclear_params) != len(append_nuclear_params.drop_duplicates()):
+        raise Exception('Duplicate entries found when appending nuclear+storage parameters. Please check the input dataframe.')
+    ### Append to the original dataframe and return
+    dfout = pd.concat([dfin, append_nuclear_params], ignore_index=True)
+    ### Check to see if we created duplicates
+    if len(dfout) != len(dfout.drop_duplicates()):
+        raise Exception('Duplicate entries found when appending nuclear+storage parameters. This may result from append_nuclear_storage_parameters being called more than once for the same file or from appending to a file that already contains the technologies')
 
     return dfout
 

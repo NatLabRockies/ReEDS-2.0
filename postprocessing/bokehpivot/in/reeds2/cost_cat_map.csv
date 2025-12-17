@@ -21,6 +21,8 @@ inv_pumpedhydro_investment,Gen & Stor Capex,Capital
 inv_spurline_investment,Interconnection Capex,Capital
 inv_transmission_intrazone_investment,Interconnection Capex,Capital
 inv_transmission_line_investment,Transmission Capex,Capital
+inv_transmission_interzone_ac_investment,Transmission Capex,Capital
+inv_transmission_interzone_dc_investment,Transmission Capex,Capital
 op_acp_compliance_costs,ACP,Operation
 op_co2_incentive_negative,CCS Incentives,Operation
 op_co2_network_fom_pipe,CO2 T&S O&M,Operation

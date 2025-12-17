@@ -1,5 +1,6 @@
 tech,hours
 battery_li,24
+tes_ms,24
 beccs_max,38
 beccs_mid,38
 beccs_mod,38
@@ -99,3 +100,7 @@ o-g-s,48
 pumped-hydro,24
 re-cc,48
 re-ct,48
+nuclear-stor1,298
+nuclear-stor2,298
+nuclear-stor3,298
+nuclear-stor4,298

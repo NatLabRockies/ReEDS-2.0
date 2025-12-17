@@ -13,6 +13,7 @@
 :hidden:
 
 setup
+developer_best_practices
 model_documentation
 user_guide
 sources

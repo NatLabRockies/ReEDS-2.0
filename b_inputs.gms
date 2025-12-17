@@ -98,6 +98,140 @@ $include inputs_case%ds%scalars.txt
 * --- Set Declarations ---
 *==========================
 
+*## Spatial sets (define first so case stays consistent)
+* written by copy_files.py
+$onOrder
+set r "regions"
+/
+$offlisting
+$include inputs_case%ds%val_r.csv
+$onlisting
+/ ;
+$offOrder
+
+$onempty
+set offshore(r) "offshore zones"
+/
+$offlisting
+$include inputs_case%ds%offshore.csv
+$onlisting
+/ ;
+$offempty
+
+set land(r) "land-based (not offshore) zones" ;
+land(r)$[not offshore(r)] = yes ;
+
+* written by copy_files.py
+$onempty
+set cs(*) "carbon storage sites"
+/
+$offlisting
+$include inputs_case%ds%val_cs.csv
+$onlisting
+/ ;
+$offempty
+
+* created in and mapped to hierarchy in ldc_prep.py
+set ccreg "capacity credit regions"
+/
+$offlisting
+$include inputs_case%ds%ccreg.csv
+$onlisting
+/ ;
+
+set eall "emission categories used in reporting"
+/
+$offlisting
+$include inputs_case%ds%eall.csv
+$onlisting
+/ ;
+
+set e(eall) "emission categories used in model"
+/
+$offlisting
+$include inputs_case%ds%e.csv
+$onlisting
+/ ;
+
+set etype "emission types used in model (upstream and process)"
+/
+$offlisting
+$include inputs_case%ds%etype.csv
+$onlisting
+/ ;
+
+Sets
+nercr "NERC regions"
+* https://www.nerc.com/pa/RAPA/ra/Reliability%20Assessments%20DL/NERC_LTRA_2021.pdf
+/
+* written by copy_files.py
+$include inputs_case%ds%val_nercr.csv
+/
+
+transreg "Transmission Planning Regions from FERC order 1000"
+* (https://www.ferc.gov/sites/default/files/industries/electric/indus-act/trans-plan/trans-plan-map.pdf)
+/
+* written by copy_files.py
+$include inputs_case%ds%val_transreg.csv
+/,
+
+transgrp "sub-FERC-1000 regions"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_transgrp.csv
+/,
+
+itlgrp "ReEDS zones for additional ITL constraints when doing a run that includes county resolution"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_itlgrp.csv
+/,
+
+cendiv "census divisions"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_cendiv.csv
+/,
+
+interconnect "interconnection regions"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_interconnect.csv
+/,
+
+country "country regions"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_country.csv
+/,
+
+st "US, Mexico, and/or Canadian States/Provinces"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_st.csv
+/,
+
+* biomass supply curves defined by USDA region
+usda_region "Biomass supply curve regions"
+/
+* written by copy_files.py
+$include inputs_case%ds%val_usda_region.csv
+/,
+
+h2ptcreg "Regions which enforce the H2 production incentive regulations, for the US these are the National Transmission Needs Study regions"
+* https://www.energy.gov/sites/default/files/2023-12/National%20Transmission%20Needs%20Study%20Supplemental%20Material%20-%20Final_2023.12.1.pdf
+/
+* written by copy_files.py
+$include inputs_case%ds%val_h2ptcreg.csv
+/
+
+* Hurdle rate regions
+hurdlereg "Hurdle regions"
+/
+$include inputs_case%ds%val_hurdlereg.csv
+/
+;
+
 * Written by copy_files.py
 $include b_sets.gms
 
@@ -170,7 +304,7 @@ $endif.hydup2
     ss
   / ;
 
-alias(i,ii,iii) ;
+alias(i,ii,iii,ii) ;
 
 set i_water_nocooling(i) "technologies that use water, but are not differentiated by cooling tech and water source"
 /
@@ -334,6 +468,11 @@ set
   lfill(i)             "land-fill gas technologies",
   nondispatch(i)       "technologies that are not dispatchable"
   nuclear(i)           "nuclear technologies",
+  nuclear_stor(i)      "nuclear technologies with storage",
+  nuclear_stor1(i)     "nuclear technologies with storage type 1",
+  nuclear_stor2(i)     "nuclear technologies with storage type 2",
+  nuclear_stor3(i)     "nuclear technologies with storage type 3",
+  nuclear_stor4(i)     "nuclear technologies with storage type 4",
   ofswind(i)           "offshore wind technologies",
   ogs(i)               "oil-gas-steam technologies",
   onswind(i)           "onshore wind technologies",
@@ -351,6 +490,7 @@ set
   storage_standalone(i) "stand alone storage technologies",
   storage(i)           "storage technologies",
   storage_interday(i)  "interday storage",
+  tes(i)               "thermal storage technologies",
   thermal_storage(i)   "thermal storage technologies",
   upgrade(i)           "technologies that are upgrades from other technologies",
   upv(i)               "upv generation technologies",
@@ -391,132 +531,6 @@ $include inputs_case%ds%p.csv
 $onlisting
 / ;
 
-
-*================================
-* --- Spatial / Temporal Sets ---
-*================================
-
-* written by copy_files.py
-set r "regions"
-/
-$offlisting
-$include inputs_case%ds%val_r.csv
-$onlisting
-/ ;
-
-* written by copy_files.py
-$onempty
-set cs(*) "carbon storage sites"
-/
-$offlisting
-$include inputs_case%ds%val_cs.csv
-$onlisting
-/ ;
-$offempty
-
-* created in and mapped to hierarchy in ldc_prep.py
-set ccreg "capacity credit regions"
-/
-$offlisting
-$include inputs_case%ds%ccreg.csv
-$onlisting
-/ ;
-
-set eall "emission categories used in reporting"
-/
-$offlisting
-$include inputs_case%ds%eall.csv
-$onlisting
-/ ;
-
-set e(eall) "emission categories used in model"
-/
-$offlisting
-$include inputs_case%ds%e.csv
-$onlisting
-/ ;
-
-set etype "emission types used in model (upstream and process)"
-/
-$offlisting
-$include inputs_case%ds%etype.csv
-$onlisting
-/ ;
-
-Sets
-nercr "NERC regions"
-* https://www.nerc.com/pa/RAPA/ra/Reliability%20Assessments%20DL/NERC_LTRA_2021.pdf
-/
-* written by copy_files.py
-$include inputs_case%ds%val_nercr.csv
-/
-
-transreg "Transmission Planning Regions from FERC order 1000"
-* (https://www.ferc.gov/sites/default/files/industries/electric/indus-act/trans-plan/trans-plan-map.pdf)
-/
-* written by copy_files.py
-$include inputs_case%ds%val_transreg.csv
-/,
-
-transgrp "sub-FERC-1000 regions"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_transgrp.csv
-/,
-
-itlgrp "ReEDS zones for additional ITL constraints when doing a run that includes county resolution"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_itlgrp.csv
-/,
-
-cendiv "census divisions"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_cendiv.csv
-/,
-
-interconnect "interconnection regions"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_interconnect.csv
-/,
-
-country "country regions"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_country.csv
-/,
-
-st "US, Mexico, and/or Canadian States/Provinces"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_st.csv
-/,
-
-
-* biomass supply curves defined by USDA region
-usda_region "Biomass supply curve regions"
-/
-* written by copy_files.py
-$include inputs_case%ds%val_usda_region.csv
-/,
-
-h2ptcreg "Regions which enforce the H2 production incentive regulations, for the US these are the National Transmission Needs Study regions"
-* https://www.energy.gov/sites/default/files/2023-12/National%20Transmission%20Needs%20Study%20Supplemental%20Material%20-%20Final_2023.12.1.pdf
-/
-* written by copy_files.py
-$include inputs_case%ds%val_h2ptcreg.csv
-/
-
-* Hurdle rate regions
-hurdlereg "Hurdle regions"
-/
-$include inputs_case%ds%val_hurdlereg.csv
-/,
-
-tg_i(tg,i) "technologies that belong in tech group tg"
-;
 
 hyd_add_pump('hydED_pumped-hydro') = yes ;
 hyd_add_pump('hydED_pumped-hydro-flex') = yes ;
@@ -745,6 +759,11 @@ if(Sw_NuclearSMR = 0,
   ban("Nuclear-SMR") = yes ;
 ) ;
 
+if(Sw_NuclearStor = 0,
+  ban(i)$i_subsets(i,'Nuclear-Stor') = yes ;
+  bannew(i)$i_subsets(i,'Nuclear-Stor') = yes ;
+) ;
+
 if(Sw_OfsWind = 0,
   ban(i)$i_subsets(i,'ofswind') = yes ;
 ) ;
@@ -813,6 +832,20 @@ $ifthen.pvb12 %GSw_PVB_Types% == '1'
     ban(i)$i_subsets(i,'pvb3') = yes ;
 $endif.pvb12
 
+* Ban NuclearStor_Types that aren't included in the model
+$ifthen.nuclear_stor1234 %GSw_NuclearStor_Types% == '1_2_3'
+    ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
+$endif.nuclear_stor1234
+$ifthen.nuclear_stor123 %GSw_NuclearStor_Types% == '1_2'
+    ban(i)$i_subsets(i,'Nuclear-Stor3') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
+$endif.nuclear_stor123
+$ifthen.nuclear_stor12 %GSw_NuclearStor_Types% == '1'
+    ban(i)$i_subsets(i,'Nuclear-Stor2') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor3') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
+$endif.nuclear_stor12
+
 *** Restrict valcap for storage techs based on Sw_Storage switch
 * 0: Ban all storage
 if(Sw_Storage = 0,
@@ -820,6 +853,10 @@ if(Sw_Storage = 0,
  Sw_BatteryMandate = 0 ;
 ) ;
 * 1: Keep all storage
+
+if(Sw_TES = 0,
+ ban(i)$i_subsets(i,'tes') = yes ;
+) ;
 
 * option to ban upgrades
 ban(i)$[upgrade(i)$(not Sw_Upgrades)] = yes ;
@@ -835,6 +872,10 @@ bannew(i)$[sum{ctt_i_ii(i,'Nuclear'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'coal-CCS_mod'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'coal-CCS_max'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'Nuclear-SMR'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor1'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor2'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor3'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor4'), i_ctt(i,'d') }] = YES ;
 
 *ban and bannew all non-numeraire techs that are derived from ban numeraire techs
 ban(i)$sum{ii$ban(ii), ctt_i_ii(i,ii) } = YES ;
@@ -966,6 +1007,11 @@ hydro(i)$(not ban(i))               = yes$i_subsets(i,'hydro') ;
 lfill(i)$(not ban(i))               = yes$i_subsets(i,'lfill') ;
 nondispatch(i)$(not ban(i))         = yes$i_subsets(i,'nondispatch') ;
 nuclear(i)$(not ban(i))             = yes$i_subsets(i,'nuclear') ;
+nuclear_stor(i)$(not ban(i))        = yes$i_subsets(i,'Nuclear-Stor') ;
+nuclear_stor1(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor1') ;
+nuclear_stor2(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor2') ;
+nuclear_stor3(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor3') ;
+nuclear_stor4(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor4') ;
 ofswind(i)$(not ban(i))             = yes$i_subsets(i,'ofswind') ;
 ogs(i)$(not ban(i))                 = yes$i_subsets(i,'ogs') ;
 onswind(i)$(not ban(i))             = yes$i_subsets(i,'onswind') ;
@@ -983,7 +1029,7 @@ storage_hybrid(i)$(not ban(i))      = yes$i_subsets(i,'storage_hybrid') ;
 storage_interday(i)$(not ban(i))    = yes$i_subsets(i,'storage_interday') ;
 storage_standalone(i)$(not ban(i))  = yes$i_subsets(i,'storage_standalone') ;
 storage(i)$(not ban(i))             = yes$i_subsets(i,'storage') ;
-thermal_storage(i)$(not ban(i))     = yes$i_subsets(i,'thermal_storage') ;
+tes(i)$(not ban(i))                 = yes$i_subsets(i,'tes') ;
 upv(i)$(not ban(i))                 = yes$i_subsets(i,'upv') ;
 vre_distributed(i)$(not ban(i))     = yes$i_subsets(i,'vre_distributed') ;
 vre_no_csp(i)$(not ban(i))          = yes$i_subsets(i,'vre_no_csp') ;
@@ -995,13 +1041,14 @@ set coal_noccs(i) "technologies that use coal and do not have CCS, aka unabated 
 coal_noccs(i)$[coal(i)$(not ccs(i))] = yes ; 
 
 * Create mapping of technology groups to technologies
+set tg_i(tg,i) "technologies that belong in tech group tg" ;
 tg_i('wind-ons',i)$onswind(i) = yes ;
 tg_i('wind-ofs',i)$ofswind(i) = yes ;
 tg_i('pv',i)$[(pv(i) or pvb(i))$(not distpv(i))] = yes ;
 tg_i('csp',i)$csp(i) = yes ;
 tg_i('gas',i)$gas(i) = yes ;
 tg_i('coal',i)$coal(i) = yes ;
-tg_i('nuclear',i)$nuclear(i) = yes ;
+tg_i('nuclear',i)$[(nuclear(i) or nuclear_stor(i))] = yes ;
 tg_i('battery',i)$battery(i) = yes ;
 tg_i('hydro',i)$hydro(i) = yes ;
 tg_i('h2',i)$h2_combustion(i) = yes ;
@@ -1009,6 +1056,7 @@ tg_i('geothermal',i)$geo(i) = yes ;
 tg_i('biomass',i)$bio(i) = yes ;
 tg_i('pumped-hydro',i)$psh(i) = yes ;
 tg_i('dr_shed',i)$dr_shed(i) = yes ;
+tg_i('tes',i)$tes(i) = yes ;
 
 *Hybrid pv+battery (PVB) configurations are defined by:
 *  (1) inverter loading ratio (DC/AC) and
@@ -1031,6 +1079,29 @@ $include inputs_case%ds%pvb_agg.csv
 $offdelim
 $onlisting
 / ;
+
+set nuclear_stor_config "set of hybrid pv+battery configurations"
+/
+$offlisting
+$include inputs_case%ds%nuclear_stor_config.csv
+$onlisting
+/ ;
+
+set nuclear_stor_stortech(i,ii) "storage tech used by each nuclear+storage config"
+/ 
+$offlisting
+$ondelim
+$include inputs_case%ds%nuclear_stor_storagetechs.csv
+$offdelim
+$onlisting
+/ ;
+
+
+* If storage tech used by nuclear+storage config is in i_subsets(i, 'TES'), then add it to tes and thermal_storage sets
+set nuclear_stor_with_tes(i) "hybrid nuclear+storage technologies whose storage tech is TES" ;
+nuclear_stor_with_tes(i)$(sum(ii$ (nuclear_stor_stortech(i,ii) and i_subsets(ii,'tes')),1) = 1) = yes ;
+
+thermal_storage(i)$nuclear_stor_with_tes(i) = yes ;
 
 *add non-numeraire CSPs in index i of already defined set tg_i(tg,i)
 tg_i("csp",i)$[(csp1(i) or csp2(i) or csp3(i) or csp4(i))$Sw_WaterMain] = yes ;
@@ -1113,7 +1184,7 @@ set dispatchtech(i)                 "technologies that are dispatchable",
 noret_upgrade_tech(i)$hyd_add_pump(i) = yes ;
 noret_upgrade_tech(i)$[(coal_ccs(i) or gas_cc_ccs(i))$upgrade(i)$Sw_CCS_NoRetire] = yes ;
 dispatchtech(i)$[not(vre(i) or hydro_nd(i) or ban(i))] = yes ;
-sccapcosttech(i)$[geo(i) or hydro(i) or psh(i) or dr_shed(i)] = yes ;
+sccapcosttech(i)$[hydro(i) or psh(i) or dr_shed(i)] = yes ;
 
 *initialize sets to "no"
 retiretech(i,v,r,t) = no ;
@@ -2058,7 +2129,7 @@ parameter exog_geohydro_allkm_rsc(i,r,rscbin,allt) "exogenous (pre-tfirst) geohy
 /
 $offlisting
 $ondelim
-$ifthen.readgeohydrorevexog %geohydrosupplycurve% == 'reV'
+$ifthene.readgeohydrorevexog ((%GSw_Geothermal%<>0)and(sameas(%geohydrosupplycurve%,reV)))
 $include inputs_case%ds%exog_geohydro_allkm_rsc.csv
 $endif.readgeohydrorevexog
 $offdelim
@@ -2666,6 +2737,9 @@ valcap(i,v,r,t)$[(not sum{tt$[tmodel_new(tt)], ivt(i,v,tt) })$newv(v)] = no ;
 * remove considerations for upgrades if the upgrade-from tech is invalid
 valcap(i,v,r,t)$[upgrade(i)$(not sum{ii$upgrade_from(i,ii),valcap(ii,v,r,t) })] = no ;
 
+* Remove non-offshore resources from offshore zones
+valcap(i,v,r,t)$[offshore(r)$(not ofswind(i))] = no ;
+
 * Add aggregations of valcap
 valcap_irt(i,r,t) = sum{v, valcap(i,v,r,t) } ;
 valcap_iv(i,v)$sum{(r,t)$tmodel_new(t), valcap(i,v,r,t) } = yes ;
@@ -2835,6 +2909,7 @@ parameter wat_supply_init(wst,r) "-- million gallons per year -- water supply al
 
 *WatAccessAvail - water access available (Mgal/year)
 *WatAccessCost - cost of water access (2004$/Mgal)
+$onempty
 parameter wat_supply_new(wst,*,r)   "-- million gallons per year , $ per million gallons per year -- water supply curve for post-2010 capacity with *=cap,cost"
 /
 $offlisting
@@ -2843,6 +2918,7 @@ $include inputs_case%ds%wat_access_cap_cost.csv
 $offdelim
 $onlisting
 / ;
+$offempty
 
 parameter m_watsc_dat(wst,*,r,t)   "-- million gallons per year, $ per million gallons per year -- water supply curve data with *=cap,cost" ;
 
@@ -3445,23 +3521,12 @@ $onlisting
 / ;
 
 set routes(r,rr,trtype,t)     "final conditional on transmission feasibility"
-    routes_inv(r,rr,trtype,t) "routes where new transmission investment is allowed (only defined for r<rr)"
+    routes_inv(r,rr,trtype,t) "routes where new transmission investment is allowed"
     routes_prm(r,rr)          "routes where PRM trading is allowed"
     opres_routes(r,rr,t)      "final conditional on operating reserve flow feasibility"
 ;
 
 alias(trtype,intype,outtype) ;
-
-* trnew maps from initial vintages to new investment vintages, and is used below in the
-* definition of routes_inv. (By default we allow investments in new transmission vintages
-* along corridors with initial transmission vintages.)
-set trnew(intype,outtype) "Initial transmission vintages (first index) and corresponding investment vintages (second index)" ;
-* We assume that new investment along corridors currently served by B2B interties
-* (which are [AC line]---[two-sided converter]---[AC line])
-* is added as B2B. If you'd rather assume that interconnect-crossing capacity is added
-* as LCC (which is [converter]---[DC line]---[converter]), change the line below to:
-* trnew('B2B','LCC') = yes ;
-trnew('B2B','B2B') = yes ;
 
 * Specify the transmission types that are limited by Sw_TransCapMax and Sw_TransCapMaxTotal
 set trtypemax(trtype) "trtypes to limit" ;
@@ -3517,22 +3582,18 @@ invtran_exog(r,rr,trtype,t)$trancap_fut(r,rr,"certain",trtype,t) = trancap_fut(r
 
 *transmission routes are enabled if:
 * (1) there is transmission capacity between the two regions
-routes(r,rr,trtype,t)$(trancap_init_energy(r,rr,trtype) or trancap_init_energy(rr,r,trtype)) = yes ;
-routes(r,rr,trtype,t)$(trancap_init_prm(r,rr,trtype) or trancap_init_prm(rr,r,trtype)) = yes ;
-routes(r,rr,trtype,t)$(invtran_exog(r,rr,trtype,t) or invtran_exog(rr,r,trtype,t)) = yes ;
+routes(r,rr,trtype,t)$[
+    trancap_init_energy(r,rr,trtype) or trancap_init_energy(rr,r,trtype)
+    or trancap_init_prm(r,rr,trtype) or trancap_init_prm(rr,r,trtype)
+    or invtran_exog(r,rr,trtype,t) or invtran_exog(rr,r,trtype,t)
+] = yes ;
 * (2) there is future capacity available between the two regions
-routes(r,rr,outtype,t)$sum{intype$trnew(intype, outtype),
-                           (trancap_init_energy(r,rr,intype) or trancap_init_energy(rr,r,intype)) } = yes ;
-routes(r,rr,outtype,t)$sum{intype$trnew(intype, outtype),
-                           (trancap_init_prm(r,rr,intype) or trancap_init_prm(rr,r,intype)) } = yes ;
-routes(r,rr,outtype,t)$sum{intype$trnew(intype, outtype),
-                           (invtran_exog(r,rr,intype,t) or invtran_exog(rr,r,intype,t)) } = yes ;
 routes(r,rr,trtype,t)$[sum{(tt,trancap_fut_cat)$(yeart(tt)<=yeart(t)),
                            trancap_fut(r,rr,trancap_fut_cat,trtype,tt) }] = yes ;
-routes(r,rr,outtype,t)$[sum{(tt,trancap_fut_cat,intype)$[(yeart(tt)<=yeart(t))$trnew(intype, outtype)],
-                            trancap_fut(r,rr,trancap_fut_cat,intype,tt) }] = yes ;
 * (3) there exists a route (r,rr) that is in the opposite direction as (rr,r)
 routes(rr,r,trtype,t)$(routes(r,rr,trtype,t)) = yes ;
+* (4) the year is modeled
+routes(r,rr,trtype,t)$(not tmodel_new(t)) = no ;
 
 * disable AC routes that cross interconnect boundaries (only happens if aggregating regions across interconnects)
 routes(r,rr,trtype,t)
@@ -3541,18 +3602,22 @@ routes(r,rr,trtype,t)
     $[(not sum{interconnect$[r_interconnect(r,interconnect)$r_interconnect(rr,interconnect)], 1 })]
     ] = no ;
 
+* Disable links between offshore zones if specified
+routes(r,rr,trtype,t)$[(not Sw_OffshoreBackbone)$offshore(r)$offshore(rr)] = no ;
+
+* If any routes use VSC, activate the VSC constraints and variables
+scalar Sw_VSC "Activate VSC constraints and variables" ;
+Sw_VSC = sum{routes(r,rr,trtype,t)$sameas(trtype,'VSC'), 1} ;
+
 * initialize all investment routes to no
 routes_inv(r,rr,trtype,t) = no ;
 * allow new investment along existing routes
-routes_inv(r,rr,trtype,t)$[sameas(trtype,'AC')$routes(r,rr,'AC',t)] = yes ;
-routes_inv(r,rr,trtype,t)$[sameas(trtype,'LCC')$routes(r,rr,'LCC',t)] = yes ;
-routes_inv(r,rr,trtype,t)$[trnew('B2B',trtype)$routes(r,rr,'B2B',t)] = yes ;
-
-*Do not allow transmission expansion on most corridors until firstyear_trans_nearterm
+routes_inv(r,rr,trtype,t)$[notvsc(trtype)$routes(r,rr,trtype,t)] = yes ;
+* Do not allow transmission expansion on most interfaces until firstyear_trans_nearterm
 routes_inv(r,rr,trtype,t)$[yeart(t)<firstyear_trans_nearterm] = no ;
-*If not allowing near-term transmission, turn those off until firstyear_trans_longterm
+* If not allowing near-term transmission, turn those off until firstyear_trans_longterm
 routes_inv(r,rr,trtype,t)$[(not Sw_TransInvNearTerm)$(yeart(t)<firstyear_trans_longterm)] = no ;
-*Do allow "possible" corridors to be expanded
+* Do allow "possible" interfaces to be expanded
 routes_inv(r,rr,trtype,t)
     $[sum{tt$[(yeart(tt)<=yeart(t))],
           trancap_fut(r,rr,"possible",trtype,tt) + trancap_fut(rr,r,"possible",trtype,tt) }
@@ -3571,9 +3636,6 @@ $else.transrestrict
     = no ;
 $endif.transrestrict
 
-* Only keep routes with r < rr for investment
-routes_inv(r,rr,trtype,t)$(ord(rr)<ord(r)) = no ;
-
 * Restrict PRM trading to the level indicated by Sw_PRMTRADE_level
 routes_prm(r,rr)$sum{(trtype,t), routes(r,rr,trtype,t) } = yes ;
 $ifthen.prmtradelevel %GSw_PRMTRADE_level% == 'r'
@@ -3586,6 +3648,10 @@ $else.prmtradelevel
         $routes_prm(r,rr)]
     = no ;
 $endif.prmtradelevel
+
+* Create list of expandable AC interfaces (r < rr) for error-checking
+set interfaces_inv(r,rr) "expandable AC transmission interfaces, which are defined only for r < rr" ;
+interfaces_inv(r,rr)$[sum{t, routes_inv(r,rr,"AC",t)}$(ord(r) < ord(rr))] = yes ;
 
 * operating reserve flows only allowed over AC lines
 opres_routes(r,rr,t)$sum{trtype$aclike(trtype), routes(r,rr,trtype,t) } = yes ;
@@ -3665,17 +3731,47 @@ routes_itlgrp(itlgrp,itlgrpp,r,rr)$[
 * Transmission line capex cost (generated from reV tables)
 * Written by transmission.py
 $onempty
-parameter transmission_line_capcost(r,rr,trtype) "--$/MW-- cost of transmission line capacity"
+parameter tsc_binwidth(r,rr,tscbin) "--$-- investment bin widths for transmission interfaces"
 /
 $offlisting
 $ondelim
-$include inputs_case%ds%transmission_line_capcost.csv
+$include inputs_case%ds%tsc_binwidth.csv
+$offdelim
+$onlisting
+/ ;
+
+parameter tsc_forward(r,rr,tscbin) "--$/MW-- transmission upgrade cost for forward direction"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%tsc_forward.csv
+$offdelim
+$onlisting
+/ ;
+
+parameter tsc_reverse(r,rr,tscbin) "--$/MW-- transmission upgrade cost for reverse direction"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%tsc_reverse.csv
+$offdelim
+$onlisting
+/ ;
+
+parameter transmission_cost_nonac(r,rr,trtype) "--$/MW-- expansion cost for DC interfaces (only lines; converters handled separately)"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%transmission_cost_nonac.csv
 $offdelim
 $onlisting
 / ;
 
 * Scale transmission line costs by Sw_TransCostMult (for sensitivity analysis)
-transmission_line_capcost(r,rr,trtype) = transmission_line_capcost(r,rr,trtype) * Sw_TransCostMult ;
+tsc_binwidth(r,rr,tscbin) = tsc_binwidth(r,rr,tscbin) * Sw_TransCostMult ;
+tsc_forward(r,rr,tscbin) = tsc_forward(r,rr,tscbin) * Sw_TransCostMult ;
+tsc_reverse(r,rr,tscbin) = tsc_reverse(r,rr,tscbin) * Sw_TransCostMult ;
+transmission_cost_nonac(r,rr,trtype) = transmission_cost_nonac(r,rr,trtype) * Sw_TransCostMult ;
 
 * Transmission line FOM cost
 * Written by transmission.py
@@ -3779,7 +3875,7 @@ cost_hurdle(r,rr,t)$[sum{trtype, routes(r,rr,trtype,t) }] = max{cost_hurdle_regi
 
 * --- transmission distance ---
 
-* The distance for a transmission corridor is calculated in reV using the same "least-cost-path"
+* The distance for a transmission interface is calculated in reV using the same "least-cost-path"
 * algorithm and cost tables as for wind and solar spur lines.
 * Distances are more representative of new greenfield lines than existing lines.
 * Written by transmission.py
@@ -3788,7 +3884,7 @@ parameter distance(r,rr,trtype) "--miles-- distance between BAs by line type"
 /
 $offlisting
 $ondelim
-$include inputs_case%ds%transmission_distance.csv
+$include inputs_case%ds%transmission_miles.csv
 $offdelim
 $onlisting
 / ;
@@ -3808,21 +3904,15 @@ $offempty
 
 
 * --- VSC HVDC macrogrid ---
-set
-val_converter(r,t) "BAs where VSC converter investment is allowed"
-;
+set val_converter(r,t) "BAs where VSC converter investment is allowed" ;
 val_converter(r,t) = no ;
 
-$ifthen.vsc %GSw_VSC% == 1
-* VSC converters are allowed in BAs on either end of a valid VSC corridor
+* VSC converters are allowed in BAs on either side of a valid VSC interface
 val_converter(r,t)$[sum{rr, routes_inv(r,rr,"VSC",t) }] = yes ;
 val_converter(r,t)$[sum{rr, routes_inv(rr,r,"VSC",t) }] = yes ;
 
 * Use LCC DC per-MW costs for VSC (converters are handled separately)
-transmission_line_capcost(r,rr,"VSC")$sum{t, routes(r,rr,"VSC",t) } = transmission_line_capcost(r,rr,"LCC") ;
 transmission_line_fom(r,rr,"VSC")$sum{t, routes(r,rr,"VSC",t) } = transmission_line_fom(r,rr,"LCC") ;
-
-$endif.vsc
 
 
 * --- Transmission switches ---
@@ -3954,7 +4044,7 @@ ccseason_cap_frac_delta(i,v,r,ccseason,t)$[conv(i)$sameas(ccseason,'hot')] =
 *============================================
 
 $onempty
-set routes_adjacent(r,rr) "all pairs of adjacent BAs"
+set routes_adjacent(r,rr) "all pairs of adjacent land-based BAs"
 /
 $offlisting
 $ondelim
@@ -3963,6 +4053,8 @@ $offdelim
 $onlisting
 / ;
 $offempty
+* Remove offshore zones
+routes_adjacent(r,rr)$(offshore(r) or offshore(rr)) = no ;
 
 set h2_routes(r,rr)       "set of feasible pipeline corridors for hydrogen"
     h2_routes_inv(r,rr)   "set of feasible investment pipeline corridors for hydrogen"
@@ -4207,7 +4299,7 @@ $onlisting
 / ;
 
 $onempty
-parameter pipeline_cost_mult(r,rr) "--fraction-- route-dependent cost multiplier for pipelines"
+parameter pipeline_cost_mult(r,rr) "--fraction-- cost multiplier for H2 pipelines (will be added to 1)"
 /
 $offlisting
 $ondelim
@@ -4222,13 +4314,13 @@ $offempty
 * note that pipeline distance is between BA centroids
 cost_h2_transport_cap(r,rr,allt)$h2_routes_inv(r,rr) =
         h2_cost_inputs("h2_pipeline",allt,"cost_cap") * h2_cap_cost_mult_pipeline(allt)
-        * pipeline_distance(r,rr) * pipeline_cost_mult(r,rr)
+        * pipeline_distance(r,rr) * (1 + pipeline_cost_mult(r,rr))
         + h2_cost_inputs("h2_compressor",allt,"cost_cap") * h2_cap_cost_mult_compressor(allt)
 ;
 
 cost_h2_transport_fom(r,rr,allt)$h2_routes_inv(r,rr) =
         h2_cost_inputs("h2_pipeline",allt,"fom")
-        * pipeline_distance(r,rr) * pipeline_cost_mult(r,rr)
+        * pipeline_distance(r,rr) * (1 + pipeline_cost_mult(r,rr))
         + h2_cost_inputs("h2_compressor",allt,"fom")
 ;
 
@@ -4353,6 +4445,21 @@ parameter bcr(i) "--unitless-- ratio of the battery capacity to the PV DC capaci
 bcr(pvb) = sum{pvb_config$pvb_agg(pvb_config,pvb), bir_pvb_config(pvb_config) / ilr_pvb_config(pvb_config) } ;
 bcr(i)$[storage_standalone(i) or csp_storage(i) or hyd_add_pump(i)] = 1 ;
 
+*==================================
+* --- Nuclear+Storage Configurations ---
+*==================================
+
+parameter bcr_nuclear_stor_config(i) "--unitless-- battery capacity ratio for each hybrid nuclear+storage configuration"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%nuclear_stor_bcr.csv
+$offdelim
+$onlisting
+/ ;
+
+bcr(i)$nuclear_stor(i) = bcr_nuclear_stor_config(i) ;
+
 *=========================================
 * --- Capital costs ---
 *=========================================
@@ -4364,7 +4471,7 @@ parameter cost_cap(i,t)           "--2004$/MW-- overnight capital costs",
 ;
 
 cost_cap(i,t) = plant_char0(i,t,"capcost") ;
-cost_cap_energy(i,t)$battery(i) = plant_char0(i,t,"capcost_energy") ;
+cost_cap_energy(i,t)$(battery(i) or tes(i)) = plant_char0(i,t,"capcost_energy") ;
 
 * apply user-defined cost reduction to Flexible CCS uniformly in all years
 cost_cap(i,t)$ccsflex(i) = cost_cap(i,t) * %GSw_CCSFLEX_cost_mult% ;
@@ -4379,6 +4486,17 @@ cost_cap_pvb_p(i,t)$pvb(i) =  sum{ii$[upv(ii)$rsc_agg(ii,i)], cost_cap(ii,t) } ;
 * Assign hybrid PV+battery to have the same value as battery_li
 parameter cost_cap_pvb_b(i,t) "--2004$/MW-- overnight capital costs for battery portion of hybrid PV+battery" ;
 cost_cap_pvb_b(i,t)$pvb(i) = cost_cap("battery_li",t) + %GSw_PVB_Dur% * cost_cap_energy("battery_li",t) ;
+
+* Assign hybrid nuclear+storage plant to have the same value as nuclear
+parameter cost_cap_nuclear_stor_p(i,t) "--2004$/MW-- overnight capital costs for nuclear portion of hybrid nuclear+storage" ;
+cost_cap_nuclear_stor_p(i,t)$nuclear_stor(i) = plant_char0('Nuclear-Stor1',t,'capcost') ;
+
+* Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
+parameter cost_cap_nuclear_stor_s(i,t) "--2004$/MW-- overnight capital costs for storage portion of hybrid nuclear+storage" ;
+cost_cap_nuclear_stor_s(i,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char0(ii,t,'capcost') } ;
+
+* Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
+cost_cap_energy(i,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char0(ii,t,'capcost_energy') } ;
 
 * Written by plantcostprep.py
 table hydrocapmult(allt,i) "--unitless-- hydropower capital cost multipliers over time"
@@ -4495,6 +4613,15 @@ cost_vom_hybrid_plant(i,v,r,t)$[storage_hybrid(i)$(not csp(i))] =  sum{ii$[upv(i
 parameter cost_vom_hybrid_storage(i,v,r,t) "--2004$/MWh-- variable OM for the storage portion of hybrid" ;
 cost_vom_hybrid_storage(i,v,r,t)$[storage_hybrid(i)$(not csp(i))] = cost_vom("battery_li",v,r,t) ;
 
+* Assign hybrid nuclear+storage plant to have the same value as nuclear
+* parameter cost_vom_nuclear_stor_p(i,v,r,t) "--2004$/MWh-- variable OM for the nuclear portion of hybrid nuclear+storage" ;
+cost_vom(i,v,r,t)$nuclear_stor(i) = plant_char('Nuclear-Stor1',v,t,'vom');
+
+* Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
+parameter cost_vom_nuclear_stor_s(i,v,r,t) "--2004$/MWh-- variable OM for storage portion of hybrid nuclear+storage" ;
+cost_vom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i) = sum{ii$nuclear_stor_stortech(i,ii), plant_char(ii,v,t,'vom')} ;
+cost_vom_nuclear_stor_s(i,v,r,t)$[nuclear_stor(i)$(not cost_vom_nuclear_stor_s(i,v,r,t))] = storage_vom_min ;
+
 *upgrade vom costs for initial classes are the vom costs for that tech
 *plus the delta between upgrade_to and upgrade_from for the initial year
 cost_vom(i,initv,r,t)$[upgrade(i)$Sw_Upgrades$valcap(i,initv,r,t)] =
@@ -4526,7 +4653,7 @@ parameter cost_fom(i,v,r,t)           "--2004$/MW-yr-- fixed O&M",
 
 *previous calculation (without tech binning)
 cost_fom(i,v,r,t)$[(not Sw_binOM)$valcap(i,v,r,t)] = plant_char(i,v,t,'fom') ;
-cost_fom_energy(i,v,r,t)$[(battery(i))$valcap(i,v,r,t)] = plant_char(i,v,t,'fom_energy') ;
+cost_fom_energy(i,v,r,t)$[(battery(i) or tes(i))$valcap(i,v,r,t)] = plant_char(i,v,t,'fom_energy') ;
 
 *if using binned costs, still need to assign default values to cost_fom for new plants
 cost_fom(i,newv,r,t)$[(Sw_binOM)$valcap(i,newv,r,t)] = plant_char(i,newv,t,'fom') ;
@@ -4555,6 +4682,19 @@ parameter cost_fom_pvb_b(i,v,r,t) "--2004$/MW-yr-- fixed OM for the battery port
 cost_fom_pvb_b(i,v,r,t)$pvb(i) =  cost_fom("battery_li",v,r,t) + %GSw_PVB_Dur% * cost_fom_energy("battery_li",v,r,t) ;
 
 cost_fom(i,v,r,t)$[valcap(i,v,r,t)$pvb(i)] = cost_fom_pvb_p(i,v,r,t) + bcr(i) * cost_fom_pvb_b(i,v,r,t) ;
+
+* Assign hybrid nuclear+storage plant to have the same value as nuclear
+parameter cost_fom_nuclear_stor_p(i,v,r,t) "--2004$/MW-- fixed OM for nuclear portion of hybrid nuclear+storage" ;
+cost_fom_nuclear_stor_p(i,v,r,t)$nuclear_stor(i) = plant_char("Nuclear-Stor1",v,t,'fom') ;
+
+* Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
+parameter cost_fom_nuclear_stor_s(i,v,r,t) "--2004$/MW-- fixed OM for storage portion of hybrid nuclear+storage" ;
+cost_fom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom')};
+
+cost_fom(i,v,r,t)$nuclear_stor(i) = cost_fom_nuclear_stor_p(i,v,r,t) + cost_fom_nuclear_stor_s(i,v,r,t) ;
+
+cost_fom_energy(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom_energy')};
+
 
 * -- FOM adjustments for coal and nuclear plants
 * The escalation factors are taken from NEMS and are roughly based on the
@@ -4825,6 +4965,10 @@ ramprate(i)$geo(i) = ramprate("geothermal") ;
 
 *if running with flexible nuclear, set ramp rate of nuclear to that of coal
 ramprate(i)$[nuclear(i)$Sw_NukeFlex] = ramprate("coal-new") ;
+ramprate(i)$[nuclear_stor(i)] = ramprate("nuclear") ;
+
+parameter ramprate_nuclear_stor(i) "--fraction/min-- storage ramp rate of hybrid nuclear+storage plants" ;
+ramprate_nuclear_stor(i)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), ramprate(ii)};
 
 ramprate(i)$[i_water_cooling(i)$Sw_WaterMain] =
   sum{ii$ctt_i_ii(i,ii), ramprate(ii) } ;
@@ -4855,6 +4999,9 @@ cost_opres(i,ortype,t)$geo(i) = cost_opres("geothermal",ortype,t) ;
 
 * Assign hybrid PV+battery the same value as battery_li
 cost_opres(i,ortype,t)$pvb(i) = cost_opres("battery_li",ortype,t) ;
+
+* Assign hybrid nuclear+storage the same value as storage tech
+cost_opres(i,ortype,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_opres(ii,ortype,t)};
 
 * add heat rate penalty for providing reserves (currently only applied to spin)
 * input data calculated based on heat rates in the PLEXOS EI database as of Dec. 2020
@@ -5151,6 +5298,19 @@ parameter cost_cap_fin_mult_pvb_p(i,r,t)            "capital cost multiplier for
 parameter cost_cap_fin_mult_pvb_b(i,r,t)            "capital cost multiplier for the battery portion of hybrid PV+Battery"
           cost_cap_fin_mult_pvb_b_noITC(i,r,t)      "capital cost multiplier for the battery portion of hybrid PV+Battery, excluding ITC"
           cost_cap_fin_mult_pvb_b_no_credits(i,r,t) "capital cost multiplier for the battery portion of hybrid PV+Battery, excluding ITC/PTC/Depreciation"
+;
+
+* --- Hybrid Nuclear+Storage ---
+* Hybrid Nuclear+Storage: Nuclear portion
+parameter cost_cap_fin_mult_nuclear_stor_p(i,r,t)            "capital cost multiplier for the nuclear portion of hybrid Nuclear+Storage"
+          cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t)      "capital cost multiplier for the nuclear portion of hybrid Nuclear+Storage, excluding ITC"
+          cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t) "capital cost multiplier for the nuclear portion of hybrid Nuclear+Storage, excluding ITC/PTC/Depreciation"
+;
+
+* Hybrid Nuclear+Storage: Storage portion
+parameter cost_cap_fin_mult_nuclear_stor_s(i,r,t)            "capital cost multiplier for the storage portion of hybrid Nuclear+Storage"
+          cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)      "capital cost multiplier for the storage portion of hybrid Nuclear+Storage, excluding ITC"
+          cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t) "capital cost multiplier for the storage portion of hybrid Nuclear+Storage, excluding ITC/PTC/Depreciation"
 ;
 
 
@@ -5764,6 +5924,7 @@ storage_eff("ICE",t) = 1 ;
 storage_eff(i,t)$[storage(i)$plant_char0(i,t,'rte')] = plant_char0(i,t,'rte') ;
 storage_eff(i,t)$[evmc_storage(i)$plant_char0(i,t,'rte')] = plant_char0(i,t,'rte') ;
 storage_eff(i,t)$pvb(i) = storage_eff("battery_li",t) ;
+storage_eff(i,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char0(ii,t,'rte')};
 
 parameter storage_eff_pvb_p(i,t) "--fraction-- efficiency of hybrid PV+battery when charging from the coupled PV"
           storage_eff_pvb_g(i,t) "--fraction-- efficiency of hybrid PV+battery when charging from the grid" ;
@@ -5772,6 +5933,17 @@ parameter storage_eff_pvb_p(i,t) "--fraction-- efficiency of hybrid PV+battery w
 storage_eff_pvb_p(i,t)$pvb(i) = storage_eff(i,t) / inverter_efficiency ;
 *when charging from the grid the efficiency will be the same as standalone storage
 storage_eff_pvb_g(i,t)$pvb(i) = storage_eff("battery_li",t) ;
+
+parameter storage_eff_nuclear_stor_p(i,t) "--fraction-- efficiency of hybrid nuclear+storage when charging from the coupled nuclear"
+          storage_eff_nuclear_stor_g(i,t) "--fraction-- efficiency of hybrid nuclear+storage when charging from the grid" ;
+
+*when charging from nuclear the nuclear_stor system will have a higher efficiency if the storage tech is tes
+storage_eff_nuclear_stor_p(i,t)$[nuclear_stor(i)$(not nuclear_stor_with_tes(i))] = sum{ii$nuclear_stor_stortech(i,ii), plant_char0(ii,t,'rte')};
+*set efficiency to 0.99 if the storage tech is tes to prevent degeneracy with dispatching from the plant
+storage_eff_nuclear_stor_p(i,t)$nuclear_stor_with_tes(i) = 0.99;
+
+*when charging from the grid the efficiency will be the same as standalone storage
+storage_eff_nuclear_stor_g(i,t)$nuclear_stor(i) = sum{ii$nuclear_stor_stortech(i,ii), plant_char0(ii,t,'rte')};
 
 *upgrade plants assume the same as what theyre upgraded to
 storage_eff(i,t)$upgrade(i) = sum{ii$upgrade_to(i,ii), storage_eff(ii,t) } ;
@@ -5844,6 +6016,24 @@ csp_sm(i)$csp4(i) = csp_sm_4 ;
 resourcescaler(i)$[(not CSP_Storage(i))$(not ban(i))] = 1 ;
 resourcescaler(i)$csp(i) = CSP_SM(i) / csp_sm_baseline ;
 
+* --- Hybrid Nuclear+Storage ---
+
+table nuclearstorcapmult(allt,i) "Nuclear+Storage capital cost multipliers over time"
+$offlisting
+$ondelim
+$include inputs_case%ds%nuclearstorcapcostmult.csv
+$offdelim
+$onlisting
+;
+
+* the capital cost for nuclear_stor includes both the nuclear and storage portions
+* total cost = cost(nuclear) * cap(nuclear) + cost(stor) * cap(stor)
+*            = cost(nuclear) * cap(nuclear) + cost(stor) * bcr * cap(nuclear)
+*            = [cost(nuclear) + cost(stor) * bcr ] * cap(nuclear)
+cost_cap(i,t)$nuclear_stor(i) = (cost_cap_nuclear_stor_p(i,t) - turbine_generator_cost - electrical_cost 
+                                 + bcr(i) * (cost_cap_nuclear_stor_s(i,t)-tes_ms_power_cycle)
+                                 +(1 + bcr(i)) * (turbine_generator_cost + electrical_cost));
+
 * --- Storage Duration ---
 
 * For PSH, tech-specific storage duration sets a default value.
@@ -5858,12 +6048,16 @@ $offdelim
 $onlisting
 / ;
 
+$onempty
 scalar psh_sc_duration "--hours-- PSH storage duration corresponding to selected supply curve"
 /
 $offlisting
+$ifthene.readpshscduration %GSw_Storage%<>0
 $include inputs_case%ds%psh_sc_duration.csv
+$endif.readpshscduration
 $onlisting
 / ;
+$offempty
 
 * Note that this PSH duration overwrites what is contained in storage_duration.csv
 storage_duration(i)$psh(i) = psh_sc_duration ;

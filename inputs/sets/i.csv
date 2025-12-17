@@ -1,5 +1,6 @@
 ice
 battery_li
+tes_ms
 biopower
 beccs_mod
 beccs_max
@@ -35,6 +36,10 @@ lfill-gas
 MHKwave
 Nuclear
 Nuclear-SMR
+Nuclear-Stor1
+Nuclear-Stor2
+Nuclear-Stor3
+Nuclear-Stor4
 Ocean
 o-g-s
 other

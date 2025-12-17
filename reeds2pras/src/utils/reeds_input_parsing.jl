@@ -141,6 +141,19 @@ end
 
 
 """
+    Get region-dependent max unit size [MW] as dictionary
+"""
+function get_max_unitsize(data::ReEDSdatapaths)
+    filepath = joinpath(
+        data.ReEDSfilepath, "ReEDS_Augur", "augur_data",
+        "max_unitsize_$(string(data.year)).csv"
+    )
+    df = DataFrames.DataFrame(CSV.File(filepath))
+    return Dict(df[!, "r"] .=> df[!, "mw"])
+end
+
+
+"""
     Get the forced outage data from the augur files.
 
     Parameters

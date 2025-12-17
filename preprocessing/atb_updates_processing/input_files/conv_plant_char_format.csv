@@ -7,4 +7,8 @@ conv_ATB_2022,Coal-IGCC,Coal-IGCC,Moderate
 conv_ATB_2022,coal-CCS_mod,Coal-90%-CCS,Moderate
 conv_ATB_2022,Nuclear,Nuclear - AP1000,Moderate
 conv_ATB_2022,Nuclear-SMR,Nuclear - Small Modular Reactor,Moderate
+conv_ATB_2022,nuclear-stor1,Nuclear - Advanced with Storage,Moderate
+conv_ATB_2022,nuclear-stor2,Nuclear - Advanced with Storage,Moderate
+conv_ATB_2022,nuclear-stor3,Nuclear - Advanced with Storage,Moderate
+conv_ATB_2022,nuclear-stor4,Nuclear - Advanced with Storage,Moderate
 conv_ATB_2022,biopower,Biopower - Dedicated,Moderate

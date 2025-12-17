@@ -25,6 +25,10 @@
   lfill-gas ,8.66,2.25,4.74
   nuclear,8.66,2.25,4.74
   nuclear-SMR,8.66,2.25,4.74
+  nuclear-stor1,8.66,2.25,4.74
+  nuclear-stor2,8.66,2.25,4.74
+  nuclear-stor3,8.66,2.25,4.74
+  nuclear-stor4,8.66,2.25,4.74
   o-g-s ,8.66,2.25,4.74
   pumped-hydro  ,8.66,2.25,4.74
   pumped-hydro-flex  ,8.66,2.25,4.74

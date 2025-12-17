@@ -1019,7 +1019,14 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1):
         header=0,
     ).rename(columns={"value": "cf_month"})
     ## Filter for modeled years
-    buildyears = [y for y in np.arange(2010, 2021)] + [y for y in years if y > 2020]
+    ## Get last data year (year used to forward-fill data) by removing all duplicated data
+    lastdatayr = (
+        cf_hyd.pivot_table(index='t', columns=['*i','month','r'], values='cf_month')
+        ## remove all duplicated data, leaving the last data year
+        .drop_duplicates()
+        .index.max()
+    )
+    buildyears = np.arange(2010, lastdatayr+1).tolist() + [y for y in years if y > lastdatayr]
     cf_hyd = cf_hyd.loc[cf_hyd["t"].isin(buildyears)]
     ## Calculate the month-weighted-average capacity factor by season
     cf_hyd_out = szn_month_weights.merge(cf_hyd, on="month", how="outer")

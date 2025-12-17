@@ -1,5 +1,9 @@
 import os
+import sys
 import pandas as pd
+import geopandas as gpd
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import reeds
 
 
 def get_agglevel_variables(reeds_path, inputs_case):
@@ -122,3 +126,24 @@ def get_agglevel_variables(reeds_path, inputs_case):
         'ba_transgrp': transgrp_regions_ba,
         'county_transgrp': transgrp_regions_county,
     }
+
+
+def assign_to_offshore_zones(unitdata):
+    """Map offshore wind units to offshore zones based on lat/lon and zone outlines"""
+    ### Get offshore zones
+    dfzones = gpd.read_file(
+        os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'offshore_zones.gpkg')
+    ).set_index('zone')
+
+    dfwind = unitdata.loc[unitdata.tech=='wind-ofs'].copy()
+    dfwind['latitude'] = dfwind['T_LAT'].abs()
+    dfwind['longitude'] = -dfwind['T_LONG'].abs()
+    dfwind = reeds.plots.df2gdf(dfwind, crs=dfzones.crs)
+
+    ## Only keep matches within 100 km since some areas only have radial sites
+    index2offshorezone = dfwind.sjoin_nearest(dfzones, max_distance=1e5)['index_right']
+
+    dfout = unitdata.copy()
+    dfout.loc[index2offshorezone.index, 'reeds_ba'] = index2offshorezone.values
+
+    return dfout

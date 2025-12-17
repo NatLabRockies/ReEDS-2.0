@@ -11,7 +11,6 @@ See README for setup and details.
 
 import argparse
 import datetime
-import h5py
 import json
 import numpy as np
 import os
@@ -164,6 +163,52 @@ def roll_hourly_data(df_hr, source_timezone, output_timezone, load_source_hr_typ
             df_hr[ba] = np.roll(df_hr[ba], shift)
     return df_hr
 
+def apply_multipliers_to_historical_load(
+    load_historical,
+    load_multiplier,
+    hierarchy,
+    solveyears=None
+):
+    # Multipliers from AEO 2022 and older are at Census Division level, while
+    # multipliers from AEO 2023 are at state level.
+    if all(r in hierarchy['cendiv'] for r in load_multiplier['r']):
+        load_multiplier_agglevel = 'cendiv'
+    else:
+        load_multiplier_agglevel = 'st'
+    # Map multipliers to BAs
+    r2ba = hierarchy.reset_index(drop=False)[['r', load_multiplier_agglevel]]
+    load_multiplier = load_multiplier.rename(columns={'r': load_multiplier_agglevel})
+    load_multiplier = (
+        load_multiplier.merge(r2ba, on=[load_multiplier_agglevel], how='outer')
+        .dropna(axis=0, how='any')
+    )
+    if solveyears is not None:
+        # Subset load multipliers for solve years only 
+        load_multiplier = load_multiplier[load_multiplier['year'].isin(solveyears)
+                                            ][['year', 'r', 'multiplier']]
+    # Reformat hourly load profiles to merge with load multipliers
+    load_historical.reset_index(drop=False, inplace=True)
+    load_historical = pd.melt(load_historical, id_vars=['datetime'], 
+                                var_name='r', value_name='load')
+    # Merge load multipliers into hourly load profiles 
+    load_historical = load_historical.merge(load_multiplier, on=['r'], how='outer')
+    load_historical.sort_values(by=['r', 'year'], ascending=True, inplace=True)
+    load_historical['load'] *= load_historical['multiplier']
+    load_historical = load_historical[['year', 'datetime', 'r', 'load']]
+    # Reformat hourly load profiles for GAMS
+    load_profiles = load_historical.pivot_table(
+        index=['year', 'datetime'], columns='r', values='load')
+    # Convert 'year' index to integers
+    load_profiles.index = (
+        load_profiles.index
+        .set_levels(
+            [load_profiles.index.levels[0].astype(int), load_profiles.index.levels[1]],
+            level=['year', 'datetime']
+        )
+    )
+    
+    return load_profiles
+
 #%% ===========================================================================
 ### --- PROCEDURE ---
 ### ===========================================================================
@@ -194,6 +239,7 @@ if __name__== '__main__':
              'ba_frac_path':cf.ba_frac_path,
              'hierarchy_path':cf.hierarchy_path,
              'load_default':cf.load_default,
+             'load_multiplier': cf.load_multiplier,
             }
     
     #If load source is a directory (as it is for EER load), the csv files inside need to be labeled like w2007.csv.
@@ -216,7 +262,14 @@ if __name__== '__main__':
     if cf.use_default_before_yr is not False:
         print('Splicing in default load before ' + str(cf.use_default_before_yr))
         df_hist = reeds.io.read_file(paths['load_default'], parse_timestamps=True)
-        df_hist = df_hist[df_hist.index.get_level_values('year') < cf.use_default_before_yr].copy()
+        load_multiplier = pd.read_csv(paths['load_multiplier'])
+        df_hier = pd.read_csv(paths['hierarchy_path']).rename(columns={'ba': 'r'})
+        df_hist = apply_multipliers_to_historical_load(
+            df_hist,
+            load_multiplier,
+            df_hier,
+            solveyears=range(cf.use_default_before_yr)
+        )
         df_multi = pd.concat([df_hist,df_multi])
         print('Done splicing in default load')
     #Save output

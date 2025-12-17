@@ -36,6 +36,7 @@ function parse_reeds_data(
     hydro_energylim = false,
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
+    pras_max_unitsize_prm = true,
 )
     @info "Processing regions and associating load profiles..."
     region_array = process_regions_and_load(ReEDS_data)
@@ -84,6 +85,7 @@ function parse_reeds_data(
         mttr_dict,
         pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
         pras_existing_unit_size = pras_existing_unit_size,
+        pras_max_unitsize_prm = pras_max_unitsize_prm,
     )
     @info "Processing variable generation..."
     gens_array = process_vg(

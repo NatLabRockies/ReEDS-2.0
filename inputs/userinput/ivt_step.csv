@@ -1,6 +1,7 @@
 i,years_per_step
 ice,0
 battery_li,0
+tes_ms,0
 biopower,5
 beccs_mod,5
 beccs_max,5
@@ -33,6 +34,10 @@ lfill-gas,5
 MHKwave,0
 Nuclear,5
 Nuclear-SMR,5
+nuclear-stor1,5
+nuclear-stor2,5
+nuclear-stor3,5
+nuclear-stor4,5
 Ocean,5
 o-g-s,5
 pumped-hydro,1

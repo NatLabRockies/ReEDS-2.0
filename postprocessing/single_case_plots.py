@@ -1,4 +1,51 @@
-#%% IMPORTS
+'''
+single_case_plots.py
+
+Purpose
+- Generate set of static maps and diagnostic plots from a single ReEDS run
+  folder and write them to <case>/outputs/figures.
+
+Primary behavior (what the script produces)
+- Reads run configuration, modeled years, and result tables from the provided ReEDS case.
+- Generates map and plot categories including:
+  - Transmission: network topology, disaggregated line types, new vs total capacity,
+    utilization (mean/max), flow direction, VSC/macrogrid views, net imports, and PRM trade.
+  - Generation & sites: per‑technology capacity maps, aggregated FERC‑region maps,
+    VRE site locations (with optional transmission overlay), hybrid site diagnostics.
+  - Dispatch & storage: hourly/seasonal dispatch year-by-month plots, storage SOC,
+    interday linkage SOC plots, dispatch weight/width diagnostics.
+  - Hydrogen (optional, controlled by run switches): H2 pipelines and storage capacity,
+    pipeline utilization and flow maps, H2 production/usage timeseries.
+  - Resource adequacy & PRAS (if present): NEUE/EUE summaries and maps, interface flows,
+    PRAS storage SOC, capacity offline / forced outage diagnostics.
+  - Stress periods: seed maps, stress-day dispatch, stress-day calendars, stress evolution,
+    period maps and technology mix summaries (GW / percent).
+  - Unit and transmission markers: per-unit capacity markers, transmission line markers,
+    combined views and difference plots between solve years.
+  - Optional features driven by switches: flexibly sited load maps, spur/hybrid siting maps.
+
+Inputs & options
+- CLI: positional case path or --case/-c, --year/-y (0 => last modeled year), --routes/-r
+  to draw actual transmission routes.
+- Uses run switches to enable/disable relevant plot groups (e.g., H2, InterDayLinkage, PRAS).
+
+Outputs
+- PNG files written to the case outputs/figures folder (and subfolders for BA‑level outputs when enabled).
+
+Adding plots
+- Implement plotting function in reeds/reedsplots.py:
+  - Follow existing signatures: accept case/year and optional f=None, ax=None and return (f, ax, data).
+  - Load required data via reeds.io helpers, prepare DataFrame(s)/GeoDataFrame(s).
+  - Use utilities in reeds/plots.py for styling, axes, colorbars, and maps.
+- Call the new function from postprocessing/single_case_plots.py:
+  - Place a call near related plots and wrap it in a try/except pattern.
+  - Save to outputs/figures (or subfolders for BA‑level outputs).
+'''
+
+#%% ===========================================================================
+### --- IMPORTS ---
+### ===========================================================================
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
@@ -17,8 +64,9 @@ reeds_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 plots.plotparams()
 
-##########
-#%% INPUTS
+#%% ===========================================================================
+### --- INPUTS ---
+### ===========================================================================
 ## Note that if your case builds lots of transmission, wscale might
 ## need to be reduced to avoid too much overlap in the plotted routes
 wscale_straight = 0.0004
@@ -115,6 +163,9 @@ val_r = pd.read_csv(
 ## If year not provided, use final solve year
 year = year if year > 0 else max(years)
 
+#%% ===========================================================================
+### --- PLOTS ---
+### ===========================================================================
 
 #%% Transmission line map with disaggregated transmission types
 ### Plot both total capacity (subtract_baseyear=None) and new (subtract_baseyear=2020)
@@ -242,19 +293,18 @@ except Exception:
 
 #%% Macrogrid map
 try:
-    if int(sw.GSw_VSC):
-        plt.close()
-        f,ax = reedsplots.plot_trans_vsc(
-            case=case, year=year, wscale=wscale_straight*1e3,
-            alpha=1.0, miles=300,
-        )
-        savename = f'map_translines_vsc-{year}.png'
-        if write:
-            plt.savefig(os.path.join(savepath, savename))
-        if interactive:
-            plt.show()
-        plt.close()
-        print(savename)
+    plt.close()
+    f,ax = reedsplots.plot_trans_vsc(
+        case=case, year=year, wscale=wscale_straight*1e3,
+        alpha=1.0, miles=300,
+    )
+    savename = f'map_translines_vsc-{year}.png'
+    if write:
+        plt.savefig(os.path.join(savepath, savename))
+    if interactive:
+        plt.show()
+    plt.close()
+    print(savename)
 except Exception:
     print('map_translines_vsc failed:')
     print(traceback.format_exc())
@@ -300,7 +350,7 @@ try:
         case, year, crs=crs, cm=gen_cmap,
         routes=False, wscale=wscale_straight, show_overlap=False,
         subtract_baseyear=None, show_transmission=False,
-        alpha=transalpha, colors=transcolor, ms=ms,
+        alpha=transalpha, colors=transcolor,
     )
     savename = f'map_VREsites-{year}.png'
     if write:
@@ -322,7 +372,7 @@ try:
         routes=routes, show_overlap=False,
         wscale=wscale_routes,
         subtract_baseyear=None, show_transmission=True,
-        alpha=transalpha, colors=transcolor, ms=ms,
+        alpha=transalpha, colors=transcolor,
     )
     savename = f'map_VREsites-translines-{year}.png'
     if write:
@@ -413,6 +463,32 @@ for label, plottechs in subtechs.items():
                     if interactive and (df is not None):
                         plt.show()
                     plt.close()
+    except Exception:
+        print('plot_dispatch-yearbymonth failed:')
+        print(traceback.format_exc())
+
+### Plot dispatch and state of charge for storage_hybrid    
+for label, plottechs in subtechs.items():
+    plottypes = ['dispatch', 'soc'] if label == 'storage' else ['dispatch']
+    try:
+        for ba in bas:
+            figpath = savepath_ba if ba else savepath
+            for v in ([1] if ba else [0, 1]):
+                plt.close()
+                f, ax, df = reedsplots.plot_storage_hybrid_dispatch_yearbymonth(
+                    case=case, t=year,
+                    region=(None if ba is None else f"r/{ba}"),
+                    techs=plottechs, highlight_rep_periods=v,
+                )
+                savename = (
+                    f"plot_storage_hybrid_dispatch{'_'+label if len(label) else ''}-yearbymonth"
+                    + f"{'-'+ba if ba else ''}-{v}-{year}.png")
+                if write and (df is not None):
+                    plt.savefig(os.path.join(figpath, savename))
+                    print(savename)
+                if interactive and (df is not None):
+                    plt.show()
+                plt.close()
     except Exception:
         print('plot_dispatch-yearbymonth failed:')
         print(traceback.format_exc())

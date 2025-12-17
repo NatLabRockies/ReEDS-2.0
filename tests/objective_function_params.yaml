@@ -56,6 +56,15 @@ cost_cap:
   - hydro
   - psh
   - dr_shed
+  - nuclear_stor
+cost_cap_nuclear_stor_p:
+  indexsets:
+  - valinv
+  - nuclear_stor
+cost_cap_nuclear_stor_s:
+  indexsets:
+  - valinv
+  - nuclear_stor
 cost_cap_fin_mult:
   indexsets:
   - valinv
@@ -95,12 +104,23 @@ spurline_cost:
   - xfeas
   switchon:
     Sw_SpurScen: 1
-transmission_line_capcost:
+tsc_forward:
   indexsets:
-  - routes
+  - interfaces_inv
+tsc_reverse:
+  indexsets:
+  - interfaces_inv
+tsc_binwidth:
+  indexsets:
+  - interfaces_inv
 trans_cost_cap_fin_mult:
   indexsets:
   - t
+transmission_cost_nonac:
+  indexsets:
+    - routes_inv
+  excludesets:
+    - aclike
 m_watsc_dat:
   indexsets:
   - i_wst
@@ -138,21 +158,30 @@ cost_vom:
 cost_vom_pvb_p:
   indexsets:
   - valgen
-  - storage_hybrid
-  excludesets:
-  - csp
+  - pvb
 cost_vom_pvb_b:
   indexsets:
   - valgen
-  - storage_hybrid
-  excludesets:
-  - csp
+  - pvb
+cost_vom_nuclear_stor_s:
+  indexsets:
+  - valgen
+  - nuclear_stor
 cost_fom:
   indexsets:
   - valcap
   excludesets:
   - canada
   - distpv
+  - nuclear_stor
+cost_fom_nuclear_stor_p:
+  indexsets:
+  - valcap
+  - nuclear_stor
+cost_fom_nuclear_stor_s:
+  indexsets:
+  - valcap
+  - nuclear_stor
 transmission_line_fom:
   indexsets:
   - routes
@@ -212,6 +241,8 @@ szn_adj_gas:
     GSw_GasCurve: 1
 cendiv_weights:
   indexsets:
+  - valgen
+  - gas
   - r_cendiv
   switchon:
     GSw_GasCurve: 1

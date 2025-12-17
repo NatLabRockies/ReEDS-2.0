@@ -316,7 +316,7 @@ ReEDS can account for the following operating reserve requirements: regulation r
 
 - **Generator operating constraints:** Technology-specific constraints bound the minimum and maximum power production and capacity commitment based on physical limitations and assumed average outage rates.
 
-- **Transmission constraints:** Power transfers among regions are constrained by the nominal carrying capacity of transmission corridors that connect the regions.
+- **Transmission constraints:** Power transfers among regions are constrained by the carrying capacity of transmission interfaces that connect the regions.
 Transmission constraints also apply to reserve sharing.
 A detailed description of the transmission constraints can be found in [Transmission](#transmission).
 
@@ -648,7 +648,7 @@ Fossil and nuclear technologies are characterized by the following parameters:
 
 Cost and performance assumptions for all new fossil and nuclear technologies are taken from the ATB {cite}`nrel2024AnnualTechnology2024` with options to use the Conservative, Moderate, or Advanced trajectories.
 Regional variations and adjustments are included and described in the [Hydrogen section](#hydrogen).
-Fixed operation and maintenance costs for coal plants increase over time with the plant's age. Fixed operation and maintenance costs for nuclear plants increase by a fixed amount after 50 years of being online. These escalation factors are taken from the Annual Energy Outlook 2025 {cite}`eiaEMMAssumptionsAnnualEnergyOutlook2025`.
+Fixed operation and maintenance costs for coal plants increase over time with the plant's age. Fixed operation and maintenance costs for nuclear plants increase by a fixed amount after 50 years of being online. These escalation factors are taken from the Annual Energy Outlook 2025 {cite}`eiaAnnualEnergyOutlook2025`.
 
 In addition to the performance parameters listed above, technologies are differentiated by their ability to provide operating reserves.
 In general, natural gas plants---especially combustion turbines---are better suited for ramping and reserve provision, whereas coal and large-scale nuclear plants are typically designed for steady operation.
@@ -821,6 +821,10 @@ Two CSP with storage configurations are available as shown in {numref}`csp-tech-
 
 For CSP with storage, plant turbine capacity factors by time slice are an output of the model---not an input---because ReEDS can dispatch collected CSP energy independent of irradiation.
 Instead, the profiles of power input from the collectors (solar field) of the CSP plants are model inputs, based on SAM simulations from weather files.
+
+```{admonition} CSP settings
+- New CSP deployment is turned off by default but can be enabled by setting the `GSw_CSP` switch to `1`.
+```
 
 
 #### Geothermal
@@ -1027,7 +1031,7 @@ Offshore wind resource availability by siting access case for the CONUS
 Each wind site in a supply curve is characterized in ReEDS by a supply curve cost, which comprises capital adder and transmission adder costs.
 The capital adder incorporates the site-specific technology, regional differences, and economies of scale.
 Refer to {cite}`shieldsImpactsTurbinePlant2021` for details on how economies of scale impact the site capital cost.
-The transmission cost adder includes the array, export ("wet") costs, and point of interconnection (POI)/substation, spur line, and reinforcement ("dry") costs.
+The transmission cost adder includes the array, export costs, and point of interconnection (POI)/substation, spur line, and reinforcement costs.
 The site capital cost adder is aggregated into region-bin-class to sync with the reference site "base" overnight capital cost from the ATB.
 
 {cite}`irsDefinitionEnergyProperty2023` defines the energy property and rules for investment tax credit (ITC) eligibility.
@@ -1120,7 +1124,7 @@ ReEDS assumes distributed PV generation is not allowed to be curtailed.
 
 ### Storage Technologies
 
-ReEDS includes PSH and utility-scale batteries as diurnal storage options and hydrogen (discussed in the [Hydrogen](#hydrogen) section) as seasonal storage.
+ReEDS includes PSH and utility-scale batteries as storage technology options along with hydrogen (discussed in the [Hydrogen](#hydrogen) section) as long-duration storage.
 All storage options are capable of load shifting (arbitrage), providing planning and operating reserves, and reducing curtailment of variable renewable energy (VRE).
 Generally, load shifting is accomplished by charging the storage or reservoir during inexpensive, low-demand time steps and discharging at peak times.
 Although storage is neither directly linked nor assumed to be co-located with renewable energy technologies in ReEDS (except in the case of PV-storage hybrids; see [PV + battery hybrids (PVB)](#pv-battery-hybrids-pvb)), it can play an important role in reducing curtailed electricity from variable generation resources by charging during time steps with excess renewable generation.
@@ -1149,7 +1153,8 @@ ReEDS provides several switches to configure storage modeling, allowing users to
   - `year`: Models the full 8760-hour year chronologically, allowing accurate tracking of storage SOC over time.
   - `day` or `wek`: Models representative days (24-hour) or weeks (5-day) to reduce computational complexity.
 
-- `GSw_InterDayLinkage`: Enables tracking of battery storage SOC across representative periods when `GSw_HourlyType = 'day'` or `'wek'`. This is essential for realistic modeling of LDES. Default setting is `0`.
+- `GSw_InterDayLinkage` (default `0`): If set to `1`, enables tracking of PSH SOC across representative periods when `GSw_HourlyType` is set to `'day'` or `'wek'`.
+This behavior can be extended to battery storage by adding `battery_li` to the `STORAGE_INTERDAY` subset in `inputs/tech-subset-table.csv`.
 
 These options are configured in `cases.csv` or a user-defined `cases_{label}.csv` file. For more detail on temporal configuration, see [Temporal Resolution](#temporal-resolution).
 ```
@@ -1167,13 +1172,13 @@ The batteries are assumed to have a round-trip efficiency of 85%. Battery storag
 
 Existing PSH capacity is represented in the model according to the input plant database (see `inputs/capacity_exogenous/ReEDS_generator_database_final_EIA-NEMS.csv`).
 New PSH potential is derived from a national PSH resource assessment described in {cite}`rosenliebClosedLoopPumpedStorage2022` and at <https://www.nrel.gov/gis/psh-supply-curves.html>.
-Several PSH supply curves are available in ReEDS, including alternative storage durations (8, 10, or 12 hours) and alternative environmental site exclusions, specifically whether new PSH reservoir construction can occur where there are ephemeral streams as defined by the National Hydrography Dataset.
+Several PSH supply curves are available in ReEDS, including alternative storage durations (8, 10, or 12 hours) and alternative environmental site exclusions, specifically whether new PSH reservoir construction can occur where there are ephemeral streams as defined by the National Hydrography Dataset, or whether to include sites that utilize existing reservoirs.
 The PSH resource assessment includes site-level capital costs calculated from a detailed bottom-up cost model that incorporates dam, reservoir, and other site characteristics {cite}`cohenComponentLevelBottomUpCost2023`.
 PSH fixed O&M costs and round-trip efficiency are taken from {cite}`mongird2020GridEnergy2020`, and PSH cost and resource assumptions are taken from the ATB {cite}`nrelAnnualTechnologyBaseline2024`.
 
 ```{admonition} PSH options
 - `pshsupplycurve`: Determines the PSH supply-curve dataset used.
-  - PSH storage duration is either 8, 10, or 12 hours depending on the chosen PSH supply curve (with 8 hours as the default).
+  - PSH storage duration is either 8, 10, or 12 hours depending on the chosen PSH supply curve (with 12 hours as the default). Supply curves with wEph or wEphemeral in the filename allow sites that intersect with ephemeral streams. Supply curves with wExist in the filename allow sites that utilize existing reservoirs. The repository typically includes the latest and previous data vintages.
 
 - `GSw_PSHwatercon`: Requires new PSH to purchase water access from water supply supply curves.
   - `0`: Ignore water access costs (default).
@@ -1198,7 +1203,7 @@ ReEDS models the use of hydrogen (H<sub>2</sub>), both as a form of seasonal sto
 
 In the power sector, hydrogen can be consumed as a fuel in hydrogen combustion turbines (H<sub>2</sub>-CTs) and hydrogen combined cycles (H<sub>2</sub>-CCs). H<sub>2</sub>-CTs and H<sub>2</sub>-CCs are comparable to commercial gas plants but can be fired with hydrogen {cite:p}`mitsubishiIntermountainPowerAgency2020, ruthTechnicalEconomicPotential2020`. H<sub>2</sub>-CTs and H<sub>2</sub>-CCs are assumed to have the same heat rate and operation and maintenance (O&M) cost as regular gas-fired plants (see [Fossil and Nuclear Technologies](#fossil-and-nuclear-technologies)) but with a 10% higher overnight capital cost reported by Ruth et al. {cite:year}`ruthTechnicalEconomicPotential2020` in order to allow the H<sub>2</sub>-CT/H<sub>2</sub>-CC to be clutched and act as a synchronous generator. Existing gas generators can be upgraded to this H<sub>2</sub>-CT or H<sub>2</sub>-CC technology by paying a 33% difference in capital cost between the two generators.[^h2upgrade]  Similarly, the combustion turbine component of the Gas-CC can be replaced, upgrading it to a H<sub>2</sub>-CC, paying a 24% difference. [^h2upgrade] H<sub>2</sub>-CCs are also assumed to have a heat rate modifier equalt to that of NG-CC with an additional 11.5% increase due to the expectation that H<sub>2</sub>-CCs will be operated at lower capacity factors. [^Low-CF-HRs].
 
-[^h2upgrade]: The 33% upgrade cost is derived from the F class combustion turbine cost at <https://www.eia.gov/analysis/studies/powerplants/capitalcost/pdf/capital_cost_AEO2020.pdf>, where the "mechanical - major equipment" category is $54M out of $166M total capital cost.  $54M / $166M = 33%. The H<sub>2</sub>-CC upgrade costs is similarly derived for a H-class 2x2x1 combined cycle plant with $294M / $1,038M = 23%.
+[^h2upgrade]: The 33% upgrade cost is derived from the F class combustion turbine cost at <https://www.eia.gov/analysis/studies/powerplants/capitalcost/pdf/capital_cost_AEO2020.pdf>, where the "mechanical - major equipment" category is $54M out of $166M total capital cost.  $54M / $166M = 33%. The H<sub>2</sub>-CC upgrade costs is similarly derived for a H-class 2x2x1 combined cycle plant with $294M / $1,038M = 28%.
 
 [^Low-CF-HRs]: Using available monthly capacity, generation, and fuel consumption data from EIA 860 and 923 {cite:p}`eiaMonthlyElectricGenerator2024,u.s.energyinformationadministrationeiaFormEIA923Detailed2024` we estimate that when NG-CC plants shift from a 51% capacity factor (mean fleet CF from 2014-2023), to a 6% capacity factor (minCF in ReEDS), they will incur 11.5% higher heatrates. To derive this we develop a relationship between capacity factor and heat rate to better capture the impacts of combined cycle power plants which are not inherently designed for low utilization or high cycling. First we find the monthly capacity factor and heat rate using EIA 923 {cite:p}`u.s.energyinformationadministrationeiaFormEIA923Detailed2024` monthly energy generated and fuel consumed compared to the EIA 860 nameplate capacities {cite:p}`eiaMonthlyElectricGenerator2024`. We eliminate plants with insufficient data, fewer than 12 months, or unreliable information such as negative heat rates. For each plant, we run an exponential regression (independent variable of capacity factor and dependent of heat rate) to find their individual curve, dropping plants with an r-squared less than 0.5 and a range of CFs less than 25%. We sample each of these curves at a resolution of 0.1pp between the 6% minCF value and 100% and then find the exponential curve through the median heat rate per CF value. 
 
@@ -2005,7 +2010,7 @@ Existing HVDC connections (all of which use LCC at the time of this writing) are
 ```{admonition} HVDC scenarios
 - Additional candidate point-to-point HVDC connections can be allowed using the `GSw_TransScen` switch.
 For example, the point-to-point connections shown in {numref}`figure-transmission-lcc-vsc` can be enabled by setting `GSw_TransScen=LCC_1000miles_demand1_wind1_subferc_20230629`.
-- Multiterminal HVDC can be turned on by setting `GSw_VSC=1` and `GSw_TransScen=VSC_all`.
+- Multiterminal HVDC expansion can be turned on by setting `GSw_TransScen=VSC_all`.
 ```
 
 
@@ -2019,6 +2024,30 @@ Losses for LCC are assumed to be 0.7% (for a total of 1.4% losses because two co
 B2B connections are modeled as two LCC converters in series and thus incur losses of 1.4%, in addition to length-dependent losses for the AC links on either side of the converters.
 
 
+
+#### Offshore transmission
+
+By default, offshore wind resources are assumed to be connected radially to land-based zones and offshore wind generation is assigned to the associated land-based zone;
+in this default formulation, offshore-to-land transmission flows are not directly modeled.
+An alternate formulation adds dedicated offshore zones to the model and explicitly tracks transmission capacity and flows between offshore and land-based zones.
+{numref}`figure-transmission-offshore` illustrates the offshore zones and associated candidate transmission connections.
+
+```{figure} figs/docs/transmission-offshore.png
+:name: figure-transmission-offshore
+
+Default interzonal transmission expansion candidates when offshore zones are enabled.
+```
+
+```{admonition} Offshore zones
+The following switches control the representation of offshore zones:
+- `GSw_OffshoreZones` (default `0`): If set to `1`, offshore zones are turned on; otherwise, if set to `0`, offshore wind generation is directly assigned to the associated land-based zone.
+- `GSw_OffshoreBackbone` (default `0`): If set to `1`, new transmission capacity may be added between offshore zones, enabling the construction of offshore transmission "backbones".
+These "backbone" links are shown in light red in {numref}`figure-transmission-offshore`; radial links between offshore and land-based zones are shown in darker red.
+If `GSw_OffshoreBackbone` is set to `0`, only the darker red radial links may be built.
+- `GSw_OffshoreBackflow` (default `0`): If set to `1`, transmission flows from land-based zones to offshore zones are allowed;
+when combined with `GSw_OffshoreBackbone`, this switch allows offshore transmission to be built and operated independently of offshore wind (for example, to bypass high-cost land-based transmission routes).
+If `GSw_OffshoreBackflow` is set to `0`, transmission flows from land to offshore zones are not allowed.
+```
 
 
 
@@ -2114,9 +2143,9 @@ The estimated regulation requirements (0.5% wind generation and 0.3% PV capacity
 ```
 
 All ancillary reserve requirements must be satisfied in each zone for each time slice;
-however, reserve provision can be traded between zones using AC transmission corridors.
+however, reserve provision can be traded between zones using AC transmission interfaces.
 Trades are allowed only within planning regions ({numref}`figure-hierarchy`) and not across planning region boundaries.
-The amount of reserves that can be traded is limited by the amount of carrying capacity of an AC transmission corridor that is not already being used for trading energy.
+The amount of reserves that can be traded is limited by the amount of carrying capacity of an AC transmission interface that is not already being used for trading energy.
 
 The ability of technologies to contribute to reserves is limited by the ramping requirement for a given reserve product, the plant ramp rate, and online capacity ({numref}`generation-techs-flexibility-params`).
 Online capacity is approximated in ReEDS as the maximum generation from all time slices within a modeled day.
@@ -2239,18 +2268,25 @@ the resulting electricity system design is passed to PRAS for resource adequacy 
 This model-to-model translation is performed by the "ReEDS2PRAS" submodule.
 PRAS, described in detail by {cite}`stephenProbabilisticResourceAdequacy2021`,
 models individual unit outages using a two-state Markov model with Monte Carlo sampling;
-by default, the application of PRAS in the coupled ReEDS-PRAS model uses chronological hourly resolution over 7 [weather years](#weather-years) (2007--2013).
+by default, the application of PRAS in the coupled ReEDS-PRAS model uses chronological hourly resolution over seven [weather years](#weather-years) (2007--2013).
 
 ReEDS2PRAS converts the modeled system from the linear generation and storage capacities used in ReEDS
 to the individual units considered in PRAS,
-making the following assumptions:
+making the following assumptions (some of which can be changed by the user):
 
 - Thermal generation
   - Existing thermal generation capacity is disaggregated using unit sizes from the EIA-NEMS database of existing units ({numref}`figure-capacity-existing`) {cite}`eiaAnnualEnergyOutlook2025`.
-  - Unit sizes for new thermal generation capacity depend on whether the model zone hosts existing capacity of that technology type:
+  - Unit sizes for new thermal generation capacity depend on whether the model zone hosts existing capacity of that technology type
+  and on the planning reserve margin of the model zone.
+  Remainder capacity is assigned to its own unit (so 210 MW of capacity, with a 100 MW unit size, would be disaggregated into 3 = 2 × 100 MW + 1 × 10 MW units).
     - If existing units are present, the average of the existing unit sizes is used for newly added capacity.
     - If no existing units are present, the assumed unit size from {cite}`nrel2024AnnualTechnology2024` is used for newly added capacity.
     These unit sizes are shown in {numref}`reeds2pras-assumptions`.
+    - The unit size described in the previous bullets is capped at the zonal planning reserve margin in MW (given by the zonal peak demand [MW] multiplied by the fractional planning reserve margin).
+    For example, if a zone has a peak demand of 1000 MW and a 15% planning reserve margin, the maximum size for new units is 150 MW;
+    if ReEDS sites 460 MW of gas-CT (with a characteristic unit size of 233 MW) in this zone,
+    this capacity would be disaggregated into four (3 × 150 MW + 1 × 10 MW) units instead of two (1 × 233 MW + 1 × 227 MW).
+    This condition helps mitigate the $n - 1$ contingency risk that would result from using unit sizes larger than the reserve margin.
   - Hourly temperature-dependent forced outage rates (FOR; shown in {numref}`figure-outage_forced-fits`) and mean time to repair (MTTR; shown in {numref}`reeds2pras-assumptions`) are converted to hourly failure ($\lambda$) and recovery ($\mu$) probabilities using the following equations:
     - $\mu = \frac{1}{\text{MTTR}}$
     - $\lambda = \frac{\mu \cdot \text{FOR}}{1 - \text{FOR}}$
@@ -2830,16 +2866,15 @@ We do not model banking of allowances, emissions offsets, or recycling of initia
 
 #### Federal tax credits for clean electricity and captured carbon
 
-Existing federal tax incentives are included in ReEDS, aligned with the IRA.
-These include the production tax credit (PTC) and the ITC for clean electricity, the 45Q credit for capturing and storing carbon, the 45U credits for existing nuclear generation, the 45V credit for producing hydrogen, and the Modified Accelerated Cost Recovery System (MACRS) depreciation schedules.
-[^ref52] Current technology-specific depreciation schedules are modeled for all years because we assume they are permanent parts of the tax code.
+Existing federal tax incentives are included in ReEDS, aligned with the One Big Beautiful Bill Act (OBBBA) passed in the summer of 2025.
+These include the production tax credit (PTC) and the ITC for several electricity generation technologies, the 45Q credit for capturing and storing carbon, the 45U credits for existing nuclear generation, the 45V credit for producing hydrogen, and the Modified Accelerated Cost Recovery System (MACRS) depreciation schedules.
 
 [^ref52]: Note the eligible cost basis for MACRS is reduced by one-half the value of the tax credit.
 
 Four clean electricity production and investment tax credits are represented in ReEDS:
 
-- **Clean Electricity Production Tax Credit (PTC):** \$26/MWh for 10 years (2022 dollars) plus a bonus credit that starts at \$1.3/MWh and increases to \$2.6/MWh by 2028.
-- **Clean Electricity Investment Tax Credit (ITC):** 30%, plus a domestic content bonus credit that starts at an additional 2.5% and increases to 5% by 2028 (for totals of 32.5% and 35%, respectively).
+- **Production Tax Credit (PTC):** \$26/MWh for 10 years (2022 dollars) plus a bonus credit that starts at \$1.3/MWh and increases to \$2.6/MWh by 2028 for eligible technologies.
+- **Investment Tax Credit (ITC):** 30%, plus a domestic content bonus credit that starts at an additional 2.5% and increases to 5% by 2028 (for totals of 32.5% and 35%, respectively).
 Energy community bonuses are also applied based on the location of the new build, with an additional 10% bonus for building within an energy community.
 For ReEDS regions that are only partially covered by energy communities, the 10% bonus is derated by the portion of the region (by land area) that is made up of energy communities.
 - **Captured CO<sub>2</sub> Incentive (45Q):** \$85 per metric ton of CO<sub>2</sub> for 12 years for fossil-CCS and bioenergy-CCS and \$180 per metric ton of CO<sub>2</sub> for 12 years for direct air capture; nominal through 2026 and inflation adjusted after that.
@@ -2848,20 +2883,22 @@ As a simplification, this dynamic calculation was not directly represented in Re
 Instead, to represent the effect of this provision, existing nuclear generators are not subject to economic retirement in ReEDS through 2032.
 - **Hydrogen Production Tax Credit (45V):** Up to \$3/kg of hydrogen produced, based on the life-cycle emissions of hydrogen production, with more emitting generation able to claim lower levels of the tax credit.
 \$3/kg is in \$2022 and the credit amount is [inflation adjusted in subsequent years](https://www.taxnotes.com/research/federal/irs-guidance/notices/irs-releases-clean-hydrogen-credit-inflation-adjustment/7kd80).
-ReEDS assumes the \$3/kg credit is sufficient incentive for all hydrogen producers to comply with the mechanisms required to prove the cleanliness of their electricity and therefore allow only generation technologies that qualify for the lowest life-cycle emissions category to contribute.
-To ensure the low carbon intensity of their electricity and to receive the 45V credit, hydrogen producers must purchase and retire energy attribute credits (EACs) for all electricity they consume.
-The generation resources that produce EACs are subject to the "three pillars"---incrementality, time-matching, and deliverability, as described in the [final rules](https://www.federalregister.gov/public-inspection/2024-31513/credit-for-production-of-clean-hydrogen-and-energy-credit) released by the U.S. Department of the Treasury in January 2025.
-ReEDS uses a simplified representation of the incrementality pillar, stating all generators with a commercial online date of 2024 or later qualify as an EAC producer, and does not represent the additional pathways for nuclear plants, CCS plants, and states with robust greenhouse gas emission caps to qualify.
+ReEDS assumes the \$3/kg credit is sufficient incentive for all hydrogen producers to comply with the mechanisms required to prove the cleanliness of their electricity and therefore allows only generation technologies that qualify for the lowest life-cycle emissions category to contribute.[^refTaxCredits]
+
+[^refTaxCredits]: To ensure the low carbon intensity of their electricity and to receive the 45V credit, hydrogen producers must purchase and retire energy attribute credits (EACs) for all electricity they consume.
+The generation resources that produce EACs are subject to the "three pillars"---incrementality, time-matching, and deliverability---described by the [U.S. Department of the Treasury in January 2025](https://www.federalregister.gov/public-inspection/2024-31513/credit-for-production-of-clean-hydrogen-and-energy-credit).
+ReEDS uses a simplified representation of the incrementality pillar, assuming all generators with a commercial online date of 2024 or later qualify as an EAC producer, and does not represent the additional pathways for nuclear plants, CCS plants, and states with robust greenhouse gas emission caps to qualify.
 ReEDS models the time-matching and deliverability pillars as written in the final rules, where EACs must be purchased and retired in the same year (pre-2030) or hour (post-2030) and geographic region that they are produced.
 The ITC or PTC can be stacked with 45V; i.e., a wind plant can receive both the PTC and 45V for its generation.
 However, 45V and 45Q cannot both be claimed by the same plant; i.e., a steam methane reforming plant with CCS cannot claim both 45V and 45Q.
 
-Note IRA allows for bonus credits for both the clean electricity PTC and ITC (but not applicable to 45U or 45Q) if a project either meets certain domestic manufacturing requirements or is in an energy community. Projects can obtain both bonus credits if they meet both requirements, which would equate to \$5.2/MWh for the PTC and 20% for the ITC.
+The tax credit rules allow for bonus credits for both the clean electricity PTC and ITC (but not 45U or 45Q) if a project either meets certain domestic manufacturing requirements or is in an energy community.
+Projects can obtain both bonus credits if they meet both requirements, which would equate to \$5.2/MWh for the PTC and 20% for the ITC.
 In ReEDS, this is simplified according to the summary above.
 In practice, there will likely be greater diversity of captured credits among projects.
 Relatedly, the values above are based on the assumption that all projects will meet the prevailing wage requirements.
 
-Under IRA, eligible clean electricity projects can select whether to take the PTC or the ITC.
+Eligible electricity projects can select whether to take the PTC or the ITC.
 As implemented in ReEDS, however, an a priori analysis was performed to estimate which credit was most likely to be more valuable, and the technology was assigned that credit.
 The assignments are as follows:
 
@@ -2876,29 +2913,21 @@ As represented in ReEDS, the value of the tax credits is reduced by 10% for non-
 [^ref53]: CCS projects are eligible for a direct pay option for the first 5 years of the 45Q credit or until 2032 (whichever comes first), with the credits returning to nonrefundable status after that point.
 The lower monetization penalty is meant to approximate the benefit of the direct pay option.
 
-The clean electricity PTC and ITC are scheduled to start phasing out when electricity sector greenhouse gas emissions fall below 25% of 2022 levels, or 2032, whichever is later.
-Once the tax credits phase out, they remain at zero---there is no reactivation of the credits if the emissions threshold is exceeded at a later point.
-The exact value of the threshold that would trigger the IRA clean electricity tax credits phasing out has not been announced but is estimated at 386 million metric tons of CO<sub>2</sub>e in this modeling.
-The 45Q, 45U, and 45V credits do not have a dynamic phaseout and are instead scheduled to end at the end of 2032 (adjusted for under-construction provisions).
+Under OBBBA, solar and wind technologies need to have commenced construction in 2026 or be completed by the end of 2027 to be eligible for tax credits.
+Projects that meet the commenced construction requirements and come online after 2027 have additional requirements (e.g., foreign entity of concern) they must meet in order to be eligible for the tax credits.
+Because of the uncertainty about whether post-2027 projects will be eligible for tax credits, ReEDS includes two options to represent incentives: one that allows solar and wind projects coming online through the end of 2030 to receive the tax credits and one that assumes only projects coming online by 2027 will receive the tax credits.
 
-In the dGen model, distributed PV is assumed to take an ITC: the 25D credit for residential, and the Section 48 credit for commercial and industrial.
-For residential projects placed in service through 2032, the ITC is assumed to be 30%, declining to zero for projects placed in service in 2036.
+Technologies other than solar and wind can continue to receive the PTC and ITC through 2032, adjusted for under-construction provisions.
+The 45V tax credits are scheduled to end at the end of 2027 (adjusted for under-construction provisions), and the 45Q and 45U credits are scheduled to end at the end of 2032 (again, adjusted for under construction provisions).
+
+In the dGen model, distributed PV is assumed to take an ITC: the 25D credit for residential, and the Section 48 credit for commercial and industrial. Because the current dGen model runs were created under IRA, for residential projects placed in service through 2032, the ITC is assumed to be 30%, declining to zero for projects placed in service in 2036.
 For commercial and industrial projects coming online through 2035, the ITC is assumed to be 40%, dropping to zero after that.
 These representations are simplifications because there can be greater diversity in captured value depending on factors such as ownership type and tax status.
-Furthermore, because of limitations of the models used in this study, the dynamic phaseout of the Section 48 ITC is not reflected.
-In practice, most scenarios did not cross the emissions threshold specified in IRA at this point, and therefore the adoption of commercial and industrial distributed PV in the later years of those scenarios is potentially underestimated.
-A tax credit extension scenario provides a view of distributed PV deployment without a phaseout.
-
 IRA includes additional bonus credits (up to 20%) for up to 1.8 GW per year for solar facilities that are placed in service in low-income communities.
 The dGen model runs used in ReEDS does not have an explicit representation of that additional bonus credit.
 Instead, 0.9 GW per year of distributed PV was added to the original dGen estimates through 2032.
 The estimate of 0.9 GW reflects the assumption that some of the projects capturing the bonus credit may not be additional (i.e., they would have occurred anyway even if the bonus credit was not available).
 The 0.9 GW per year is added in such a way that the spatial distribution of distributed PV remains unchanged.
-
-All the IRA tax credits are assumed to have safe harbor periods, meaning a technology can capture a credit as long as it started construction before the expiration of the tax credit.
-The maximum safe harbor periods are assumed to be 10 years for offshore wind, 6 years for CCS and nuclear, and 4 years for all other technologies.
-Generators will obtain the largest credit available within their safe harbor window, meaning once a credit starts to phase down or terminate, ReEDS assumes efforts were made to start construction at the maximum length of the safe harbor window before the unit came online.
-In practice, this means ReEDS will show generators coming online and capturing the tax credits for several years beyond the nominal year in which they expired.
 
 ReEDS can also be run with the federal tax incentive changes introduced by the One Big Beautiful Bill Act (OBBBA).
 Under OBBBA, solar and wind projects must either start construction by July 4, 2026 or come online by the end of 2027 to be eligible for the PTC and ITC, and hydrogen projects must start construction by the end of 2027 to be eligible for the hydrogen PTC.
@@ -3724,7 +3753,6 @@ Simulating LDES requires interperiod linkage to reflect seasonal SOC changes.
 This can be achieved by using a fully chronological year at hourly resolution with `GSw_HourlyType = 'year'`, but this approach is computationally intensive.
 Alternatively, ReEDS offers an interday linkage option that enables SOC linkage across representative days while maintaining high computational efficiency.
 This interday linkage can be activated using `GSw_InterDayLinkage`, which is designed to work with the representative day and week method (`GSw_HourlyType = 'day' or 'wek'`).
-Currently, interday linkage is supported for batteries with durations of 12, 24, 48, 72, and 100 hours.
 Without the interday linkage, SOC is typically limited to intraday changes and resets at the end of each representative period, preventing interperiod variations.
 However, with interday linkage enabled, SOC can evolve across multiple periods, with fidelity improving as the number of representative periods increases, as demonstrated in {numref}`figure-sparse-chronology`.
 The interday linkage is built using a sparse chronology strategy---a recently developed method that is computationally efficient and accurate---as referenced in {cite}`chenSparseChronologyStrategy2024`.
@@ -3746,7 +3774,7 @@ Comparison of the state of charge of a 100-hour battery across different tempora
 Resource adequacy modeling in ReEDS uses the [stress periods](#stress-periods-ra-method) approach by default, which uses the same model for storage as described in the [temporal resolution](#temporal-resolution) section.
 Here the treatment of storage under the alternative [capacity credit](#capacity-credit-ra-method) method is described.
 
-The storage capacity credit method characterizes the increase in storage duration that is needed to serve peak demand as a function of total storage capacity.
+The storage capacity-credit method characterizes how much energy duration is required to serve peak demand as a function of total storage power capacity.
 The potential of storage to serve peak demand is considered by performing several simulated dispatches against the load profiles within each of the resource assessment regions.
 Net load profiles of wind and PV generation are used to capture the effects of VRE resources on the overall net load profile shape in a region using the hourly load, wind, and solar profiles.
 
@@ -3786,89 +3814,81 @@ The curve gives storage energy capacity that is required for full capacity credi
 At any point along the curve, the slope of the tangent to the curve represents the number of hours needed for marginal storage to receive full capacity credit.
 The incremental capacity credit of an additional unit of storage is equal to the duration of the additional unit installed divided by the duration requirement (slope) at the point on the curve corresponding to the installed storage capacity.
 
-[^ref45]: To account for forecasting errors and uncertainty in future loads, this curve is shifted by 1 hour of storage duration.
-Thus, 2-hour storage gets full capacity credit for meeting peaks that are 1 hour in duration, 4-hour storage gets full capacity credit for peaks that are 3 hours or shorter, etc.
+The storage capacity credit method in ReEDS characterizes how much additional storage duration is needed to serve peak demand as storage penetration increases. 
+The power-energy curve acts as a constraint, in which the power value is treated as the firm capacity contributing to resource adequacy. 
+To ensure there is always enough energy to support the targeted demand reduction, the combined storage power and energy capacities must lie above the power-energy curve.
+
+One challenge for ReEDS is that it is a linear model, whereas the power-energy curve is nonlinear. 
+To address this, a binning method is used to develop a piecewise, linearized power-energy curve. 
+This process differs between discrete-duration and continuous-duration storage technologies. For discrete-duration technologies, storage duration bins are predefined, and the power-energy curve is linearized using the slopes associated with these storage durations. 
+The power bin sizes for each bin, determined by the intersection of the power-energy curve with the corresponding predefined duration slopes, are output to represent the minimum storage duration required to achieve the desired demand reductions while ensuring sufficient energy supply.
 
 ```{figure} figs/docs/storage-peak-capacity-determination.png
 :name: figure-storage-peak-capacity-determination
 
-Determining storage peaking capacity potential in ReEDS.
-The slope of each dashed line is the power-to-energy ratio for the duration specified.
-Model results are for Electric Reliability Council of Texas (ERCOT) in 2050.
-Note these capacities are cumulative, starting from the shortest duration and moving to the longest.
+Example power-energy curve and the binning logic. 
+The power-energy curve represents the energy capacity need for expected demand reduction given the load profile. 
+The five storage bins (sdbin) are the default ReEDS setup, and the storage bin size (sdbin_size and sdbin_size_energy) are the crossover of the storage bin slopes with the power-energy curve, representing the theoretical highest demand reduction capability of the bins and the corresponding energy capacity needed, used as the constraints for ReEDS system sizing. 
 ```
 
-{numref}`figure-storage-peak-capacity-determination` also illustrates how we create a more tractable solution by reducing the number of combinations considered.
-Storage in ReEDS is considered in several discrete durations, which are used to define the requirements needed to receive full capacity credit.
-Instead of a continuous function represented by the constantly varying slope of the power-energy curve, we create several discrete peak duration "bins" representing duration requirements.
-We start by plotting a line with constant slope equal to the shortest duration considered and find where it intersects with the power-energy curve.
-Then, starting from that point, we plot a line with the next shortest duration and find the point where it intersects with the power-energy curve, and so on, until we have obtained the cumulative limit for each discrete duration of storage to serve peak demand.
+#### Discrete-Duration Framework
 
-As an example, the first segment (having a slope of 2) requires 2 hours to provide full capacity credit, even though it may be physically possible for some small amount of storage with a duration less than 2 hours to receive full capacity credit.
-In this example, at the point where 4,309 MW of 2-hour storage has been added, the lines intersect and the interpolation shifts to a slope of 4 hours, so a device with 4 hours is now required to achieve full capacity credit.
-The model is still allowed to build 2 hours of storage, but it will receive only a 50% (2/4) capacity credit---or the duration of the installed storage device divided by the discrete peak duration "bin."
-At each point, the marginal capacity credit is calculated by the physical capacity of the incremental unit, divided by the discrete duration requirement slope at any point along the curve.
+Discrete-duration battery framework was previously applied to discrete-duration batteries and is currently used for pumped hydro.
+In this approach, stand-alone storage must be allocated to predefined storage bins. 
+This allocation is calculated in following equations, using the sets I, R, T, and SDBIN, where I represents generation technologies (focused here on stand-alone storage), R refers to ReEDS regions, T denotes model years, and SDBIN defines the preassigned storage duration bins. 
 
-The limit for each duration to serve peak demand from {numref}`figure-storage-peak-capacity-determination` is passed back to the ReEDS model, and the model optimizes the capacity credit of all storage (existing and new investments) together.
-One advantage of this approach is that it informs the model of when the capacity credit of storage should go up or down in response to changes in the net load profile shape.
-Another advantage is that total storage peaking capacity can be assessed in conjunction with other services storage can provide such as curtailment recovery, energy arbitrage, and operating reserves[^ref46], and a least-cost solution can be obtained overall.
+$$
+sdbin\_size_{sdbin,t} \ge 
+\sum_{i,r} \left( CAP\_SDBIN_{i,r,sdbin,t} \times cc\_storage_{i,sdbin} \right)
+\qquad \forall i,r,t,sdbin \in \mathbf{I,R,T,SDBIN}
+$$
 
-[^ref46]: It is worth noting storage resources can provide resources to the electricity grid beyond peaking capacity and energy arbitrage.
-A capacity expansion model such as ReEDS has limited representation of these services, but to the extent that they are represented in the model these services are captured when assessing energy storage.
-See the ReEDS documentation {cite}`brownRegionalEnergyDeployment2020` for more information on operating reserve representation in ReEDS.
+$$
+CAP_{i,r,t} \ge 
+\sum_{sdbin} CAP\_SDBIN_{i,r,sdbin,t}
+\qquad \forall i,r,t,sdbin \in \mathbf{I,R,T,SDBIN}
+$$
 
-This dynamic assessment of storage capacity credit enables the model to identify the limitations of energy storage to provide peaking capacity.
-It allows the model to identify the benefits, if they exist, of deploying short-duration resources at reduced capacity credit for energy arbitrage purposes or other grid services captured in the model.
-Alternatively, the model is also free to deploy longer-duration storage even when shorter durations would receive full capacity credit if this leads to a least-cost solution for meeting all grid services.
-It also allows the model to respond to changes in net load shape from wind and PV deployment.
-The capacity credit of storage can change from one solve year to the next as a result of these net load profile shape changes.
+$$
+\sum_{i,sdbin} \left( CAP\_SDBIN_{i,r,sdbin,t} \times cc\_storage_{i,sdbin} + X \right)
+\ge peakdemand_{r,t}(1 + prm_{r,t})
+\qquad \forall i,r,t,sdbin \in \mathbf{I,R,T,SDBIN}
+$$
 
-Peaking capacity potential for longer durations of storage are also assessed within the model.
-The potential for 12- and 24-hour storage is included in the assessments described in {numref}`figure-energy-capacity-requirements-for-storage` and {numref}`figure-storage-peak-capacity-determination`.
-This is meant to accommodate the potential to derate the capacity credit of 10-hour batteries and capture the capacity credit of PSH (assumed to have an 8-hour duration by default) and compressed air energy storage (assumed to have a 12-hour duration).
+By default, ReEDS uses bins of 2, 4, 6, 8, 10, 12, 24, 48, 72, and 100 hours, along with an overflow bin at 8760 hours. 
+CAP denotes the total generation capacity, whereas CAP_SDBIN refers to the capacity allocated by storage bin. 
+Parameters are denoted in lowercase: sdbin_size represents the power capacity for each bin, based on the storage duration and the power-energy curve, indicating the maximum power the bin’s duration can support. 
+cc_storage stands for the capacity credit applied to each storage duration, reflecting the discount in credited power when storage is placed in a higher-duration bin. For example, a 4-hour storage would receive full credit (1) in the 2- and 4-hour bins, but only 0.667 in the 6-hour bin and 0.5 in the 8-hour bin. 
+To encourage allocation to shorter-duration bins first for instances when the constraint is not binding, ReEDS applies a very small penalty to the objective cost when storage is placed in longer-duration bins. 
+Additionally, peakdemand represents the peak demand requirement, prm is the planning reserve margin, and X represents other firm capacities that contribute to resource adequacy.
 
-After this potential is determined, the actual storage capacity credit in ReEDS is determined within the optimization.
-The durations of storage devices that are installed by the model are evaluated based on the peaking capacity potential of storage ({numref}`figure-energy-capacity-requirements-for-storage`).
-The constraints for the formulation of storage capacity credit in ReEDS are as follows:
+The first equation ensures the binned power capacity, adjusted by capacity credit, does not exceed the corresponding storage bin size; otherwise, there would not be enough energy to support the intended demand reduction. 
+The second equation requires that the binned power capacity used for capacity credit must be greater than or equal to the actual power capacity. 
+This ensures the existing storage resources are properly allocated and sufficient to meet the capacity needs of each storage bin. 
+Together, the first and second equations linearize the power-energy curve and allocate storage capacity to meet its requirements, effectively translating actual power capacity into storage bin capacity for firm capacity contributions. 
+The third equation represents the final constraint for meeting demand reduction: the total storage bin capacity from stand-alone storage technologies, combined with other firm capacity, must be greater than or equal to peak demand plus the planning reserve margin.
 
-$$\sum_{pd}^{}{C_{pd,id} = C_{id}}$$
+#### Continuous-Duration Framework
 
-$$\sum_{id}^{}{C_{pd,id}*{cc}_{pd,id} \leq L_{pd}}$$
+The continuous-duration framework is currently applied to lithium batteries. 
+Since the storage duration in this framework is not fixed, we introduce two additional equations to support the continuous framework, in addition to the three equations above.
 
-where *L* is the limit of peaking storage capacity (i.e., the megawatt values from Figure 5), *C* is the installed storage capacity, *id* is the duration of installed storage, *pd* is the duration of the peak demand contribution being considered, and *cc* is the capacity credit of an installed duration (*id*) of storage when applied to a specific peaking duration (*pd*).
-Storage capacity credit is equal to installed duration / peak duration, with a maximum of 1.
-For each duration of installed storage *id*, its capacity can contribute to any duration of peak demand *pd*, but the total installed storage capacity *C<sub>id</sub>* must be equal to the sum of its contributions toward each duration of peak demand.
-And for each duration of peak demand *pd*, the total contribution of each installed duration *id* of storage capacity (adjusted for their capacity credit *cc*) cannot exceed the limit of peaking storage capacity *L* of that *pd*.
+$$
+CAP\_SDBIN\_ENERGY_{i,r,sdbin,t} 
+= bin\_duration_{sdbin} \times CAP\_SDBIN_{i,r,sdbin,t}
+\qquad \forall\, i,r,t,sdbin \in \mathbf{I,R,T,SDBIN}
+$$
 
-For example, consider a simple example where there is 100 MW of peaking storage potential for each storage duration considered in ReEDS: 2, 4, 6, 8, 10, 12, and 24 hours.
-In this example, 200 MW of 2-hour storage, 100 MW of 4-hour storage, and 50 MW of 6-hour storage are already installed.
-The model would optimize the capacity credit of storage by giving 100 MW of 2-hour storage full capacity credit for its 2-hour contribution, the 100 MW of 4-hour storage full capacity credit for its 4-hour contribution, and the 50 MW of 6-hour storage full capacity credit for its 6-hour contribution ({numref}`figure-storage-capacity-credit-allocation-example`).
-In this example, the peaking potential limits of 2- and 4-hour storage have been reached, so the remaining 100 MW of 2-hour storage would receive a capacity credit of 1/3 and contribute 33.3 MW for its 6-hour peak demand contribution.
-The model could then build 16.7 MW of 6-hour storage at full capacity credit, at which point the potential for 6-hour storage to meet peak demand would be reached as well.
-The model would then be able to build 2-, 4-, or 6-hour storage at a derated capacity credit with their contribution going toward the 8-hour peak demand "bin," or it could build 8-hour storage with full capacity credit.
+$$
+CAP\_ENERGY_{i,r,t} \ge 
+\sum_{sdbin} CAP\_SDBIN\_ENERGY_{i,r,sdbin,t}
+\qquad \forall\, i,r,t,sdbin \in \mathbf{I,R,T,SDBIN}
+$$
 
-```{figure} figs/docs/storage-capacity-credit-allocation-example.png
-:name: figure-storage-capacity-credit-allocation-example
-
-An example of storage capacity credit allocation in ReEDS.
-200 MW of 2-hour batteries exist, but there is only 100 MW of 2-hour peaking capacity potential.
-Because there is also 100 MW of 4-hour batteries serving all 100 MW of 4-hour peaking storage potential, the remaining 100 MW of 2-hour storage provides 33.3 MW toward the 6-hour peaking storage potential.
-```
-
-Now consider the same example but in addition to the 2-, 4-, and 6-hour storage installed, there is also 300 MW of PSH in this region with a 12-hour duration ({numref}`figure-storage-capacity-credit-allocation-example2`).
-The potential for 12-hour storage to serve peak demand is only 100 MW.
-Rather than giving the remaining 200 MW of PSH a capacity credit of 1/2 for its contribution to the 24-hour peak demand period, it is optimal for the model to fill the 10- and 8-hour peak demand "bins" with the remaining PSH capacity at full capacity credit because no other storage is allocated to those peak demand periods.
-Now, after the model builds 16.7 MW of 6-hour storage at full capacity credit, the 8-, 10-, and 12-hour bins are already filled by PSH.
-So, if the model wants to build additional storage capacity, it will shuffle the allocated storage capacity to the optimal "bins" as it fills the 24-hour bin.
-In this example, if any 8-hour storage is built, it will be allocated to the 8-hour bin, and some PSH capacity will be pushed out of that bin and reallocated to the 24-hour bin at 1/2 capacity credit (12 hours / 24 hours).
-So, even though the duration required for storage to receive full capacity credit at this point is 24 hours, 8-hour storage would receive a marginal capacity credit of 1/2 because an excess of 12-hour storage is already installed in the system.
-
-```{figure} figs/docs/storage-capacity-credit-allocation-example2.png
-:name: figure-storage-capacity-credit-allocation-example2
-
-The same example from {numref}`figure-storage-capacity-credit-allocation-example` but this time with 300 MW of 12-hour PSH.
-Because there is only 100 MW of 12-hour peaking potential, remaining PSH capacity is allocated to serve shorter peak durations.
-```
+Using this approach, the first equation links the power and energy constraints for each storage bin, calculating the energy required to meet the demand reduction associated with that bin (as sdbin_size_energy shown in {numref}`figure-storage-peak-capacity-determination`). 
+The second equation then enforces a minimum battery energy capacity, ensuring the storage technology is sufficiently sized to support the peak reduction. 
+As a result of these two equations, the capacity credit (cc_storage) in this case is effectively always equal to 1. 
+This schematic enables the integration of continuous-duration framework into the storage bin and capacity credit framework, allowing them to function effectively within the model. 
 
 Storage capacity credit is sensitive to a variety of factors on the power system, so, rather than ignoring the many factors that can influence storage capacity credit, we simply pass the model information on what storage *could* do to serve peaking capacity based on load shape and storage duration and then allow the model to choose the least-cost option based on the suite of available resources and the entire set of storage revenue streams represented within the ReEDS model.
 Interactions between the storage peaking potential of storage and VRE generation fraction are described by {cite}`denholmPotentialBatteryEnergy2019,frazierAssessingPotentialBattery2020`.
@@ -3955,6 +3975,8 @@ The final transmission limits calculated using this method are shown in {numref}
 
 Final transfer limits used in the county-level input dataset for the forward direction.
 ```
+
+Except for a small number of predetermined lines, all AC expansion options at county resolution are limited to 250 miles in order to limit the number of possible expansion pairs.
 
 
 #### Wind and solar supply curve data

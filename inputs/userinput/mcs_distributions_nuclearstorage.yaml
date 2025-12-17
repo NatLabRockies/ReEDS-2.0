@@ -1,0 +1,15 @@
+
+- name: nuclear
+  assignments_list:
+    - plantchar_nuclear_stor: [nuclear_ATB_2024_conservative, nuclear_ATB_2024_natrium, nuclear_ATB_2024_advanced]
+    - plantchar_tes: [tes_ATB_2024_conservative, tes_ATB_2024_moderate, tes_ATB_2024_advanced]
+  dist: dirichlet
+  dist_params: [1, 1, 1]
+  weight_r: country
+
+- name: tes
+  assignments_list:
+    - plantchar_tes: [tes_ATB_2024_conservative, tes_ATB_2024_moderate, tes_ATB_2024_advanced]
+  dist: dirichlet
+  dist_params: [1, 1, 1]
+  weight_r: country

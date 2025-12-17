@@ -26,8 +26,8 @@ coststreams = ['eq_gasaccounting_regional','eq_gasaccounting_national','eq_bious
 vf_valstreams = ['eq_supply_demand_balance','eq_reserve_margin','eq_opres_requirement','eq_rec_requirement','eq_curt_gen_balance','eq_curtailment','eq_storage_in_max','eq_storage_in_min']
 # valuestreams = ['eq_supply_demand_balance','eq_reserve_margin','eq_opres_requirement','eq_rec_requirement','eq_national_gen','eq_annual_cap','eq_curt_gen_balance','eq_curtailment','eq_storage_in_max','eq_storage_in_min','eq_emit_accounting','eq_mingen_lb','eq_mingen_ub','eq_rps_ofswind']
 energy_valstreams = ['eq_supply_demand_balance','eq_curt_gen_balance','eq_curtailment','eq_storage_in_max','eq_storage_in_min']
-cc_techs = ['hydro','wind-ons','wind-ofs','csp','upv','pumped-hydro','pumped-hydro-flex','battery','battery_li']
-battery_techs=['battery_li']
+cc_techs = ['hydro','wind-ons','wind-ofs','csp','upv','pumped-hydro','pumped-hydro-flex','battery','battery_li','tes_ms']
+battery_techs=['battery_li','tes_ms']
 h2_techs = ['smr', 'smr-ccs', 'electrolyzer']
 prod_techs = h2_techs + ['dac']
 niche_techs =  ['hydro','csp','geothermal','beccs','lfill-gas','biopower']
@@ -127,6 +127,8 @@ def pre_systemcost(dfs, **kw):
         c for c in cap_type_ls if c in [
             'inv_converter_costs',
             'inv_transmission_line_investment',
+            'inv_transmission_interzone_ac_investment',
+            'inv_transmission_interzone_dc_investment',
         ]
     ]
     nontrans_cap_type_ls = [c for c in cap_type_ls if c not in trans_cap_type_ls]

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Hourlize
 
 ## Overview
@@ -78,8 +82,6 @@ Note that hourlize copies to only one of the shared locations (either the HPC or
 rsync -aPu [username]@kestrel.nrel.gov://projects/shared-projects-reeds/reeds/Supply_Curve_Data/UPV/2023_11_02_LandCover /Volumes/ReEDS/Supply_Curve_Data/UPV
 ```
 
-(back to [overview](#overview))
-
 ## Running hourlize
 
 ### run_hourlize.py
@@ -123,7 +125,7 @@ Hourlize uses a set of json config files to provide information on how to proces
 
 The `run_hourlize.py` process will generate a final config (`config.json`) from the relevant base and tech configs for each run, as depicted in the figure below. In general the settings in the `cases.json` file unique to each run while the settings in the tech and base configs aren't frequently changed. In the case of duplicated entries across configs hourlize uses the following order of precedence: cases > tech > base.
 
-![hourlize_configs](https://media.github.nrel.gov/user/1374/files/e4c990fa-fa12-47c2-9b0c-0d7bdbc255d0)
+![hourlize_configs](../docs/source/figs/docs/hourlize_config.png)
 
 The `srun_template.sh` file is used to govern HPC submission settings. Update with your allocation, email, and any other slurm specifications before submitting jobs. There is also a command line argument to via `run_hourlize.py` for running jobs using the debug partition.
 
@@ -153,8 +155,6 @@ The current `cases.json` file in the repository contains all the settings to run
   * Note: this script currently only copies to one of the shared folders (the HPC or nrelnas01), so you'll need to sync up the two after copying.
 * By default hourlize is set up to copy outputs into the ReEDS repo (`copy_to_reeds = true`).
 * `reg_out_col`  is typically either 'ba' for ReEDS regions or 'FIPS' for county-level supply curves, but can also be a column in the supply curve file itself.
-
-(back to [overview](#overview))
 
 ## Resource Logic (resource.py)
 
@@ -219,8 +219,6 @@ The `resource.py` script follows the following logic (in order of execution):
 
 See comments in those files for more information.
 
-(back to [overview](#overview))
-
 ## EER Load Splicing
 
 `hourlize/eer_to_reeds/eer_splice/eer_splice.py` allows replacement of certain subsectors of EER load with other data sources.
@@ -239,10 +237,12 @@ See comments in those files for more information.
 `hourlize/eer_to_reeds/eer_splice/eer_splice.py` utilizes the state, subsector level h5 files mentioned above, along with other sources of load data, to develop new load csv files that can be used as inputs to `hourlize/eer_to_reeds/eer_to_reeds.py`. Note that you will need to run on Kestrel, and you will need access to the `eerload` allocation on Kestrel to use this functionality. To replace sectors follow these steps:
 
 1. Set `replace_sectors` to `True` at the top of `eer_splice.py`.
-1. Set `replace_type` to one of the available sectors (`'Transportation'`, `'Buildings'` or `'Data Centers'`), or a custom sector replacement.
+1. Set `replace_type` to one of the available sectors (`'Transportation'`, `'Buildings'` or `'Data Centers'`), or add your own custom sector replacement.
     * Leave `replace_type` as `'Buildings'` to demo the script, as the Buildings data should all be accessible in the `eerload` allocation. Example building replacement files are also at `//nrelnas01/ReEDS/FY24-Geo-Mowers/eer_load_splice/res_com_outputs_2025-01-10-14-57-33`.
     * An example data center replacement file is also included here: `hourlize/eer_to_reeds/eer_splice/dummy_agg_op_datacenters.csv`
-1. If using a custom sector replacement, make sure to set `sectors_remove`, `years_remove`, and add the desired replacement logic depending on your data format (see `elif replace_type == 'Buildings':` for an example).
+    * If adding your own custom sector replacement, make sure to set `sectors_remove` and `years_remove`, and add the desired replacement logic depending on your data format (see `elif replace_type == 'Buildings':` for an example).
+1. Set `replace_states` to `all` to replace sector load in all states or a lowercase list of states in which to replace load, such as `['massachusetts','vermont',...]`.
+1. Set the `replacement_share` dictionary to the share of sectoral load you would like to replace in each model year. These values should be a float between 0, which adds replacement load to all existing EER load, and 1, which completely replaces the EER sector load. Note that the replacement data itself is not modified by `replacement_share`.
 1. Run `python eer_splice.py`. A new output directory will be created in `hourlize/eer_to_reeds/eer_splice/`.
 1. Follow the rest of the [quickstart load](#quickstart-load) instructions, starting with the `hourlize/eer_to_reeds/eer_to_reeds.py` step.
 
@@ -320,4 +320,3 @@ This section provides some descriptions and typical values for the settings in t
 | us_only  | Run only US BAs. |  True |
 | use_default_before_yr  | Either False or a year. If set to a year, this will pull in ReEDS default load data before that year (2012 weather year) | 2021 |
 
-(back to [overview](#overview))

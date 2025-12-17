@@ -1,5 +1,5 @@
 {
-    "expand": false,
+    "dynamicMainFile": false,
     "file": "b_inputs.gms",
     "name": "b_inputs",
     "nodes": [
@@ -14,6 +14,7 @@
     "options": [
         ""
     ],
+    "ownBaseDir": false,
     "path": ".",
     "projectType": 1,
     "workDir": "."

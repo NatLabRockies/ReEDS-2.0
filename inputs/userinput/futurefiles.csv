@@ -97,7 +97,6 @@ degradation_adj.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 degradation_annual.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 demonstration_plants.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 depreciation_schedules.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
-df_capex_init.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 diagnose.gms,.gms,1,None,9999,None,9999,0,constant,None,None,new; seems to be handled in calc_financial_inputs.py,
 disagg_geosize.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 disagg_hydroexist.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -283,6 +282,7 @@ objective_function_params.yaml,.yaml,1,None,9999,None,9999,0,constant,None,None,
 offshore_goal_fix.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
 offshore_goal_float.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
 offshore_req.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
+offshore.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 ofstype_i.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 ofstype.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 ofswind_rsc_mult.csv,.csv,0,None,t,None,1,0,constant,0,None,done,linear_5
@@ -470,6 +470,8 @@ transmission_capacity_init_AC_r.csv,.csv,1,None,9999,None,9999,0,constant,None,N
 transmission_capacity_init_AC_transgrp.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 transmission_capacity_init_nonAC.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 transmission_capacity_initial.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+transmission_cost_ac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+transmission_cost_dc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 transmission_distance_cost_500kVac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 transmission_distance_cost_500kVdc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 transmission_distance.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant

@@ -20,6 +20,17 @@ model_years = [2021, 2025, 2030, 2035, 2040, 2045, 2050]
 bas = [f'p{n}' for n in range(1,135)]
 replace_sectors = False #If True, use the following parameters to remove and replace sectors
 replace_type = 'Buildings' #Options: 'Transportation', 'Buildings', 'Data Centers'
+replace_states = 'all' # Options: 'all' for all states in eer source file; or a list of lowercase states in which to replace load, e.g. ['massachusetts','vermont',...]
+# share of sector load replaced, float between 0 (new load is added to all EER load) and 1 (EER sector load completely replaced)
+replacement_share = {
+    2021: 1.,
+    2025: 1.,
+    2030: 1.,
+    2035: 1.,
+    2040: 1.,
+    2045: 1.,
+    2050: 1.,
+}
 
 this_dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -69,17 +80,22 @@ shutil.copy2(f'{this_dir_path}/ba_timezone.csv', output_dir)
 
 df_load_factors = pd.read_csv(f'{this_dir_path}/load_factors.csv')
 ba_timezone = pd.read_csv(f'{this_dir_path}/ba_timezone.csv', index_col=0)['timezone']
+nonstate_columns = ['sector', 'subsector', 'dispatch_feeder', 'weather_datetime',]
 
 ls_df_eer = []
 for model_year in model_years:
     print(f'Loading eer load: {model_year}')
     #Read csv.gz
     df_eer = pd.read_csv(f'{eer_base_path}/{eer_case_meta}/{model_year}.csv.gz', compression='gzip')
+    if replace_states == 'all':
+        replace_states = df_eer.columns.drop(nonstate_columns).tolist()
     #Strip out specified sectors/subsectors (allow all subsectors of a sector to be removed)
     if replace_sectors and model_year in years_remove:
         for sector, subsectors in sectors_remove.items():
             remove_criteria = (df_eer['sector'] == sector)&(df_eer['subsector'].isin(subsectors))
-            df_eer = df_eer[~remove_criteria].copy()
+            # reduce subsector load by replacement share
+            df_eer.loc[remove_criteria, replace_states] = (
+                (1 - float(replacement_share[model_year])) * df_eer.loc[remove_criteria, replace_states])
     #Sum over sectors, subsectors, and dispatch feeders
     df_eer = df_eer.groupby(by=['weather_datetime'], sort=False).sum(numeric_only=True)
     df_eer = (df_eer/1000).reset_index()  # Convert from MWh to GWh and reset index
@@ -121,20 +137,16 @@ for weather_year in weather_years:
                 #Duplicate the final day of TEMPO data for leap years, since EER data includes all hours but TEMPO EV data does not.
                 if weather_year % 4 == 0:
                     df_load_r = pd.concat([df_load_r, df_load_r.iloc[-24:]])
-                #Convert from local to EST and adjust df_ba_load with new load
+                #Convert from local to EST
                 for ba in bas:
                     df_load_r[ba] = np.roll(df_load_r[ba], -5 - ba_timezone[ba])
-                    df_ba_load[ba] = df_ba_load[ba] + df_load_r[ba].values
             elif replace_type == 'Buildings':
+                #No rolling needed because EER data starts at 12am hour beginning and building data starts at 1am hour ending
                 ls_df = [pd.read_csv(f, index_col=0) for f in replace_files]
                 df_load_r = pd.concat(ls_df).groupby(level=0).sum()
                 #Duplicate the final day of Building data for leap years, since EER data includes all hours but Building data does not.
                 if weather_year % 4 == 0:
                     df_load_r = pd.concat([df_load_r, df_load_r.iloc[-24:]])
-                #Adjust df_ba_load with new load (no rolling needed because EER data starts at 12am hour beginning and building data starts at 1am hour ending)
-                for ba in bas:
-                    if ba in df_load_r:
-                        df_ba_load[ba] = df_ba_load[ba] + df_load_r[ba].values
             elif replace_type == 'Data Centers':
                 ls_df = [pd.read_csv(f, index_col=0) for f in replace_files]
                 df_load_r = pd.concat(ls_df).groupby(level=0).sum()
@@ -143,10 +155,11 @@ for weather_year in weather_years:
                 #Duplicate the final day of Data center data for leap years, since EER data includes all hours but Data center data does not.
                 if weather_year % 4 == 0:
                     df_load_r = pd.concat([df_load_r, df_load_r.iloc[-24:]])
-                #Adjust df_ba_load with new load
-                for ba in bas:
-                    if ba in df_load_r:
-                        df_ba_load[ba] = df_ba_load[ba] + df_load_r[ba].values
+            #Adjust df_ba_load with new load
+            for ba in bas:
+                # only replace if ba is in replacement states (use any because p123 includes both DC and MD)
+                if ba in df_load_r and df_load_factors[df_load_factors['ba'] == ba]['state'].isin(replace_states).any():
+                    df_ba_load[ba] = df_ba_load[ba] + df_load_r[ba].values
         for ba in bas:
             df_ba_load[ba] = df_ba_load[ba].round(4)
         df_ba_load.to_csv(f'{output_dir}/{eer_case}_e{model_year}_w{weather_year}.csv', index=False)

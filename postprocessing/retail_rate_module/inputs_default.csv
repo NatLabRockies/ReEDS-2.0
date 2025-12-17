@@ -15,6 +15,8 @@ input_daproj,cleanup,1
 input_eval_periods,fom_capitalized,20
 input_eval_periods,inv_investment_spurline_costs_rsc_technologies,20
 input_eval_periods,inv_transmission_line_investment,30
+input_eval_periods,inv_transmission_interzone_ac_investment,30
+input_eval_periods,inv_transmission_interzone_dc_investment,30
 input_eval_periods,inv_converter_costs,30
 input_eval_periods,init_trans_capex,30
 input_eval_periods,dist_capex,20

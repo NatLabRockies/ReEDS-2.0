@@ -71,6 +71,10 @@
   assignments_list:
     - plantchar_nuclear: [nuclear_ATB_2024_conservative, nuclear_ATB_2024_moderate, nuclear_ATB_2024_advanced]
     - plantchar_nuclear_smr: [nuclear-smr_ATB_2024_conservative, nuclear-smr_ATB_2024_moderate, nuclear-smr_ATB_2024_advanced]
+    - plantchar_nuclear_stor: [nuclear_stor_chars, nuclear_stor_chars, nuclear_stor_chars]
+    - plantchar_nuclear_stor2: [nuclear_stor_chars, nuclear_stor_chars, nuclear_stor_chars]
+    - plantchar_nuclear_stor3: [nuclear_stor_chars, nuclear_stor_chars, nuclear_stor_chars]
+    - plantchar_nuclear_stor4: [nuclear_stor_chars, nuclear_stor_chars, nuclear_stor_chars]
   dist: dirichlet
   dist_params: [1, 1, 1]
   weight_r: country
@@ -78,6 +82,13 @@
 - name: battery
   assignments_list:
     - plantchar_battery: [battery_ATB_2024_conservative, battery_ATB_2024_moderate, battery_ATB_2024_advanced]
+  dist: dirichlet
+  dist_params: [1, 1, 1]
+  weight_r: country
+
+- name: tes
+  assignments_list:
+    - plantchar_tes: [tes_ATB_2024_conservative, tes_ATB_2024_moderate, tes_ATB_2024_advanced]
   dist: dirichlet
   dist_params: [1, 1, 1]
   weight_r: country
@@ -115,6 +126,7 @@
 - name: tech
   assignments_list:
     - plantchar_battery: [battery_ATB_2024_conservative, battery_ATB_2024_moderate, battery_ATB_2024_advanced]
+    - plantchar_tes: [tes_ATB_2024_conservative, tes_ATB_2024_moderate, tes_ATB_2024_advanced]
     - plantchar_upv: [upv_ATB_2024_conservative, upv_ATB_2024_moderate, upv_ATB_2024_advanced]
     - plantchar_csp: [csp_ATB_2024_conservative, csp_ATB_2024_moderate, csp_ATB_2024_advanced]
     - plantchar_ofswind: [ofs-wind_ATB_2024_conservative, ofs-wind_ATB_2024_moderate, ofs-wind_ATB_2024_advanced]
@@ -127,6 +139,7 @@
 - name: tech_discrete
   assignments_list:
     - plantchar_battery: [battery_ATB_2024_conservative, battery_ATB_2024_moderate, battery_ATB_2024_advanced]
+    - plantchar_tes: [tes_ATB_2024_conservative, tes_ATB_2024_moderate, tes_ATB_2024_advanced]
     - plantchar_upv: [upv_ATB_2024_conservative, upv_ATB_2024_moderate, upv_ATB_2024_advanced]
     - plantchar_csp: [csp_ATB_2024_conservative, csp_ATB_2024_moderate, csp_ATB_2024_advanced]
     - plantchar_ofswind: [ofs-wind_ATB_2024_conservative, ofs-wind_ATB_2024_moderate, ofs-wind_ATB_2024_advanced]

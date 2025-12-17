@@ -209,14 +209,21 @@ def main(
 
     # %% Load supply curve files ---------------------------------------------------------
 
+    alloutcap_list = []
+    alloutcost_list = []
+    spurout_list = []
+
     # %%#################
     #    -- Wind --    #
     ####################
 
     windin, wind = {}, {}
-    cost_components_wind = {}
+    cost_components_wind_list = []
+    wind_types = ["ons"]
+    if int(sw["GSw_OfsWind"]):
+        wind_types.append("ofs")
 
-    for s in ["ons", "ofs"]:
+    for s in wind_types:
         windin[s], wind[s] = agg_supplycurve(
             scpath=os.path.join(inputs_case,f'supplycurve_wind-{s}.csv'),
             inputs_case=inputs_case, 
@@ -226,7 +233,7 @@ def main(
             sw=sw, write=write
             )
         
-        cost_components_wind[s] = (
+        cost_components = (
             wind[s][["cost_total_trans_usd_per_mw", "capital_adder_per_mw"]]
             .round(2)
             .reset_index()
@@ -241,50 +248,74 @@ def main(
             )
         )
 
-        cost_components_wind[s]["*i"] = f"wind-{s}_" + cost_components_wind[s][
+        cost_components["*i"] = f"wind-{s}_" + cost_components[
             "*i"
         ].astype(str)
-        cost_components_wind[s]["rscbin"] = "bin" + cost_components_wind[s][
+        cost_components["rscbin"] = "bin" + cost_components[
             "rscbin"
         ].astype(str)
-        cost_components_wind[s] = pd.melt(
-            cost_components_wind[s],
+        cost_components = pd.melt(
+            cost_components,
             id_vars=["*i", "r", "rscbin"],
             var_name="sc_cat",
             value_name="value",
         )
+        cost_components_wind_list.append(cost_components)
 
+        spurout_list.append(
+            wind[s]
+            .reset_index()
+            .assign(i=f"wind-{s}_" + wind[s].reset_index()["class"].astype(str))
+            .assign(rscbin="bin" + wind[s].reset_index()["bin"].astype(str))
+            .rename(columns={"region": "r"})
+        )
+
+    cost_components_wind = pd.concat(cost_components_wind_list)
     windall = (
         pd.concat(wind, axis=0)
         .reset_index(level=0)
-        .rename(columns={"level_0": "type"})
+        .rename(columns={"level_0": "tech"})
         .reset_index()
     )
     ### Normalize formatting
-    windall["type"] = "wind-" + windall["type"]
+    windall["tech"] = "wind-" + windall["tech"]
     windall.supply_curve_cost_per_mw = windall.supply_curve_cost_per_mw.round(2)
     windall["class"] = "class" + windall["class"].astype(str)
     windall["bin"] = "wsc" + windall["bin"].astype(str)
     ### Pivot, with bins in long format
+    bins_wind = list(range(1, max(numbins["wind-ons"], numbins["wind-ofs"]) + 1))
     windcost = (
         windall.pivot(
-            index=["region", "class", "type"],
+            index=["region", "class", "tech"],
             columns="bin",
             values="supply_curve_cost_per_mw",
         )
         .fillna(0)
         .reset_index()
     )
+    windcost.rename(
+        columns={"wsc{}".format(i): "bin{}".format(i) for i in bins_wind},
+        inplace=True,
+    )
+    alloutcost_list.append(windcost)
+
     windcap = (
         windall.pivot(
-            index=["region", "class", "type"], columns="bin", values="capacity"
+            index=["region", "class", "tech"], columns="bin", values="capacity"
         )
         .fillna(0)
         .reset_index()
     )
+    windcap.rename(
+        columns={"wsc{}".format(i): "bin{}".format(i) for i in bins_wind},
+        inplace=True,
+    )
+    alloutcap_list.append(windcap)
 
-    ## Get exogenous capacity
-    dfwindexog = get_exog_cap(inputs_case, tech='wind-ons', dfsc=wind['ons'])
+    if write:
+        ## Exogenous wind capacity
+        dfwindexog = get_exog_cap(inputs_case, tech='wind-ons', dfsc=wind['ons'])
+        dfwindexog.round(3).to_csv(os.path.join(inputs_case, "exog_wind_ons_rsc.csv"))
 
     # %%###############
     #    -- PV --    #
@@ -322,82 +353,124 @@ def main(
         value_name="value",
     )
 
-    ## Get exogenous capacity
-    dfupvexog = get_exog_cap(inputs_case, tech='upv', dfsc=upv)
+    if write:    
+        ## Exogenous UPV capacity
+        dfupvexog = get_exog_cap(inputs_case, tech='upv', dfsc=upv)
+        dfupvexog.round(3).to_csv(os.path.join(inputs_case, "exog_upv_rsc.csv"))
 
     ### Normalize formatting
     upv = upv.reset_index()
     upv["class"] = "class" + upv["class"].astype(str)
     upv["bin"] = "upvsc" + upv["bin"].astype(str)
+
+    spurout_list.append(
+        upv.assign(i="upv_" + upv["class"].astype(str).str.strip("class"))
+        .assign(rscbin="bin" + upv["bin"].str.strip("upvsc"))
+        .rename(columns={"region": "r"})
+    )
+
     ### Pivot, with bins in long format
+    bins_upv = list(range(1, numbins["upv"] + 1))
     upvcost = (
         upv.pivot(
             columns="bin", values="supply_curve_cost_per_mw", index=["region", "class"]
         ).fillna(0)
         ### reV spur line and reinforcement costs are now in per MW-AC terms, so removing the
         ### correction term that was applied.
+        .assign(tech="upv")
     ).reset_index()
+    upvcost.rename(
+        columns={"upvsc{}".format(i): "bin{}".format(i) for i in bins_upv},
+        inplace=True,
+    )
+    alloutcost_list.append(upvcost)
+
     upvcap = (
         upv.pivot(columns="bin", values="capacity", index=["region", "class"])
         .fillna(0)
         .reset_index()
+        .assign(tech="upv")
     )
+    upvcap.rename(
+        columns={"upvsc{}".format(i): "bin{}".format(i) for i in bins_upv},
+        inplace=True,
+    )
+    alloutcap_list.append(upvcap)
 
     # %%################
     #    -- CSP --    #
     ###################
 
-    cspin, csp = agg_supplycurve(
-        scpath=os.path.join(inputs_case, 'supplycurve_csp.csv'),
-        inputs_case=inputs_case,
-        agglevel=agglevel, AggregateRegions=AggregateRegions, 
-        numbins_tech=numbins['csp'], spur_cutoff=spur_cutoff,
-        agglevel_variables=agglevel_variables, deflate=deflate,
-        sw=sw, write=False
-    )
-
-    ### Normalize formatting
-    csp = csp.reset_index()
-    csp["class"] = "class" + csp["class"].astype(str)
-    csp["bin"] = "cspsc" + csp["bin"].astype(str)
-    ### Pivot, with bins in long format
-    cspcost = (
-        csp.pivot(
-            columns="bin", values="supply_curve_cost_per_mw", index=["region", "class"]
-        ).fillna(0)
-    ).reset_index()
-    cspcap = (
-        csp.pivot(columns="bin", values="capacity", index=["region", "class"])
-        .fillna(0)
-        .reset_index()
-    )
-
-    ## Duplicate the CSP supply curve for each CSP configuration
-    cspcap = (
-        pd.concat(
-            {"csp{}".format(i): cspcap for i in range(1, csp_configs + 1)}, axis=0
+    if int(sw["GSw_CSP"]):
+        cspin, csp = agg_supplycurve(
+            scpath=os.path.join(inputs_case, 'supplycurve_csp.csv'),
+            inputs_case=inputs_case,
+            agglevel=agglevel, AggregateRegions=AggregateRegions, 
+            numbins_tech=numbins['csp'], spur_cutoff=spur_cutoff,
+            agglevel_variables=agglevel_variables, deflate=deflate,
+            sw=sw, write=False
         )
-        .reset_index(level=0)
-        .rename(columns={"level_0": "tech"})
-        .reset_index(drop=True)
-    )
-    cspcost = (
-        pd.concat(
-            {"csp{}".format(i): cspcost for i in range(1, csp_configs + 1)}, axis=0
-        )
-        .reset_index(level=0)
-        .rename(columns={"level_0": "tech"})
-        .reset_index(drop=True)
-    )
 
-    # If CSP is turned off, remove the CSP supply curve data
-    if int(sw["GSw_CSP"]) == 0:
-        cspcap = pd.DataFrame(columns=cspcap.columns)
-        cspcost = pd.DataFrame(columns=cspcost.columns)
+        ### Normalize formatting
+        csp = csp.reset_index()
+        csp["class"] = "class" + csp["class"].astype(str)
+        csp["bin"] = "cspsc" + csp["bin"].astype(str)
+
+        spurout_list.append(
+            csp.assign(i="csp_" + csp["class"].astype(str).str.strip("class"))
+            .assign(rscbin="bin" + csp["bin"].str.strip("cspsc"))
+            .rename(columns={"region": "r"})
+        )
+
+        ### Pivot, with bins in long format
+        cspcost = (
+            csp.pivot(
+                columns="bin", values="supply_curve_cost_per_mw", index=["region", "class"]
+            ).fillna(0)
+        ).reset_index()
+        cspcap = (
+            csp.pivot(columns="bin", values="capacity", index=["region", "class"])
+            .fillna(0)
+            .reset_index()
+        )
+
+        ## Duplicate the CSP supply curve for each CSP configuration
+        bins_csp = list(range(1, numbins["csp"] + 1))
+        cspcap = (
+            pd.concat(
+                {"csp{}".format(i): cspcap for i in range(1, csp_configs + 1)}, axis=0
+            )
+            .reset_index(level=0)
+            .rename(columns={"level_0": "tech"})
+            .reset_index(drop=True)
+        )
+        cspcap.rename(
+            columns={"cspsc{}".format(i): "bin{}".format(i) for i in bins_csp},
+            inplace=True,
+        )
+        alloutcap_list.append(cspcap)
+        
+        cspcost = (
+            pd.concat(
+                {"csp{}".format(i): cspcost for i in range(1, csp_configs + 1)}, axis=0
+            )
+            .reset_index(level=0)
+            .rename(columns={"level_0": "tech"})
+            .reset_index(drop=True)
+        )
+        cspcost.rename(
+            columns={"cspsc{}".format(i): "bin{}".format(i) for i in bins_csp},
+            inplace=True,
+        )
+        alloutcost_list.append(cspcost)
 
     # %% Geothermal
-    use_geohydro_rev_sc = geohydrosupplycurve == "reV"
-    use_egs_rev_sc = egssupplycurve == "reV"
+    if int(sw["GSw_Geothermal"]):
+        use_geohydro_rev_sc = geohydrosupplycurve == "reV"
+        use_egs_rev_sc = egssupplycurve == "reV"
+    else:
+        use_geohydro_rev_sc = False
+        use_egs_rev_sc = False
 
     ## reV supply curves
     if use_geohydro_rev_sc or use_egs_rev_sc:
@@ -416,6 +489,13 @@ def main(
                 agglevel=agglevel, AggregateRegions=AggregateRegions,
                 spur_cutoff=spur_cutoff,agglevel_variables=agglevel_variables, deflate=deflate,
                 sw=sw, write=False
+            )
+            spurout_list.append(
+                geo[s]
+                .reset_index()
+                .assign(i=f"{s}_allkm_" + geo[s].reset_index()["class"].astype(str))
+                .assign(rscbin="bin" + geo[s].reset_index()["bin"].astype(str))
+                .rename(columns={"region": "r"})
             )
 
         geoall = (
@@ -448,13 +528,11 @@ def main(
 
         ### Geothermal bins (flexible)
         bins_geo = (range(1, max(numbins['geohydro']*use_geohydro_rev_sc, numbins['egs']*use_egs_rev_sc) + 1))
-
         geocap.rename(
             columns={
                 **{
-                    "region": "r",
                     "type": "tech",
-                    "Unnamed: 0": "r",
+                    "Unnamed: 0": "region",
                     "Unnamed: 1": "class",
                     "Unnamed 2": "tech",
                 },
@@ -462,12 +540,13 @@ def main(
             },
             inplace=True,
         )
+        alloutcap_list.append(geocap)
+
         geocost.rename(
             columns={
                 **{
-                    "region": "r",
                     "type": "tech",
-                    "Unnamed: 0": "r",
+                    "Unnamed: 0": "region",
                     "Unnamed: 1": "class",
                     "Unnamed 2": "tech",
                 },
@@ -475,9 +554,29 @@ def main(
             },
             inplace=True,
         )
-        ## Get exogenous capacity
-        if use_geohydro_rev_sc:
-            dfgeohydroexog = get_exog_cap(inputs_case, tech='geohydro', dfsc=geo['geohydro'])
+        alloutcost_list.append(geocost)
+
+        if write:
+            ## Geothermal discovery rates
+            geo_disc_rate = pd.read_csv(os.path.join(inputs_case, "geo_discovery_rate.csv"))
+            geo_disc_rate.round(decimals).to_csv(
+                os.path.join(inputs_case, "geo_discovery_rate.csv"), index=False
+            )
+            geo_discovery_factor = pd.read_csv(
+                os.path.join(inputs_case, "geo_discovery_factor.csv")
+            )
+            geo_discovery_factor = geo_discovery_factor.loc[
+                geo_discovery_factor.r.isin(val_r_all)].copy()
+            geo_discovery_factor.round(decimals).to_csv(
+                os.path.join(inputs_case, "geo_discovery_factor.csv"), index=False
+            )
+
+            if use_geohydro_rev_sc:
+                ## Exogenous geohydro capacity
+                dfgeohydroexog = get_exog_cap(inputs_case, tech='geohydro', dfsc=geo['geohydro'])
+                dfgeohydroexog.round(3).to_csv(
+                    os.path.join(inputs_case, "exog_geohydro_allkm_rsc.csv")
+                )
 
     # %% Get supply-curve data for postprocessing
     spurcols = [
@@ -489,51 +588,10 @@ def main(
         'dist_reinforcement_km',
         'supply_curve_cost_per_mw',
     ]
-    spurout_list = [
-        (
-            wind["ons"]
-            .reset_index()
-            .assign(i="wind-ons_" + wind["ons"].reset_index()["class"].astype(str))
-            .assign(rscbin="bin" + wind["ons"].reset_index()["bin"].astype(str))
-            .rename(columns={"region": "r"})[spurcols]
-        ),
-        (
-            wind["ofs"]
-            .reset_index()
-            .assign(i="wind-ofs_" + wind["ofs"].reset_index()["class"].astype(str))
-            .assign(rscbin="bin" + wind["ofs"].reset_index()["bin"].astype(str))
-            .rename(columns={"region": "r"})[spurcols]
-        ),
-        (
-            upv.assign(i="upv_" + upv["class"].astype(str).str.strip("class"))
-            .assign(rscbin="bin" + upv["bin"].str.strip("upvsc"))
-            .rename(columns={"region": "r"})[spurcols]
-        ),
-        (
-            csp.assign(i="csp_" + csp["class"].astype(str).str.strip("class"))
-            .assign(rscbin="bin" + csp["bin"].str.strip("cspsc"))
-            .rename(columns={"region": "r"})[spurcols]
-        ),
-    ]
-    if use_geohydro_rev_sc:
-        spurout_list.append(
-            geo["geohydro"]
-            .reset_index()
-            .assign(
-                i="geohydro_allkm_" + geo["geohydro"].reset_index()["class"].astype(str)
-            )
-            .assign(rscbin="bin" + geo["geohydro"].reset_index()["bin"].astype(str))
-            .rename(columns={"region": "r"})[spurcols]
-        )
-    if use_egs_rev_sc:
-        spurout_list.append(
-            geo["egs"]
-            .reset_index()
-            .assign(i="egs_allkm_" + geo["egs"].reset_index()["class"].astype(str))
-            .assign(rscbin="bin" + geo["egs"].reset_index()["bin"].astype(str))
-            .rename(columns={"region": "r"})[spurcols]
-        )
-    spurout = pd.concat(spurout_list).round(2)
+    spurout = pd.concat(spurout_list)[spurcols].round(2)
+    if write:
+        ## Spurline and reinforcement distances and costs
+        spurout.to_csv(os.path.join(inputs_case, "spur_parameters.csv"), index=False)
 
     ### Get spur-line and reinforcement distances if using in annual trans investment limit
     poi_distance = spurout.copy()
@@ -562,95 +620,31 @@ def main(
     )
     ## Convert to miles
     distance_spur = (poi_distance_out.dist_spur_km.rename("miles") / 1.609).round(3)
+    if write:
+        distance_spur.to_csv(os.path.join(inputs_case, "distance_spur.csv"))
+
     distance_reinforcement = (
         poi_distance_out.dist_reinforcement_km.rename("miles") / 1.609
     ).round(3)
+    if write:
+        distance_reinforcement.to_csv(
+            os.path.join(inputs_case, "distance_reinforcement.csv")
+        )
 
     # %%###################################
     #    -- Supply Curve Data --    #
     ######################################
-
-    # %% Reformat the supply curve dataframes
-    ### Wind bins (flexible)
-    bins_wind = list(range(1, max(numbins["wind-ons"], numbins["wind-ofs"]) + 1))
-    ### UPV bins (flexible)
-    bins_upv = list(range(1, numbins["upv"] + 1))
-    ### CSP bins (flexible)
-    bins_csp = list(range(1, numbins["csp"] + 1))
-
-    ### NOTE: wind capacity and costs also differentiate between 'class' and 'tech'
-    rcolnames = {"region": "r", "type": "tech"}
-
-    upvcap.rename(
-        columns={
-            **rcolnames,
-            **{"upvsc{}".format(i): "bin{}".format(i) for i in bins_upv},
-        },
-        inplace=True,
-    )
-    cspcap.rename(
-        columns={
-            **rcolnames,
-            **{"cspsc{}".format(i): "bin{}".format(i) for i in bins_csp},
-        },
-        inplace=True,
-    )
-    windcap.rename(
-        columns={
-            **rcolnames,
-            **{"wsc{}".format(i): "bin{}".format(i) for i in bins_wind},
-        },
-        inplace=True,
-    )
-
-    upvcost.rename(
-        columns={
-            **rcolnames,
-            **{"upvsc{}".format(i): "bin{}".format(i) for i in bins_upv},
-        },
-        inplace=True,
-    )
-    cspcost.rename(
-        columns={
-            **rcolnames,
-            **{"cspsc{}".format(i): "bin{}".format(i) for i in bins_csp},
-        },
-        inplace=True,
-    )
-    windcost.rename(
-        columns={
-            **rcolnames,
-            **{"wsc{}".format(i): "bin{}".format(i) for i in bins_wind},
-        },
-        inplace=True,
-    )
-
-    upvcap["tech"] = "upv"
-
-    upvcost["tech"] = "upv"
-
     # %% Combine the supply curves
-    alloutcap_list = [windcap, cspcap, upvcap]
-    alloutcost_list = [windcost, cspcost, upvcost]
-
-    if use_geohydro_rev_sc or use_egs_rev_sc:
-        alloutcap_list.append(geocap)
-        alloutcost_list.append(geocost)
-
-    alloutcap = pd.concat(alloutcap_list)
-    alloutcost = (
-        pd.concat(alloutcost_list).set_index(["r", "class", "tech"]).reset_index()
+    alloutcap = (
+        pd.concat(alloutcap_list)
+        .rename(columns={"region": "r"})
+        .assign(var="cap")
+    )
+    alloutcap["class"] = alloutcap["class"].map(lambda x: x.lstrip("cspclass"))
+    alloutcap["class"] = (
+        "class" + alloutcap["class"].map(lambda x: x.lstrip("class")).astype(str)
     )
 
-    alloutcap["class"] = alloutcap["class"].map(lambda x: x.lstrip("cspclass"))
-    alloutcap["class"] = alloutcap["class"].map(lambda x: x.lstrip("class"))
-    alloutcost["class"] = alloutcost["class"].map(lambda x: x.lstrip("cspclass"))
-    alloutcost["class"] = alloutcost["class"].map(lambda x: x.lstrip("class"))
-
-    alloutcap["var"] = "cap"
-    alloutcost["var"] = "cost"
-
-    alloutcap["class"] = "class" + alloutcap["class"].astype(str)
     t1 = alloutcap.pivot(
         index=["r", "tech", "var"],
         columns="class",
@@ -688,8 +682,22 @@ def main(
         .reset_index()
     )
 
+    alloutcost = (
+        pd.concat(alloutcost_list)
+        .rename(columns={"region": "r"})
+        .set_index(["r", "class", "tech"])
+        .reset_index()
+        .assign(var="cost")
+    )
+    alloutcost["class"] = alloutcost["class"].map(lambda x: x.lstrip("cspclass"))
+    alloutcost["class"] = alloutcost["class"].map(lambda x: x.lstrip("class"))
+
     allout = pd.concat([outcapfin, alloutcost])
     allout["tech"] = allout["tech"] + "_" + allout["class"].astype(str)
+    alloutm = pd.melt(allout, id_vars=["r", "tech", "var"])
+    alloutm.rename(columns={"bin":"variable"}, inplace=True)
+    alloutm = alloutm.loc[alloutm.variable != "class"].copy()
+    allout_list = [alloutm]
 
     # %%----------------------------------------------------------------------------------
     ##########################
@@ -725,66 +733,75 @@ def main(
 
     hyddat.rename(columns={"variable": "r", "bin": "variable"}, inplace=True)
     hyddat = hyddat[["tech", "r", "value", "var", "variable"]].fillna(0)
+    allout_list.append(hyddat)
 
     #########################################
     #    -- Pumped Storage Hydropower --    #
     #########################################
 
-    # Input processing currently assumes that cost data in CSV file is in 2004$
-    psh_cap = pd.read_csv(os.path.join(inputs_case, "psh_supply_curves_capacity.csv"))
-    psh_cost = pd.read_csv(os.path.join(inputs_case, "psh_supply_curves_cost.csv"))
-    psh_durs = pd.read_csv(
-        os.path.join(inputs_case, "psh_supply_curves_duration.csv"), header=0
-    )
+    if int(sw["GSw_Storage"]):
+        # Input processing currently assumes that cost data in CSV file is in 2004$
+        psh_cap = pd.read_csv(os.path.join(inputs_case, "psh_supply_curves_capacity.csv"))
+        psh_cost = pd.read_csv(os.path.join(inputs_case, "psh_supply_curves_cost.csv"))
+        psh_durs = pd.read_csv(
+            os.path.join(inputs_case, "psh_supply_curves_duration.csv"), header=0
+        )
 
-    psh_cap = pd.melt(psh_cap, id_vars=["r"])
-    psh_cost = pd.melt(psh_cost, id_vars=["r"])
+        psh_cap = pd.melt(psh_cap, id_vars=["r"])
+        psh_cost = pd.melt(psh_cost, id_vars=["r"])
 
-    # Convert dollar year
-    psh_cost[psh_cost.select_dtypes(include=["number"]).columns] *= deflate["PHScostn"]
+        # Convert dollar year
+        psh_cost[psh_cost.select_dtypes(include=["number"]).columns] *= deflate["PHScostn"]
 
-    psh_cap["var"] = "cap"
-    psh_cost["var"] = "cost"
+        psh_cap["var"] = "cap"
+        psh_cost["var"] = "cost"
 
-    psh_out = pd.concat([psh_cap, psh_cost]).fillna(0)
-    psh_out["tech"] = "pumped-hydro"
-    psh_out["variable"] = psh_out.variable.map(lambda x: x.replace("pshclass", "bin"))
-    psh_out = psh_out[hyddat.columns].copy()
+        psh_out = pd.concat([psh_cap, psh_cost]).fillna(0)
+        psh_out["tech"] = "pumped-hydro"
+        psh_out["variable"] = psh_out.variable.map(lambda x: x.replace("pshclass", "bin"))
+        psh_out = psh_out[hyddat.columns].copy()
+        allout_list.append(psh_out)
 
-    # Select storage duration correponding to the supply curve
-    psh_dur_out = psh_durs[psh_durs["pshsupplycurve"] == pshsupplycurve]["duration"]
+        if write:
+            # Select storage duration correponding to the supply curve
+            psh_dur_out = psh_durs[psh_durs["pshsupplycurve"] == pshsupplycurve]["duration"]
+            psh_dur_out.to_csv(
+                os.path.join(inputs_case, "psh_sc_duration.csv"), index=False, header=False
+            )
 
     #######################################################
     #    -- Demand Response  --    #
     #######################################################
 
-    # Use capacity and cost to add DR Shed to rsc_combined
-    # Define rsc class using tech
-    dr_shed_cap = pd.read_csv(os.path.join(inputs_case,'dr_shed_cap.csv'))
-    dr_shed_cap['class'] = dr_shed_cap['tech']
-    dr_shed_cost = pd.read_csv(os.path.join(inputs_case,'dr_shed_cost.csv'))
-    dr_shed_cost['class'] = dr_shed_cost['tech']
+    if int(sw["GSw_DRShed"]):
+        # Use capacity and cost to add DR Shed to rsc_combined
+        # Define rsc class using tech
+        dr_shed_cap = pd.read_csv(os.path.join(inputs_case,'dr_shed_cap.csv'))
+        dr_shed_cap['class'] = dr_shed_cap['tech']
+        dr_shed_cost = pd.read_csv(os.path.join(inputs_case,'dr_shed_cost.csv'))
+        dr_shed_cost['class'] = dr_shed_cost['tech']
 
-    dr_shed_cap = (pd.melt(dr_shed_cap, id_vars=['tech','class'])
-                .set_index(['tech','class','variable'])
-                .sort_index())
-    dr_shed_cap = dr_shed_cap.reset_index()
-    dr_shed_cost = pd.melt(dr_shed_cost, id_vars=['tech','class'])
+        dr_shed_cap = (pd.melt(dr_shed_cap, id_vars=['tech','class'])
+                    .set_index(['tech','class','variable'])
+                    .sort_index())
+        dr_shed_cap = dr_shed_cap.reset_index()
+        dr_shed_cost = pd.melt(dr_shed_cost, id_vars=['tech','class'])
 
-    # Convert dollar year
-    dr_shed_cost[dr_shed_cost.select_dtypes(include=['number']).columns] *= deflate['dr_shed']
+        # Convert dollar year
+        dr_shed_cost[dr_shed_cost.select_dtypes(include=['number']).columns] *= deflate['dr_shed']
 
-    # Assign rsc cat
-    dr_shed_cap['var'] = 'cap'
-    dr_shed_cost['var'] = 'cost'
+        # Assign rsc cat
+        dr_shed_cap['var'] = 'cap'
+        dr_shed_cost['var'] = 'cost'
 
-    # Combined cost and capacity
-    dr_shed_dat = pd.concat([dr_shed_cap, dr_shed_cost])
-    dr_shed_dat['bin'] = dr_shed_dat['class'].map(lambda x: x.replace('dr_shed_','bin'))
-    dr_shed_dat['class'] = dr_shed_dat['class'].map(lambda x: x.replace('dr_shed_',''))
+        # Combined cost and capacity
+        dr_shed_dat = pd.concat([dr_shed_cap, dr_shed_cost])
+        dr_shed_dat['bin'] = dr_shed_dat['class'].map(lambda x: x.replace('dr_shed_','bin'))
+        dr_shed_dat['class'] = dr_shed_dat['class'].map(lambda x: x.replace('dr_shed_',''))
 
-    dr_shed_dat.rename(columns={'variable':'r','bin':'variable'}, inplace=True)
-    dr_shed_dat = dr_shed_dat[['tech','r','value','var','variable']].fillna(0)
+        dr_shed_dat.rename(columns={'variable':'r','bin':'variable'}, inplace=True)
+        dr_shed_dat = dr_shed_dat[['tech','r','value','var','variable']].fillna(0)
+        allout_list.append(dr_shed_dat)
 
     #######################################################
     #    -- EV Managed Charging --    #
@@ -845,6 +862,11 @@ def main(
         else:
             rsc = pd.DataFrame(columns=["*tech", "r", "sc_cat", "rscbin", "t", "value"])
 
+        if write:
+            rsc.to_csv(
+                os.path.join(inputs_case, f"rsc_{drcat}.csv"), index=False, header=True
+            )
+
         rsc_dr[drcat] = rsc.copy()
 
     # %%----------------------------------------------------------------------------------
@@ -852,15 +874,10 @@ def main(
     #    -- Combine everything --    #
     ##################################
 
-    ### Stack the final versions
-    alloutm = pd.melt(allout, id_vars=["r", "tech", "var"])
-    alloutm.rename(columns={"bin":"variable"}, inplace=True)
-    alloutm = alloutm.loc[alloutm.variable != "class"].copy()
-    alloutm = pd.concat([alloutm, hyddat, psh_out,dr_shed_dat])
-
-    ### Drop the (cap,cost) entries with nan cost
+    ### Combine, then drop the (cap,cost) entries with nan cost
     alloutm = (
-        alloutm.pivot(
+        pd.concat(allout_list)
+        .pivot(
             index=["r", "tech", "variable"], columns=["var"], values=["value"]
         )
         .dropna()["value"]
@@ -878,51 +895,55 @@ def main(
     )
 
     ## Merge geothermal non-reV supply curves if applicable
-    if not use_geohydro_rev_sc:
-        geohydro_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
-        geohydro_rsc = geohydro_rsc.loc[
-            geohydro_rsc["*i"].str.startswith("geohydro_allkm")
+    if int(sw["GSw_Geothermal"]):
+        if not use_geohydro_rev_sc:
+            geohydro_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
+            geohydro_rsc = geohydro_rsc.loc[
+                geohydro_rsc["*i"].str.startswith("geohydro_allkm")
+            ]
+            # Filter by valid regions
+            geohydro_rsc = geohydro_rsc.loc[geohydro_rsc["r"].isin(val_r_all)]
+            # Convert dollar year
+            geohydro_rsc.sc_cat = geohydro_rsc.sc_cat.str.lower()
+            geohydro_rsc.loc[geohydro_rsc.sc_cat == "cost", "value"] *= deflate[
+                "geo_rsc_{}".format(geohydrosupplycurve)
+            ]
+            geohydro_rsc["rscbin"] = "bin1"
+            alloutm = pd.concat([alloutm, geohydro_rsc])
+
+        if not use_egs_rev_sc:
+            egs_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
+            egs_rsc = egs_rsc.loc[egs_rsc["*i"].str.startswith("egs_allkm")]
+            # Filter by valid regions
+            egs_rsc = egs_rsc.loc[egs_rsc["r"].isin(val_r_all)]
+            # Convert dollar year
+            egs_rsc.sc_cat = egs_rsc.sc_cat.str.lower()
+            egs_rsc.loc[egs_rsc.sc_cat == "cost", "value"] *= deflate[
+                "geo_rsc_{}".format(egssupplycurve)
+            ]
+            egs_rsc["rscbin"] = "bin1"
+            alloutm = pd.concat([alloutm, egs_rsc])
+
+        egsnearfield_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
+        egsnearfield_rsc = egsnearfield_rsc.loc[
+            egsnearfield_rsc["*i"].str.startswith("egs_nearfield")
         ]
         # Filter by valid regions
-        geohydro_rsc = geohydro_rsc.loc[geohydro_rsc["r"].isin(val_r_all)]
+        egsnearfield_rsc = egsnearfield_rsc.loc[egsnearfield_rsc["r"].isin(val_r_all)]
         # Convert dollar year
-        geohydro_rsc.sc_cat = geohydro_rsc.sc_cat.str.lower()
-        geohydro_rsc.loc[geohydro_rsc.sc_cat == "cost", "value"] *= deflate[
-            "geo_rsc_{}".format(geohydrosupplycurve)
+        egsnearfield_rsc.sc_cat = egsnearfield_rsc.sc_cat.str.lower()
+        egsnearfield_rsc.loc[egsnearfield_rsc.sc_cat == "cost", "value"] *= deflate[
+            "geo_rsc_{}".format(egsnearfieldsupplycurve)
         ]
-        geohydro_rsc["rscbin"] = "bin1"
-        alloutm = pd.concat([alloutm, geohydro_rsc])
-
-    if not use_egs_rev_sc:
-        egs_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
-        egs_rsc = egs_rsc.loc[egs_rsc["*i"].str.startswith("egs_allkm")]
-        # Filter by valid regions
-        egs_rsc = egs_rsc.loc[egs_rsc["r"].isin(val_r_all)]
-        # Convert dollar year
-        egs_rsc.sc_cat = egs_rsc.sc_cat.str.lower()
-        egs_rsc.loc[egs_rsc.sc_cat == "cost", "value"] *= deflate[
-            "geo_rsc_{}".format(egssupplycurve)
-        ]
-        egs_rsc["rscbin"] = "bin1"
-        alloutm = pd.concat([alloutm, egs_rsc])
-
-    egsnearfield_rsc = pd.read_csv(os.path.join(inputs_case, "geo_rsc.csv"), header=0)
-    egsnearfield_rsc = egsnearfield_rsc.loc[
-        egsnearfield_rsc["*i"].str.startswith("egs_nearfield")
-    ]
-    # Filter by valid regions
-    egsnearfield_rsc = egsnearfield_rsc.loc[egsnearfield_rsc["r"].isin(val_r_all)]
-    # Convert dollar year
-    egsnearfield_rsc.sc_cat = egsnearfield_rsc.sc_cat.str.lower()
-    egsnearfield_rsc.loc[egsnearfield_rsc.sc_cat == "cost", "value"] *= deflate[
-        "geo_rsc_{}".format(egsnearfieldsupplycurve)
-    ]
-    egsnearfield_rsc["rscbin"] = "bin1"
-    alloutm = pd.concat([alloutm, egsnearfield_rsc])
+        egsnearfield_rsc["rscbin"] = "bin1"
+        alloutm = pd.concat([alloutm, egsnearfield_rsc])
 
     ### Combine with cost components
-    alloutm = pd.concat(
-        [alloutm, cost_components_upv,cost_components_wind['ons'], cost_components_wind['ofs']])
+    alloutm = pd.concat([alloutm, cost_components_upv, cost_components_wind])
+    if write:
+        alloutm.to_csv(
+            os.path.join(inputs_case, "rsc_combined.csv"), index=False, header=True
+        )
     
     #%%----------------------------------------------------------------------------------
     #######################
@@ -933,59 +954,30 @@ def main(
     """
 
     # %%----------------------------------------------------------------------------------
-    ##########################
-    #    -- Geothermal --    #
-    ##########################
-
-    geo_disc_rate = pd.read_csv(os.path.join(inputs_case, "geo_discovery_rate.csv"))
-    geo_discovery_factor = pd.read_csv(
-        os.path.join(inputs_case, "geo_discovery_factor.csv")
-    )
-    geo_discovery_factor = geo_discovery_factor.loc[
-        geo_discovery_factor.r.isin(val_r_all)].copy()
-
-    # %%----------------------------------------------------------------------------------
     ##########################################
     #    -- Spur lines (disaggregated) --    #
     ##########################################
-    """
-    NOTE: In the upv and wind-ons supply curves from reV, a single site (indicated by
-    a single sc_point_gid value) can be mapped to different BAs for upv and wind, depending
-    on the distribution of tech-specific developable area within the reV cell.
-    That could presumably lead to errors for site-specific spur lines indexed by sc_point_gid.
-    Here we re-map each upv/wind-ons supply curve point based on the no-exclusions
-    transmission table. But note that that will throw off the CF profiles, which are
-    calculated as weighted averages over the available gid's within the reV cell.
-    So it would be better to do this correction in hourlize (and even better to make the
-    fix upstream in reV.)
-    """
-    ### Get the fips-to-r map
-    fips2r = pd.read_csv(
-        os.path.join(inputs_case, "r_county.csv"), index_col=1
-    ).squeeze(1)
-
-    ###### Spur line costs
-    spursites = pd.read_csv(os.path.join(inputs_case, "spur_cost.csv"))
-    ### Deflate to ReEDS dollar year
-    spursites["trans_cap_cost_per_mw"] *= deflate["spur"]
-    spursites = (
-        spursites.assign(x="i" + spursites["sc_point_gid"].astype(str))
-        .assign(
-            r=(
-                ### Update Oglala Lakota county, SD
-                spursites["r"].map(lambda x: {"p46113": "p46102"}.get(x, x))
-            )
+    ### Get interconnection cost for reV sites within modeled area
+    interconnection_cost = reeds.io.assemble_supplycurve()
+    sitemap = reeds.io.get_sitemap()
+    county2zone = reeds.inputs.get_county2zone(os.path.dirname(os.path.normpath(inputs_case)))
+    interconnection_cost['r'] = interconnection_cost.index.map(sitemap.FIPS).map(county2zone)
+    val_r = pd.read_csv(
+        os.path.join(inputs_case, 'val_r.csv'),
+        header=None,
+    ).squeeze(1).values
+    spursites = interconnection_cost.loc[interconnection_cost.r.isin(val_r)].copy()
+    spursites['x'] = 'i' + spursites.index.astype(str)
+    if write:
+        spursites[["x", "cost_total_trans_usd_per_mw"]].rename(columns={"x": "*x"}).to_csv(
+            os.path.join(inputs_case, "spurline_cost.csv"), index=False
         )
-        ### drop sites with too high of spur-line cost
-        .loc[spursites["trans_cap_cost_per_mw"] < spur_cutoff]
-        .round(2)
-    )
-
-    ### Map sites to the proper regional aggregation
-    spursites["r"] = spursites["r"].map(fips2r)
-
-    ### Filter for valid regions
-    spursites.dropna(subset=["r"], inplace=True)
+        spursites["x"].to_csv(
+            os.path.join(inputs_case, "x.csv"), index=False, header=False
+        )
+        spursites[["x", "r"]].rename(
+            columns={"x": "*x"}
+        ).drop_duplicates().to_csv(os.path.join(inputs_case, "x_r.csv"), index=False)
 
     ###### Site maps
     ### UPV
@@ -1055,14 +1047,21 @@ def main(
     spurline_sitemap = spurline_sitemap.loc[
         spurline_sitemap.x.isin(spursites.x.values)
     ].copy()
-    spursites = spursites.loc[spursites.x.isin(spurline_sitemap.x.values)].copy()
+    if write:
+        spurline_sitemap.to_csv(
+            os.path.join(inputs_case, "spurline_sitemap.csv"), index=False
+        )
 
     ### Add mapping from sc_point_gid to bin for reeds_to_rev.py
     site_bin_map_list = [
-        windin["ons"].assign(tech="wind-ons")[["tech", "sc_point_gid", "bin"]],
-        windin["ofs"].assign(tech="wind-ofs")[["tech", "sc_point_gid", "bin"]],
-        upvin.assign(tech="upv")[["tech", "sc_point_gid", "bin"]],
+        upvin.assign(tech="upv")[["tech", "sc_point_gid", "bin"]]
     ]
+    for wind_type, dfin in windin.items():
+        site_bin_map_list.append(
+            dfin.assign(tech=f"wind-{wind_type}")[
+                ["tech", "sc_point_gid", "bin"]
+            ]
+        )
     if use_geohydro_rev_sc:
         site_bin_map_list.append(
             geoin["geohydro"].assign(tech="geohydro_allkm")[
@@ -1074,62 +1073,8 @@ def main(
             geoin["egs"].assign(tech="egs_allkm")[["tech", "sc_point_gid", "bin"]]
         )
     site_bin_map = pd.concat(site_bin_map_list, ignore_index=True)
-
-    # %%##############################
-    #    -- Data Write-Out --    #
-    #################################
-
     if write:
-        ## Everything
-        alloutm.to_csv(
-            os.path.join(inputs_case, "rsc_combined.csv"), index=False, header=True
-        )
-        ## Exogenous wind
-        dfwindexog.round(3).to_csv(os.path.join(inputs_case, "exog_wind_ons_rsc.csv"))
-        ## Exogenous UPV
-        dfupvexog.round(3).to_csv(os.path.join(inputs_case, "exog_upv_rsc.csv"))
-        ## Exogenous geohydro
-        if use_geohydro_rev_sc:
-            dfgeohydroexog.round(3).to_csv(
-                os.path.join(inputs_case, "exog_geohydro_allkm_rsc.csv")
-            )
-        ## Geothermal discovery rates
-        geo_disc_rate.round(decimals).to_csv(
-            os.path.join(inputs_case, "geo_discovery_rate.csv"), index=False
-        )
-        geo_discovery_factor.round(decimals).to_csv(
-            os.path.join(inputs_case, "geo_discovery_factor.csv"), index=False
-        )
-        ## DR and EVMC
-        for drcat in ["evmc"]:
-            rsc_dr[drcat].to_csv(
-                os.path.join(inputs_case, f"rsc_{drcat}.csv"), index=False, header=True
-            )
-        ## Hybrids
-        spursites[["x", "trans_cap_cost_per_mw"]].rename(columns={"x": "*x"}).to_csv(
-            os.path.join(inputs_case, "spurline_cost.csv"), index=False
-        )
-        spursites["x"].to_csv(
-            os.path.join(inputs_case, "x.csv"), index=False, header=False
-        )
-        spurline_sitemap.to_csv(
-            os.path.join(inputs_case, "spurline_sitemap.csv"), index=False
-        )
-        spurline_sitemap[["x", "r"]].rename(
-            columns={"x": "*x"}
-        ).drop_duplicates().to_csv(os.path.join(inputs_case, "x_r.csv"), index=False)
-        ## Bin mapping
         site_bin_map.to_csv(os.path.join(inputs_case, "site_bin_map.csv"), index=False)
-        ## Spurline and reinforcement distances and costs
-        spurout.to_csv(os.path.join(inputs_case, "spur_parameters.csv"), index=False)
-        distance_spur.to_csv(os.path.join(inputs_case, "distance_spur.csv"))
-        distance_reinforcement.to_csv(
-            os.path.join(inputs_case, "distance_reinforcement.csv")
-        )
-        ## Supply-Curve-Specific PSH Duration
-        psh_dur_out.to_csv(
-            os.path.join(inputs_case, "psh_sc_duration.csv"), index=False, header=False
-        )
 
     return alloutm
 

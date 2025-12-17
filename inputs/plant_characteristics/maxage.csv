@@ -34,6 +34,10 @@ geohydro_allkm_1*geohydro_allkm_10,30
 egs_nearfield_1*egs_nearfield_10,30
 Nuclear,80
 Nuclear-SMR,80
+nuclear-stor1,80
+nuclear-stor2,80
+nuclear-stor3,80
+nuclear-stor4,80
 hydro,100
 hydD,100
 hydND,100
@@ -50,6 +54,7 @@ csp2_1*csp2_12,30
 csp3_1*csp3_12,30
 csp4_1*csp4_12,30
 battery_li,15
+tes_ms,30
 dr_shed_1*dr_shed_2,8
 evmc_storage_1*evmc_storage_10,1
 evmc_shape_1*evmc_shape_10,1

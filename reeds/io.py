@@ -95,16 +95,20 @@ def get_countymap(select_counties=None, exclude_water_areas=False):
     
     return dfcounty
 
-def get_zonemap(case=None, exclude_water_areas=False):
+def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
     """
     Get geodataframe of model zones, applying aggregation if necessary
     """
+    sw = get_switches(case)
+    ## Backwards compatibility
+    if 'GSw_RegionResolution' not in sw:
+        sw['GSw_RegionResolution'] = 'ba'
+
     if case:
         agglevel_variables = reeds.spatial.get_agglevel_variables(
             reeds_path,
             os.path.join(case, 'inputs_case'),
         )
-
     else:
         agglevel_variables = {'lvl': 'ba'}
 
@@ -178,38 +182,46 @@ def get_zonemap(case=None, exclude_water_areas=False):
     ######## Single Resolution Procedure ########
     else:
         ### Check if resolution is at county level
-        if case:
-            sw = pd.read_csv(
-                os.path.join(case, 'inputs_case', 'switches.csv'), header=None, index_col=0
-            ).squeeze(1)
-        else:
-            sw = pd.Series()
-
-        ## Backwards compatibility
-        if 'GSw_RegionResolution' not in sw:
-            sw['GSw_RegionResolution'] = 'ba'
-
         if sw.GSw_RegionResolution != 'county':
             hierarchy = get_hierarchy(case, original=True)
             ### Model zones
             dfba = gpd.read_file(
                 os.path.join(reeds_path, 'inputs', 'shapefiles', 'US_PCA')
-            ).set_index('rb')
-
+            ).set_index('rb').to_crs(crs)[['geometry']].copy()
+            ## Add transmission endpoints
+            endpoints = (
+                gpd.read_file(
+                    os.path.join(reeds_path, 'inputs', 'shapefiles', 'transmission_endpoints')
+                )
+                .set_index('ba_str')
+                .rename(columns={'lon':'node_longitude','lat':'node_latitude'})
+                [['node_longitude','node_latitude','geometry']]
+            )
+            endpoints['x'] = endpoints.centroid.x
+            endpoints['y'] = endpoints.centroid.y
+            dfba = dfba.merge(endpoints.drop(columns='geometry'), left_index=True, right_index=True)
+            ## Add offshore zones (transmission endpoints already included)
+            if int(sw.GSw_OffshoreZones):
+                offshore_zones = gpd.read_file(
+                    os.path.join(reeds_path, 'inputs', 'shapefiles', 'offshore_zones.gpkg')
+                ).set_index('zone').to_crs(crs).drop(columns=['zone_old'], errors='ignore')
+                ## Get node x/y for consistency with land-based zones
+                xy = reeds.plots.df2gdf(
+                    offshore_zones.drop(columns='geometry'),
+                    lat='node_latitude',
+                    lon='node_longitude',
+                    crs=crs,
+                )
+                offshore_zones['x'] = xy.geometry.x
+                offshore_zones['y'] = xy.geometry.y
+                ## Combine
+                dfba = pd.concat([dfba.assign(offshore=0), offshore_zones.assign(offshore=1)])
+            ## Filter to regions used in this run
             if 'ba_regions' in agglevel_variables:
                 dfba = dfba.loc[(
                     dfba.index.intersection(agglevel_variables['ba_regions'])
                 )]
-
-            ### Use transmission endpoints from reV
-            endpoints = gpd.read_file(
-                os.path.join(reeds_path, 'inputs', 'shapefiles', 'transmission_endpoints')
-            ).set_index('ba_str')
-            endpoints['x'] = endpoints.centroid.x
-            endpoints['y'] = endpoints.centroid.y
-
-            dfba['x'] = dfba.index.map(endpoints.x)
-            dfba['y'] = dfba.index.map(endpoints.y)
+            ## Record centroid locations for plot labels
             dfba['centroid_x'] = dfba.geometry.centroid.x
             dfba['centroid_y'] = dfba.geometry.centroid.y
 
@@ -272,7 +284,10 @@ def get_dfmap(case=None, levels=None, exclude_water_areas=False):
     for col in hierarchy_levels:
         dfmap[col] = dfba.copy()
         dfmap[col]['geometry'] = dfmap[col].buffer(0.0)
-        dfmap[col] = dfmap[col].dissolve(col)
+        ## Exclude offshore zones from aggregated regions
+        if 'offshore' not in dfmap[col]:
+            dfmap[col]['offshore'] = 0
+        dfmap[col] = dfmap[col].loc[dfmap[col].offshore == 0].dissolve(col)
         for prefix in ['', 'centroid_']:
             dfmap[col][prefix + 'x'] = dfmap[col].centroid.x
             dfmap[col][prefix + 'y'] = dfmap[col].centroid.y
@@ -660,22 +675,17 @@ def read_file(filename, parse_timestamps=False, decode_strings=False):
 
     # parse timestamps if specified and if there is a datetime index
     if parse_timestamps and ('datetime' in df.index.names):
-        if not isinstance(df.index.get_level_values('datetime')[0], bytes):
-            raise ValueError(
-                "The time index for timestamp-indexed dataframes should be encoded as "
-                f"bytes. Please update {filename}."
-            )
-
-        unique_indices = df.index.get_level_values('datetime').unique()
-        index2datetime = dict(zip(
-            unique_indices,
-            pd.to_datetime(unique_indices.str.decode('utf-8'), format='ISO8601')
-        ))
-        df['datetime'] = df.index.get_level_values('datetime').map(index2datetime)
-        if isinstance(df.index, pd.MultiIndex):
-            df = df.droplevel('datetime').set_index('datetime', append=True)
-        else:
-            df = df.set_index('datetime')
+        if isinstance(df.index.get_level_values('datetime')[0], bytes):
+            unique_indices = df.index.get_level_values('datetime').unique()
+            index2datetime = dict(zip(
+                unique_indices,
+                pd.to_datetime(unique_indices.str.decode('utf-8'), format='ISO8601')
+            ))
+            df['datetime'] = df.index.get_level_values('datetime').map(index2datetime)
+            if isinstance(df.index, pd.MultiIndex):
+                df = df.droplevel('datetime').set_index('datetime', append=True)
+            else:
+                df = df.set_index('datetime')
 
     # All values being NaN indicates that the region filtering in copy_files.py removed all
     # data, leaving an empty dataframe.
@@ -1006,14 +1016,17 @@ def get_sitemap(offshore=False, geo=True):
         reeds_path, 'inputs', 'supply_curve',
         'interconnection_offshore.h5' if offshore else 'sitemap.h5'
     )
-    sitemap = read_h5_groups(fpath)[['latitude', 'longitude', 'FIPS']]
+    sitemap = read_h5_groups(fpath)[
+        ['latitude', 'longitude', 'FIPS']
+        + (['ba', 'always_radial'] if offshore else [])
+    ]
     if geo:
         crs = 'EPSG:5070' if offshore else 'ESRI:102008'
         sitemap = reeds.plots.df2gdf(sitemap, crs=crs)
     return sitemap
 
 
-def assemble_supplycurve(scfile, case=None, drop_extra=True, agg=True, skip_if_complete=False):
+def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip_if_complete=False):
     """
     Join on sc_point_gid column:
     - Generator supply curve (indicated by scfile input)
@@ -1027,19 +1040,16 @@ def assemble_supplycurve(scfile, case=None, drop_extra=True, agg=True, skip_if_c
     scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_upv-reference.csv')
     scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_wind-ofs-reference.csv')
     """
-    ### Get inputs
-    offshore = True if 'wind-ofs' in os.path.basename(scfile) else False
-    dfin = pd.read_csv(scfile, index_col='sc_point_gid')
-    ## If derived columns are already in file, it's already been assembled, so stop here
-    if 'supply_curve_cost_per_mw' in dfin:
-        ## Rebuild it if not aggregating
-        if skip_if_complete:
-            return dfin
-        else:
-            dfin = dfin[['class', 'capacity', 'capital_adder_per_mw']].copy()
-
-    county2zone = reeds.inputs.get_county2zone(case=(case if agg else None))
-
+    ### Parse inputs
+    sw = get_switches(case)
+    if scfile is None:
+        offshore = False
+    else:
+        offshore = (
+            True if ('wind-ofs' in os.path.basename(scfile)) or (scfile == 'offshore')
+            else False
+        )
+    ### Get interconnection cost
     fpath_interconnection = os.path.join(
         reeds_path, 'inputs', 'supply_curve',
         ('interconnection_offshore.h5' if offshore else 'interconnection_land.h5')
@@ -1055,19 +1065,44 @@ def assemble_supplycurve(scfile, case=None, drop_extra=True, agg=True, skip_if_c
         interconnection_cost = interconnection_cost.loc[old2new.values]
         interconnection_cost.index = old2new.index.values
         interconnection_cost['FIPS'] = interconnection_cost.index.map(sitemap.FIPS)
+    if scfile is None:
+        return interconnection_cost
+
+    ### Get supply curve
+    dfin = pd.read_csv(scfile, index_col='sc_point_gid')
+    ## If derived columns are already in file, it's already been assembled, so stop here
+    if 'supply_curve_cost_per_mw' in dfin:
+        ## Rebuild it if not aggregating
+        if skip_if_complete:
+            return dfin
+        else:
+            dfin = dfin[['class', 'capacity', 'capital_adder_per_mw']].copy()
+
+    county2zone = reeds.inputs.get_county2zone(case if agg else None)
+
     ### Combine
     dfout = dfin.copy()
     dfout = dfout.merge(interconnection_cost, how='left', left_index=True, right_index=True)
     dfout['region'] = dfout.FIPS.map(county2zone)
-    ## NOTE 20250819 pbrown: TEMPORARILY drop meshed offshore values and only keep radial
+    ## Keep either meshed or radial data for offshore
     if offshore:
-        cols_meshed = [c for c in dfout if c.endswith('|meshed')]
-        cols_radial = [c for c in dfout if c.endswith('|radial')]
+        keep = '|meshed' if int(sw.GSw_OffshoreZones) else '|radial'
+        drop = '|radial' if int(sw.GSw_OffshoreZones) else '|meshed'
+
+        cols_keep = [c for c in dfout if c.endswith(keep)]
+        cols_drop = [c for c in dfout if c.endswith(drop)]
+
         dfout = (
             dfout
-            .drop(columns=cols_meshed)
-            .rename(columns={c: c.replace('|radial','') for c in cols_radial})
+            .drop(columns=cols_drop)
+            .rename(columns={c: c.replace(keep,'') for c in cols_keep})
         )
+        if int(sw.GSw_OffshoreZones):
+            offshore_zones = dfout.always_radial == 0
+            dfout.loc[offshore_zones, 'region'] = dfout.loc[offshore_zones, 'ba'].copy()
+        else:
+            dfout['ba'] = dfout['region'].copy()
+
     ## Drop reinforcement cost for counties
     agglevel_variables = reeds.spatial.get_agglevel_variables(
         reeds_path, os.path.join(case, 'inputs_case')
@@ -1100,6 +1135,7 @@ def assemble_supplycurve(scfile, case=None, drop_extra=True, agg=True, skip_if_c
                 'node_latitude',
                 'node_longitude',
                 'always_radial',
+                'ba',
             ],
             errors='ignore',
         )
@@ -1296,11 +1332,19 @@ def write_profile_to_h5(df, filename, outfolder, compression_opts=4):
                 # Other indices can be saved using their data type
                 f.create_dataset(f'index_{i}', data=indexvals, dtype=indexvals.dtype)
 
-        # save index names
+        # save index and column names
         index_names = pd.Index(df.index.names)
         if len(index_names):
             f.create_dataset(
                 'index_names', data=index_names, dtype=f'S{index_names.map(len).max()}'
+            )
+
+        column_names = pd.Index(df.columns.names)
+        if len(column_names) and not all([i is None for i in column_names]):
+            f.create_dataset(
+                'column_names',
+                data=column_names.map(lambda x: {None:''}.get(x,x)),
+                dtype=f'S{column_names.map(len).max()}',
             )
 
         # save column names as string type
@@ -1348,9 +1392,6 @@ def write_gswitches(sw_df: pd.DataFrame, inputs_case: str) -> str:
         except (ValueError, TypeError):
             return False
 
-    # Adding in switch for itlgrp constraints in county or mixed resolution runs
-    switches['GSw_itlgrpConstraint'] = int(switches.loc['GSw_RegionResolution'] in ['county','mixed'])
-        
     gswitches = switches.loc[
         switches.index.str.lower().str.startswith('gsw') & switches.map(is_numeric)
     ].copy()
