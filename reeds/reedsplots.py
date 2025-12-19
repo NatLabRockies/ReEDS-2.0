@@ -567,7 +567,7 @@ def plot_trans_diff(
         dfzones['y'] = dfzones.centroid.y
     ## Get thick borders if necessary
     if thickborders not in [None,'','none','None',False]:
-        if thickborders in hierarchy:
+        if thickborders in hierarchy.reset_index():
             dfthick = dfba.copy()
             dfthick[thickborders] = hierarchy[thickborders]
             dfthick.geometry = dfthick.buffer(0.)
@@ -780,7 +780,7 @@ def plot_trans_onecase(
         dfzones['y'] = dfzones.centroid.y
     ## Get thick borders if necessary
     if thickborders not in [None,'','none','None',False]:
-        if thickborders in hierarchy:
+        if thickborders in hierarchy.reset_index():
             dfthick = dfmap[thickborders].copy()
     ## Get route linestrings if necessary
     if routes:

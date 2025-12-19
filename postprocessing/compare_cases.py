@@ -131,13 +131,13 @@ techmap = {
     **{f'upv_{i}':'Utility PV' for i in range(20)},
     **{f'wind-ons_{i}':'Land-based wind' for i in range(20)},
     **{f'wind-ofs_{i}':'Offshore wind' for i in range(20)},
-    **dict(zip(['nuclear','nuclear-smr', 'nuclear-stor'], ['Nuclear']*20)),
+    **dict(zip(['nuclear','nuclear-smr','nuclear-stor'], ['Nuclear']*20)),
     **dict(zip(
         ['gas-cc_re-cc','gas-ct_re-ct','re-cc','re-ct',
          'gas-ct_h2-ct','h2-ct','gas-cc_h2-cc','h2-cc'],
         ['H2 turbine']*20)),
     **{f'battery_{i}':'Battery/PSH' for i in range(20)},
-    **{'battery_li':'Battery/PSH', 'tes_ms':'Battery/PSH', 'pumped-hydro':'Battery/PSH'},
+    **{'battery_li':'Battery/PSH', 'tes_ms':'Battery/PSH','pumped-hydro':'Battery/PSH'},
     **dict(zip(
         ['coal-igcc', 'coaloldscr', 'coalolduns', 'gas-cc', 'gas-ct', 'coal-new', 'o-g-s',],
         ['Fossil']*20)),
@@ -728,7 +728,7 @@ aggtechsplot = {
         'hydro','geothermal',
         'biopower','lfill-gas','cofire','beccs_mod','beccs'
     ],
-    'Nuclear': ['nuclear', 'nuclear-smr', 'nuclear-stor'],
+    'Nuclear': ['nuclear', 'nuclear-smr','nuclear-stor'],
     'Hydrogen\nturbine': ['h2-cc', 'h2-cc-upgrade', 'h2-ct', 'h2-ct-upgrade'],
     'Gas CCS': ['gas-cc-ccs_mod'],
     'Coal CCS': ['coal-ccs_mod'],
@@ -983,7 +983,6 @@ aggstack = {
     'tes_ms|charge':'Storage|charge',
     'battery_li|discharge':'Storage|discharge',
     'tes_ms|discharge':'Storage|discharge',
-
     'pumped-hydro':'Storage',
     'pumped-hydro|charge':'Storage|charge',
     'pumped-hydro|discharge':'Storage|discharge',
@@ -1021,6 +1020,7 @@ aggstack = {
     'nuclear-smr':'Nuclear',
     'nuclear-stor':'Nuclear',
 }
+
 aggcolors = {
     'Nuclear':'C3',
 
@@ -2329,6 +2329,7 @@ if (len(cases) == 2) and (not forcemulti):
         year=lastyear,
         alpha=1, dpi=150,
         titleshorten=titleshorten,
+        thickborders='transreg', drawstates=False, drawzones=False, 
     )
     reeds.report_utils.add_to_pptx(f'Transmission ({lastyear})', prs=prs)
     if interactive:
@@ -2351,7 +2352,7 @@ else:
                 alpha=alpha, scalesize=8,
                 f=f, ax=ax[coords[case]], title=False,
                 subtract_baseyear=subtract_baseyear,
-                thickborders='transreg', drawstates=False, drawzones=False, 
+                thickborders='r', drawstates=False, drawzones=True, 
                 label_line_capacity=10,
                 scale=(True if case == basecase else False),
             )
@@ -2388,10 +2389,11 @@ else:
             alpha=alpha, scalesize=8,
             f=f, ax=ax[coords[case]], title=False,
             subtract_baseyear=subtract_baseyear,
-            thickborders='transreg', drawstates=False, drawzones=False, 
+            thickborders='r', drawstates=False, drawzones=True, 
             label_line_capacity=10,
             scale=(True if case == basecase else False),
         )
+        
         ax[coords[case]].set_title(case)
     ### Formatting
     title = (
