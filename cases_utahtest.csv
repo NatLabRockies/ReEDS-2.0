@@ -7,8 +7,9 @@ pcm,1,1,1,1,1,1,1,1
 GSw_Region,st/UT,st/UT,st/UT,st/UT,st/UT,st/UT,st/UT,st/UT
 GSw_BatteryMandate,0,0,0,0,0,0,0,0
 GSw_TES,0,0,0,0,0,0,0,0
+plantchar_nuclear,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap
 GSw_Nuclear,1,1,1,1,1,1,1,1
-GSw_NuclearStor,1,1,1,1,1,1,1,1
+GSw_NuclearStor,0,0,0,0,0,0,0,0
 GSw_NuclearStor_Types,1,1,1,1,1,1,1,1
 GSw_NuclearStor_StorageTechs,tes-ms,tes-ms,tes-ms,tes-ms,tes-ms,tes-ms,tes-ms,tes-ms
 GSw_NuclearStor_BCR,0.45,0.75,1.0,0.0,0.45,0.75,1.0,0.0
