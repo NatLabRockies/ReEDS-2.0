@@ -1858,8 +1858,8 @@ def launch_single_case_run(
     batch_case = f'{BatchName}_{case}'
     casedir = os.path.join(reeds_path,'runs',batch_case)
     
-    from ToApps import to_slack
-    to_slack(f"Launching single case run for case {batch_case}...\n")
+    # from ToApps import to_slack
+    # to_slack(f"Launching single case run for case {batch_case}...\n")
 
     write_batch_script(
         options,
