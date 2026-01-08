@@ -1,0 +1,38 @@
+,Description,Default Value,base,base_no_stor
+ignore,"0=run this case, 1=ignore this case",0,,
+GSw_Region,st/UT,st/UT,,
+timetype,Sequential or Intertemporal,seq,,
+plantchar_nuclear,,nuclear_ATB_2024_dirtcheap,,
+GSw_Nuclear,,1,,
+GSw_NuclearDemo,,1,,
+GSw_Biopower,,0,0,0
+GSw_CCS,,0,0,0
+GSw_CoalIGCC,,0,0,0
+GSw_CoalNew,,0,0,0
+GSw_CofireNew,,0,0,0
+GSw_CSAPR,,0,0,0
+GSw_CSP,,0,0,0
+GSw_ForcePrescription,,1,1,1
+GSw_GasCurve,,2,2,2
+GSw_Geothermal,,0,0,0
+GSw_H2Combustion,,0,0,0
+GSw_hydED,,0,0,0
+GSw_LfillGas,,0,0,0
+GSw_MinCF,,0,0,0
+GSw_Mingen,,0,0,0
+GSw_MinLoading,,0,0,0
+GSw_OfsWind,,0,0,0
+GSw_OnsWind6to10,,0,0,0
+GSw_OpRes,,0,0,0
+GSw_PVB,,0,0,0
+GSw_Refurb,,0,0,0
+GSw_PRM_CapCredit,,0,0,0
+GSw_Retire,,0,0,0
+GSw_RGGI,,0,0,0
+GSw_SkipAugurYear,2030,2030,2030,2030
+GSw_StateCap,,0,0,0
+GSw_StateRPS,,0,0,0
+GSw_Storage,,1,1,1
+GSw_Upgrades,,0,0,0
+ivt_suffix,,small,small,small
+numhintage,,1,1,1
