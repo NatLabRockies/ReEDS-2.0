@@ -563,6 +563,9 @@ def agg_disagg(filepath, r2aggreg_glob, r_ba_glob, runfiles_row):
         [] if row.fix_cols in ['None', 'none', '', None, np.nan]
         else row.fix_cols.split(',')
     )
+    # exception for historic load profile which does not have a year column
+    if sw['GSw_EFS1_AllYearLoad'] == 'historic' and filename == 'load_hourly.h5':
+        row.fix_cols = [x for x in row.fix_cols if x != 'year']
     ### i_col: indicate technology column. Only used/needed if aggregating techs.
     if row.i_col in ['None', 'none', '', np.nan]:
         row.i_col = None
