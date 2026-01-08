@@ -1,0 +1,22 @@
+t,r,i,coolingwatertech,ctt,wst,value,notes
+2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
+2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
+2023,GA,Nuclear,nuclear_r_fsu,r,fsu,371.333333,
+2026,GA,Nuclear,nuclear_r_fsu,r,fsu,371.333333,
+2020,TN,Nuclear,nuclear_r_fsu,r,fsu,224.4,
+2032,TX_ERCOT_E,Nuclear,nuclear_r_fsu,r,fsu,106.666667,
+2035,WY,Nuclear,nuclear_r_fsu,r,fsu,115.0,
+2047,DE,Nuclear,nuclear_r_fsu,r,fsu,18.384091,
+2050,DE,Nuclear,nuclear_r_fsu,r,fsu,124.445908,
+2038,ID,Nuclear,nuclear_r_fsu,r,fsu,365.553745,
+2038,IL_PJM,Nuclear,nuclear_r_fsu,r,fsu,644.584759,
+2038,NV,Nuclear,nuclear_r_fsu,r,fsu,299.353762,
+2047,NV,Nuclear,nuclear_r_fsu,r,fsu,50.661263,
+2050,NV,Nuclear,nuclear_r_fsu,r,fsu,169.493915,
+2038,NY_UP,Nuclear,nuclear_r_fsu,r,fsu,457.172446,
+2047,NY_UP,Nuclear,nuclear_r_fsu,r,fsu,298.554943,
+2050,NY_UP,Nuclear,nuclear_r_fsu,r,fsu,444.815541,
+2047,VA,Nuclear,nuclear_r_fsu,r,fsu,712.998432,
+2038,WA,Nuclear,nuclear_r_fsu,r,fsu,102.146649,
+2035,WI,Nuclear,nuclear_r_fsu,r,fsu,452.651298,
+2038,WI,Nuclear,nuclear_r_fsu,r,fsu,65.494626,
