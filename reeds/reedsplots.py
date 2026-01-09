@@ -981,7 +981,7 @@ def plot_trans_onecase(
     return f, ax, dfplot
 
 
-def plotdiffmaps(val, i_plot, year, casebase, casecomp, reeds_path, 
+def plotdiffmaps(val, i_plot, year, casebase, casecomp, 
                  plot='diff', f=None, ax=None, cmap=plt.cm.Blues,
                  zmax=None, zlim=None,
                  legend_kwds=None, plot_kwds=None,):
@@ -2863,6 +2863,8 @@ def map_capacity_techs(
         _vmax = dfcap.loc[
             dfcap.i.isin(techs) & (dfcap.t.astype(int)==year)
         ].groupby(['i','r']).MW.sum().max() / 1e3
+    elif isinstance(vmax, (int,float)):
+        _vmax = vmax
     else:
         _vmax = None
     ### Arrange the subplots
@@ -2872,7 +2874,8 @@ def map_capacity_techs(
     f,ax = plt.subplots(
         nrows, ncols, figsize=(3*ncols, 3*nrows),
         gridspec_kw={'wspace':0.0,'hspace':-0.05}, dpi=150)
-    for tech in techs:
+    if len(techs) == 1:
+        tech = techs[0]
         dfval = dfcap.loc[
             (dfcap.i==tech)
             & (dfcap.t.astype(int)==year)
@@ -2881,25 +2884,55 @@ def map_capacity_techs(
         dfplot['GW'] = (dfval / 1000).fillna(0)
 
         dfba.plot(
-            ax=ax[coords[tech]],
+            ax=ax,
             facecolor='none', edgecolor='k', lw=0.1, zorder=10000)
         dfstates.plot(
-            ax=ax[coords[tech]],
+            ax=ax,
             facecolor='none', edgecolor='k', lw=0.2, zorder=10001)
         dfplot.plot(
-            ax=ax[coords[tech]], column='GW', cmap=cmap, legend=True,
+            ax=ax, column='GW', cmap=cmap, legend=True,
             vmin=0, vmax=_vmax,
             legend_kwds={
                 'shrink':0.75, 'pad':0, 'orientation':'horizontal',
                 'label': '{} [GW]'.format(tech),
             }
         )
-        ax[coords[tech]].axis('off')
-    ax[0,0].set_title(
-        '{} ({})'.format(os.path.basename(case), year),
-        x=0.1, ha='left', va='top')
-    plots.trim_subplots(ax, nrows, ncols, len(techs))
-    return f, ax
+        ax.axis('off')
+        ax.set_title(
+            '{} - {} ({})'.format(os.path.basename(case), tech, year),
+            x=0.1, ha='left', va='top')
+        return f, ax
+    else:
+        for tech in techs:
+            dfval = dfcap.loc[
+                (dfcap.i==tech)
+                & (dfcap.t.astype(int)==year)
+            ].groupby('r').MW.sum().round(3)
+            dfplot = dfba.copy()
+            dfplot['GW'] = (dfval / 1000).fillna(0)
+
+            dfba.plot(
+                ax=ax[coords[tech]],
+                facecolor='none', edgecolor='k', lw=0.1, zorder=10000)
+            dfstates.plot(
+                ax=ax[coords[tech]],
+                facecolor='none', edgecolor='k', lw=0.2, zorder=10001)
+            dfplot.plot(
+                ax=ax[coords[tech]], column='GW', cmap=cmap, legend=True,
+                vmin=0, vmax=_vmax,
+                legend_kwds={
+                    'shrink':0.75, 'pad':0, 'orientation':'horizontal',
+                    'label': '{} [GW]'.format(tech),
+                }
+            )
+            ax[coords[tech]].axis('off')
+        ax[0,0].set_title(
+            '{} ({})'.format(os.path.basename(case), year),
+            x=0.1, ha='left', va='top')
+        plots.trim_subplots(ax, nrows, ncols, len(techs))
+    
+        return f, ax
+
 
 
 def map_capacity_markers(
@@ -4172,6 +4205,7 @@ def plot_storage_hybrid_dispatch_yearbymonth(
         # Nothing to plot
         print(f"No storage-hybrid data found for t={t} in case {case}")
         return None, None, None
+    
 
     # Concatenate horizontally (columns are unique due to prefix)
     dfyear = pd.concat(series_list, axis=1).fillna(0)
@@ -6949,7 +6983,14 @@ def plot_bytech_annual(
         pass
 
     # Aggregate Value by year (t) and technology (i)
-    dfagg = dfin.groupby(['t', 'i']).Value.sum().unstack('i').fillna(0)
+    if techs is not None:
+        if isinstance(techs, str):
+            techs = [techs]
+        techs_lower = [t.lower() for t in techs]
+        dfin = dfin.loc[dfin.i.str.lower().isin(techs_lower)].copy()
+        dfagg = dfin.groupby(['t', 'i']).Value.sum().unstack('i').fillna(0)
+    else:
+        dfagg = dfin.groupby(['t', 'i']).Value.sum().unstack('i').fillna(0)
 
     if dfagg.empty:
         print("No data to plot")
@@ -7041,11 +7082,14 @@ if __name__ == '__main__':
     #     case=case_dir)
     # plt.show()
 
-    fig, ax = map_capacity_techs(
-        case=case_dir, year=year, 
-        techs=["Nuclear-Stor", "Nuclear-SMR", "Nuclear"], 
-        ncols=2,
-        vmax=""
-    )
+    # fig, ax = map_capacity_techs(
+    #     case=case_dir, year=year, 
+    #     techs=["Nuclear-Stor", "Nuclear-SMR", "Nuclear"], 
+    #     ncols=2,
+    #     vmax=""
+    # )
+    # plt.show()
+
+    fig, ax, dfplot = plot_bytech_annual(case=case_dir, plottype='cap')
     plt.show()
 # %%
