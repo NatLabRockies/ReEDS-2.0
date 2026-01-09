@@ -738,6 +738,15 @@ def subset_to_valid_regions(
             # Group lines going between same BA and county
             if 'distance' in filename:
                 df_county = df_county.groupby([tx_region_col,'rr']).mean().reset_index()
+            elif 'cost_ac' in filename:
+                df_county = df_county.groupby([tx_region_col,'rr'] + fix_cols).sum().reset_index()
+                # Drop reverse interfaces
+                # Keep only the interface where the first region is alphabetically first
+                df_county['region_pair'] = df_county.apply(
+                    lambda x: '||'.join(sorted([x[tx_region_col], x['rr']])), axis=1)
+                df_county = df_county.sort_values(by=['region_pair','tscbin'])
+                df_county = df_county.drop_duplicates(subset=['region_pair','tscbin'], keep='first')
+                df_county = df_county.drop(columns=['region_pair'])
             else:
                 df_county = df_county.groupby([tx_region_col,'rr']).sum().reset_index()
             df_county['interface'] = df_county[tx_region_col] + '||'+df_county['rr']
@@ -1403,6 +1412,7 @@ def write_region_indexed_file(
                 pass
 
         df.to_csv(os.path.join(dir_dst,filename), index=False)
+
 
 
 def write_region_indexed_files(

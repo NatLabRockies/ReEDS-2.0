@@ -452,7 +452,7 @@ transmission_capacity_init_AC_r.csv,inputs/transmission/transmission_capacity_in
 transmission_capacity_init_AC_itlgrp.csv,inputs/transmission/transmission_capacity_init_AC_ba_{GSw_TransNetworkSource}.csv,,,sum,ignore,"r,rr",interface,,0,0,drop_dup_r,,,,,
 transmission_capacity_init_AC_transgrp.csv,inputs/transmission/transmission_capacity_init_AC_transgrp_{GSw_TransNetworkSource}.csv,,,sum,ignore,"transgrp,transgrpp",interface,,0,0,,,,,,
 transmission_capacity_init_nonAC.csv,inputs/transmission/transmission_capacity_init_nonAC_{lvl}.csv,,,sum,ignore,"r,rr",trtype,,0,0,drop_dup_r,,,,,'ignore’ in disaggfunc because all transmisison data will be read into model at appropriate spatial resolution
-transmission_cost_ac.csv,inputs/transmission/transmission_cost_ac_{GSw_TransUpgradeMethod}_{lvl}.h5,,,trans_lookup,ignore,"r,rr",t0,,0,0,drop_dup_r,,,,,
+transmission_cost_ac.csv,inputs/transmission/transmission_cost_ac_{GSw_TransUpgradeMethod}_{lvl}.h5,,,trans_lookup,ignore,"r,rr",tscbin,,0,0,drop_dup_r,,,,,
 transmission_cost_dc.csv,inputs/transmission/transmission_cost_dc_{lvl}.csv,,,trans_lookup,ignore,"r,rr",,,0,0,drop_dup_r,,,,,
 transmission_distance.csv,inputs/transmission/transmission_distance_{lvl}.h5,,,trans_lookup,ignore,"r,rr",,,0,0,drop_dup_r,,,,,Stored in wide-format h5 to reduce county filesize but converted to long in copy_files.py
 transmission_line_fom.csv,,,,trans_lookup,ignore,"*r,rr",trtype,,0,0,drop_dup_r,1,,,,disaggfunc set to ignore because all transmisison data will be read into model at the correct spatial resolution

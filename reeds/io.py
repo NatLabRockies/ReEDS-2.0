@@ -110,7 +110,10 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
             os.path.join(case, 'inputs_case'),
         )
     else:
-        agglevel_variables = {'lvl': 'ba'}
+        agglevel_variables = {'lvl': 'ba',
+                        'agglevel': 'ba',
+                        }
+
 
     # Mixed resolution procedure
     if agglevel_variables['lvl'] == 'mult':
@@ -138,19 +141,23 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
                 .set_index('r')
                 .aggreg
             )
-            aggreg2anchorreg = r2aggreg.reset_index().rename(columns={'aggreg': 'aggreg'})
-            aggreg2anchorreg .to_csv(
-                os.path.join(case, 'inputs_case', 'aggreg2anchorreg.csv')
-            )
-            # aggreg2anchorreg = pd.read_csv(
-            #     os.path.join(case, 'inputs_case', 'aggreg2anchorreg.csv')
-            # )
-            aggreg2anchorreg = aggreg2anchorreg[
-                aggreg2anchorreg['aggreg'].isin(agglevel_variables['ba_regions'])
+            ### Take the "anchor" zone as the zone with the largest area [km2]
+            dfba['km2'] = dfba.area / 1e6
+            ## Add column for new regions
+            dfba['aggreg'] = dfba.index.map(r2aggreg)
+            ## Take the original zone with largest area
+            aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
+            ## Save it for plotting
+            aggreg2anchorreg.to_csv(os.path.join(case,'inputs_case', 'aggreg2anchorreg.csv'))
+
+            aggreg2anchorreg = aggreg2anchorreg.reset_index()
+            aggreg2anchorreg = aggreg2anchorreg[aggreg2anchorreg
+                ['aggreg'].isin(agglevel_variables['ba_regions'])
             ]
             dfba = dfba.reset_index()
             dfba.rb = dfba.rb.map(r2aggreg)
             dfba = dfba.dissolve('rb').loc[aggreg2anchorreg.aggreg].copy()
+
 
         ### Get the county map
         dfcounty = get_countymap(
@@ -224,6 +231,22 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
             ## Record centroid locations for plot labels
             dfba['centroid_x'] = dfba.geometry.centroid.x
             dfba['centroid_y'] = dfba.geometry.centroid.y
+
+            if 'aggreg' in agglevel_variables['agglevel']:
+                r2aggreg = (
+                    pd.read_csv(os.path.join(case, 'inputs_case', 'hierarchy_original.csv'))
+                    .rename(columns={'ba': 'r'})
+                    .set_index('r')
+                    .aggreg
+                    )
+                ### Take the "anchor" zone as the zone with the largest area [km2]
+                dfba['km2'] = dfba.area / 1e6
+                ## Add column for new regions
+                dfba['aggreg'] = dfba.index.map(r2aggreg)
+                ## Take the original zone with largest area
+                aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
+                ## Save it for plotting
+                aggreg2anchorreg.to_csv(os.path.join(case,'inputs_case', 'aggreg2anchorreg.csv'))
 
         else:
             hierarchy = (

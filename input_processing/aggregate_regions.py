@@ -1031,31 +1031,14 @@ else:
 if 'aggreg' in agglevel:
     if agglevel_variables['lvl'] == 'mult':
         r_ba = r_aggreg
-    if anchortype in ['load','demand','MW','MWh']:
-        ### Take the "anchor" zone as the zone with the largest annual demand in 2010.
-        ## Get annual average load
-        load = pd.read_csv(
-            os.path.join(reeds_path, 'inputs', 'variability', 'multi_year', 'load.csv.gz'),
-            index_col=0,
-        ).mean().rename_axis('r').rename('MW').to_frame()
-        ## Add column for new regions
-        load['aggreg'] = load.index.map(r_ba)
-        ## Take the original zone with largest demand
-        aggreg2anchorreg = load.groupby('aggreg').idxmax()['MW'].rename('rb')
-    elif anchortype in ['size','km2','area']:
-        ### Take the "anchor" zone as the zone with the largest area [km2]
-        dfba = reeds.io.get_zonemap(os.path.dirname(inputs_case))
-        dfba['km2'] = dfba.area / 1e6
-        ## Add column for new regions
-        dfba['aggreg'] = dfba.index.map(r_ba)
-        ## Take the original zone with largest area
-        aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
-    else:
-        raise ValueError(f'Invalid choice of anchortype: {anchortype}')
-    anchorreg2aggreg = pd.Series(index=aggreg2anchorreg.values, data=aggreg2anchorreg.index)
-    ## Save it for plotting
-    aggreg2anchorreg.to_csv(os.path.join(inputs_case, 'aggreg2anchorreg.csv'))
 
+    # Written in reeds.io.get_zonemap()
+    aggreg2anchorreg = pd.read_csv(os.path.join(inputs_case, 'aggreg2anchorreg.csv'))
+    aggreg2anchorreg = aggreg2anchorreg.set_index('aggreg')
+    aggreg2anchorreg = aggreg2anchorreg.squeeze()
+    anchorreg2aggreg = pd.Series(index=aggreg2anchorreg.values, data=aggreg2anchorreg.index)    
+    
+    
     ### Get RSC VRE available capacity to use in capacity-weighted averages
     ### We need the original un-aggregated supply curves, so run writesupplycurves again
     # rscweight = pd.read_csv(os.path.join(inputs_case, 'rsc_combined.csv'))
