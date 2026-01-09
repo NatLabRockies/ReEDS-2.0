@@ -1,77 +1,77 @@
 t,r,i,coolingwatertech,ctt,wst,value,notes
 2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
 2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
-2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,
-2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,
-2035,p12005,Nuclear,nuclear_r_fsu,r,fsu,2691.58413,
-2032,p19009,Nuclear,nuclear_r_fsu,r,fsu,544.467784,
-2035,p19009,Nuclear,nuclear_r_fsu,r,fsu,746.975192,
-2035,p17007,Nuclear,nuclear_r_fsu,r,fsu,509.14552,
-2035,p18001,Nuclear,nuclear_r_fsu,r,fsu,1096.837567,
-2035,p38001,Nuclear,nuclear_r_fsu,r,fsu,106.361916,
-2035,p33001,Nuclear,nuclear_r_fsu,r,fsu,135.815333,
-2035,p32001,Nuclear,nuclear_r_fsu,r,fsu,1465.430852,
-2032,p55003,Nuclear,nuclear_r_fsu,r,fsu,1061.412736,
-2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,1843.157669,
-2038,p8001,Nuclear,nuclear_r_fsu,r,fsu,711.706039,
-2038,p12005,Nuclear,nuclear_r_fsu,r,fsu,1474.506044,
-2038,p13001,Nuclear,nuclear_r_fsu,r,fsu,1129.795935,
-2038,p19009,Nuclear,nuclear_r_fsu,r,fsu,170.25919,
-2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,874.841318,
-2038,p18001,Nuclear,nuclear_r_fsu,r,fsu,1707.962608,
-2038,p21003,Nuclear,nuclear_r_fsu,r,fsu,54.142151,
-2038,p38001,Nuclear,nuclear_r_fsu,r,fsu,160.834531,
-2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,1440.842578,
-2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,2092.128823,
-2038,p47001,Nuclear,nuclear_r_fsu,r,fsu,1109.169469,
-2038,p48001,Nuclear,nuclear_r_fsu,r,fsu,2370.052809,
-2038,p49001,Nuclear,nuclear_r_fsu,r,fsu,1064.947564,
-2038,p51003,Nuclear,nuclear_r_fsu,r,fsu,693.145845,
-2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,642.890911,
-2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,735.85218,
-2038,p54001,Nuclear,nuclear_r_fsu,r,fsu,29.811189,
-2041,p4015,Nuclear,nuclear_r_fsu,r,fsu,483.806972,
-2044,p4015,Nuclear,nuclear_r_fsu,r,fsu,804.429729,
-2041,p12005,Nuclear,nuclear_r_fsu,r,fsu,1833.4305,
-2044,p12005,Nuclear,nuclear_r_fsu,r,fsu,3890.203603,
-2044,p13001,Nuclear,nuclear_r_fsu,r,fsu,1880.712875,
-2044,p24001,Nuclear,nuclear_r_fsu,r,fsu,1489.199002,
-2044,p38001,Nuclear,nuclear_r_fsu,r,fsu,297.106957,
-2041,p32001,Nuclear,nuclear_r_fsu,r,fsu,237.082043,
-2044,p32001,Nuclear,nuclear_r_fsu,r,fsu,651.808367,
-2041,p36001,Nuclear,nuclear_r_fsu,r,fsu,403.30774,
-2044,p36001,Nuclear,nuclear_r_fsu,r,fsu,2762.91011,
-2044,p47001,Nuclear,nuclear_r_fsu,r,fsu,338.978151,
-2044,p48037,Nuclear,nuclear_r_fsu,r,fsu,261.888618,
-2044,p49001,Nuclear,nuclear_r_fsu,r,fsu,613.808422,
-2044,p51003,Nuclear,nuclear_r_fsu,r,fsu,79.572806,
-2044,p55003,Nuclear,nuclear_r_fsu,r,fsu,1176.940104,
-2050,p1007,Nuclear,nuclear_r_fsu,r,fsu,67.901834,
-2047,p4015,Nuclear,nuclear_r_fsu,r,fsu,1045.889148,
-2050,p4015,Nuclear,nuclear_r_fsu,r,fsu,990.831036,
-2047,p12005,Nuclear,nuclear_r_fsu,r,fsu,2056.049231,
-2050,p12005,Nuclear,nuclear_r_fsu,r,fsu,897.658022,
-2050,p13001,Nuclear,nuclear_r_fsu,r,fsu,1391.535321,
-2050,p19009,Nuclear,nuclear_r_fsu,r,fsu,980.649577,
-2047,p17007,Nuclear,nuclear_r_fsu,r,fsu,2181.148789,
-2050,p17007,Nuclear,nuclear_r_fsu,r,fsu,343.37941,
-2050,p29003,Nuclear,nuclear_r_fsu,r,fsu,279.940539,
-2050,p37003,Nuclear,nuclear_r_fsu,r,fsu,2128.309798,
-2047,p38001,Nuclear,nuclear_r_fsu,r,fsu,624.887402,
-2050,p38001,Nuclear,nuclear_r_fsu,r,fsu,542.968397,
-2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,486.706478,
-2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,694.936091,
-2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,1561.396399,
-2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1943.699216,
-2050,p47001,Nuclear,nuclear_r_fsu,r,fsu,834.663181,
-2047,p48001,Nuclear,nuclear_r_fsu,r,fsu,7158.485625,
-2050,p48001,Nuclear,nuclear_r_fsu,r,fsu,2638.593851,
-2047,p49001,Nuclear,nuclear_r_fsu,r,fsu,180.100239,
-2050,p49001,Nuclear,nuclear_r_fsu,r,fsu,152.876878,
-2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,4892.617245,
-2050,p51003,Nuclear,nuclear_r_fsu,r,fsu,1286.826734,
-2047,p55003,Nuclear,nuclear_r_fsu,r,fsu,364.45613,
-2050,p55003,Nuclear,nuclear_r_fsu,r,fsu,1048.81567,
+2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Carbtax150
+2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case Carbtax150
+2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Carbtax150
+2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case Carbtax150
+2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case Carbtax150
+2035,p12005,Nuclear,nuclear_r_fsu,r,fsu,2691.58413,From ReEDS case Carbtax150
+2032,p19009,Nuclear,nuclear_r_fsu,r,fsu,544.467784,From ReEDS case Carbtax150
+2035,p19009,Nuclear,nuclear_r_fsu,r,fsu,746.975192,From ReEDS case Carbtax150
+2035,p17007,Nuclear,nuclear_r_fsu,r,fsu,509.14552,From ReEDS case Carbtax150
+2035,p18001,Nuclear,nuclear_r_fsu,r,fsu,1096.837567,From ReEDS case Carbtax150
+2035,p38001,Nuclear,nuclear_r_fsu,r,fsu,106.361916,From ReEDS case Carbtax150
+2035,p33001,Nuclear,nuclear_r_fsu,r,fsu,135.815333,From ReEDS case Carbtax150
+2035,p32001,Nuclear,nuclear_r_fsu,r,fsu,1465.430852,From ReEDS case Carbtax150
+2032,p55003,Nuclear,nuclear_r_fsu,r,fsu,1061.412736,From ReEDS case Carbtax150
+2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,1843.157669,From ReEDS case Carbtax150
+2038,p8001,Nuclear,nuclear_r_fsu,r,fsu,711.706039,From ReEDS case Carbtax150
+2038,p12005,Nuclear,nuclear_r_fsu,r,fsu,1474.506044,From ReEDS case Carbtax150
+2038,p13001,Nuclear,nuclear_r_fsu,r,fsu,1129.795935,From ReEDS case Carbtax150
+2038,p19009,Nuclear,nuclear_r_fsu,r,fsu,170.25919,From ReEDS case Carbtax150
+2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,874.841318,From ReEDS case Carbtax150
+2038,p18001,Nuclear,nuclear_r_fsu,r,fsu,1707.962608,From ReEDS case Carbtax150
+2038,p21003,Nuclear,nuclear_r_fsu,r,fsu,54.142151,From ReEDS case Carbtax150
+2038,p38001,Nuclear,nuclear_r_fsu,r,fsu,160.834531,From ReEDS case Carbtax150
+2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,1440.842578,From ReEDS case Carbtax150
+2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,2092.128823,From ReEDS case Carbtax150
+2038,p47001,Nuclear,nuclear_r_fsu,r,fsu,1109.169469,From ReEDS case Carbtax150
+2038,p48001,Nuclear,nuclear_r_fsu,r,fsu,2370.052809,From ReEDS case Carbtax150
+2038,p49001,Nuclear,nuclear_r_fsu,r,fsu,1064.947564,From ReEDS case Carbtax150
+2038,p51003,Nuclear,nuclear_r_fsu,r,fsu,693.145845,From ReEDS case Carbtax150
+2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,642.890911,From ReEDS case Carbtax150
+2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,735.85218,From ReEDS case Carbtax150
+2038,p54001,Nuclear,nuclear_r_fsu,r,fsu,29.811189,From ReEDS case Carbtax150
+2041,p4015,Nuclear,nuclear_r_fsu,r,fsu,483.806972,From ReEDS case Carbtax150
+2044,p4015,Nuclear,nuclear_r_fsu,r,fsu,804.429729,From ReEDS case Carbtax150
+2041,p12005,Nuclear,nuclear_r_fsu,r,fsu,1833.4305,From ReEDS case Carbtax150
+2044,p12005,Nuclear,nuclear_r_fsu,r,fsu,3890.203603,From ReEDS case Carbtax150
+2044,p13001,Nuclear,nuclear_r_fsu,r,fsu,1880.712875,From ReEDS case Carbtax150
+2044,p24001,Nuclear,nuclear_r_fsu,r,fsu,1489.199002,From ReEDS case Carbtax150
+2044,p38001,Nuclear,nuclear_r_fsu,r,fsu,297.106957,From ReEDS case Carbtax150
+2041,p32001,Nuclear,nuclear_r_fsu,r,fsu,237.082043,From ReEDS case Carbtax150
+2044,p32001,Nuclear,nuclear_r_fsu,r,fsu,651.808367,From ReEDS case Carbtax150
+2041,p36001,Nuclear,nuclear_r_fsu,r,fsu,403.30774,From ReEDS case Carbtax150
+2044,p36001,Nuclear,nuclear_r_fsu,r,fsu,2762.91011,From ReEDS case Carbtax150
+2044,p47001,Nuclear,nuclear_r_fsu,r,fsu,338.978151,From ReEDS case Carbtax150
+2044,p48037,Nuclear,nuclear_r_fsu,r,fsu,261.888618,From ReEDS case Carbtax150
+2044,p49001,Nuclear,nuclear_r_fsu,r,fsu,613.808422,From ReEDS case Carbtax150
+2044,p51003,Nuclear,nuclear_r_fsu,r,fsu,79.572806,From ReEDS case Carbtax150
+2044,p55003,Nuclear,nuclear_r_fsu,r,fsu,1176.940104,From ReEDS case Carbtax150
+2050,p1007,Nuclear,nuclear_r_fsu,r,fsu,67.901834,From ReEDS case Carbtax150
+2047,p4015,Nuclear,nuclear_r_fsu,r,fsu,1045.889148,From ReEDS case Carbtax150
+2050,p4015,Nuclear,nuclear_r_fsu,r,fsu,990.831036,From ReEDS case Carbtax150
+2047,p12005,Nuclear,nuclear_r_fsu,r,fsu,2056.049231,From ReEDS case Carbtax150
+2050,p12005,Nuclear,nuclear_r_fsu,r,fsu,897.658022,From ReEDS case Carbtax150
+2050,p13001,Nuclear,nuclear_r_fsu,r,fsu,1391.535321,From ReEDS case Carbtax150
+2050,p19009,Nuclear,nuclear_r_fsu,r,fsu,980.649577,From ReEDS case Carbtax150
+2047,p17007,Nuclear,nuclear_r_fsu,r,fsu,2181.148789,From ReEDS case Carbtax150
+2050,p17007,Nuclear,nuclear_r_fsu,r,fsu,343.37941,From ReEDS case Carbtax150
+2050,p29003,Nuclear,nuclear_r_fsu,r,fsu,279.940539,From ReEDS case Carbtax150
+2050,p37003,Nuclear,nuclear_r_fsu,r,fsu,2128.309798,From ReEDS case Carbtax150
+2047,p38001,Nuclear,nuclear_r_fsu,r,fsu,624.887402,From ReEDS case Carbtax150
+2050,p38001,Nuclear,nuclear_r_fsu,r,fsu,542.968397,From ReEDS case Carbtax150
+2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,486.706478,From ReEDS case Carbtax150
+2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,694.936091,From ReEDS case Carbtax150
+2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,1561.396399,From ReEDS case Carbtax150
+2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1943.699216,From ReEDS case Carbtax150
+2050,p47001,Nuclear,nuclear_r_fsu,r,fsu,834.663181,From ReEDS case Carbtax150
+2047,p48001,Nuclear,nuclear_r_fsu,r,fsu,7158.485625,From ReEDS case Carbtax150
+2050,p48001,Nuclear,nuclear_r_fsu,r,fsu,2638.593851,From ReEDS case Carbtax150
+2047,p49001,Nuclear,nuclear_r_fsu,r,fsu,180.100239,From ReEDS case Carbtax150
+2050,p49001,Nuclear,nuclear_r_fsu,r,fsu,152.876878,From ReEDS case Carbtax150
+2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,4892.617245,From ReEDS case Carbtax150
+2050,p51003,Nuclear,nuclear_r_fsu,r,fsu,1286.826734,From ReEDS case Carbtax150
+2047,p55003,Nuclear,nuclear_r_fsu,r,fsu,364.45613,From ReEDS case Carbtax150
+2050,p55003,Nuclear,nuclear_r_fsu,r,fsu,1048.81567,From ReEDS case Carbtax150
