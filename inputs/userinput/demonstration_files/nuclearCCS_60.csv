@@ -1,22 +1,22 @@
 t,r,i,coolingwatertech,ctt,wst,value,notes
 2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
 2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
-2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,
-2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,
-2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,1357.951008,
-2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,1096.670591,
-2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,1933.757967,
-2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,898.061472,
-2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,1371.517218,
-2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,306.433952,
-2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,196.485873,
-2047,p10001,Nuclear,nuclear_r_fsu,r,fsu,55.152326,
-2050,p10001,Nuclear,nuclear_r_fsu,r,fsu,373.337591,
-2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,151.833986,
-2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,508.532195,
-2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,895.659084,
-2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1334.472045,
-2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,2138.994964,
+2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case nuclearCCS_60
+2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case nuclearCCS_60
+2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case nuclearCCS_60
+2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case nuclearCCS_60
+2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case nuclearCCS_60
+2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,1357.951008,From ReEDS case nuclearCCS_60
+2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,1096.670591,From ReEDS case nuclearCCS_60
+2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,1933.757967,From ReEDS case nuclearCCS_60
+2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,898.061472,From ReEDS case nuclearCCS_60
+2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,1371.517218,From ReEDS case nuclearCCS_60
+2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,306.433952,From ReEDS case nuclearCCS_60
+2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,196.485873,From ReEDS case nuclearCCS_60
+2047,p10001,Nuclear,nuclear_r_fsu,r,fsu,55.152326,From ReEDS case nuclearCCS_60
+2050,p10001,Nuclear,nuclear_r_fsu,r,fsu,373.337591,From ReEDS case nuclearCCS_60
+2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,151.833986,From ReEDS case nuclearCCS_60
+2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,508.532195,From ReEDS case nuclearCCS_60
+2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,895.659084,From ReEDS case nuclearCCS_60
+2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1334.472045,From ReEDS case nuclearCCS_60
+2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,2138.994964,From ReEDS case nuclearCCS_60

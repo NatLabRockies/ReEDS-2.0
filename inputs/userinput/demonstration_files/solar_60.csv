@@ -1,14 +1,14 @@
 t,r,i,coolingwatertech,ctt,wst,value,notes
 2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
 2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
-2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,
-2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,
-2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,521.950908,
-2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,197.592371,
-2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,1509.183493,
-2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,1215.387106,
-2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,233.025668,
-2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,1771.934438,
+2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case solar_60
+2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case solar_60
+2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case solar_60
+2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case solar_60
+2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case solar_60
+2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,521.950908,From ReEDS case solar_60
+2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,197.592371,From ReEDS case solar_60
+2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,1509.183493,From ReEDS case solar_60
+2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,1215.387106,From ReEDS case solar_60
+2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,233.025668,From ReEDS case solar_60
+2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,1771.934438,From ReEDS case solar_60

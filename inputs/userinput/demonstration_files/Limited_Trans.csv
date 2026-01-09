@@ -1,30 +1,30 @@
 t,r,i,coolingwatertech,ctt,wst,value,notes
 2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
 2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
-2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,
-2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,
-2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,962.095117,
-2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1948.953963,
-2035,p17007,Nuclear,nuclear_r_fsu,r,fsu,1725.333043,
-2038,p8001,Nuclear,nuclear_r_fsu,r,fsu,1841.963105,
-2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,1551.747976,
-2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,2261.560501,
-2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,780.803452,
-2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,712.334902,
-2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,348.716225,
-2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,179.578884,
-2041,p17007,Nuclear,nuclear_r_fsu,r,fsu,167.253984,
-2044,p17007,Nuclear,nuclear_r_fsu,r,fsu,990.497564,
-2041,p36001,Nuclear,nuclear_r_fsu,r,fsu,2614.560236,
-2044,p36001,Nuclear,nuclear_r_fsu,r,fsu,756.583076,
-2047,p10001,Nuclear,nuclear_r_fsu,r,fsu,116.480972,
-2050,p10001,Nuclear,nuclear_r_fsu,r,fsu,327.678759,
-2047,p17007,Nuclear,nuclear_r_fsu,r,fsu,4021.733407,
-2050,p17007,Nuclear,nuclear_r_fsu,r,fsu,1516.542103,
-2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,566.481399,
-2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,511.406662,
-2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,3063.575918,
-2050,p51003,Nuclear,nuclear_r_fsu,r,fsu,135.581816,
+2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Limited_Trans
+2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case Limited_Trans
+2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Limited_Trans
+2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case Limited_Trans
+2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case Limited_Trans
+2047,p36001,Nuclear,nuclear_r_fsu,r,fsu,962.095117,From ReEDS case Limited_Trans
+2050,p36001,Nuclear,nuclear_r_fsu,r,fsu,1948.953963,From ReEDS case Limited_Trans
+2035,p17007,Nuclear,nuclear_r_fsu,r,fsu,1725.333043,From ReEDS case Limited_Trans
+2038,p8001,Nuclear,nuclear_r_fsu,r,fsu,1841.963105,From ReEDS case Limited_Trans
+2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,1551.747976,From ReEDS case Limited_Trans
+2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,2261.560501,From ReEDS case Limited_Trans
+2038,p32001,Nuclear,nuclear_r_fsu,r,fsu,780.803452,From ReEDS case Limited_Trans
+2038,p36001,Nuclear,nuclear_r_fsu,r,fsu,712.334902,From ReEDS case Limited_Trans
+2038,p53007,Nuclear,nuclear_r_fsu,r,fsu,348.716225,From ReEDS case Limited_Trans
+2038,p55003,Nuclear,nuclear_r_fsu,r,fsu,179.578884,From ReEDS case Limited_Trans
+2041,p17007,Nuclear,nuclear_r_fsu,r,fsu,167.253984,From ReEDS case Limited_Trans
+2044,p17007,Nuclear,nuclear_r_fsu,r,fsu,990.497564,From ReEDS case Limited_Trans
+2041,p36001,Nuclear,nuclear_r_fsu,r,fsu,2614.560236,From ReEDS case Limited_Trans
+2044,p36001,Nuclear,nuclear_r_fsu,r,fsu,756.583076,From ReEDS case Limited_Trans
+2047,p10001,Nuclear,nuclear_r_fsu,r,fsu,116.480972,From ReEDS case Limited_Trans
+2050,p10001,Nuclear,nuclear_r_fsu,r,fsu,327.678759,From ReEDS case Limited_Trans
+2047,p17007,Nuclear,nuclear_r_fsu,r,fsu,4021.733407,From ReEDS case Limited_Trans
+2050,p17007,Nuclear,nuclear_r_fsu,r,fsu,1516.542103,From ReEDS case Limited_Trans
+2047,p32001,Nuclear,nuclear_r_fsu,r,fsu,566.481399,From ReEDS case Limited_Trans
+2050,p32001,Nuclear,nuclear_r_fsu,r,fsu,511.406662,From ReEDS case Limited_Trans
+2047,p51003,Nuclear,nuclear_r_fsu,r,fsu,3063.575918,From ReEDS case Limited_Trans
+2050,p51003,Nuclear,nuclear_r_fsu,r,fsu,135.581816,From ReEDS case Limited_Trans
