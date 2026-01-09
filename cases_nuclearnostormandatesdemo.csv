@@ -1,0 +1,26 @@
+,Description,Default Value,base,wind_20,wind_40,wind_60,wind_80,wind_90,solar_20,solar_40,solar_60,solar_80,solar_90,gas_20,gas_40,gas_60,nuclear_40,nuclear_60,nuclear_80,nuclear_90,nuclearCCS_40,nuclearCCS_60,nuclearCCS_80,nuclearCCS_90,Limited_Trans,Carbtax50,Carbtax100,Carbtax150,Carbtax200,Carbcap100,CarbCap95,CarbCap90
+ignore,"0=run this case, 1=ignore this case",0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+timetype,Sequential or Intertemporal,seq,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+plantchar_tes,,tes_ATB_2024_moderate,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+plantchar_nuclear,,nuclear_ATB_2024_moderate,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+plantchar_nuclear_stor,,nuclear_ATB_2024_moderate,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_Nuclear,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearStor,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearStor_Types,,1_2_3_4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearStor_StorageTechs,,tes-ms_tes-ms_tes-ms_tes-ms,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearStor_BCR,,0.25_0.5_0.75_1.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_NuclearDemo,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_demoFile,,base,wind_20,wind_40,wind_60,wind_80,wind_90,solar_20,solar_40,solar_60,solar_80,solar_90,gas_20,gas_40,gas_60,nuclear_40,nuclear_60,nuclear_80,nuclear_90,nuclearCCS_40,nuclearCCS_60,nuclearCCS_80,nuclearCCS_90,Limited_Trans,Carbtax50,Carbtax100,Carbtax150,Carbtax200,Carbcap100,CarbCap95,CarbCap90
+GSw_GenMandate,Turn on/off national Gen Requirement. 2 turns on and applies constraint at busbar.,1,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_GenMandateList,Select technology list for national generation standard (see inputs/national_generation/nat_gen_tech_frac.csv),RE,,Wind,Wind,Wind,Wind,Wind,Solar,Solar,Solar,Solar,Solar,Gas,Gas,Gas,Nuclear,Nuclear,Nuclear,Nuclear,NuclearCCS,NuclearCCS,NuclearCCS,NuclearCCS,,,,,,,,
+GSw_GenMandateScen,Select trajectory for national generation standard (see inputs/national_generation/gen_mandate_trajectory.csv),20,,20,40,60,80,90,20,40,60,80,90,20,40,60,40,60,80,90,40,60,80,90,,,,,,,,
+GSw_NewValCapShrink,switch to shrink valcap and related conditioning sets post-solve,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_PRM_StressIterateMax,Max number of times to iterate on a given solve year to achieve GSw_PRM_StressThreshold when using stress periods (0 means don't iterate; 1 means 1 extra ReEDS run; etc),3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_RegionResolution,,aggreg,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_HierarchyFile,,agg54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_TransInvMaxLongTerm,[TW-mile/year] maximum transmission capacity investment per year IN/AFTER firstyear_trans_longterm (constraint is OFF if set to 0 meaning unlimited trans investment; annual max since 2009 is ~3.64),0,,,,,,,,,,,,,,,,,,,,,,,1.07,,,,,,,
+GSw_TransRestrict,hierarchy level within which to allow new transmission lines,country,,,,,,,,,,,,,,,,,,,,,,,transreg,,,,,,,
+GSw_CarbTax,Turn on/off CO2 tax,0,,,,,,,,,,,,,,,,,,,,,,,,1,1,1,1,,,
+GSw_CarbTaxOption,Choose the co2_tax input csv file (see inputs\emission_constraints),default,,,,,,,,,,,,,,,,,,,,,,,,t050_2050,t100_2050,t150_2050,t200_2050,,,
+GSw_AnnualCap,CO2/CO2e emission cap. Turn off cap (0) or turn on CO2 only cap (1) or turn on CO2e cap (2) or include H2 leakage in CO2e cap (3) ,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1,1
+GSw_AnnualCapScen,Scenario for CO2 cap pathway (see inputs\emission_constraints\co2_cap.csv),default,,,,,,,,,,,,,,,,,,,,,,,,,,,,2050_linear,95_by_2050,90_by_2050
