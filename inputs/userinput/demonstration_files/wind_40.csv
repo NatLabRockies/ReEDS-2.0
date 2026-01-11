@@ -1,9 +1,6 @@
 t,r,i,coolingwatertech,ctt,wst,value,notes
 2033,p56023,nuclear-stor1,nuclear-stor1_r_fsu,r,fsu,345.0,"TerraPower Natrium project; online date from Pacificorp 2025 IRP (https://www.pacificorp.com/content/dam/pcorp/documents/en/pacificorp/energy/integrated-resource-plan/2025-irp/2025_IRP_Vol_1_Utah.pdf, page 147)"
 2030,p48057,nuclear-SMR,nuclear-SMR_r_fsu,r,fsu,320.0,Dow and X-energy project; site moved from WA to TX in 2023; details from https://x-energy.com/seadrift
-2021,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case wind_40
-2018,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case wind_40
-2024,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case wind_40
 2033,p55003,Nuclear,nuclear_r_fsu,r,fsu,1357.949074,From ReEDS case wind_40
 2036,p16009,Nuclear,nuclear_r_fsu,r,fsu,1096.650273,From ReEDS case wind_40
 2036,p17007,Nuclear,nuclear_r_fsu,r,fsu,1933.730249,From ReEDS case wind_40
