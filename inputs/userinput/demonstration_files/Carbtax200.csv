@@ -4,8 +4,6 @@ t,r,i,coolingwatertech,ctt,wst,value,notes
 2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Carbtax200
 2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case Carbtax200
 2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case Carbtax200
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case Carbtax200
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case Carbtax200
 2032,p12005,Nuclear,nuclear_r_fsu,r,fsu,252.715971,From ReEDS case Carbtax200
 2035,p12005,Nuclear,nuclear_r_fsu,r,fsu,581.69009,From ReEDS case Carbtax200
 2032,p19009,Nuclear,nuclear_r_fsu,r,fsu,708.784321,From ReEDS case Carbtax200

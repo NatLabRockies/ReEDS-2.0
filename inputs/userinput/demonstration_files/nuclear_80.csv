@@ -4,8 +4,6 @@ t,r,i,coolingwatertech,ctt,wst,value,notes
 2023,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case nuclear_80
 2020,p47001,Nuclear,nuclear_r_fsu,r,fsu,1122.0,From ReEDS case nuclear_80
 2026,p13001,Nuclear,nuclear_r_fsu,r,fsu,1114.0,From ReEDS case nuclear_80
-2032,p48001,Nuclear,nuclear_r_fsu,r,fsu,320.0,From ReEDS case nuclear_80
-2035,p56003,Nuclear,nuclear_r_fsu,r,fsu,345.0,From ReEDS case nuclear_80
 2035,p55003,Nuclear,nuclear_r_fsu,r,fsu,1357.952521,From ReEDS case nuclear_80
 2038,p16009,Nuclear,nuclear_r_fsu,r,fsu,1096.672773,From ReEDS case nuclear_80
 2038,p17007,Nuclear,nuclear_r_fsu,r,fsu,1933.757934,From ReEDS case nuclear_80
