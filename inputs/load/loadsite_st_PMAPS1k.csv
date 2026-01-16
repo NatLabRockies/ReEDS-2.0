@@ -1,0 +1,31 @@
+# Other region hierarchy levels can be used in the first column,,
+# but they can only be used with a matching GSw_LoadSiteReg.,,
+# So this file would need GSw_LoadSiteReg = country.,,
+# If using smaller levels then multiple entries can be provided on different rows,,
+# (e.g. for state- or ISO-specific load across multiple states/ISOs).,,
+*loadsitereg,t,MW
+UT,2026,0
+UT,2027,0
+UT,2028,0
+UT,2029,1000
+UT,2030,1000
+UT,2031,1000
+UT,2032,1000
+UT,2033,1000
+UT,2034,1000
+UT,2035,1000
+UT,2036,1000
+UT,2037,1000
+UT,2038,1000
+UT,2039,1000
+UT,2040,1000
+UT,2041,1000
+UT,2042,1000
+UT,2043,1000
+UT,2044,1000
+UT,2045,1000
+UT,2046,1000
+UT,2047,1000
+UT,2048,1000
+UT,2049,1000
+UT,2050,1000
