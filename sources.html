@@ -108,12 +108,6 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#hourlize"><span class="xref myst">hourlize</span></a></p>
 <ul>
-<li><p><a class="reference internal" href="#hourlize-eer-to-reeds"><span class="xref myst">eer_to_reeds</span></a></p>
-<ul>
-<li><p><a class="reference internal" href="#hourlize-eer-to-reeds-eer-load-participation-factors"><span class="xref myst">eer_load_participation_factors</span></a></p></li>
-<li><p><a class="reference internal" href="#hourlize-eer-to-reeds-eer-splice"><span class="xref myst">eer_splice</span></a></p></li>
-</ul>
-</li>
 <li><p><a class="reference internal" href="#hourlize-inputs"><span class="xref myst">inputs</span></a></p>
 <ul>
 <li><p><a class="reference internal" href="#hourlize-inputs-load"><span class="xref myst">load</span></a></p></li>
@@ -247,8 +241,7 @@
 <ul>
 <li><p><a class="reference internal" href="#reeds2pras-test-reeds-cases"><span class="xref myst">reeds_cases</span></a></p>
 <ul>
-<li><p><a class="reference internal" href="#reeds2pras-test-reeds-cases-pacific"><span class="xref myst">Pacific</span></a></p></li>
-<li><p><a class="reference internal" href="#reeds2pras-test-reeds-cases-usa-vsc-2035"><span class="xref myst">USA_VSC_2035</span></a></p></li>
+<li><p><a class="reference internal" href="#reeds2pras-test-reeds-cases-test"><span class="xref myst">test</span></a></p></li>
 </ul>
 </li>
 </ul>
@@ -336,74 +329,22 @@
 <p><a id='hourlize'></a></p>
 <section id="hourlize">
 <h3>hourlize<a class="headerlink" href="#hourlize" title="Link to this heading"></a></h3>
-<p><a id='hourlize-eer-to-reeds'></a></p>
-<section id="hourlize-eer-to-reeds">
-<h4>hourlize/eer_to_reeds<a class="headerlink" href="#hourlize-eer-to-reeds" title="Link to this heading"></a></h4>
-<p><a id='hourlize-eer-to-reeds-eer-load-participation-factors'></a></p>
-<section id="hourlize-eer-to-reeds-eer-load-participation-factors">
-<h5>hourlize/eer_to_reeds/eer_load_participation_factors<a class="headerlink" href="#hourlize-eer-to-reeds-eer-load-participation-factors" title="Link to this heading"></a></h5>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/eer_to_reeds/eer_load_participation_factors/ba_state_map.csv">ba_state_map.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<p><a id='hourlize-eer-to-reeds-eer-splice'></a></p>
-</section>
-<section id="hourlize-eer-to-reeds-eer-splice">
-<h5>hourlize/eer_to_reeds/eer_splice<a class="headerlink" href="#hourlize-eer-to-reeds-eer-splice" title="Link to this heading"></a></h5>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/eer_to_reeds/eer_splice/ba_timezone.csv">ba_timezone.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/eer_to_reeds/eer_splice/dummy_agg_op_datacenters.csv">dummy_agg_op_datacenters.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/eer_to_reeds/eer_splice/load_factors.csv">load_factors.csv</a></p></li>
-</ul>
-<hr class="docutils" />
 <p><a id='hourlize-inputs'></a></p>
-</section>
-</section>
 <section id="hourlize-inputs">
 <h4>hourlize/inputs<a class="headerlink" href="#hourlize-inputs" title="Link to this heading"></a></h4>
 <p><a id='hourlize-inputs-load'></a></p>
 <section id="hourlize-inputs-load">
 <h5>hourlize/inputs/load<a class="headerlink" href="#hourlize-inputs-load" title="Link to this heading"></a></h5>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/ba_timezone.csv">ba_timezone.csv</a></p>
-<ul>
-<li><p><strong>Description:</strong> Contains timezone information for BAs with respect to GMT.</p></li>
-<li><p><strong>Indices:</strong> r</p></li>
-</ul>
-</li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/dummy_agg_op_datacenters.csv">dummy_agg_op_datacenters.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/EIA_2010loadbystate.csv">EIA_2010loadbystate.csv</a></p>
-<ul>
-<li><p><strong>Description:</strong> Contains 2010 EIA load information (GWh) with respect to each state in the US.</p></li>
-<li><p><strong>Indices:</strong> r</p></li>
-</ul>
-</li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/legacy_ba_state_map.csv">legacy_ba_state_map.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/EIA_loadbystate.csv">EIA_loadbystate.csv</a></p>
-<ul>
-<li><p><strong>Description:</strong> Contains historical (2010-2022) EIA load information (GWh) with respect to each state in the US.</p></li>
-<li><p><strong>Indices:</strong> t,r</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/load_participation_factors_st_to_ba.csv">load_participation_factors_st_to_ba.csv</a></p>
-<ul>
-<li><p><strong>Description:</strong> Contains load participation factors for each of the BAs</p></li>
-<li><p><strong>Indices:</strong> r</p></li>
-</ul>
-</li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/load/legacy_ba_timezone.csv">legacy_ba_timezone.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <p><a id='hourlize-inputs-resource'></a></p>
@@ -412,15 +353,6 @@
 <h5>hourlize/inputs/resource<a class="headerlink" href="#hourlize-inputs-resource" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/resource/egs_resource_classes.csv">egs_resource_classes.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/hourlize/inputs/resource/fair_market_value.csv">fair_market_value.csv</a></p>
-<ul>
-<li><p><strong>Description:</strong> Contains estimates of fair market land value in $ per hectare for each reV supply curve site</p></li>
-<li><p><strong>Citation:</strong> Provided by Anthony Lopez in June 2023</p></li>
-</ul>
-</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
@@ -1720,30 +1652,6 @@
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/consume/h2_storage_ba.csv">h2_storage_ba.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> Inputs</p></li>
-<li><p><strong>Description:</strong> Cheapest H2 storage type that exists in each ReEDS BA. Storage locations come from https://www.sciencedirect.com/science/article/pii/S0360319914021223.</p></li>
-<li><p><strong>Indices:</strong> r</p></li>
-<li><p><strong>Dollar year:</strong> N/A</p></li>
-<li><p><strong>Citation:</strong> N/A</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/consume/h2_storage_county.csv">h2_storage_county.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> Inputs</p></li>
-<li><p><strong>Description:</strong> Cheapest H2 storage type that exists in each county. Storage locations come from https://www.sciencedirect.com/science/article/pii/S0360319914021223.</p></li>
-<li><p><strong>Indices:</strong> r</p></li>
-<li><p><strong>Dollar year:</strong> N/A</p></li>
-<li><p><strong>Citation:</strong> N/A</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/consume/h2_transport_and_storage_costs.csv">h2_transport_and_storage_costs.csv</a></p>
 <ul>
 <li><p><strong>File Type:</strong> Inputs</p></li>
@@ -1769,14 +1677,6 @@
 <hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/ctus/cs.csv">cs.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/ctus/r_cs.csv">r_cs.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/ctus/r_cs_distance_mi.csv">r_cs_distance_mi.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <p><a id='inputs-degradation'></a></p>
@@ -1963,6 +1863,10 @@
 </ul>
 <hr class="docutils" />
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/disaggregation/county_state_lpf.csv">county_state_lpf.csv</a></p></li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/disaggregation/disagg_hydroexist.csv">disagg_hydroexist.csv</a></p>
 <ul>
 <li><p><strong>Description:</strong> The hydropower capacity fraction of each county within a given ReEDS BA, used as multipliers for downselecting data</p></li>
@@ -2018,7 +1922,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/emission_constraints/emitrate.csv">emitrate.csv</a></p>
 <ul>
-<li><p><strong>Description:</strong> Emition rates for thermal generator for SO2, NOx, and CO2</p></li>
+<li><p><strong>Description:</strong> Emition rates for thermal generators with values from Table 5 of https://docs.nrel.gov/docs/fy25osti/93005.pdf</p></li>
 <li><p><strong>Indices:</strong> i,e</p></li>
 </ul>
 </li>
@@ -2183,12 +2087,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/financials/nuclear_energy_communities.csv">nuclear_energy_communities.csv</a></p>
 <ul>
-<li><p><strong>File Type:</strong>  LLNL</p></li>
-<li><p><strong>Description:</strong> Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL</p></li>
-<li><p><strong>Indices:</strong>  INL</p></li>
-<li><p><strong>Dollar year:</strong>  ORNL</p></li>
-<li><p><strong>Citation:</strong>  SNL</p></li>
-<li><p><strong>Units:</strong>  Argonne</p></li>
+<li><p><strong>Description:</strong> “Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL, INL, ORNL, SNL, LLNL, Argonne, and LANL) has been at least 0.17 percent of the MSA’s total employment at any point since 2010.”</p></li>
 </ul>
 </li>
 </ul>
@@ -2722,19 +2621,57 @@
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_high.csv">demand_AEO_2023_high.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_high.csv">demand_AEO_2023_high.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2023 High Economic Growth scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_low.csv">demand_AEO_2023_low.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_low.csv">demand_AEO_2023_low.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2023 Low Economic Growth scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_reference.csv">demand_AEO_2023_reference.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2023_reference.csv">demand_AEO_2023_reference.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2023 Reference scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_flat_2020_onward.csv">demand_flat_2020_onward.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2025_high.csv">demand_AEO_2025_high.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2025 High Economic Growth scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2025_low.csv">demand_AEO_2025_low.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2025 Low Economic Growth scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/demand_AEO_2025_reference.csv">demand_AEO_2025_reference.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Load growth projection from the AEO2025 Reference scenario</p></li>
+<li><p><strong>Units:</strong> unitless</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
@@ -2763,6 +2700,10 @@
 <hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/EER_IRAmoderate_v2023_load_hourly.h5">EER_IRAmoderate_v2023_load_hourly.h5</a></p></li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/load/EIA_loadbystate.csv">EIA_loadbystate.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
@@ -3947,14 +3888,6 @@
 <section id="inputs-shapefiles">
 <h4>inputs/shapefiles<a class="headerlink" href="#inputs-shapefiles" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/shapefiles/ctus_cs_polygons_BVRE.csv">ctus_cs_polygons_BVRE.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/shapefiles/ctus_r_cs_spurlines_200mi.csv">ctus_r_cs_spurlines_200mi.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/shapefiles/r_rr_lines_to_25_nearest_neighbors.csv">r_rr_lines_to_25_nearest_neighbors.csv</a></p></li>
 </ul>
 <hr class="docutils" />
@@ -4075,8 +4008,9 @@
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/state_policies/offshore_req_default.csv">offshore_req_default.csv</a></p>
 <ul>
 <li><p><strong>File Type:</strong> Inputs</p></li>
-<li><p><strong>Description:</strong> default state mandates of offshore wind capacity</p></li>
+<li><p><strong>Description:</strong> default state mandates of offshore wind capacity, updated in November 2025</p></li>
 <li><p><strong>Indices:</strong> st,allt</p></li>
+<li><p><strong>Units:</strong> MW</p></li>
 </ul>
 </li>
 </ul>
@@ -4559,51 +4493,100 @@
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_csp-reference.csv">supplycurve_csp-reference.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_egs-reference.csv">supplycurve_egs-reference.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_geohydro-reference.csv">supplycurve_geohydro-reference.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-limited.csv">supplycurve_upv-limited.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> UPV supply curve from reV for the limited siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+<li><p><strong>Units:</strong> capacity numbers are in MW_DC and cost numbers are in $/MW_AC</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-limited.csv">supplycurve_upv-limited.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-open.csv">supplycurve_upv-open.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> UPV supply curve from reV for the open siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+<li><p><strong>Units:</strong> capacity numbers are in MW_DC and cost numbers are in $/MW_AC</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-open.csv">supplycurve_upv-open.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-reference.csv">supplycurve_upv-reference.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> UPV supply curve from reV for the reference siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+<li><p><strong>Units:</strong> capacity numbers are in MW_DC and cost numbers are in $/MW_AC</p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_upv-reference.csv">supplycurve_upv-reference.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-limited.csv">supplycurve_wind-ofs-limited.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Offshore sind supply curve from reV for the limited siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-limited.csv">supplycurve_wind-ofs-limited.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-open.csv">supplycurve_wind-ofs-open.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Offshore wind supply curve from reV for the open siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-open.csv">supplycurve_wind-ofs-open.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-reference.csv">supplycurve_wind-ofs-reference.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Offshore wind supply curve from reV for the reference siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ofs-reference.csv">supplycurve_wind-ofs-reference.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-limited.csv">supplycurve_wind-ons-limited.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Land-based wind supply curve from reV for the limited siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-limited.csv">supplycurve_wind-ons-limited.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-open.csv">supplycurve_wind-ons-open.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Land-based wind supply curve from reV for the open siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
+</ul>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-open.csv">supplycurve_wind-ons-open.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-reference.csv">supplycurve_wind-ons-reference.csv</a></p>
+<ul>
+<li><p><strong>Description:</strong> Land-based wind supply curve from reV for the reference siting scenario</p></li>
+<li><p><strong>Dollar year:</strong> specified in inputs/supply_curve/dollaryear.csv</p></li>
+<li><p><strong>Citation:</strong> <a class="reference external" href="https://docs.nrel.gov/docs/fy25osti/91900.pdf">https://docs.nrel.gov/docs/fy25osti/91900.pdf</a></p></li>
 </ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/supply_curve/supplycurve_wind-ons-reference.csv">supplycurve_wind-ons-reference.csv</a></p></li>
+</li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
@@ -4689,46 +4672,6 @@
 <ul>
 <li><p><strong>File Type:</strong> inputs</p></li>
 <li><p><strong>Description:</strong> Future transmission capacity additions for the LCC_all case at BA resolution</p></li>
-<li><p><strong>Indices:</strong> r,rr</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD2b.csv">transmission_capacity_future_ba_LCC_SeamsD2b.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> inputs</p></li>
-<li><p><strong>Description:</strong> Future transmission capacity additions for the LCC_SeamsD2B case at BA resolution</p></li>
-<li><p><strong>Indices:</strong> r,rr</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_certain.csv">transmission_capacity_future_ba_LCC_SeamsD3_certain.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> inputs</p></li>
-<li><p><strong>Description:</strong> Future transmission capacity additions for the LCC_SeamsD3_certain case at BA resolution</p></li>
-<li><p><strong>Indices:</strong> r,rr</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_possible.csv">transmission_capacity_future_ba_LCC_SeamsD3_possible.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> inputs</p></li>
-<li><p><strong>Description:</strong> Future transmission capacity additions for the LCC_SeamsD3_possible case at BA resolution</p></li>
-<li><p><strong>Indices:</strong> r,rr</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_possible_unconstrained.csv">transmission_capacity_future_ba_LCC_SeamsD3_possible_unconstrained.csv</a></p>
-<ul>
-<li><p><strong>File Type:</strong> inputs</p></li>
-<li><p><strong>Description:</strong> Future transmission capacity additions for the LCC_SeamsD3_possible_unconstrained case at BA resolution</p></li>
 <li><p><strong>Indices:</strong> r,rr</p></li>
 </ul>
 </li>
@@ -5074,14 +5017,6 @@
 <section id="inputs-variability-multi-year">
 <h5>inputs/variability/multi_year<a class="headerlink" href="#inputs-variability-multi-year" title="Link to this heading"></a></h5>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/variability/multi_year/csp-none_ba.h5">csp-none_ba.h5</a></p>
-<ul>
-<li><p><strong>Description:</strong> Concentrated Solar Power resource supply curve. Data is a capacity factor i.e. a fraction.</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/variability/multi_year/distpv-reference_ba.h5">distpv-reference_ba.h5</a></p>
 <ul>
 <li><p><strong>File Type:</strong> Resource supply curve</p></li>
@@ -5126,30 +5061,6 @@
 <ul>
 <li><p><strong>File Type:</strong> Resource supply curve</p></li>
 <li><p><strong>Description:</strong> Utility scale photovoltaics resource supply curve using Reference access assumptions. Data is a capacity factor i.e. a fraction.</p></li>
-<li><p><strong>Indices:</strong> v,r,t</p></li>
-<li><p><strong>Dollar year:</strong> N/A</p></li>
-<li><p><strong>Citation:</strong> N/A</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/variability/multi_year/upv_140AC-reference_ba.h5">upv_140AC-reference_ba.h5</a></p>
-<ul>
-<li><p><strong>File Type:</strong> Resource supply curve</p></li>
-<li><p><strong>Description:</strong> Utility scale photovoltaics resource supply curve (AC, using a 1.40 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.</p></li>
-<li><p><strong>Indices:</strong> v,r,t</p></li>
-<li><p><strong>Dollar year:</strong> N/A</p></li>
-<li><p><strong>Citation:</strong> N/A</p></li>
-</ul>
-</li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/inputs/variability/multi_year/upv_220AC-reference_ba.h5">upv_220AC-reference_ba.h5</a></p>
-<ul>
-<li><p><strong>File Type:</strong> Resource supply curve</p></li>
-<li><p><strong>Description:</strong> Utility scale photovoltaics resource supply curve (AC, using a 2.20 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.</p></li>
 <li><p><strong>Indices:</strong> v,r,t</p></li>
 <li><p><strong>Dollar year:</strong> N/A</p></li>
 <li><p><strong>Citation:</strong> N/A</p></li>
@@ -5694,163 +5605,103 @@
 <p><a id='reeds2pras-test-reeds-cases'></a></p>
 <section id="reeds2pras-test-reeds-cases">
 <h5>reeds2pras/test/reeds_cases<a class="headerlink" href="#reeds2pras-test-reeds-cases" title="Link to this heading"></a></h5>
-<p><a id='reeds2pras-test-reeds-cases-pacific'></a></p>
-<section id="reeds2pras-test-reeds-cases-pacific">
-<h6>reeds2pras/test/reeds_cases/Pacific<a class="headerlink" href="#reeds2pras-test-reeds-cases-pacific" title="Link to this heading"></a></h6>
-<p><a id='reeds2pras-test-reeds-cases-pacific-inputs-case'></a></p>
+<p><a id='reeds2pras-test-reeds-cases-test'></a></p>
+<section id="reeds2pras-test-reeds-cases-test">
+<h6>reeds2pras/test/reeds_cases/test<a class="headerlink" href="#reeds2pras-test-reeds-cases-test" title="Link to this heading"></a></h6>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/cases_reeds2pras.csv">cases_reeds2pras.csv</a></p></li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/meta.csv">meta.csv</a></p></li>
+</ul>
+<hr class="docutils" />
+<p><a id='reeds2pras-test-reeds-cases-test-inputs-case'></a></p>
 </section>
-<section id="reeds2pras-test-reeds-cases-pacific-inputs-case">
-<h6>reeds2pras/test/reeds_cases/Pacific/inputs_case<a class="headerlink" href="#reeds2pras-test-reeds-cases-pacific-inputs-case" title="Link to this heading"></a></h6>
+<section id="reeds2pras-test-reeds-cases-test-inputs-case">
+<h6>reeds2pras/test/reeds_cases/test/inputs_case<a class="headerlink" href="#reeds2pras-test-reeds-cases-test-inputs-case" title="Link to this heading"></a></h6>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/hydcf.csv">hydcf.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/hydcapadj.csv">hydcapadj.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_forced_hourly.h5">outage_forced_hourly.h5</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/hydcf.csv">hydcf.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_forced_static.csv">outage_forced_static.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/mttr.csv">mttr.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_scheduled_hourly.h5">outage_scheduled_hourly.h5</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/outage_forced_hourly.h5">outage_forced_hourly.h5</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_scheduled_static.csv">outage_scheduled_static.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/outage_forced_static.csv">outage_forced_static.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/resources.csv">resources.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/outage_scheduled_hourly.h5">outage_scheduled_hourly.h5</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/tech-subset-table.csv">tech-subset-table.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/resources.csv">resources.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/unitdata.csv">unitdata.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/tech-subset-table.csv">tech-subset-table.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/unitsize.csv">unitsize.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/unitdata.csv">unitdata.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/inputs_case/upgrade_link.csv">upgrade_link.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/inputs_case/unitsize.csv">unitsize.csv</a></p></li>
 </ul>
 <hr class="docutils" />
-<p><a id='reeds2pras-test-reeds-cases-pacific-reeds-augur'></a></p>
+<p><a id='reeds2pras-test-reeds-cases-test-reeds-augur'></a></p>
 </section>
-<section id="reeds2pras-test-reeds-cases-pacific-reeds-augur">
-<h6>reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur<a class="headerlink" href="#reeds2pras-test-reeds-cases-pacific-reeds-augur" title="Link to this heading"></a></h6>
-<p><a id='reeds2pras-test-reeds-cases-pacific-reeds-augur-augur-data'></a></p>
+<section id="reeds2pras-test-reeds-cases-test-reeds-augur">
+<h6>reeds2pras/test/reeds_cases/test/ReEDS_Augur<a class="headerlink" href="#reeds2pras-test-reeds-cases-test-reeds-augur" title="Link to this heading"></a></h6>
+<p><a id='reeds2pras-test-reeds-cases-test-reeds-augur-augur-data'></a></p>
 </section>
-<section id="reeds2pras-test-reeds-cases-pacific-reeds-augur-augur-data">
-<h6>reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data<a class="headerlink" href="#reeds2pras-test-reeds-cases-pacific-reeds-augur-augur-data" title="Link to this heading"></a></h6>
+<section id="reeds2pras-test-reeds-cases-test-reeds-augur-augur-data">
+<h6>reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data<a class="headerlink" href="#reeds2pras-test-reeds-cases-test-reeds-augur-augur-data" title="Link to this heading"></a></h6>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/cap_converter_2032.csv">cap_converter_2032.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/cap_converter_2035.csv">cap_converter_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/energy_cap_2032.csv">energy_cap_2032.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/charge_eff_2035.csv">charge_eff_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/max_cap_2032.csv">max_cap_2032.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/discharge_eff_2035.csv">discharge_eff_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/pras_load_2032.h5">pras_load_2032.h5</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/energy_cap_2035.csv">energy_cap_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/pras_vre_gen_2032.h5">pras_vre_gen_2032.h5</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/max_cap_2035.csv">max_cap_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/tran_cap_2032.csv">tran_cap_2032.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<p><a id='reeds2pras-test-reeds-cases-usa-vsc-2035'></a></p>
-</section>
-<section id="reeds2pras-test-reeds-cases-usa-vsc-2035">
-<h6>reeds2pras/test/reeds_cases/USA_VSC_2035<a class="headerlink" href="#reeds2pras-test-reeds-cases-usa-vsc-2035" title="Link to this heading"></a></h6>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/cases_USA_VSC_2035.csv">cases_USA_VSC_2035.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/max_unitsize_2035.csv">max_unitsize_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/meta.csv">meta.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<p><a id='reeds2pras-test-reeds-cases-usa-vsc-2035-inputs-case'></a></p>
-</section>
-<section id="reeds2pras-test-reeds-cases-usa-vsc-2035-inputs-case">
-<h6>reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case<a class="headerlink" href="#reeds2pras-test-reeds-cases-usa-vsc-2035-inputs-case" title="Link to this heading"></a></h6>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/forcedoutage_hourly.h5">forcedoutage_hourly.h5</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/pras_load_2035.h5">pras_load_2035.h5</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/hydcf.csv">hydcf.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/pras_vre_gen_2035.h5">pras_vre_gen_2035.h5</a></p></li>
 </ul>
 <hr class="docutils" />
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/outage_forced_static.csv">outage_forced_static.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/resources.csv">resources.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/tech-subset-table.csv">tech-subset-table.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/unitdata.csv">unitdata.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/unitsize.csv">unitsize.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/upgrade_link.csv">upgrade_link.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<p><a id='reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur'></a></p>
-</section>
-<section id="reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur">
-<h6>reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur<a class="headerlink" href="#reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur" title="Link to this heading"></a></h6>
-<p><a id='reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur-augur-data'></a></p>
-</section>
-<section id="reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur-augur-data">
-<h6>reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data<a class="headerlink" href="#reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur-augur-data" title="Link to this heading"></a></h6>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/cap_converter_2035.csv">cap_converter_2035.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/energy_cap_2035.csv">energy_cap_2035.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/max_cap_2035.csv">max_cap_2035.csv</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/pras_load_2035.h5">pras_load_2035.h5</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/pras_vre_gen_2035.h5">pras_vre_gen_2035.h5</a></p></li>
-</ul>
-<hr class="docutils" />
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/tran_cap_2035.csv">tran_cap_2035.csv</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NREL/ReEDS-2.0/blob/main/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/tran_cap_2035.csv">tran_cap_2035.csv</a></p></li>
 </ul>
 <hr class="docutils" />
 <p><a id='reeds-augur'></a></p>
@@ -6000,7 +5851,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on November 25, 2025.
+      <span class="lastupdated">Last updated on January 29, 2026.
       </span></p>
   </div>
 

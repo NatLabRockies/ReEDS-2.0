@@ -27,7 +27,8 @@
       - So if you want to use the example period:szn map, just set `GSw_HourlyClusterAlgorithm=user`.
       - If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/variability/period_szn_user.csv with a unique scenario name in the 'scenario' column, and set `GSw_HourlyClusterAlgorithm` to your unique scenario name, *which must contain the substring 'user'*. (For example, I could use a mapping called 'user_myname_20230130' by adding my period:szn map to inputs/variability/period_szn_user.csv with 'user_myname_20230130' in the 'scenario' column and setting `GSw_HourlyClusterAlgorithm=user_myname_20230130`.)
       - Make sure the settings for `GSw_HourlyType` and `GSw_HourlyWeatherYears` match your user-defined map. For example, if your 'user_myname_20230130' map includes 365 representative days for weather year 2012, then set `GSw_HourlyType=day` and `GSw_HourlyWeatherYears=2012`.
-      - You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods. More detail can be found [here](https://pages.github.nrel.gov/ReEDS/ReEDS-2.0/postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py) 
+      - You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods.
+      More detail can be found in the <a href="postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py">postprocessing tools</a> guide.
 
 - `GSw_PRM_StressThreshold`: The default setting of 'transgrp_10_EUE_sum' means a threshold of "**10** ppm NEUE in each **transgrp**", with stress periods selected by the daily **sum** of **EUE** within each **transgrp**.
   - The first argument can be selected from ['country', 'interconnect', 'nercr', 'transreg', 'transgrp', 'st', 'r'] and specifies the hierarchy level within which to compare RA performance against the threshold.
@@ -47,48 +48,51 @@
 
 
 ## Hourly Resolution
+
 The model can be run at hourly resolution using the following switch settings:
-* `GSw_Hourly = 1`
-  * Turn on hourly resolution
-* `GSw_Canada = 2`
-  * Turn on hourly resolution for Canadian imports/exports
-* `GSw_AugurCurtailment = 0`
-  * Turn off the Augur calculation of curtailment
-* `GSw_StorageArbitrageMult = 0`
-  * Turn off the Augur calculation of storage arbitrage value
-* `GSw_Storage_in_Min = 0`
-  * Turn off the Augur calculation of storage charging
-* `capcredit_szn_hours = 3`
-  * The current default hourly representation is 18 representative 5-day weeks. Each representative period is treated as a 'season' and is thus active in the planning-reserve margin constraint. In h17 ReEDS we set `capcredit_szn_hours = 10`, giving 40 total hours considered for planning reserves (the top 10 hours in each of the 4 quarterly seasons). 18 'seasons' with 10 hours each would give 180 hours, so we switch to 3 hours per 'season' (for 54 hours total).
+
+- `GSw_Hourly = 1`
+  - Turn on hourly resolution
+- `GSw_Canada = 2`
+  - Turn on hourly resolution for Canadian imports/exports
+- `GSw_AugurCurtailment = 0`
+  - Turn off the Augur calculation of curtailment
+- `GSw_StorageArbitrageMult = 0`
+  - Turn off the Augur calculation of storage arbitrage value
+- `GSw_Storage_in_Min = 0`
+  - Turn off the Augur calculation of storage charging
+- `capcredit_szn_hours = 3`
+  - The current default hourly representation is 18 representative 5-day weeks. Each representative period is treated as a 'season' and is thus active in the planning-reserve margin constraint. In h17 ReEDS we set `capcredit_szn_hours = 10`, giving 40 total hours considered for planning reserves (the top 10 hours in each of the 4 quarterly seasons). 18 'seasons' with 10 hours each would give 180 hours, so we switch to 3 hours per 'season' (for 54 hours total).
 
 To further reduce solve time, you can make the following changes:
-* `yearset_suffix = fiveyear`
-  * Solve in 5-year steps
-* `GSw_OpRes = 0`
-  * Turn off operating reserves
-* `GSw_MinLoading = 0`
-  * Turn off the sliding-window representation of minimum-generation limits
-* `GSw_PVB = 0`
-  * Turn off PV-battery hybrids
-* `GSw_calc_powfrac = 0`
-  * Turn off a post-processing calculation of power flows
+
+- `yearset_suffix = fiveyear`
+  - Solve in 5-year steps
+- `GSw_OpRes = 0`
+  - Turn off operating reserves
+- `GSw_MinLoading = 0`
+  - Turn off the sliding-window representation of minimum-generation limits
+- `GSw_PVB = 0`
+  - Turn off PV-battery hybrids
+- `GSw_calc_powfrac = 0`
+  - Turn off a post-processing calculation of power flows
 
 
 
 ## Electricity Demand Profiles
 
-### Switch options for GSw_EFS1_AllYearLoad
+### Switch options for GSw_LoadProfiles
 
 These files are stored in `inputs/load/{switch_name}_load_hourly.h5`.
 
 | Switch Name    | Description of Profile | Origin | Weather year included |
 | ------------- | ------------- | ------------- | ------------- |
-| historic | Detrended historic demand from 2007-2013 and 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team from a compilation of data sources. More detail can be found [here](https://github.nrel.gov/ReEDS/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme) and in [PR 1601](https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1601). | 2007-2013 & 2016-2023 |
+| historic | Detrended historic demand from 2007-2013 and 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team from a compilation of data sources. More detail can be found in the [hourlize readme](https://github.com/NREL/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme). | 2007-2013 & 2016-2023 |
 | Clean2035_LTS | Net-zero emissions, economy wide, by 2050 based on the White House's Long Term Strategy as shown here: <https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf> | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
 | Clean2035    | Accelerated Demand Electrification (ADE) profile. This profile was custom made for the 100% Clean Electricity by 2035 study. More information about how it was formed can be found in <https://www.nrel.gov/docs/fy22osti/81644.pdf> Appendix C. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
 | Clean2035clip1pct | Same as Clean2035 but clips off the top 1% of load hours. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
 | EPHIGH | Features a combination of technology advancements, policy support and consumer enthusiasm that enables transformational change in electrification.   | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
-| EPMEDIUMStretch2046 | An average of the EPMEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA. | NREL researchers combined the EPMEDIUM profile and the AEO reference trajectory. |  2007-2013 |
+| EPMEDIUMStretch2046 | An average of the EPMEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA. | NLR researchers combined the EPMEDIUM profile and the AEO reference trajectory. |  2007-2013 |
 | EPMEDIUM | Features a future with widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps and select industrial applications, but one that does not result in transformational change. | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
 | EPREFERENCE | Features the least incremental change in electrification through 2050, which serves as a baseline of comparison to the other scenarios.| Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
 | EER_Baseline_AEO2022_v2023  | Business as usual load growth. Based on the service demand projections from AEO 2022. This does not include the impacts of the Inflation Reduction Act.   | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in [EER's 2022 Annual Decarbonization Report](https://www.evolved.energy/post/adp2022). This is the "Baseline" scenario in EER's 2022 ADP. | 2007-2013 |
@@ -102,21 +106,22 @@ These files are stored in `inputs/load/{switch_name}_load_hourly.h5`.
 
 ### Resources for more info about ReEDS's load profiles
 
-- [Standard Scenarios 2024](https://docs.nrel.gov/docs/fy25osti/92256.pdf) has a appendix that synthesizes what is included in these demand profiles in more detail. See pg 37-45 for more information. Note that this describes the previous batch of EER profiles from June 2023; however, the high level trends will be largely consistent between the previous and current profiles.  
+- [Standard Scenarios 2024](https://docs.nrel.gov/docs/fy25osti/92256.pdf) has a appendix that synthesizes what is included in these demand profiles in more detail. See pg 37-45 for more information. Note that this describes the previous batch of EER profiles from June 2023; however, the high level trends will be largely consistent between the previous and current profiles.
 - [ADP 2024's Technical Documentation](https://www.evolved.energy/us-adp-2024) lists many of their underlying stock assumptions.
 - [EER's docs page](https://energypathways.readthedocs.io/en/latest/) if you want a deeper look into their modeling.
 
 
 ### Different weather years
 
-For EER’s load profiles, “weather” includes everything considered by NREL's [ResStock](https://resstock.nrel.gov/) and [ComStock](https://comstock.nrel.gov/) building models (i.e., temperature, humidity, insolation, and wind speed). This information gets translated into variations in load through regressions and benchmarking with historical system load data for the weather year in question.
+For EER’s load profiles, “weather” includes everything considered by NLR's [ResStock](https://resstock.nrel.gov/) and [ComStock](https://comstock.nrel.gov/) building models (i.e., temperature, humidity, insolation, and wind speed). This information gets translated into variations in load through regressions and benchmarking with historical system load data for the weather year in question.
 
 ### Demand Response
 
 Demand response is turned off by default. To enable it the following switches are needed:
-  - `GSw_DRShed`: turns on/off the demand response resource
-  - `GSw_MaxDailyCF` : turns on/off daily maximum capacity factor constraint
-  - `dr_shedscen`: scenario to define which scalars will be used for the supply curve cost and capacity
+
+- `GSw_DRShed`: turns on/off the demand response resource
+- `GSw_MaxDailyCF` : turns on/off daily maximum capacity factor constraint
+- `dr_shedscen`: scenario to define which scalars will be used for the supply curve cost and capacity
 
 ## Hydrogen inputs
 
@@ -126,14 +131,14 @@ Most hydrogen input files are in the `inputs/consume/` folder.
 
 Contains cost and performance assumption for electrolyzers and steam-methane reformer.
 
-Electrolyzer capital cost assumptions are based on the Pathways to Commercial Liftoff: Clean Hydrogen Report (<https://liftoff.energy.gov/wp-content/uploads/2023/05/20230320-Liftoff-Clean-H2-vPUB-0329-update.pdf>) [see values in the footnotes of Figure 3 on page 14].
+Electrolyzer capital cost assumptions are based on the [Pathways to Commercial Liftoff: Clean Hydrogen Report](https://h2fcp.org/system/files/cafcp_members/2024%20DOE%20Pathways%20to%20Commercial%20Liftoff%20-%20Clean%20Hydrogen.pdf) [see values in the footnotes of Figure 3 on page 14].
 The reference scenario assumes linearly decline from 1750 $/kW in 2022 to 550 $/kW in 2030, and then remain constant after.
 The low cost scenario assumes further declines from 2030 to 2050.
 
 Fixed O&M values are assumed to be 5% of CAPEX (source: <https://iopscience.iop.org/article/10.1088/1748-9326/acacb5>)
 
-Electrolyzer performance (efficiency) as well as SMR cost and performance assumptions are derived from assumptions H2A: Hydrogen Analysis Production Models (<https://www.nrel.gov/hydrogen/h2a-production-models.html>), with guidance from Paige Jadun.
-See original input assumptions in the ReEDS-2.0_Input_Processing repo: <https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/costs/H2ProductionCosts-20210414.xlsx>.
+Electrolyzer performance (efficiency) as well as SMR cost and performance assumptions are derived from assumptions [H2A: Hydrogen Analysis Production Models](https://www.nrel.gov/hydrogen/h2a-production-models.html), with guidance from Paige Jadun.
+See original input assumptions in the [ReEDS-2.0_Input_Processing repo](https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/costs/H2ProductionCosts-20210414.xlsx).
 
 Note that SMR costs are currently in 2018$ and electrolyzer costs are in 2022$.
 
@@ -152,7 +157,7 @@ Note that SMR costs are currently in 2018$ and electrolyzer costs are in 2022$.
 | Storage  | Electric load  | MWh/metric ton |
 
 The values in `H2_transport_and_storage_costs.csv` are based on raw data provided from the SERA model by Paige Jadun.
-The raw data are formated by the `process-h2-inputs.py` script in the input processing repository (<https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/process-h2-inputs.py>).
+The raw data are formatted by the [`process-h2-inputs.py` script](https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/process-h2-inputs.py) in the input processing repository.
 
 ### Intra-Regional Hydrogen Transport Cost
 
@@ -203,15 +208,13 @@ This press release has a nice [summary](https://home.treasury.gov/news/press-rel
 | (1.5, 0.45] | 1 | (.027, .007] |
 | (0.45, 0] | 3 | (.008, 0] |
 
-To ensure the low carbon intensity of the electricity powering electrolyzers, the hydrogen production tax credit has three "pillars" or core components, as described below:  
+To ensure the low carbon intensity of the electricity powering electrolyzers, the hydrogen production tax credit has three "pillars" or core components, as described below:
 
 1. Incrementality (also referred to as additionality): generators must have a commercial online date no more than three years before a H2 production facility's placed in service date to qualify.
 Example: if an electrolyzer is put in service in 2028, only generators whose commercial operations dates are between 2025-2028 may qualify to power this electrolyzer.
 This requirement starts immediately. There are special exceptions for nuclear, CCS and states with robust GHG emission caps - we do not model these additional pathways in ReEDS.
 2. Hourly matching: each MWh must be consumed by an electrolyzer in the same hour of the year in which it was generated.
-3. Deliverablity: each MWh must be consumed by an electrolyzer in the same region in which it was generated. Regional matching is required at the National Transmission Needs Study region level, as shown in the image below.
-
-![image](https://media.github.nrel.gov/user/2165/files/d7b3e8ae-cb0c-4413-8442-4e6b720bcd20)
+3. Deliverablity: each MWh must be consumed by an electrolyzer in the same region in which it was generated. Regional matching is required at the National Transmission Needs Study region level, which corresponds to the H<sub>2</sub> PTC region level shown in {numref}`figure-hierarchy`.
 
 Source: [Guidelines to Determine Well-to-Gate GHG Emissions of Hydrogen Production Pathways using 45VH2-GREET 2023](https://www.energy.gov/sites/default/files/2023-12/greet-manual_2023-12-20.pdf), 2023, Figure 2
 
@@ -306,16 +309,14 @@ This assumption is enforced by the constraints `eq_h2_ptc_region_balance` and `e
 
 - The final version of the regulation will not be published until later in FY24, at which point this documentation will be updated to reflect the final regulations.
 - Fun fact: There is an Investment Tax Credit (ITC) component to 45V.
-However, all analyses (both ours and from other research groups) indicate that hydrogen producing facilties will choose to take the H2 PTC so in ReEDS we exclusively model the PTC.
-
-
+However, all analyses (both ours and from other research groups) indicate that hydrogen producing facilities will choose to take the H2 PTC so in ReEDS we exclusively model the PTC.
 
 
 ## Supply curves
 
 ### Supply curve switches
 
-Supply curve "access" scenarios: these switches are used to toggle across the different supply curve scenarios from reV.  
+Supply curve "access" scenarios: these switches are used to toggle across the different supply curve scenarios from reV.
 
 - `GSw_SitingGeo`
 - `GSw_SitingUPV`
@@ -430,11 +431,11 @@ This approach should therefore be used with caution.
 
 This guide explains how to enable, configure, and run Monte Carlo simulations so you can propagate input uncertainty through ReEDS runs.
 
-### Quick start
+### Quick start: Monte Carlo
 
 1. In `cases.csv`, set `MCS_runs` to the number of samples you want. Zero disables MCS.
 
-2. Set `MCS_dist` to the suffix name of a YAML file that contains the input distribution definitions. 
+2. Set `MCS_dist` to the suffix name of a YAML file that contains the input distribution definitions.
 For example, `default` will use `inputs/userinput/mcs_distributions_default.yaml`.
 
 3. Set `MCS_dist_groups` to one or more YAML group names. Separate multiple groups with a dot.
@@ -446,10 +447,11 @@ These three switches (`MCS_runs`,`MCS_dist`, and  `MCS_dist_groups`) are the onl
 All other settings live in the YAML file (`inputs/userinput/mcs_distributions_{MCS_dist}.yaml`).
 
 ### YAML distribution file format
+
 Distribution groups live in `inputs/userinput/mcs_distributions_{MCS_dist}.yaml`.
 Each group samples one or more switches together.
 
-**Group field summary:**
+#### Group field summary
 
 | Field              | Type            | Values                                                                   | Purpose                              |
 |--------------------|-----------------|--------------------------------------------------------------------------|--------------------------------------|
@@ -460,44 +462,44 @@ Each group samples one or more switches together.
 | `weight_r`         | string          | spatial hierarchy level (typically `country`, `transgrp`, `st`, or `ba`) | Spatial resolution for draws.        |
 
 
-**name**
+##### name
 
 - Unique id of the group.
 - The id must appear in `MCS_dist_groups` to activate this group.
 - Switches listed in the same group receive the same random draw, which creates perfect correlation inside the group.
 To force independence, place switches in different groups.
 
-**assignments\_list**
+##### assignments\_list
 
 - A list where each item is a one key dictionary.
 - Key gives the switch name. Value lists the candidate options for that switch,
 referencing the underlying files or literal values that the sampler can draw from.
 - Example idea: `[{switch1: [v1, v2]}, {switch2: [v1, v2]}]`.
 
-**dist**
+##### dist
 
 - `dirichlet` uses a weighted average across options.
 - `discrete` selects a single option using the given weights.
 - `triangular_multiplier` draws a multiplier from a triangular distribution and applies it to all files in the `assignments_list` group.
 - `uniform_multiplier` draws a uniform multiplier and applies it likewise.
 
-**dist\_params**
+##### dist\_params
 
 - `dirichlet`: `[alpha1, alpha2, ...]` concentration values. Length must match the number of options for the switches in the group.
 - `discrete`: `[w1, w2, ...]` probability weights, normalized internally. Length must match the number of options.
 - `triangular_multiplier`: `[low, center, high]`.
 - `uniform_multiplier`: `[low, high]`.
 
-**weight\_r**
+##### weight\_r
 
 - For some files (those with regional data) we support the possibility of applying different weights to different ReEDS hierarchies.
 This field specifies the hierarchy considered.
-- Common values are `country`, `transgrp`, `st`, or `ba`. 
+- Common values are `country`, `transgrp`, `st`, or `ba`.
 - Support depends on the switch. ATB `plantchar_*` switches currently support only `country`.
 
 ---
 
-**Example 1. Correlated technology sampling**
+#### Example 1. Correlated technology sampling
 
 ```yaml
 - name: tech
@@ -517,12 +519,12 @@ with the same `W1, W2, W3` and `W1 + W2 + W3 = 1`.
 In this configuration all three technologies share the same Dirichlet draw
 (so a sample with low-cost PV also has low-cost batteries and offshore wind).
 
-**Example 2. Sampling load forecast scenarios per state**
+#### Example 2. Sampling load forecast scenarios per state
 
 ```yaml
 - name: load_st
   assignments_list:
-    - GSw_EFS1_AllYearLoad: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
   dist: dirichlet
   dist_params: [1, 1]
   weight_r: st
@@ -531,7 +533,7 @@ In this configuration all three technologies share the same Dirichlet draw
 Each state receives its own weighted combination of the two load scenarios.\
 `Sample_load = W1*(EER_100by2050) +  W2*(EER_IRAlow)` with `W1 + W2 = 1`.
 
-**Example 3. Discrete siting uncertainty for wind and solar**
+#### Example 3. Discrete siting uncertainty for wind and solar
 
 ```yaml
 - name: wind_solar_siting_st
@@ -551,9 +553,9 @@ This enables state level uncertainty in siting supply curves for wind and solar 
 - Use multiple distribution groups to sample switches independently.
 For example `tech.load_st` defines two groups that are sampled independently.
 - Sampling of float values (e.g., transmission multipliers) is supported using `*_multiplier` distribution types.
-- The **Dirichlet** distribution defines weights applied to each scenario. 
+- The **Dirichlet** distribution defines weights applied to each scenario.
 When all concentration parameters are set to one (e.g., `[1, 1, 1]`), the distribution is considered uninformed;
-it assigns equal expected weight to all options, though individual samples will still vary. 
+it assigns equal expected weight to all options, though individual samples will still vary.
 These parameters can be adjusted to emphasize or de-emphasize specific scenarios.
 Since these weights are used as multiplicative factors on reference files,
 Dirichlet sampling tends to favor combinations that lean toward central scenarios when the inputs represent "low",
@@ -599,18 +601,20 @@ Users familiar with GAMS can add alternative objective functions to the `c_mga.g
 ## Uncertainty Plots
 
 ReEDS includes plotting tools to help explore how uncertainty affects model results,
-especially in Monte Carlo or MGA-style simulations. 
+especially in Monte Carlo or MGA-style simulations.
 By scanning a folder of ReEDS runs, the module reads input and output data and automatically generates a PowerPoint
 presentation with key trends and uncertainty ranges, along with an Excel workbook containing the raw data behind each figure.
 
 These outputs make it easier to:
-- Visualize median trends and percentile bands across runs 
-- Examine distributions of variables across sampled scenarios 
-- Compare differences between groups of runs 
+
+- Visualize median trends and percentile bands across runs
+- Examine distributions of variables across sampled scenarios
+- Compare differences between groups of runs
 
 
-### Quick start
-1. Go to the `postprocessing` directory.  
+### Quick start: Uncertainty plots
+
+1. Go to the `postprocessing` directory.
 2. Run the command below, replacing placeholders with your paths and options.
 
 ```bash
@@ -652,7 +656,9 @@ MCS Example: Natural gas price paths.
 :width: 50%
 MCS Example: Technology cost trajectories.
 ```
+
 ### Example of output plots
+
 *Note: The simulation results shown here are for illustrative purposes only.
 They reflect specific input assumptions and policy configurations that are not detailed in this section,
 as the goal is simply to demonstrate the plotting capabilities.*

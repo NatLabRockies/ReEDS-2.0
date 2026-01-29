@@ -8,14 +8,13 @@
     - [Is there a trial version of the GAMS license so that I can test ReEDS?](#is-there-a-trial-version-of-the-gams-license-so-that-i-can-test-reeds)
     - [What computer hardware is necessary to run ReEDS?](#what-computer-hardware-is-necessary-to-run-reeds)
     - [Can I configure a ReEDS case to run as an isolated interconnect?](#can-i-configure-a-reeds-case-to-run-as-an-isolated-interconnect)
-    - [Can I change the spatial resolution of a ReEDS case?](#can-i-change-the-spatial-resolution-of-a-reeds-case)
-    - [Is there a way to reduce solve time?](#is-there-a-way-to-reduce-solve-time)
+    - [How do I change the spatial resolution of a ReEDS case?](#how-do-i-change-the-spatial-resolution-of-a-reeds-case)
+    - [How can I reduce solve time?](#how-can-i-reduce-solve-time)
     - [How often are updates made to ReEDS?](#how-often-are-updates-made-to-reeds)
     - [What are the limitations, caveats, and known issues?](#what-are-the-limitations-caveats-and-known-issues)
       - [Capabilities that don't currently work](#capabilities-that-dont-currently-work)
       - [Assumptions](#assumptions)
       - [Input data and processing](#input-data-and-processing)
-      - [Core optimization](#core-optimization)
       - [Output processing](#output-processing)
 
 <a name="gams-license"></a>
@@ -106,7 +105,7 @@ git checkout tags/v2024.0.0
 <a name="known-issues"></a>
 ### What are the limitations, caveats, and known issues?
 
-ReEDS is a big model with lots of limitations and caveats. Many higher-level limitations are discussed in the [documentation](https://www.nrel.gov/docs/fy21osti/78195.pdf); more code-facing issues are listed here.
+ReEDS is a big model with limitations and caveats. Higher-level limitations are discussed in the [model documentation](model_documentation.md); more code-facing issues are listed here.
 
 **Note: The following limitations, caveats, and known issues are incomplete and will evolve as the model changes**
 

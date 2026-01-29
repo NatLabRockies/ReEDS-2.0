@@ -64,7 +64,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#hourly-resolution">Hourly Resolution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#electricity-demand-profiles">Electricity Demand Profiles</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#switch-options-for-gsw-efs1-allyearload">Switch options for GSw_EFS1_AllYearLoad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#switch-options-for-gsw-loadprofiles">Switch options for GSw_LoadProfiles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#resources-for-more-info-about-reeds-s-load-profiles">Resources for more info about ReEDS’s load profiles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#different-weather-years">Different weather years</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#demand-response">Demand Response</a></li>
@@ -91,14 +91,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reeds2pras-and-pras">ReEDS2PRAS and PRAS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#monte-carlo-sampling-mcs">Monte Carlo Sampling (MCS)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-start-monte-carlo">Quick start: Monte Carlo</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaml-distribution-file-format">YAML distribution file format</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tips">Tips</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#modeling-to-generate-alternatives-mga">Modeling to Generate Alternatives (MGA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#uncertainty-plots">Uncertainty Plots</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Quick start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-start-uncertainty-plots">Quick start: Uncertainty plots</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-of-input-plots">Example of input plots</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-of-output-plots">Example of output plots</a></li>
 </ul>
@@ -109,7 +109,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#running-hourlize">Running hourlize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#resource-logic-resource-py">Resource Logic (resource.py)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load-logic-load-py">Load Logic (load.py)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#eer-load-splicing">EER Load Splicing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#details-on-config-file-settings">Details on config file settings</a></li>
 </ul>
 </li>
@@ -190,7 +189,8 @@
 <li><p>So if you want to use the example period:szn map, just set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm=user</span></code>.</p></li>
 <li><p>If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/variability/period_szn_user.csv with a unique scenario name in the ‘scenario’ column, and set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code> to your unique scenario name, <em>which must contain the substring ‘user’</em>. (For example, I could use a mapping called ‘user_myname_20230130’ by adding my period:szn map to inputs/variability/period_szn_user.csv with ‘user_myname_20230130’ in the ‘scenario’ column and setting <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm=user_myname_20230130</span></code>.)</p></li>
 <li><p>Make sure the settings for <code class="docutils literal notranslate"><span class="pre">GSw_HourlyType</span></code> and <code class="docutils literal notranslate"><span class="pre">GSw_HourlyWeatherYears</span></code> match your user-defined map. For example, if your ‘user_myname_20230130’ map includes 365 representative days for weather year 2012, then set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyType=day</span></code> and <code class="docutils literal notranslate"><span class="pre">GSw_HourlyWeatherYears=2012</span></code>.</p></li>
-<li><p>You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods. More detail can be found <a class="reference external" href="https://pages.github.nrel.gov/ReEDS/ReEDS-2.0/postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py">here</a></p></li>
+<li><p>You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods.
+More detail can be found in the <a href="postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py">postprocessing tools</a> guide.</p></li>
 </ul>
 </li>
 </ul>
@@ -290,8 +290,8 @@
 </section>
 <section id="electricity-demand-profiles">
 <h2>Electricity Demand Profiles<a class="headerlink" href="#electricity-demand-profiles" title="Link to this heading"></a></h2>
-<section id="switch-options-for-gsw-efs1-allyearload">
-<h3>Switch options for GSw_EFS1_AllYearLoad<a class="headerlink" href="#switch-options-for-gsw-efs1-allyearload" title="Link to this heading"></a></h3>
+<section id="switch-options-for-gsw-loadprofiles">
+<h3>Switch options for GSw_LoadProfiles<a class="headerlink" href="#switch-options-for-gsw-loadprofiles" title="Link to this heading"></a></h3>
 <p>These files are stored in <code class="docutils literal notranslate"><span class="pre">inputs/load/{switch_name}_load_hourly.h5</span></code>.</p>
 <table class="docutils align-default">
 <thead>
@@ -304,7 +304,7 @@
 <tbody>
 <tr class="row-even"><td><p>historic</p></td>
 <td><p>Detrended historic demand from 2007-2013 and 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth.</p></td>
-<td><p>Produced by the ReEDS team from a compilation of data sources. More detail can be found <a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme">here</a> and in <a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1601">PR 1601</a>.</p></td>
+<td><p>Produced by the ReEDS team from a compilation of data sources. More detail can be found in the <a class="reference external" href="https://github.com/NREL/ReEDS-2.0/tree/main/hourlize/plexos_to_reeds#readme">hourlize readme</a>.</p></td>
 <td><p>2007-2013 &amp; 2016-2023</p></td>
 </tr>
 <tr class="row-odd"><td><p>Clean2035_LTS</p></td>
@@ -329,7 +329,7 @@
 </tr>
 <tr class="row-odd"><td><p>EPMEDIUMStretch2046</p></td>
 <td><p>An average of the EPMEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA.</p></td>
-<td><p>NREL researchers combined the EPMEDIUM profile and the AEO reference trajectory.</p></td>
+<td><p>NLR researchers combined the EPMEDIUM profile and the AEO reference trajectory.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
 <tr class="row-even"><td><p>EPMEDIUM</p></td>
@@ -390,7 +390,7 @@
 </section>
 <section id="different-weather-years">
 <h3>Different weather years<a class="headerlink" href="#different-weather-years" title="Link to this heading"></a></h3>
-<p>For EER’s load profiles, “weather” includes everything considered by NREL’s <a class="reference external" href="https://resstock.nrel.gov/">ResStock</a> and <a class="reference external" href="https://comstock.nrel.gov/">ComStock</a> building models (i.e., temperature, humidity, insolation, and wind speed). This information gets translated into variations in load through regressions and benchmarking with historical system load data for the weather year in question.</p>
+<p>For EER’s load profiles, “weather” includes everything considered by NLR’s <a class="reference external" href="https://resstock.nrel.gov/">ResStock</a> and <a class="reference external" href="https://comstock.nrel.gov/">ComStock</a> building models (i.e., temperature, humidity, insolation, and wind speed). This information gets translated into variations in load through regressions and benchmarking with historical system load data for the weather year in question.</p>
 </section>
 <section id="demand-response">
 <h3>Demand Response<a class="headerlink" href="#demand-response" title="Link to this heading"></a></h3>
@@ -408,12 +408,12 @@
 <section id="consume-char-gsw-h2-inputs-csv">
 <h3>consume_char_[GSw_H2_Inputs].csv<a class="headerlink" href="#consume-char-gsw-h2-inputs-csv" title="Link to this heading"></a></h3>
 <p>Contains cost and performance assumption for electrolyzers and steam-methane reformer.</p>
-<p>Electrolyzer capital cost assumptions are based on the Pathways to Commercial Liftoff: Clean Hydrogen Report (<a class="reference external" href="https://liftoff.energy.gov/wp-content/uploads/2023/05/20230320-Liftoff-Clean-H2-vPUB-0329-update.pdf">https://liftoff.energy.gov/wp-content/uploads/2023/05/20230320-Liftoff-Clean-H2-vPUB-0329-update.pdf</a>) [see values in the footnotes of Figure 3 on page 14].
+<p>Electrolyzer capital cost assumptions are based on the <a class="reference external" href="https://h2fcp.org/system/files/cafcp_members/2024%20DOE%20Pathways%20to%20Commercial%20Liftoff%20-%20Clean%20Hydrogen.pdf">Pathways to Commercial Liftoff: Clean Hydrogen Report</a> [see values in the footnotes of Figure 3 on page 14].
 The reference scenario assumes linearly decline from 1750 <span class="math notranslate nohighlight">\(/kW in 2022 to 550 \)</span>/kW in 2030, and then remain constant after.
 The low cost scenario assumes further declines from 2030 to 2050.</p>
 <p>Fixed O&amp;M values are assumed to be 5% of CAPEX (source: <a class="reference external" href="https://iopscience.iop.org/article/10.1088/1748-9326/acacb5">https://iopscience.iop.org/article/10.1088/1748-9326/acacb5</a>)</p>
-<p>Electrolyzer performance (efficiency) as well as SMR cost and performance assumptions are derived from assumptions H2A: Hydrogen Analysis Production Models (<a class="reference external" href="https://www.nrel.gov/hydrogen/h2a-production-models.html">https://www.nrel.gov/hydrogen/h2a-production-models.html</a>), with guidance from Paige Jadun.
-See original input assumptions in the ReEDS-2.0_Input_Processing repo: <a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/costs/H2ProductionCosts-20210414.xlsx">https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/costs/H2ProductionCosts-20210414.xlsx</a>.</p>
+<p>Electrolyzer performance (efficiency) as well as SMR cost and performance assumptions are derived from assumptions <a class="reference external" href="https://www.nrel.gov/hydrogen/h2a-production-models.html">H2A: Hydrogen Analysis Production Models</a>, with guidance from Paige Jadun.
+See original input assumptions in the <a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/costs/H2ProductionCosts-20210414.xlsx">ReEDS-2.0_Input_Processing repo</a>.</p>
 <p>Note that SMR costs are currently in 2018<span class="math notranslate nohighlight">\( and electrolyzer costs are in 2022\)</span>.</p>
 </section>
 <section id="h2-transport-and-storage-costs-csv">
@@ -465,7 +465,7 @@ See original input assumptions in the ReEDS-2.0_Input_Processing repo: <a class=
 </tbody>
 </table>
 <p>The values in <code class="docutils literal notranslate"><span class="pre">H2_transport_and_storage_costs.csv</span></code> are based on raw data provided from the SERA model by Paige Jadun.
-The raw data are formated by the <code class="docutils literal notranslate"><span class="pre">process-h2-inputs.py</span></code> script in the input processing repository (<a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/process-h2-inputs.py">https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/process-h2-inputs.py</a>).</p>
+The raw data are formatted by the <a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0_Input_Processing/blob/main/H2/process-h2-inputs.py"><code class="docutils literal notranslate"><span class="pre">process-h2-inputs.py</span></code> script</a> in the input processing repository.</p>
 </section>
 <section id="intra-regional-hydrogen-transport-cost">
 <h3>Intra-Regional Hydrogen Transport Cost<a class="headerlink" href="#intra-regional-hydrogen-transport-cost" title="Link to this heading"></a></h3>
@@ -542,9 +542,8 @@ This press release has a nice <a class="reference external" href="https://home.t
 Example: if an electrolyzer is put in service in 2028, only generators whose commercial operations dates are between 2025-2028 may qualify to power this electrolyzer.
 This requirement starts immediately. There are special exceptions for nuclear, CCS and states with robust GHG emission caps - we do not model these additional pathways in ReEDS.</p></li>
 <li><p>Hourly matching: each MWh must be consumed by an electrolyzer in the same hour of the year in which it was generated.</p></li>
-<li><p>Deliverablity: each MWh must be consumed by an electrolyzer in the same region in which it was generated. Regional matching is required at the National Transmission Needs Study region level, as shown in the image below.</p></li>
+<li><p>Deliverablity: each MWh must be consumed by an electrolyzer in the same region in which it was generated. Regional matching is required at the National Transmission Needs Study region level, which corresponds to the H<sub>2</sub> PTC region level shown in <a class="reference internal" href="model_documentation.html#figure-hierarchy"><span class="std std-numref">Fig. 17</span></a>.</p></li>
 </ol>
-<p><img alt="image" src="https://media.github.nrel.gov/user/2165/files/d7b3e8ae-cb0c-4413-8442-4e6b720bcd20" /></p>
 <p>Source: <a class="reference external" href="https://www.energy.gov/sites/default/files/2023-12/greet-manual_2023-12-20.pdf">Guidelines to Determine Well-to-Gate GHG Emissions of Hydrogen Production Pathways using 45VH2-GREET 2023</a>, 2023, Figure 2</p>
 <p>These three pillars are combined differently depending on which year it is:</p>
 <ul class="simple">
@@ -690,7 +689,7 @@ This assumption is enforced by the constraints <code class="docutils literal not
 <ul class="simple">
 <li><p>The final version of the regulation will not be published until later in FY24, at which point this documentation will be updated to reflect the final regulations.</p></li>
 <li><p>Fun fact: There is an Investment Tax Credit (ITC) component to 45V.
-However, all analyses (both ours and from other research groups) indicate that hydrogen producing facilties will choose to take the H2 PTC so in ReEDS we exclusively model the PTC.</p></li>
+However, all analyses (both ours and from other research groups) indicate that hydrogen producing facilities will choose to take the H2 PTC so in ReEDS we exclusively model the PTC.</p></li>
 </ul>
 </section>
 </section>
@@ -828,8 +827,8 @@ This approach should therefore be used with caution.</p></li>
 <section id="monte-carlo-sampling-mcs">
 <h2>Monte Carlo Sampling (MCS)<a class="headerlink" href="#monte-carlo-sampling-mcs" title="Link to this heading"></a></h2>
 <p>This guide explains how to enable, configure, and run Monte Carlo simulations so you can propagate input uncertainty through ReEDS runs.</p>
-<section id="quick-start">
-<h3>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h3>
+<section id="quick-start-monte-carlo">
+<h3>Quick start: Monte Carlo<a class="headerlink" href="#quick-start-monte-carlo" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p>In <code class="docutils literal notranslate"><span class="pre">cases.csv</span></code>, set <code class="docutils literal notranslate"><span class="pre">MCS_runs</span></code> to the number of samples you want. Zero disables MCS.</p></li>
 <li><p>Set <code class="docutils literal notranslate"><span class="pre">MCS_dist</span></code> to the suffix name of a YAML file that contains the input distribution definitions.
@@ -845,7 +844,8 @@ All other settings live in the YAML file (<code class="docutils literal notransl
 <h3>YAML distribution file format<a class="headerlink" href="#yaml-distribution-file-format" title="Link to this heading"></a></h3>
 <p>Distribution groups live in <code class="docutils literal notranslate"><span class="pre">inputs/userinput/mcs_distributions_{MCS_dist}.yaml</span></code>.
 Each group samples one or more switches together.</p>
-<p><strong>Group field summary:</strong></p>
+<section id="group-field-summary">
+<h4>Group field summary<a class="headerlink" href="#group-field-summary" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
@@ -882,43 +882,55 @@ Each group samples one or more switches together.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>name</strong></p>
+<section id="name">
+<h5>name<a class="headerlink" href="#name" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p>Unique id of the group.</p></li>
 <li><p>The id must appear in <code class="docutils literal notranslate"><span class="pre">MCS_dist_groups</span></code> to activate this group.</p></li>
 <li><p>Switches listed in the same group receive the same random draw, which creates perfect correlation inside the group.
 To force independence, place switches in different groups.</p></li>
 </ul>
-<p><strong>assignments_list</strong></p>
+</section>
+<section id="assignments-list">
+<h5>assignments_list<a class="headerlink" href="#assignments-list" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p>A list where each item is a one key dictionary.</p></li>
 <li><p>Key gives the switch name. Value lists the candidate options for that switch,
 referencing the underlying files or literal values that the sampler can draw from.</p></li>
 <li><p>Example idea: <code class="docutils literal notranslate"><span class="pre">[{switch1:</span> <span class="pre">[v1,</span> <span class="pre">v2]},</span> <span class="pre">{switch2:</span> <span class="pre">[v1,</span> <span class="pre">v2]}]</span></code>.</p></li>
 </ul>
-<p><strong>dist</strong></p>
+</section>
+<section id="dist">
+<h5>dist<a class="headerlink" href="#dist" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dirichlet</span></code> uses a weighted average across options.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">discrete</span></code> selects a single option using the given weights.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">triangular_multiplier</span></code> draws a multiplier from a triangular distribution and applies it to all files in the <code class="docutils literal notranslate"><span class="pre">assignments_list</span></code> group.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uniform_multiplier</span></code> draws a uniform multiplier and applies it likewise.</p></li>
 </ul>
-<p><strong>dist_params</strong></p>
+</section>
+<section id="dist-params">
+<h5>dist_params<a class="headerlink" href="#dist-params" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dirichlet</span></code>: <code class="docutils literal notranslate"><span class="pre">[alpha1,</span> <span class="pre">alpha2,</span> <span class="pre">...]</span></code> concentration values. Length must match the number of options for the switches in the group.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">discrete</span></code>: <code class="docutils literal notranslate"><span class="pre">[w1,</span> <span class="pre">w2,</span> <span class="pre">...]</span></code> probability weights, normalized internally. Length must match the number of options.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">triangular_multiplier</span></code>: <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">center,</span> <span class="pre">high]</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uniform_multiplier</span></code>: <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high]</span></code>.</p></li>
 </ul>
-<p><strong>weight_r</strong></p>
+</section>
+<section id="weight-r">
+<h5>weight_r<a class="headerlink" href="#weight-r" title="Link to this heading"></a></h5>
 <ul class="simple">
 <li><p>For some files (those with regional data) we support the possibility of applying different weights to different ReEDS hierarchies.
 This field specifies the hierarchy considered.</p></li>
 <li><p>Common values are <code class="docutils literal notranslate"><span class="pre">country</span></code>, <code class="docutils literal notranslate"><span class="pre">transgrp</span></code>, <code class="docutils literal notranslate"><span class="pre">st</span></code>, or <code class="docutils literal notranslate"><span class="pre">ba</span></code>.</p></li>
 <li><p>Support depends on the switch. ATB <code class="docutils literal notranslate"><span class="pre">plantchar_*</span></code> switches currently support only <code class="docutils literal notranslate"><span class="pre">country</span></code>.</p></li>
 </ul>
+</section>
+</section>
 <hr class="docutils" />
-<p><strong>Example 1. Correlated technology sampling</strong></p>
+<section id="example-1-correlated-technology-sampling">
+<h4>Example 1. Correlated technology sampling<a class="headerlink" href="#example-1-correlated-technology-sampling" title="Link to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tech</span>
 <span class="w">  </span><span class="nt">assignments_list</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">plantchar_battery</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">battery_ATB_2024_conservative</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">battery_ATB_2024_moderate</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">battery_ATB_2024_advanced</span><span class="p p-Indicator">]</span>
@@ -934,10 +946,12 @@ This field specifies the hierarchy considered.</p></li>
 with the same <code class="docutils literal notranslate"><span class="pre">W1,</span> <span class="pre">W2,</span> <span class="pre">W3</span></code> and <code class="docutils literal notranslate"><span class="pre">W1</span> <span class="pre">+</span> <span class="pre">W2</span> <span class="pre">+</span> <span class="pre">W3</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
 <p>In this configuration all three technologies share the same Dirichlet draw
 (so a sample with low-cost PV also has low-cost batteries and offshore wind).</p>
-<p><strong>Example 2. Sampling load forecast scenarios per state</strong></p>
+</section>
+<section id="example-2-sampling-load-forecast-scenarios-per-state">
+<h4>Example 2. Sampling load forecast scenarios per state<a class="headerlink" href="#example-2-sampling-load-forecast-scenarios-per-state" title="Link to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load_st</span>
 <span class="w">  </span><span class="nt">assignments_list</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">GSw_EFS1_AllYearLoad</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">EER_100by2050</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">EER_IRAlow</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">GSw_LoadProfiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">EER_100by2050</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">EER_IRAlow</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">dist</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dirichlet</span>
 <span class="w">  </span><span class="nt">dist_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">weight_r</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">st</span>
@@ -945,7 +959,9 @@ with the same <code class="docutils literal notranslate"><span class="pre">W1,</
 </div>
 <p>Each state receives its own weighted combination of the two load scenarios.<br />
 <code class="docutils literal notranslate"><span class="pre">Sample_load</span> <span class="pre">=</span> <span class="pre">W1*(EER_100by2050)</span> <span class="pre">+</span>&#160; <span class="pre">W2*(EER_IRAlow)</span></code> with <code class="docutils literal notranslate"><span class="pre">W1</span> <span class="pre">+</span> <span class="pre">W2</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
-<p><strong>Example 3. Discrete siting uncertainty for wind and solar</strong></p>
+</section>
+<section id="example-3-discrete-siting-uncertainty-for-wind-and-solar">
+<h4>Example 3. Discrete siting uncertainty for wind and solar<a class="headerlink" href="#example-3-discrete-siting-uncertainty-for-wind-and-solar" title="Link to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wind_solar_siting_st</span>
 <span class="w">  </span><span class="nt">assignments_list</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">GSw_SitingUPV</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">limited</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">reference</span><span class="p p-Indicator">]</span>
@@ -957,6 +973,7 @@ with the same <code class="docutils literal notranslate"><span class="pre">W1,</
 </pre></div>
 </div>
 <p>This enables state level uncertainty in siting supply curves for wind and solar technologies through a random draw between <code class="docutils literal notranslate"><span class="pre">limited</span></code> and <code class="docutils literal notranslate"><span class="pre">reference</span></code> conditions.</p>
+</section>
 </section>
 <section id="tips">
 <h3>Tips<a class="headerlink" href="#tips" title="Link to this heading"></a></h3>
@@ -1016,8 +1033,8 @@ presentation with key trends and uncertainty ranges, along with an Excel workboo
 <li><p>Examine distributions of variables across sampled scenarios</p></li>
 <li><p>Compare differences between groups of runs</p></li>
 </ul>
-<section id="id2">
-<h3>Quick start<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="quick-start-uncertainty-plots">
+<h3>Quick start: Uncertainty plots<a class="headerlink" href="#quick-start-uncertainty-plots" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p>Go to the <code class="docutils literal notranslate"><span class="pre">postprocessing</span></code> directory.</p></li>
 <li><p>Run the command below, replacing placeholders with your paths and options.</p></li>
@@ -1145,12 +1162,10 @@ temporally and spatially.</p>
 <section id="quickstart-load">
 <h4>Quickstart: Load<a class="headerlink" href="#quickstart-load" title="Link to this heading"></a></h4>
 <ol class="arabic simple">
-<li><p>(EER-style only) If we don’t already have a set of csv outputs from Grant Buster’s script akin to <code class="docutils literal notranslate"><span class="pre">//nrelnas01/ReEDS/Users/ahamilto/NTPS/Demand_Analysis/6.4.23/6.4.23_load_files/20230604_reeds_load_baseline_*.csv</span></code>, you can develop similar csv files (including optional sector replacements) by adjusting <code class="docutils literal notranslate"><span class="pre">#USER</span> <span class="pre">INPUTS</span></code> at the top of <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_splice/eer_splice.py</span></code> and running the file (On Kestrel only). (<a class="reference internal" href="#eer-load-splicing"><span class="xref myst">details</span></a>)</p></li>
-<li><p>(EER-style only) Adjust <code class="docutils literal notranslate"><span class="pre">#USER</span> <span class="pre">INPUTS</span></code> at the top of <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_to_reeds.py</span></code> to point to set of csv input files and run the file. Outputs will be in a new directory in <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/outputs/</span></code></p></li>
-<li><p>Update settings in <code class="docutils literal notranslate"><span class="pre">config_base.json</span></code> as needed (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>), including <code class="docutils literal notranslate"><span class="pre">load_source</span></code>, which in the case of EER-style load will point to the output of the prior step.</p></li>
+<li><p>Update settings in <code class="docutils literal notranslate"><span class="pre">config_base.json</span></code> as needed (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>), including <code class="docutils literal notranslate"><span class="pre">load_source</span></code>.</p></li>
 <li><p>If running on the HPC, specify run allocation or other submission settings in <code class="docutils literal notranslate"><span class="pre">inputs/configs/srun_template.sh</span></code> (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>).</p></li>
 <li><p>Run using <code class="docutils literal notranslate"><span class="pre">run_hourlize.py</span> <span class="pre">load</span></code> (<a class="reference internal" href="#running-hourlize"><span class="xref myst">details</span></a>).</p></li>
-<li><p>Gather outputs from the new directory in <code class="docutils literal notranslate"><span class="pre">hourlize/out/</span></code>.</p></li>
+<li><p>Outputs are written to <code class="docutils literal notranslate"><span class="pre">ReEDS-2.0/inputs/load</span></code>.</p></li>
 </ol>
 <p>For more details and run options see further below.</p>
 </section>
@@ -1263,8 +1278,8 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <p>Other key/value pairs in the <code class="docutils literal notranslate"><span class="pre">cases.json</span></code> file can also be used as subsetting variables for downselecting relevant rows from the corresponding rev_paths file. This can helpful when running hourlize for cases that don’t just differ by access and tech. To use this add the key/value pair from the rev_paths_file to the relevant cases and to the list of <code class="docutils literal notranslate"><span class="pre">subsetvars</span></code> in the base config.</p>
 <p>The current <code class="docutils literal notranslate"><span class="pre">cases.json</span></code> file in the repository contains all the settings to run the supply curves currently maintained by ReEDS.</p>
 </section>
-<section id="id3">
-<h4>Tips<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<section id="id2">
+<h4>Tips<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>If you want the hourlize runs to be copied back the shared supply curve folder, set <code class="docutils literal notranslate"><span class="pre">copy_to_shared</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p>
 <ul>
@@ -1340,7 +1355,7 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save_time_outputs()</span></code></p>
 <ul class="simple">
-<li><p>Weighted average profiles by region/class are saved to a <code class="docutils literal notranslate"><span class="pre">{tech}.h5</span></code> file. This method makes use of the same h5 format specified in the <code class="docutils literal notranslate"><span class="pre">write_profile_to_h5</span></code> function used by <code class="docutils literal notranslate"><span class="pre">ldc_prep.py</span></code> in ReEDS.</p></li>
+<li><p>Weighted average profiles by region/class are saved to a <code class="docutils literal notranslate"><span class="pre">{tech}.h5</span></code> file. This method makes use of the same h5 format specified in the <code class="docutils literal notranslate"><span class="pre">write_profile_to_h5</span></code> function used by <code class="docutils literal notranslate"><span class="pre">hourly_load.py</span></code> and <code class="docutils literal notranslate"><span class="pre">recf.py</span></code> in ReEDS.</p></li>
 </ul>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">map_supplycurve()</span></code></p>
@@ -1359,58 +1374,14 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <section id="load-logic-load-py">
 <h3>Load Logic (load.py)<a class="headerlink" href="#load-logic-load-py" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>See Load Quickstart at top for overall load pipeline. This is the basic logic of load.py:</p></li>
+<li><p>See Load Quickstart at top for overall load pipeline. load.py processes the load profiles coming from EER, converting them into ReEDS model inputs. EER load profiles are originally delivered at the state, subsector level for 15 weather years (2007-2013 + 2016-2023) and 7 model years (2021, 2025, 2030, 2035, 2040, 2045, 2050), via compressed csv.gz files, in Central Standard Time (hour-ending). The basic logic of load.py is outlined below.</p></li>
 </ul>
 <ol class="arabic simple">
-<li><p>We remove the final day from leap years.</p></li>
-<li><p>We calibrate each year of hourly data to EIA 2010 load data by state combined with load participation factors by BA. These load participation factors are from heritage ReEDS load inputs, which I believe were derived from Ventyx 2006 county-level load data.</p></li>
-<li><p>We shift hourly data to hour-ending (so the first entry, 12am, refers to 11pm-12am) and shift to the specified output timezone</p></li>
-<li><p>We splice in historical data.</p></li>
-<li><p>The load profiles are saved to a new folder in <code class="docutils literal notranslate"><span class="pre">out/</span></code></p></li>
+<li><p>Where applicable, replace subsectors of EER load with other data sources as specified in <code class="docutils literal notranslate"><span class="pre">inputs/configs/config_base.json</span></code> and <code class="docutils literal notranslate"><span class="pre">inputs/load/sector_config.json</span></code>.</p></li>
+<li><p>Aggregate the load profiles to the state level.</p></li>
+<li><p>Convert the load profiles from the source timezone to the output timezone.</p></li>
+<li><p>Remove the final day from leap years.</p></li>
 </ol>
-<ul class="simple">
-<li><p>Current inputs and outputs are stored here: <code class="docutils literal notranslate"><span class="pre">\\nrelnas01\ReEDS\Supply_Curve_Data\LOAD\</span></code></p></li>
-</ul>
-<p>See comments in those files for more information.</p>
-</section>
-<section id="eer-load-splicing">
-<h3>EER Load Splicing<a class="headerlink" href="#eer-load-splicing" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_splice/eer_splice.py</span></code> allows replacement of certain subsectors of EER load with other data sources.</p>
-<section id="background">
-<h4>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p>EER load profiles are originally delivered at the state, subsector level for 15 weather years (2007-2013 + 2016-2023) and 7 model years (2021, 2025, 2030, 2035, 2040, 2045, 2050), via compressed csv.gz files, in Eastern Standard Time (hour-beginning).</p></li>
-<li><p>These files are then processed by Grant Buster’s <a class="reference external" href="https://github.com/NREL/ntps_load">ntps_load</a> project, which creates h5 files of the same data (also in EST, hour-beginning) (see <code class="docutils literal notranslate"><span class="pre">/projects/eerload/source_eer_load_profiles/</span></code> on Kestrel), as well as BA-level CSV files aggregated across sectors (see <code class="docutils literal notranslate"><span class="pre">/projects/eerload/reeds_load</span></code> on Kestrel).</p>
-<ul>
-<li><p>ntps_load disaggregates from state to BA via PLEXOS’s nodal database and the peak load at each node.</p></li>
-<li><p>These CSV files can be processed into ReEDS inputs by following the <a class="reference internal" href="#quickstart-load"><span class="xref myst">quickstart load</span></a> instructions, starting with the <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_to_reeds.py</span></code> step.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_load_participation_factors/load_factors.py</span></code> utilizes these two outputs of ntps_load (state-level h5 files and BA-level CSV files) to produce load participation factors from state to BA, <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_load_participation_factors/load_factors.csv</span></code>, which then allows us to develop new load trajectories directly from the h5 files along with other sources of subsector data.</p>
-<ul>
-<li><p>Multiple weather years, EER cases, and model years were tested to confirm the same load_factors were produced, which affirms the assumption we had that load participation factors are constant and purely spatial disaggregation factors.</p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="eer-splice-py">
-<h4>eer_splice.py<a class="headerlink" href="#eer-splice-py" title="Link to this heading"></a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_splice/eer_splice.py</span></code> utilizes the state, subsector level h5 files mentioned above, along with other sources of load data, to develop new load csv files that can be used as inputs to <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_to_reeds.py</span></code>. Note that you will need to run on Kestrel, and you will need access to the <code class="docutils literal notranslate"><span class="pre">eerload</span></code> allocation on Kestrel to use this functionality. To replace sectors follow these steps:</p>
-<ol class="arabic simple">
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">replace_sectors</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> at the top of <code class="docutils literal notranslate"><span class="pre">eer_splice.py</span></code>.</p></li>
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">replace_type</span></code> to one of the available sectors (<code class="docutils literal notranslate"><span class="pre">'Transportation'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Buildings'</span></code> or <code class="docutils literal notranslate"><span class="pre">'Data</span> <span class="pre">Centers'</span></code>), or add your own custom sector replacement.</p>
-<ul class="simple">
-<li><p>Leave <code class="docutils literal notranslate"><span class="pre">replace_type</span></code> as <code class="docutils literal notranslate"><span class="pre">'Buildings'</span></code> to demo the script, as the Buildings data should all be accessible in the <code class="docutils literal notranslate"><span class="pre">eerload</span></code> allocation. Example building replacement files are also at <code class="docutils literal notranslate"><span class="pre">//nrelnas01/ReEDS/FY24-Geo-Mowers/eer_load_splice/res_com_outputs_2025-01-10-14-57-33</span></code>.</p></li>
-<li><p>An example data center replacement file is also included here: <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_splice/dummy_agg_op_datacenters.csv</span></code></p></li>
-<li><p>If adding your own custom sector replacement, make sure to set <code class="docutils literal notranslate"><span class="pre">sectors_remove</span></code> and <code class="docutils literal notranslate"><span class="pre">years_remove</span></code>, and add the desired replacement logic depending on your data format (see <code class="docutils literal notranslate"><span class="pre">elif</span> <span class="pre">replace_type</span> <span class="pre">==</span> <span class="pre">'Buildings':</span></code> for an example).</p></li>
-</ul>
-</li>
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">replace_states</span></code> to <code class="docutils literal notranslate"><span class="pre">all</span></code> to replace sector load in all states or a lowercase list of states in which to replace load, such as <code class="docutils literal notranslate"><span class="pre">['massachusetts','vermont',...]</span></code>.</p></li>
-<li><p>Set the <code class="docutils literal notranslate"><span class="pre">replacement_share</span></code> dictionary to the share of sectoral load you would like to replace in each model year. These values should be a float between 0, which adds replacement load to all existing EER load, and 1, which completely replaces the EER sector load. Note that the replacement data itself is not modified by <code class="docutils literal notranslate"><span class="pre">replacement_share</span></code>.</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">eer_splice.py</span></code>. A new output directory will be created in <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_splice/</span></code>.</p></li>
-<li><p>Follow the rest of the <a class="reference internal" href="#quickstart-load"><span class="xref myst">quickstart load</span></a> instructions, starting with the <code class="docutils literal notranslate"><span class="pre">hourlize/eer_to_reeds/eer_to_reeds.py</span></code> step.</p></li>
-</ol>
-</section>
 </section>
 <section id="details-on-config-file-settings">
 <h3>Details on config file settings<a class="headerlink" href="#details-on-config-file-settings" title="Link to this heading"></a></h3>
@@ -1434,7 +1405,7 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <td class="text-left"><p>4</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>filetype</p></td>
-<td class="text-left"><p>output filetype: ‘csv’ or ‘h5’. Note that load.py uses h5 regardless for default (historical) and EER load</p></td>
+<td class="text-left"><p>output filetype: ‘csv’ or ‘h5’. Note that load.py uses h5 regardless</p></td>
 <td class="text-left"><p>‘h5’</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>hierarchy_path</p></td>
@@ -1446,7 +1417,7 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <td class="text-left"><p>‘Etc/GMT+6’</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>select_year</p></td>
-<td class="text-left"><p>this is the year used for load and resource profile-derived inputs, although the profile outputs may still be multiyear (see hourly_out_years)</p></td>
+<td class="text-left"><p>this is the year used for resource profile-derived inputs, although the profile outputs may still be multiyear (see hourly_out_years)</p></td>
 <td class="text-left"><p>2012</p></td>
 </tr>
 </tbody>
@@ -1572,7 +1543,7 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <td class="text-left"><p>upv, wind-ons: {}<br>wind-ofs: {‘offshore’:[‘=’,0]}</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>min_cap</p></td>
-<td class="text-left"><p>MW  (LBNL utility-scale solar report &amp; NREL PV cost benchmarks define utility-scale as ≥5 MW)</p></td>
+<td class="text-left"><p>MW  (LBNL utility-scale solar report &amp; NLR PV cost benchmarks define utility-scale as ≥5 MW)</p></td>
 <td class="text-left"><p>upv: 5, wind-ofs: 15, wind-ons: 0</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>profile_dir</p></td>
@@ -1612,57 +1583,53 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>load_default</p></td>
-<td class="text-left"><p>To add historical demand pre-use_default_before_yr</p></td>
-<td class="text-left"><p>“{reeds_path}/inputs/load/historic_full_load_hourly.h5”,</p></td>
+<tr class="row-even"><td class="text-left"><p>inputfiles</p></td>
+<td class="text-left"><p>list of files to copy over to hourlize input folder</p></td>
+<td class="text-left"><p>[]</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>ba_frac_path</p></td>
-<td class="text-left"><p>These are fractions of state load in each ba, unused if calibrate_path is False</p></td>
-<td class="text-left"><p>os.path.join(this_dir_path,’inputs’,’load’,’load_participation_factors_st_to_ba.csv’)</p></td>
+<tr class="row-odd"><td class="text-left"><p>legacy_ba_state_map_file</p></td>
+<td class="text-left"><p>File mapping the set of 134 legacy ReEDS zones to the states they belong to.</p></td>
+<td class="text-left"><p>‘{hourlize_path}/inputs/load/legacy_ba_state_map.csv’</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>calibrate_path</p></td>
-<td class="text-left"><p>Enter path to calibration file or ‘False’ to leave uncalibrated</p></td>
-<td class="text-left"><p>os.path.join(this_dir_path,’inputs’,’load’,’EIA_loadbystate.csv’)</p></td>
+<tr class="row-even"><td class="text-left"><p>legacy_ba_timezone_file</p></td>
+<td class="text-left"><p>File defining the timezones for the set of 134 legacy ReEDS zones.</p></td>
+<td class="text-left"><p>‘{hourlize_path}/inputs/load/legacy_ba_timezone.csv’</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>calibrate_type</p></td>
-<td class="text-left"><p>either ‘one_year’ or ‘all_years’. Unused if calibrate_path is False. ‘one_year’ means to only calibrate one year to the EIA data and then apply the same scaling factor to all years. ‘all_years’ will calibrate all each year to the EIA data.</p></td>
-<td class="text-left"><p>‘all_years’</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>calibrate_year</p></td>
-<td class="text-left"><p>This is the year that the outputs of load.py represent, based on the EIA calibration year. Unused if calibrate_path is False.</p></td>
-<td class="text-left"><p>2010</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>dtypeLoad</p></td>
-<td class="text-left"><p>Use int if the file size ends up too large.</p></td>
-<td class="text-left"><p>np.float32</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>hourly_out_years</p></td>
-<td class="text-left"><p>e.g. list(range(2021,2051)) for 2021-2050; must be a list even if only one year</p></td>
-<td class="text-left"><p>list(range(2021,2051))</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>hourly_process</p></td>
-<td class="text-left"><p>If False, skip all hourly processing steps</p></td>
-<td class="text-left"><p>True</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>load_source</p></td>
-<td class="text-left"><p>The load source file’s first column should be datetime, starting at Jan 1, 12am, stepping by 1 hour, and one column for each BA. It should be a csv or a compressed csv.</p></td>
-<td class="text-left"><p>‘//nrelnas01/ReEDS/Supply_Curve_Data/LOAD/2020_Update/plexos_to_reeds/outputs/load_hourly_ba_EST.csv’</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>load_source_hr_type</p></td>
-<td class="text-left"><p>Use ‘end’ if load_source data hour-ending or ‘begin’ for hour-beginning. For instantaneous use ‘end’. For EER load use ‘begin’.</p></td>
-<td class="text-left"><p>‘begin’</p></td>
+<tr class="row-odd"><td class="text-left"><p>load_source</p></td>
+<td class="text-left"><p>Directory containing subdirectories named after load scenarios. Each load scenario subdirectory should contain compressed csv files (using gzip compression), each named after the relevant model year (e.g., “{load_source}/baseline/2025.csv.gz”). Each file should contain one column for each state, containing hourly load values in MW, along with “weather_datetime”, “sector”, and “subsector” columns. Each year of the datetime column should start at Jan 1, 12am.</p></td>
+<td class="text-left"><p>‘/projects/eerload/source_eer_load_profiles/20250512_eer_download/shape_outputs_2025-05-12’</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>load_source_timezone</p></td>
-<td class="text-left"><p>UTC would be 0, Eastern standard time would be -5</p></td>
-<td class="text-left"><p>“Etc/GMT+5”</p></td>
+<td class="text-left"><p>Timezone of the load source, assuming times are reported using the hour-ending convention. The timezone should be recognized by python (e.g., Etc/GMT+6 for Central Standard Time).</p></td>
+<td class="text-left"><p>‘Etc/GMT+6’</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>us_only</p></td>
-<td class="text-left"><p>Run only US BAs.</p></td>
-<td class="text-left"><p>True</p></td>
+<tr class="row-odd"><td class="text-left"><p>model_years</p></td>
+<td class="text-left"><p>List of model years to include in exported load profiles.</p></td>
+<td class="text-left"><p>[2021, 2025, 2030, 2035, 2040, 2045, 2050]</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>use_default_before_yr</p></td>
-<td class="text-left"><p>Either False or a year. If set to a year, this will pull in ReEDS default load data before that year (2012 weather year)</p></td>
-<td class="text-left"><p>2021</p></td>
+<tr class="row-even"><td class="text-left"><p>replace_sectors</p></td>
+<td class="text-left"><p>List of sectors for which endogenous (with respect to ‘load_source’) sectoral load should be replaced with load from external load sources.</p></td>
+<td class="text-left"><p>[]</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>replace_states</p></td>
+<td class="text-left"><p>List of lowercase names of states in the contiguous U.S. (or “all” to represent all states in the contiguous U.S.) whose sectoral load (using sectors specified in ‘replace_sectors’) should be replaced.</p></td>
+<td class="text-left"><p>‘all’</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>replacement_share</p></td>
+<td class="text-left"><p>The percentage (specified as a number from 0 to 1) of endogenous sectoral load (using sectors specified in ‘replace_sectors’) that should be removed in each model year before adding exogenous sectoral load. Dictionary keys are the model years and dictionary values are the percentages.</p></td>
+<td class="text-left"><p>{“2021”: 1, “2025”: 1, “2030”: 1, “2035”: 1, “2040”: 1, “2045”: 1, “2050”: 1}</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>scenarios</p></td>
+<td class="text-left"><p>List of load scenarios (of those listed as subdirectories in ‘load_source’) to include in exported load profiles.</p></td>
+<td class="text-left"><p>[‘IRA cons’, ‘central’, ‘baseline’]</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>sector_config_file</p></td>
+<td class="text-left"><p>File containing configuration defining the subsectors of each sector, the model years for which sectoral load should be replaced, and information concerning the files containing exogenous sectoral load.</p></td>
+<td class="text-left"><p>‘{hourlize_path}/inputs/load/sector_config.json’</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>weather_years</p></td>
+<td class="text-left"><p>List of weather years to include in exported load profiles.</p></td>
+<td class="text-left"><p>[2007, 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]</p></td>
 </tr>
 </tbody>
 </table>
@@ -1810,7 +1777,7 @@ These characteristics include:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on November 25, 2025.
+      <span class="lastupdated">Last updated on January 29, 2026.
       </span></p>
   </div>
 
