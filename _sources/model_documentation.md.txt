@@ -9,7 +9,7 @@ We are especially grateful to Walter Short who first envisioned and developed th
 Finally, we are grateful to all those who helped sponsor ReEDS model development and analysis, particularly supporters from the U.S. Department of Energy (DOE) but also others who have funded our work over the years.
 
 ```{admonition} Suggested Citation
-National Laboratory of the Rockies. ({{ cite_date_last_updated }}). *Model documentation — ReEDS 2.0*. https://nrel.github.io/ReEDS-2.0/model_documentation.html
+National Laboratory of the Rockies. ({{ cite_date_last_updated }}). *Model documentation — ReEDS 2.0*. https://natlabrockies.github.io/ReEDS-2.0/model_documentation.html
 
 ```
 
@@ -157,7 +157,7 @@ This documentation describes the structure and key data elements of the [Regiona
 In this introduction, we provide a high-level overview of ReEDS objectives, capabilities, and applications.
 We also provide a short discussion of important caveats that apply to any ReEDS analysis.
 
-The ReEDS model code and input data can be accessed at <https://github.com/NREL/ReEDS-2.0>.
+The ReEDS model code and input data can be accessed at <https://github.com/NatLabRockies/ReEDS-2.0>.
 
 
 ### Overview
@@ -216,7 +216,7 @@ This means that ReEDS investments are not guaranteed to be aligned with cost inp
 
 - **Resolution:** Although ReEDS has high spatial, temporal, and process resolution for models of its class and scope, it cannot generally represent individual units and transmission lines, and it does not have the temporal resolution to characterize detailed operating behaviors, such as ramp rates and minimum plant runtime.
 By default, operations are modeled for a selection of representative and outlying periods (days or weeks), rather than full years, to achieve a tractable model size.
-The linkage with [PRAS](https://github.com/NREL/PRAS), which includes chronological hourly modeling for multiple years, helps ensure the ReEDS electricity system portfolios meet specified resource adequacy levels.
+The linkage with [PRAS](https://github.com/NatLabRockies/PRAS), which includes chronological hourly modeling for multiple years, helps ensure the ReEDS electricity system portfolios meet specified resource adequacy levels.
 
 - **Foresight and behavior:** ReEDS solve years are evaluated sequentially and myopically.
 The model has limited foresight and its decision making does not account for anticipated changes to markets and policies.
@@ -269,7 +269,7 @@ ReEDS is run sequentially for a series of modeled years, typically through 2050.
 The increments between solve years are user defined, but most studies use 2-year, 3-year, or 5-year increments.
 Increments can also vary between different solve years; e.g., annual increments can be used in the near term followed by multiyear increments in the latter years.
 {numref}`figure-reeds-pras` illustrates the model's sequential structure.
-For a given solve year *t*, ReEDS iterates with the [PRAS](https://github.com/NREL/PRAS) model to dynamically update stress periods and check for reliability (see more in the [Resource Adequacy](#resource-adequacy) section).
+For a given solve year *t*, ReEDS iterates with the [PRAS](https://github.com/NatLabRockies/PRAS) model to dynamically update stress periods and check for reliability (see more in the [Resource Adequacy](#resource-adequacy) section).
 Once the system design is found to be resource adequate, ReEDS advances to the next model solve year ($t + \Delta t$).
 
 ```{figure} figs/docs/reeds-pras.png
@@ -1962,7 +1962,7 @@ Existing HVDC and B2B connection capacities are taken from project websites and 
 #### New transmission capacity
 
 The cost of new interzonal transmission capacity between each pair of model zones is calculated in the reV model using the base costs shown in {numref}`figure-transmission-cost-input-data`.
-For each pair of zones, a [least-cost path](https://github.com/NREL/reVX/tree/main/reVX/least_cost_xmission) between the two zone "centers" (the same "centers" described in the [Network reinforcement](#network-reinforcement) section) is determined.
+For each pair of zones, a [least-cost path](https://github.com/NatLabRockies/reVX/tree/main/reVX/least_cost_xmission) between the two zone "centers" (the same "centers" described in the [Network reinforcement](#network-reinforcement) section) is determined.
 (Example paths from Maine to each of the other ReEDS zones are shown in {numref}`figure-lcp-p134`.)
 The integrated \$/mile cost along the least-cost path determines the \$/MW cost for expanding the interface capacity between the linked zones;
 the length of the least-cost path determines the distance (used in the calculation of transmission losses within the model,
@@ -3403,7 +3403,7 @@ section of the <a href="user_guide.html">User Guide</a>.
 
 The ReEDS reduced-form dispatch aims to represent enough operational detail for realistic capacity expansion decisions,
 but the model cannot explicitly represent detailed power system operations.
-To enable more detailed study of system operations, NLR has developed a translation framework [R2X](https://github.com/NREL/R2X) to implement a ReEDS capacity
+To enable more detailed study of system operations, NLR has developed a translation framework [R2X](https://github.com/NatLabRockies/R2X) to implement a ReEDS capacity
 expansion solution for any solve year in production cost models (PCMs).
 R2X supports translations to two PCMs: Sienna and PLEXOS.
 
@@ -3424,7 +3424,7 @@ To maintain consistency, the linkage preserves the spatial resolution of ReEDS (
 The PCM translation uses ReEDS transmission interface capacity, whereas reactance and resistance are derived from ReEDS transmission assumptions to represent the aggregated transmission system.
 For generating capacity, ReEDS aggregate capacity is converted to individual units in the PCM using characteristic unit sizes for each technology.
 Where possible and reasonable, ReEDS cost and performance parameters are used.
-If a parameter is missing or inconsistently used in ReEDS because of structural differences between the models, the default translation uses average values across the [WECC](https://github.com/NREL/R2X/blob/main/src/r2x/defaults/pcm_defaults.json) for the equivalent technologies in ReEDS.[^ref63]
+If a parameter is missing or inconsistently used in ReEDS because of structural differences between the models, the default translation uses average values across the [WECC](https://github.com/NatLabRockies/R2X/blob/main/src/r2x/defaults/pcm_defaults.json) for the equivalent technologies in ReEDS.[^ref63]
 
 [^ref63]: Minimum load is an example of one such parameter.
 The aggregate representation of minimum load in ReEDS at the technology-zone level does not effectively reflect unit-level operating constraints used in PLEXOS, so PLEXOS uses native assumptions for minimum load.

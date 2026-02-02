@@ -92,7 +92,7 @@ This script reruns a completed ReEDS case as a dispatch simulation at higher tim
 The operational constraints in `c_supplymodel.gms` are used directly, but the investment and capacity variables are fixed to their previously optimized values; only the operational variables are re-optimized.
 365 representative 1-day periods at 1-hour resolution are used by default, but these settings can be changed using the `-s/--switch_mods` switch.
 
-This approach is distinct from the [R2X](https://github.com/NREL/R2X) tool, which formats the results of a ReEDS case as inputs to a separate production cost modeling tool such as [Sienna](https://github.com/NREL-Sienna) or [PLEXOS](https://www.energyexemplar.com/plexos).
+This approach is distinct from the [R2X](https://github.com/NatLabRockies/R2X) tool, which formats the results of a ReEDS case as inputs to a separate production cost modeling tool such as [Sienna](https://github.com/NREL-Sienna) or [PLEXOS](https://www.energyexemplar.com/plexos).
 Those tools provide more advanced and realistic features like unit commitment and rolling forecast horizons;
 by contrast, `run_pcm.py` simply reuses the existing ReEDS formulation at higher time resolution,
 and is subject to all the normal caveats and limitations of ReEDS (linear variables, pipe-and-bubble transmission flow, etc.).

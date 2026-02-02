@@ -211,7 +211,7 @@ We are especially grateful to Walter Short who first envisioned and developed th
 Finally, we are grateful to all those who helped sponsor ReEDS model development and analysis, particularly supporters from the U.S. Department of Energy (DOE) but also others who have funded our work over the years.</p>
 <div class="admonition-suggested-citation admonition">
 <p class="admonition-title">Suggested Citation</p>
-<p>National Laboratory of the Rockies. (2026, January). <em>Model documentation — ReEDS 2.0</em>. https://nrel.github.io/ReEDS-2.0/model_documentation.html</p>
+<p>National Laboratory of the Rockies. (2026, February). <em>Model documentation — ReEDS 2.0</em>. https://natlabrockies.github.io/ReEDS-2.0/model_documentation.html</p>
 </div>
 </section>
 <section id="list-of-abbreviations-and-acronyms">
@@ -627,7 +627,7 @@ Finally, we are grateful to all those who helped sponsor ReEDS model development
 <p>This documentation describes the structure and key data elements of the <a class="reference external" href="https://www.nrel.gov/analysis/reeds/">Regional Energy Deployment System</a> (ReEDS) model, which is maintained and operated by the National Laboratory of the Rockies (NLR).
 In this introduction, we provide a high-level overview of ReEDS objectives, capabilities, and applications.
 We also provide a short discussion of important caveats that apply to any ReEDS analysis.</p>
-<p>The ReEDS model code and input data can be accessed at <a class="reference external" href="https://github.com/NREL/ReEDS-2.0">https://github.com/NREL/ReEDS-2.0</a>.</p>
+<p>The ReEDS model code and input data can be accessed at <a class="reference external" href="https://github.com/NatLabRockies/ReEDS-2.0">https://github.com/NatLabRockies/ReEDS-2.0</a>.</p>
 <section id="overview">
 <h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
 <p>ReEDS is a mathematical programming model of the electric power sector.
@@ -676,7 +676,7 @@ In addition, like other optimization models, ReEDS finds the absolute (determini
 This means that ReEDS investments are not guaranteed to be aligned with cost inputs because ReEDS might add very small amounts of capacity in some regions while cost inputs are based on larger projects. This can be mitigated to some extent by using larger regions and/or larger time steps (e.g., solving every 5 years instead of annually).</p></li>
 <li><p><strong>Resolution:</strong> Although ReEDS has high spatial, temporal, and process resolution for models of its class and scope, it cannot generally represent individual units and transmission lines, and it does not have the temporal resolution to characterize detailed operating behaviors, such as ramp rates and minimum plant runtime.
 By default, operations are modeled for a selection of representative and outlying periods (days or weeks), rather than full years, to achieve a tractable model size.
-The linkage with <a class="reference external" href="https://github.com/NREL/PRAS">PRAS</a>, which includes chronological hourly modeling for multiple years, helps ensure the ReEDS electricity system portfolios meet specified resource adequacy levels.</p></li>
+The linkage with <a class="reference external" href="https://github.com/NatLabRockies/PRAS">PRAS</a>, which includes chronological hourly modeling for multiple years, helps ensure the ReEDS electricity system portfolios meet specified resource adequacy levels.</p></li>
 <li><p><strong>Foresight and behavior:</strong> ReEDS solve years are evaluated sequentially and myopically.
 The model has limited foresight and its decision making does not account for anticipated changes to markets and policies.
 For example, ReEDS typically does not endogenously model the banking and borrowing of credits for carbon, renewable, or clean energy policy between solve years.
@@ -717,7 +717,7 @@ Other readers can ignore these boxes.</p>
 The increments between solve years are user defined, but most studies use 2-year, 3-year, or 5-year increments.
 Increments can also vary between different solve years; e.g., annual increments can be used in the near term followed by multiyear increments in the latter years.
 <a class="reference internal" href="#figure-reeds-pras"><span class="std std-numref">Fig. 16</span></a> illustrates the model’s sequential structure.
-For a given solve year <em>t</em>, ReEDS iterates with the <a class="reference external" href="https://github.com/NREL/PRAS">PRAS</a> model to dynamically update stress periods and check for reliability (see more in the <a class="reference internal" href="#resource-adequacy"><span class="xref myst">Resource Adequacy</span></a> section).
+For a given solve year <em>t</em>, ReEDS iterates with the <a class="reference external" href="https://github.com/NatLabRockies/PRAS">PRAS</a> model to dynamically update stress periods and check for reliability (see more in the <a class="reference internal" href="#resource-adequacy"><span class="xref myst">Resource Adequacy</span></a> section).
 Once the system design is found to be resource adequate, ReEDS advances to the next model solve year (<span class="math notranslate nohighlight">\(t + \Delta t\)</span>).</p>
 <figure class="align-default" id="figure-reeds-pras">
 <img alt="_images/reeds-pras.png" src="_images/reeds-pras.png" />
@@ -2575,7 +2575,7 @@ i.e., only &gt;230-kV lines are included in the calculated ITL between planning 
 <section id="new-transmission-capacity">
 <h4>New transmission capacity<a class="headerlink" href="#new-transmission-capacity" title="Link to this heading"></a></h4>
 <p>The cost of new interzonal transmission capacity between each pair of model zones is calculated in the reV model using the base costs shown in <a class="reference internal" href="#figure-transmission-cost-input-data"><span class="std std-numref">Fig. 45</span></a>.
-For each pair of zones, a <a class="reference external" href="https://github.com/NREL/reVX/tree/main/reVX/least_cost_xmission">least-cost path</a> between the two zone “centers” (the same “centers” described in the <a class="reference internal" href="#network-reinforcement"><span class="xref myst">Network reinforcement</span></a> section) is determined.
+For each pair of zones, a <a class="reference external" href="https://github.com/NatLabRockies/reVX/tree/main/reVX/least_cost_xmission">least-cost path</a> between the two zone “centers” (the same “centers” described in the <a class="reference internal" href="#network-reinforcement"><span class="xref myst">Network reinforcement</span></a> section) is determined.
 (Example paths from Maine to each of the other ReEDS zones are shown in <a class="reference internal" href="#figure-lcp-p134"><span class="std std-numref">Fig. 50</span></a>.)
 The integrated $/mile cost along the least-cost path determines the $/MW cost for expanding the interface capacity between the linked zones;
 the length of the least-cost path determines the distance (used in the calculation of transmission losses within the model,
@@ -4740,7 +4740,7 @@ section of the <a href="user_guide.html">User Guide</a>.</p>
 <h3>ReEDS-PCM<a class="headerlink" href="#reeds-pcm" title="Link to this heading"></a></h3>
 <p>The ReEDS reduced-form dispatch aims to represent enough operational detail for realistic capacity expansion decisions,
 but the model cannot explicitly represent detailed power system operations.
-To enable more detailed study of system operations, NLR has developed a translation framework <a class="reference external" href="https://github.com/NREL/R2X">R2X</a> to implement a ReEDS capacity
+To enable more detailed study of system operations, NLR has developed a translation framework <a class="reference external" href="https://github.com/NatLabRockies/R2X">R2X</a> to implement a ReEDS capacity
 expansion solution for any solve year in production cost models (PCMs).
 R2X supports translations to two PCMs: Sienna and PLEXOS.</p>
 <p><a class="reference external" href="https://www.nrel.gov/analysis/sienna">Sienna</a> is an open-source NLR modeling tool for scientific energy system analysis.
@@ -4758,7 +4758,7 @@ To maintain consistency, the linkage preserves the spatial resolution of ReEDS (
 The PCM translation uses ReEDS transmission interface capacity, whereas reactance and resistance are derived from ReEDS transmission assumptions to represent the aggregated transmission system.
 For generating capacity, ReEDS aggregate capacity is converted to individual units in the PCM using characteristic unit sizes for each technology.
 Where possible and reasonable, ReEDS cost and performance parameters are used.
-If a parameter is missing or inconsistently used in ReEDS because of structural differences between the models, the default translation uses average values across the <a class="reference external" href="https://github.com/NREL/R2X/blob/main/src/r2x/defaults/pcm_defaults.json">WECC</a> for the equivalent technologies in ReEDS.<a class="footnote-reference brackets" href="#ref63" id="id246" role="doc-noteref"><span class="fn-bracket">[</span>36<span class="fn-bracket">]</span></a></p>
+If a parameter is missing or inconsistently used in ReEDS because of structural differences between the models, the default translation uses average values across the <a class="reference external" href="https://github.com/NatLabRockies/R2X/blob/main/src/r2x/defaults/pcm_defaults.json">WECC</a> for the equivalent technologies in ReEDS.<a class="footnote-reference brackets" href="#ref63" id="id246" role="doc-noteref"><span class="fn-bracket">[</span>36<span class="fn-bracket">]</span></a></p>
 <p>Once the ReEDS solution is converted to a PCM, one can simulate hourly dispatch over a full year and compare results with ReEDS outcomes.
 A consistent solution builds confidence in the effectiveness of ReEDS capacity expansion decisions, whereas inconsistencies and reliability concerns such as load shedding indicate the need for improving capacity expansion model structures.
 Additional details are available in <span id="id247">[<a class="reference internal" href="#id1149" title="Bethany Frew, Wesley Cole, Paul Denholm, Will Frazier, Nina Vincent, and Robert Margolis. Sunny with a Chance of Curtailment: Operating the US Grid with Very High Levels of Solar Photovoltaics. iScience, 21:436447, November 2019. doi:10.1016/ j.isci.2019.10.017.">Frew <em>et al.</em>, 2019</a>]</span>.</p>
@@ -6457,7 +6457,7 @@ Prescribed retirements are power plant retirements that are forced into the mode
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on January 29, 2026.
+      <span class="lastupdated">Last updated on February 02, 2026.
       </span></p>
   </div>
 

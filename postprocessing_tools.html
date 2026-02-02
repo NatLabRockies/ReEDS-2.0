@@ -202,7 +202,7 @@ For example, to use a different number of samples than are specified by the defa
 <p>This script reruns a completed ReEDS case as a dispatch simulation at higher time resolution.
 The operational constraints in <code class="docutils literal notranslate"><span class="pre">c_supplymodel.gms</span></code> are used directly, but the investment and capacity variables are fixed to their previously optimized values; only the operational variables are re-optimized.
 365 representative 1-day periods at 1-hour resolution are used by default, but these settings can be changed using the <code class="docutils literal notranslate"><span class="pre">-s/--switch_mods</span></code> switch.</p>
-<p>This approach is distinct from the <a class="reference external" href="https://github.com/NREL/R2X">R2X</a> tool, which formats the results of a ReEDS case as inputs to a separate production cost modeling tool such as <a class="reference external" href="https://github.com/NREL-Sienna">Sienna</a> or <a class="reference external" href="https://www.energyexemplar.com/plexos">PLEXOS</a>.
+<p>This approach is distinct from the <a class="reference external" href="https://github.com/NatLabRockies/R2X">R2X</a> tool, which formats the results of a ReEDS case as inputs to a separate production cost modeling tool such as <a class="reference external" href="https://github.com/NREL-Sienna">Sienna</a> or <a class="reference external" href="https://www.energyexemplar.com/plexos">PLEXOS</a>.
 Those tools provide more advanced and realistic features like unit commitment and rolling forecast horizons;
 by contrast, <code class="docutils literal notranslate"><span class="pre">run_pcm.py</span></code> simply reuses the existing ReEDS formulation at higher time resolution,
 and is subject to all the normal caveats and limitations of ReEDS (linear variables, pipe-and-bubble transmission flow, etc.).</p>
@@ -251,7 +251,7 @@ For more information on how to use bokehpivot, see the <a class="reference inter
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on January 29, 2026.
+      <span class="lastupdated">Last updated on February 02, 2026.
       </span></p>
   </div>
 
