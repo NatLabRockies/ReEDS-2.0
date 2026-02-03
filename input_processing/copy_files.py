@@ -1870,8 +1870,13 @@ def main(reeds_path, inputs_case, NARIS=False):
 
     # Create a maps.gpkg for this run
     # Skip if using region dis/aggregation, maps will be written in aggregation_regions.py.
-    if agglevel_variables['lvl'] == 'ba':
+    if agglevel_variables['agglevel'] == 'ba':
         generate_maps_gpkg(inputs_case)
+    
+    # If aggreg in agglevel_variables['agglevel'], need to run get_dfmap() to produce aggreg2anchorreg
+    if 'aggreg' in agglevel_variables['agglevel']:
+        reeds.io.get_dfmap(os.path.abspath(os.path.join(inputs_case,'..')))
+    
 
     #%% ===========================================================================
     ### --- Exceptions ---
