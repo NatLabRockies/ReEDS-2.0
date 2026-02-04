@@ -956,7 +956,7 @@ eq_forceprescription_energy(pcat,r,t)
 *energy capacity built in the current period or prior
     sum{(i,newv,tt)$[valinv(i,newv,r,tt)$prescriptivelink(pcat,i)
                      $(yeart(tt)<=yeart(t))$(tmodel(tt) or tfix(tt))
-                     $(battery(i) or tes(i))],
+                     $(battery(i) or tes(i) or nuclear_stor(i))],
         INV_ENERGY(i,newv,r,tt)}
 
     =e=
