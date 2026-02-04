@@ -2802,136 +2802,214 @@ def map_agg(
 
 
 def map_capacity_techs(
-        case, year=2050,
-        techs=[
-            'Utility PV', 'Land-based wind', 'Offshore wind', 'Electrolyzer',
-            'Battery', 'TES', 'PSH', 'H2 turbine', 'Nuclear',
-            'Gas CCS', 'Coal CCS', 'Gas', 'Coal',
-        ],
-        ncols=4,
-        vmax='shared',
-        cmap=cmocean.cm.rain,
-    ):
+    case,
+    year=2050,
+    techs=[
+        'Utility PV', 'Land-based wind', 'Offshore wind', 'Electrolyzer',
+        'Battery', 'TES', 'PSH', 'H2 turbine', 'Nuclear',
+        'Gas CCS', 'Coal CCS', 'Gas', 'Coal',
+    ],
+    ncols=4,
+    vmax='shared',
+    cmap=cmocean.cm.rain,
+    log=False,
+    agg_region='ba',
+):
     """
+    Plot capacity maps by technology.
+
+    Parameters
+    ----------
+    agg_region : str
+        Aggregation region to plot. Defaults to 'ba' (no aggregation, plot by BA).
+        If set to something else, capacities are aggregated by mapping each BA to
+        the corresponding column in hierarchy.csv (via reeds.io.get_hierarchy(case)).
+        Example: 'transreg', 'interconnect', 'nercr', etc.
     """
     ### Tech simplifications
     techmap = {
-        **{f'upv_{i}':'Utility PV' for i in range(20)},
-        **{f'wind-ons_{i}':'Land-based wind' for i in range(20)},
-        **{f'wind-ofs_{i}':'Offshore wind' for i in range(20)},
-        # **dict(zip(['nuclear','nuclear-smr', 'nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear']*20)),
-        **dict(zip(['nuclear'], ['Nuclear']*20)),
-        **dict(zip(['nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear-Stor']*20)),
-        **dict(zip(['nuclear-smr'], ['Nuclear-SMR']*20)),
-        **dict(zip(
-            ['h2-cc', 'h2-ct', 'gas-cc_h2-cc', 'gas-ct_h2-ct'],
-            ['H2 turbine']*20)),
-        **{'electrolyzer':'Electrolyzer'},
-    **{'battery_li':'Battery', 'tes_ms':'TES', 'pumped-hydro':'PSH'},
-        **dict(zip(
-            ['gas-cc_gas-cc-ccs_mod','gas-cc_gas-cc-ccs_max',
-             'gas-cc-ccs_mod','gas-cc-ccs_max'],
-            ['Gas CCS']*50)),
-        **dict(zip(
-            ['coal-igcc_coal-ccs_mod','coal-new_coal-ccs_mod',
-             'coaloldscr_coal-ccs_mod','coalolduns_coal-ccs_mod','cofirenew_coal-ccs_mod',
-             'cofireold_coal-ccs_mod','coal-igcc_coal-ccs_max',
-             'coal-new_coal-ccs_max','coaloldscr_coal-ccs_max','coalolduns_coal-ccs_max',
-             'cofirenew_coal-ccs_max','cofireold_coal-ccs_max'],
-            ['Coal CCS']*50)),
-        **dict(zip(
-            ['coal-igcc', 'coaloldscr', 'coalolduns', 'coal-new',
-             'gas-cc', 'gas-ct', 'o-g-s'],
-            ['Fossil']*20)),
-        **dict(zip(
-            ['coal-igcc', 'coaloldscr', 'coalolduns', 'coal-new'],
-            ['Coal']*20)),
-        **dict(zip(
-            ['gas-cc', 'gas-ct'],
-            ['Gas']*20)),
-        **dict(zip(['dac','beccs_mod','beccs_max'], ['CO2 removal']*20)),
+        **{f'upv_{i}': 'Utility PV' for i in range(20)},
+        **{f'wind-ons_{i}': 'Land-based wind' for i in range(20)},
+        **{f'wind-ofs_{i}': 'Offshore wind' for i in range(20)},
+        **dict(zip(['nuclear'], ['Nuclear'] * 20)),
+        **dict(zip(['nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear-Stor'] * 20)),
+        **dict(zip(['nuclear-smr'], ['Nuclear-SMR'] * 20)),
+        **dict(
+            zip(
+                ['h2-cc', 'h2-ct', 'gas-cc_h2-cc', 'gas-ct_h2-ct'],
+                ['H2 turbine'] * 20,
+            )
+        ),
+        **{'electrolyzer': 'Electrolyzer'},
+        **{'battery_li': 'Battery', 'tes_ms': 'TES', 'pumped-hydro': 'PSH'},
+        **dict(
+            zip(
+                ['gas-cc_gas-cc-ccs_mod', 'gas-cc_gas-cc-ccs_max',
+                 'gas-cc-ccs_mod', 'gas-cc-ccs_max'],
+                ['Gas CCS'] * 50,
+            )
+        ),
+        **dict(
+            zip(
+                ['coal-igcc_coal-ccs_mod', 'coal-new_coal-ccs_mod',
+                 'coaloldscr_coal-ccs_mod', 'coalolduns_coal-ccs_mod', 'cofirenew_coal-ccs_mod',
+                 'cofireold_coal-ccs_mod', 'coal-igcc_coal-ccs_max',
+                 'coal-new_coal-ccs_max', 'coaloldscr_coal-ccs_max', 'coalolduns_coal-ccs_max',
+                 'cofirenew_coal-ccs_max', 'cofireold_coal-ccs_max'],
+                ['Coal CCS'] * 50,
+            )
+        ),
+        **dict(
+            zip(
+                ['coal-igcc', 'coaloldscr', 'coalolduns', 'coal-new',
+                 'gas-cc', 'gas-ct', 'o-g-s'],
+                ['Fossil'] * 20,
+            )
+        ),
+        **dict(
+            zip(
+                ['coal-igcc', 'coaloldscr', 'coalolduns', 'coal-new'],
+                ['Coal'] * 20,
+            )
+        ),
+        **dict(
+            zip(
+                ['gas-cc', 'gas-ct'],
+                ['Gas'] * 20,
+            )
+        ),
+        **dict(zip(['dac', 'beccs_mod', 'beccs_max'], ['CO2 removal'] * 20)),
     }
+
     ### Get maps
     dfmap = reeds.io.get_dfmap(case)
     dfba = dfmap['r']
     dfstates = dfmap['st']
+    dftransgrp = dfmap.get('transgrp', None)
+
+    ### Hierarchy + aggregation
+    hierarchy = reeds.io.get_hierarchy(case)
+    agg_region = (agg_region or 'ba')
+    agg_region_norm = agg_region.strip().lower()
+
+    # Treat these as "no aggregation"
+    if agg_region_norm in ['ba', 'r', 'rb']:
+        agg_region_use = 'ba'
+        region_col = 'r'
+        dfzones = dfba.copy()
+    else:
+        if agg_region not in hierarchy.columns:
+            raise ValueError(
+                f"agg_region='{agg_region}' not found in hierarchy columns. "
+                f"Available: {list(hierarchy.columns)}"
+            )
+        region_col = 'agg'
+
+        # Prefer a pre-built layer if available; otherwise dissolve BA polygons
+        if agg_region in dfmap:
+            dfzones = dfmap[agg_region].copy()
+        else:
+            dfzones = dfba.copy()
+            dfzones[region_col] = dfzones.index.map(hierarchy[agg_region])
+            dfzones.geometry = dfzones.geometry.buffer(0.0)
+            dfzones = dfzones.dissolve(region_col)
+
+        agg_region_use = agg_region
+
     ### Case data
     dfcap = reeds.io.read_output(case, 'cap', valname='MW')
-    dfcap.i = dfcap.i.str.lower().map(lambda x: techmap.get(x,x))
-    ### Get the vmax
+    dfcap.i = dfcap.i.str.lower().map(lambda x: techmap.get(x, x))
+    dfcap = dfcap[dfcap["MW"] > 200].copy()
+
+    # Add aggregation key for capacity if aggregating
+    if region_col == 'agg':
+        dfcap['agg'] = dfcap.r.map(hierarchy[agg_region])
+
+    ### Color scaling
     if vmax == 'shared':
-        _vmax = dfcap.loc[
-            dfcap.i.isin(techs) & (dfcap.t.astype(int)==year)
-        ].groupby(['i','r']).MW.sum().max() / 1e3
-    elif isinstance(vmax, (int,float)):
-        _vmax = vmax
+        _vmax = (
+            dfcap.loc[dfcap.i.isin(techs) & (dfcap.t.astype(int) == year)]
+            .groupby(['i', region_col]).MW.sum().max() / 1e3
+        )
+    elif isinstance(vmax, (int, float)):
+        _vmax = float(vmax)
     else:
         _vmax = None
+
+    norm = None
+    if log:
+        # LogNorm can't handle non-positive values; pick a shared positive vmin.
+        dfpos = (
+            dfcap.loc[dfcap.i.isin(techs) & (dfcap.t.astype(int) == year)]
+            .groupby(['i', region_col]).MW.sum() / 1e3
+        )
+        dfpos = dfpos[dfpos > 0]
+        if len(dfpos):
+            vmin_pos = float(dfpos.min())
+            vmax_pos = float(dfpos.max()) if _vmax is None else float(_vmax)
+            if vmax_pos <= vmin_pos:
+                vmax_pos = vmin_pos * 10
+            norm = mpl.colors.LogNorm(vmin=vmin_pos, vmax=vmax_pos)
+
     ### Arrange the subplots
     nrows, _, coords = reeds.plots.get_coordinates(techs, ncols=ncols)
+
     ### Plot it
     plt.close()
-    f,ax = plt.subplots(
-        nrows, ncols, figsize=(3*ncols, 3*nrows),
-        gridspec_kw={'wspace':0.0,'hspace':-0.05}, dpi=150)
-    if len(techs) == 1:
-        tech = techs[0]
-        dfval = dfcap.loc[
-            (dfcap.i==tech)
-            & (dfcap.t.astype(int)==year)
-        ].groupby('r').MW.sum().round(3)
-        dfplot = dfba.copy()
-        dfplot['GW'] = (dfval / 1000).fillna(0)
+    f, ax = plt.subplots(
+        nrows, ncols, figsize=(3 * ncols, 3 * nrows),
+        gridspec_kw={'wspace': 0.0, 'hspace': -0.05}, dpi=150
+    )
 
-        dfba.plot(
-            ax=ax,
-            facecolor='none', edgecolor='k', lw=0.1, zorder=10000)
-        dfstates.plot(
-            ax=ax,
-            facecolor='none', edgecolor='k', lw=0.2, zorder=10001)
-        dfplot.plot(
-            ax=ax, column='GW', cmap=cmap, legend=True,
-            vmin=0, vmax=_vmax,
+    def _plot_one(_ax, tech):
+        dfval = (
+            dfcap.loc[(dfcap.i == tech) & (dfcap.t.astype(int) == year)]
+            .groupby(region_col).MW.sum().round(3)
+        )
+
+        dfplot = dfzones.copy()
+        dfplot['GW'] = (dfval / 1000).reindex(dfzones.index).fillna(0)
+
+        # Background / outlines
+        dfzones.plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.2, alpha=0.35, zorder=10000)
+        dfstates.plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.15, alpha=0.35, zorder=10001)
+
+        # Optional extra outlines (kept from original behavior)
+        if (dftransgrp is not None) and (agg_region_use == 'ba'):
+            dftransgrp.plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.4, zorder=9000)
+
+        plot_kw = dict(
+            ax=_ax, column='GW', cmap=cmap, legend=True,
             legend_kwds={
-                'shrink':0.75, 'pad':0, 'orientation':'horizontal',
-                'label': '{} [GW]'.format(tech),
+                'shrink': 0.75, 'pad': 0, 'orientation': 'horizontal',
+                'label': f'{tech} [GW]',
             }
         )
-        ax.axis('off')
-        ax.set_title(
-            '{} - {} ({})'.format(os.path.basename(case), tech, year),
-            x=0.1, ha='left', va='top')
-        return f, ax
-    else:
-        for tech in techs:
-            dfval = dfcap.loc[
-                (dfcap.i==tech)
-                & (dfcap.t.astype(int)==year)
-            ].groupby('r').MW.sum().round(3)
-            dfplot = dfba.copy()
-            dfplot['GW'] = (dfval / 1000).fillna(0)
+        if norm is not None:
+            plot_kw.update(dict(norm=norm))
+        else:
+            plot_kw.update(dict(vmin=0, vmax=_vmax))
 
-            dfba.plot(
-                ax=ax[coords[tech]],
-                facecolor='none', edgecolor='k', lw=0.1, zorder=10000)
-            dfstates.plot(
-                ax=ax[coords[tech]],
-                facecolor='none', edgecolor='k', lw=0.2, zorder=10001)
-            dfplot.plot(
-                ax=ax[coords[tech]], column='GW', cmap=cmap, legend=True,
-                vmin=0, vmax=_vmax,
-                legend_kwds={
-                    'shrink':0.75, 'pad':0, 'orientation':'horizontal',
-                    'label': '{} [GW]'.format(tech),
-                }
-            )
-            ax[coords[tech]].axis('off')
-        ax[0,0].set_title(
-            '{} ({})'.format(os.path.basename(case), year),
-            x=0.1, ha='left', va='top')
-        plots.trim_subplots(ax, nrows, ncols, len(techs))
-    
+        dfplot.plot(**plot_kw)
+        _ax.axis('off')
+
+    if len(techs) == 1:
+        _plot_one(ax, techs[0])
+        ax.set_title(
+            f"{os.path.basename(case)} - {techs[0]} ({year})\nagg_region={agg_region_use}",
+            x=0.1, ha='left', va='top'
+        )
         return f, ax
+
+    for tech in techs:
+        _plot_one(ax[coords[tech]], tech)
+
+    ax[0, 0].set_title(
+        f"{os.path.basename(case)} ({year})\nagg_region={agg_region_use}",
+        x=0.1, ha='left', va='top'
+    )
+    plots.trim_subplots(ax, nrows, ncols, len(techs))
+    return f, ax
 
 
 
@@ -3064,6 +3142,138 @@ def map_capacity_markers(
     ax.axis('off')
 
     return f, ax
+
+
+def map_regional_retail_rate(
+    case,
+    year=2050,
+    cmap=plt.cm.inferno,
+    vmax='shared',
+    include_flows=True,
+    units='cents/kWh',
+    comp=None,
+    f=None, ax=None,
+):
+    """Plot BA-level retail rates using components from
+    outputs/retail/regional_retail_rate_components.csv.
+
+    Inputs
+    ------
+    - case: path to run directory
+    - year: modeled year to plot
+    - include_flows: include interregional expenditure flow adjustments
+      (load/oper_res/rps/res_marg_ann) if available
+    - units: output units ('cents/kWh' or '$/MWh')
+    - comp: optional comparison case path. If provided, plot (comp – case) difference.
+    """
+    def _rate_by_region(casedir):
+        """Load components and return Series indexed by r with rate in desired display units."""
+        components_path = os.path.join(
+            casedir, 'outputs', 'retail', 'regional_retail_rate_components.csv'
+        )
+        if not os.path.exists(components_path):
+            raise FileNotFoundError(
+                f"Regional retail components not found: {components_path}. "
+                "Run postprocessing/retail_rate_module/regional_retail_rate_calculations.py first."
+            )
+        dfin = pd.read_csv(components_path)
+        if ('t' not in dfin) or ('r' not in dfin):
+            raise ValueError('Expected columns r and t in regional retail components.')
+        try:
+            dfin['t'] = dfin['t'].astype(int)
+        except Exception:
+            pass
+        dfin = dfin.loc[dfin['t'] == year].copy()
+        if dfin.empty:
+            raise ValueError(f'No regional retail components for year {year} in {casedir}.')
+
+        costcols = [c for c in dfin.columns if c.startswith('op_') or c.startswith('cap_')]
+        extras = [c for c in ['ptc_grossup', 'itc_normalized_value', 'itc_trans'] if c in dfin.columns]
+        flowcols = [c for c in ['load_flow', 'oper_res_flow', 'rps_flow', 'res_marg_ann_flow'] if c in dfin.columns]
+        usecols = costcols + extras + (flowcols if include_flows else [])
+
+        if 'retail_load' not in dfin.columns:
+            raise ValueError('Expected column retail_load in regional retail components.')
+
+        dfin[usecols] = dfin[usecols].fillna(0)
+        total_cost = dfin.groupby('r')[usecols].sum().sum(axis=1)
+        retail_load = dfin.groupby('r')['retail_load'].sum().replace(0, np.nan)
+        rate_per_mwh = (total_cost / retail_load).fillna(0)  # [$ / MWh]
+
+        if units.lower() in ['cents/kwh', 'c/kwh', 'cent/kwh']:
+            # 1 $/MWh = 0.1 cents/kWh
+            return (rate_per_mwh * 0.1).rename('rate')
+        elif units.lower() in ['$/mwh', 'usd/mwh']:
+            return rate_per_mwh.rename('rate')
+        else:
+            raise ValueError(f'Unsupported units: {units}')
+
+    # Maps
+    dfmap = reeds.io.get_dfmap(case)
+    dfba = dfmap['r']
+    dfstates = dfmap['st']
+
+    # Compute rate(s)
+    rate_case = _rate_by_region(case).reindex(dfba.index).fillna(0)
+
+    if comp is None:
+        dfplot = (
+            dfba.merge(rate_case.rename('rate'), left_index=True, right_index=True, how='left')
+            .fillna(0)
+        )
+        unit_label = 'cents/kWh' if units.lower() in ['cents/kwh', 'c/kwh', 'cent/kwh'] else '$/MWh'
+        label = f"Retail rate {year} [{unit_label}]"
+        title = f'{os.path.basename(case)} ({year})'
+        vmin, vmax_plot = 0.0, None
+        if vmax == 'shared':
+            vmax_plot = float(dfplot['rate'].max())
+        elif isinstance(vmax, (int, float)):
+            vmax_plot = float(vmax)
+        _cmap = cmap
+    else:
+        rate_comp = _rate_by_region(comp).reindex(dfba.index).fillna(0)
+        ratediff = (rate_case - rate_comp).rename('rate')
+        dfplot = (
+            dfba.merge(ratediff, left_index=True, right_index=True, how='left')
+            .fillna(0)
+        )
+        unit_label = 'cents/kWh' if units.lower() in ['cents/kwh', 'c/kwh', 'cent/kwh'] else '$/MWh'
+        label = (
+            f"Δ Retail rate {year} [{unit_label}]\n"
+            f"{os.path.basename(case)} – {os.path.basename(comp)}"
+        )
+        title = f"{os.path.basename(comp)} – {os.path.basename(case)} ({year})"
+        if vmax == 'shared':
+            zlim = max(abs(dfplot['rate'].min()), abs(dfplot['rate'].max()))
+        elif isinstance(vmax, (int, float)):
+            zlim = abs(float(vmax))
+        else:
+            zlim = max(abs(dfplot['rate'].min()), abs(dfplot['rate'].max()))
+        vmin, vmax_plot = -zlim, zlim
+        _cmap = (plt.cm.RdBu_r if cmap == plt.cm.inferno else cmap)
+
+    # Plot
+    if (f is None) and (ax is None):
+        plt.close()
+        f, ax = plt.subplots(figsize=(8, 6))
+
+    dfba.plot(ax=ax, facecolor='none', edgecolor='k', lw=0.2, zorder=10000, alpha=0.5)
+    dfstates.plot(ax=ax, facecolor='none', edgecolor='k', lw=0.2, zorder=10001, alpha=0.5)
+    dfmap['interconnect'].plot(ax=ax, edgecolor='k', facecolor='none', lw=0.3, zorder=10002)
+
+
+    dfplot.plot(
+        ax=ax, column='rate', cmap=_cmap, legend=True,
+        vmin=vmin, vmax=vmax_plot,
+        legend_kwds={
+            'shrink': 0.75, 'pad': 0, 'orientation': 'horizontal',
+            'label': label,
+        }
+    )
+
+    ax.axis('off')
+    ax.set_title(title, x=0.1, ha='left', va='top')
+    return f, ax, dfplot
 
 
 def map_transmission_lines(
@@ -4167,6 +4377,45 @@ def plot_storage_hybrid_dispatch_yearbymonth(
     storage_in_plant_h = _safe_read('storage_in_plant_h')
     storage_in_grid_h = _safe_read('storage_in_grid_h')
 
+    # Storage efficiency (round-trip efficiency) for the selected year.
+    # Apply to charging-from-grid flows (storage_in_grid) so the plotted
+    # series reflects net energy stored after charging losses.
+    storage_eff_by_tech = None
+    try:
+        eff_paths = [os.path.join(case, 'outputs', 'storage_eff.csv')]
+        if periodtype != 'rep':
+            eff_paths.append(os.path.join(case, 'outputs', f'{periodtype}_{t}', 'storage_eff.csv'))
+
+        eff_path = next((p for p in eff_paths if os.path.exists(p)), None)
+        if eff_path is not None:
+            dfeff = pd.read_csv(eff_path)
+            dfeff.columns = [c.strip().lower() for c in dfeff.columns]
+            tech_col = next((c for c in ['i', 'tech', 'technology'] if c in dfeff.columns), None)
+            year_col = next((c for c in ['t', 'year'] if c in dfeff.columns), None)
+            val_col = next((c for c in ['value', 'fraction', 'storage_eff', 'rte', 'eff'] if c in dfeff.columns), None)
+
+            if (tech_col is not None) and (val_col is not None):
+                if year_col is not None:
+                    # tolerate year col being str/int
+                    dfeff = dfeff.loc[dfeff[year_col].astype(int) == int(t)].copy()
+
+                def _map_tech_name(x: str) -> str:
+                    x = str(x)
+                    x = x if (x.startswith('battery') or x.startswith('tes')) else x.strip('_01234567890*')
+                    x = x.lower()
+                    return tech_map.get(x, x)
+
+                eff_series = (
+                    dfeff[[tech_col, val_col]]
+                    .dropna(subset=[tech_col, val_col])
+                    .assign(**{tech_col: lambda df_: df_[tech_col].map(_map_tech_name)})
+                    .groupby(tech_col)[val_col]
+                    .mean()
+                )
+                storage_eff_by_tech = eff_series.to_dict()
+    except Exception:
+        storage_eff_by_tech = None
+
     datasets = {
         'gen_plant': gen_plant_h,
         'gen_storage': gen_storage_h,
@@ -4194,6 +4443,12 @@ def plot_storage_hybrid_dispatch_yearbymonth(
         # Group by h and i, sum values across r
         if {'h', 'i'}.issubset(df.columns):
             grouped = df.groupby(['h', 'i']).Value.sum().unstack('i').fillna(0)
+
+            # Apply storage efficiency scaling to storage_in_grid only
+            if (dsname == 'storage_in_grid') and storage_eff_by_tech:
+                eff = pd.Series(storage_eff_by_tech, dtype=float)
+                grouped = grouped.mul(eff.reindex(grouped.columns).fillna(1.0), axis=1)
+
             # prefix columns with dataset to ensure uniqueness
             grouped.columns = [f'{dsname}|{c}' for c in grouped.columns]
             series_list.append(grouped)
@@ -4237,7 +4492,6 @@ def plot_storage_hybrid_dispatch_yearbymonth(
 
     # Handle negative columns (put negative portion on bottom)
     goes_negative = list(dffull.columns[(dffull < 0).any()])
-    print(goes_negative)
     df = dffull.copy()
     for col in goes_negative:
         df[col + '_neg'] = df[col].clip(upper=0)
@@ -4253,8 +4507,7 @@ def plot_storage_hybrid_dispatch_yearbymonth(
         df[[c for c in plotorder if c in df]].cumsum(axis=1)
         [[c for c in plotorder[::-1] if c in df]]
     )
-    print(dfplot.columns)
-    print(dfplot)
+
     # Build color list: one color per original entry column (not the generated _neg/_pos/_off names)
     # Use plots.rainbowmapper so entries get distinct, stable colors.
     color_map = plots.rainbowmapper(base_entries)

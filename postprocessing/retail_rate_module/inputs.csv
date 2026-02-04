@@ -6,6 +6,7 @@ inputs,trans_timeframe,40
 inputs,eval_period_overwrite,0
 inputs,financefile,capital_financing_assumptions.csv
 inputs,dollar_year,2004
+inputs,ops_interp_mode,interpolate
 input_daproj,numslopeyears,10
 input_daproj,numprojyears,10
 input_daproj,current_t,2020

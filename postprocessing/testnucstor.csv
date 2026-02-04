@@ -1,5 +1,5 @@
 casepath,casename,color
 # python postprocessing/compare_cases.py /Users/ethan/code/research/ReEDS-2.0-nuclear-stor/postprocessing/testnucstor.csv
-C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\runs\mandate_scenarios_nuclear_storage\test1_base,base,
-C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\runs\mandate_scenarios_nuclear_storage\test1_wind_60,wind60,
-C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\runs\mandate_scenarios_nuclear_storage\test1_solar_60,solar60,
+D:\ReEDS files\control\mandates_nostor_base,control,
+D:\ReEDS files\test\test1_base,test,
+D:\ReEDS files\demo\mandate_demo_nostor_base,demo,
