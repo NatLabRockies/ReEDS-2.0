@@ -39,7 +39,7 @@ eq_ObjFn_inv(t)$tmodel(t)..
                        cost_cap_fin_mult(i,r,t) * cost_cap(i,t) * INV(i,v,r,t)
                       }
 
-                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i))],
+                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))],
                        cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t) 
                       }
 
@@ -184,7 +184,7 @@ eq_Objfn_op(t)$tmodel(t)..
               + sum{(i,v,r)$[valcap(i,v,r,t)],
                    cost_fom(i,v,r,t) * CAP(i,v,r,t) }
 
-              + sum{(i,v,r)$[valcap(i,v,r,t)$(battery(i) or tes(i))],
+              + sum{(i,v,r)$[valcap(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))],
                    cost_fom_energy(i,v,r,t) * CAP_ENERGY(i,v,r,t) }
 
 * transmission lines
