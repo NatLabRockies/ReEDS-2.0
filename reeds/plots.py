@@ -1418,7 +1418,14 @@ def plotyearbymonth(dfs, plotcols=None, colors=None, net=False,
                 continue
             if normalize:
                 dfmonth = dfmonth / dfmonth.max()
-            net_series = dfmonth.iloc[:,0] + dfmonth.iloc[:,-1]
+            # For stacked/cumulative dispatch plots, each column is typically a cumulative
+            # boundary (created via cumsum). In that case, the "top" envelope is the total
+            # positive dispatch and the "bottom" envelope is the total negative dispatch.
+            # Using max/min across columns correctly includes *all* negative contributors
+            # (not just the first/last column).
+            top = dfmonth.max(axis=1)
+            bottom = dfmonth.min(axis=1)
+            net_series = top + bottom.where(bottom < 0, 0)
             net_series.index = net_series.index.map(monthifier)
             ax[i].plot(net_series.index, net_series.values, color='k', lw=1, zorder=1000, label='Net Generation')
                                         
