@@ -172,6 +172,7 @@ EQUATION
  eq_growthlimit_relative(i,st,t)          "--MW-- relative growth limit on technologies"
  eq_growthbin_limit(gbin,st,tg,t)         "--MW-- capacity limit for each growth bin"
  eq_growthlimit_absolute(tg,t)            "--MW-- absolute growth limit on technologies"
+ eq_nucleargrowthlimit_absolute(i,t)      "--MW-- absolute growth limit on nuclear capacity additions"
 
 eq_interconnection_queues(tg,r,t)         "--MW-- capacity deployment limit based on interconnection queues"  
 
@@ -1103,6 +1104,25 @@ eq_growthlimit_absolute(tg,t)$[growth_limit_absolute(tg)$tmodel(t)
 * must exceed the total investment
      sum{(i,v,r)$[valinv(i,v,r,t)$tg_i(tg,i)],
           INV(i,v,r,t) }
+;
+
+* ---------------------------------------------------------------------------
+
+eq_nucleargrowthlimit_absolute(i,t)$[tmodel(t)
+                               $Sw_NuclearGrowthAbsCon
+                               $(yeart(t)>=firstyear(i))
+                               $(not Sw_PCM)
+                               $nuclear(i)]..
+
+* the absolute limit of growth (in MW)
+    (sum{tt$[tprev(tt,t)], yeart(tt) } - yeart(t))
+    * nuclear_growth_limit_absolute
+
+     =g=
+
+* must exceed the total investment
+    sum{(v,r)$[valinv(i,v,r,t)$nuclear(i)],
+        INV(i,v,r,t) }
 ;
 
 * ---------------------------------------------------------------------------

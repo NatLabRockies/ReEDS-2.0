@@ -9,7 +9,7 @@ lpmethod = 4
 advind 0
 
 *** reslim (integer): solve time limit in seconds [172800 seconds = 2 days]
-reslim 172800
+reslim 604800
 
 *** scaind (integer): matrix scaling on/off [1 = modified, more aggressive scaling method]
 scaind 1
