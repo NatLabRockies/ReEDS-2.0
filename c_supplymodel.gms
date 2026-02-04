@@ -172,6 +172,7 @@ EQUATION
  eq_growthlimit_relative(i,st,t)          "--MW-- relative growth limit on technologies"
  eq_growthbin_limit(gbin,st,tg,t)         "--MW-- capacity limit for each growth bin"
  eq_growthlimit_absolute(tg,t)            "--MW-- absolute growth limit on technologies"
+ eq_nucleargrowthlimit_absolute(i,t)      "--MW-- absolute growth limit on nuclear capacity additions"
 
 eq_interconnection_queues(tg,r,t)         "--MW-- capacity deployment limit based on interconnection queues"  
 
@@ -1103,6 +1104,25 @@ eq_growthlimit_absolute(tg,t)$[growth_limit_absolute(tg)$tmodel(t)
 * must exceed the total investment
      sum{(i,v,r)$[valinv(i,v,r,t)$tg_i(tg,i)],
           INV(i,v,r,t) }
+;
+
+* ---------------------------------------------------------------------------
+
+eq_nucleargrowthlimit_absolute(i,t)$[tmodel(t)
+                               $Sw_NuclearGrowthAbsCon
+                               $(yeart(t)>=firstyear(i))
+                               $(not Sw_PCM)
+                               $nuclear(i)]..
+
+* the absolute limit of growth (in MW)
+    (sum{tt$[tprev(tt,t)], yeart(tt) } - yeart(t))
+    * nuclear_growth_limit_absolute
+
+     =g=
+
+* must exceed the total investment
+    sum{(v,r)$[valinv(i,v,r,t)$nuclear(i)],
+        INV(i,v,r,t) }
 ;
 
 * ---------------------------------------------------------------------------
@@ -2639,7 +2659,7 @@ eq_REC_Generation(RPSCat,i,st,t)$[stfeas(st)$(not tfirst(t))$tmodel(t)
           RPSTechMult(RPSCat,i,st) * hours(h)
           * (GEN(i,v,r,h,t) 
           - CREDIT_H2PTC(i,v,r,h,t)$[valgen_h2ptc(i,v,r,t)$Sw_H2_PTC] 
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$[$Sw_HybridPlant] )
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$Sw_HybridPlant )
          }
 
      =g=
@@ -2713,7 +2733,7 @@ eq_REC_Requirement(RPSCat,st,t)$[RecPerc(RPSCat,st,t)$(not tfirst(t))
 *subtract out its grid charging (see eq_REC_Generation above).
       + ( sum{(i,v)$[valgen(i,v,r,t)$(not storage_standalone(i))], GEN(i,v,r,h,t)
           - (distloss * GEN(i,v,r,h,t))$(distpv(i))
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$[$Sw_HybridPlant] }
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$Sw_HybridPlant }
           - can_exports_h(r,h,t)$[(Sw_Canada=1)$sameas(RPSCat,"CES")]
         )$(RecStyle(st,RPSCat)=2)
     )}
@@ -3333,9 +3353,9 @@ eq_storage_interday_min_level_end(i,v,r,allszn,t)$[valgen(i,v,r,t)$storage_inter
 eq_storage_interday_max_level_start(i,v,r,allszn,t)$[valgen(i,v,r,t)$storage_interday(i)$tmodel(t)$numpartitions(allszn)]..
     
 * Fixed-duration storage
-    storage_duration(i) * CAP(i,v,r,t)$(not battery(i))
+    storage_duration(i) * CAP(i,v,r,t)$[not (battery(i) or nuclear_stor(i))]
 * Variable-duration storage
-    + CAP_ENERGY(i,v,r,t)$battery(i)
+    + CAP_ENERGY(i,v,r,t)$( battery(i) or nuclear_stor(i))
 
     =g=
     
@@ -3351,9 +3371,9 @@ eq_storage_interday_max_level_start(i,v,r,allszn,t)$[valgen(i,v,r,t)$storage_int
 * This is to make sure not only their hour 0 but also the highest point of the last period of each partition is greater than maximum capacity
 eq_storage_interday_max_level_end(i,v,r,allszn,t)$[valgen(i,v,r,t)$storage_interday(i)$tmodel(t)$numpartitions(allszn)]..
     
-    storage_duration(i) * CAP(i,v,r,t)$(not battery(i))
+    storage_duration(i) * CAP(i,v,r,t)$[not (battery(i) or nuclear_stor(i))]
 
-    + CAP_ENERGY(i,v,r,t)$battery(i)
+    + CAP_ENERGY(i,v,r,t)$( battery(i) or nuclear_stor(i))
 
     =g=
     

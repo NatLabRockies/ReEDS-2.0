@@ -545,12 +545,14 @@ repgasprice_r(r,t)$[(Sw_GasCurve = 1)$tmodel_new(t)] =
                    hours(h) } / sum{h, hours(h) }
 
               + smax((fuelbin,cendiv)$[VGASBINQ_REGIONAL.l(fuelbin,cendiv,t)$r_cendiv(r,cendiv)], gasbinp_regional(fuelbin,cendiv,t) )
+                  $sum{(fuelbin,cendiv)$[VGASBINQ_REGIONAL.l(fuelbin,cendiv,t)$r_cendiv(r,cendiv)], 1}
 
               + smax(fuelbin$VGASBINQ_NATIONAL.l(fuelbin,t), gasbinp_national(fuelbin,t) )
+                  $sum{fuelbin$VGASBINQ_NATIONAL.l(fuelbin,t), 1}
               ) ;
 
 repgasprice(cendiv,t)$[(Sw_GasCurve = 1)$tmodel_new(t)$repgasquant(cendiv,t)] =
-    sum{(i,r)$r_cendiv(r,cendiv), repgasprice_r(r,t) * repgasquant_irt(i,r,t) } / repgasquant(cendiv,t) ;
+    sum{(i,r)$[r_cendiv(r,cendiv)$repgasquant_irt(i,r,t)], repgasprice_r(r,t) * repgasquant_irt(i,r,t) } / repgasquant(cendiv,t) ;
 
 repgasprice_nat(t)$[tmodel_new(t)$sum{cendiv, repgasquant(cendiv,t) }] =
     sum{cendiv, repgasprice(cendiv,t) * repgasquant(cendiv,t) }
