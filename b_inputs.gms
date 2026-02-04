@@ -1101,6 +1101,7 @@ $onlisting
 set nuclear_stor_with_tes(i) "hybrid nuclear+storage technologies whose storage tech is TES" ;
 nuclear_stor_with_tes(i)$(sum(ii$ (nuclear_stor_stortech(i,ii) and i_subsets(ii,'tes')),1) = 1) = yes ;
 
+tes(i)$nuclear_stor_with_tes(i) = yes ;
 thermal_storage(i)$nuclear_stor_with_tes(i) = yes ;
 
 *add non-numeraire CSPs in index i of already defined set tg_i(tg,i)

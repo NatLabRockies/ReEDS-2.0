@@ -1647,7 +1647,7 @@ eq_PRMTRADE_VSC(r,ccseason,t)
 * binned power capacity for capacity credit must be the greater than power capacity
 * (except for CSP, which is treated like VRE for capacity credit)
 eq_cap_sdbin_balance(i,v,r,ccseason,t)
-    $[tmodel(t)$valcap(i,v,r,t)$storage(i)$(not csp(i))$(not nuclear_stor(i))$Sw_PRM_CapCredit$(not Sw_PCM)]..
+    $[tmodel(t)$valcap(i,v,r,t)$storage(i)$(not csp(i))$Sw_PRM_CapCredit$(not Sw_PCM)]..
 
 *total capacity in each region
     bcr(i) * CAP(i,v,r,t)
@@ -1662,7 +1662,7 @@ eq_cap_sdbin_balance(i,v,r,ccseason,t)
 
 * energy capacity must be greater than the binned value
 eq_cap_sdbin_energy_balance(i,v,r,ccseason,t)
-    $[tmodel(t)$valcap(i,v,r,t)$(battery(i) or tes(i))$Sw_PRM_CapCredit]..
+    $[tmodel(t)$valcap(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))$Sw_PRM_CapCredit]..
 
 *total capacity in each region
     CAP_ENERGY(i,v,r,t)
@@ -1678,7 +1678,7 @@ eq_cap_sdbin_energy_balance(i,v,r,ccseason,t)
 * for each bin, binned energy capacity must equal to binned power capacity
 * times bin duration
 eq_sdbin_power_energy_link(i,v,r,ccseason,sdbin,t)
-    $[tmodel(t)$valcap(i,v,r,t)$(battery(i) or tes(i))$Sw_PRM_CapCredit]..
+    $[tmodel(t)$valcap(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))$Sw_PRM_CapCredit]..
 
 *binned energy capacity
     CAP_SDBIN_ENERGY(i,v,r,ccseason,sdbin,t)
@@ -1708,6 +1708,11 @@ eq_sdbin_power_limit(ccreg,ccseason,sdbin,t)$[tmodel(t)$Sw_PRM_CapCredit]..
     + sum{(i,v,r)$[r_ccreg(r,ccreg)
                  $valcap(i,v,r,t)$storage_hybrid(i)$(not csp(i))$(not nuclear_stor(i))],
           CAP_SDBIN(i,v,r,ccseason,sdbin,t) * cc_storage(i,sdbin) * hybrid_cc_derate(i,r,ccseason,sdbin,t)
+          }
+
+*[plus] hybrid nuclear+storage capacity in each sdbin adjusted by the appropriate CC value
+    + sum{(i,v,r)$[r_ccreg(r,ccreg)$valcap(i,v,r,t)$nuclear_stor(i)],
+          CAP_SDBIN(i,v,r,ccseason,sdbin,t) * cc_storage(i,sdbin)
           }
 ;
 
@@ -1751,6 +1756,11 @@ eq_reserve_margin(r,ccseason,t)
 *hybrid PV+battery
     + sum{(i,v,sdbin)$[pvb(i)$valcap(i,v,r,t)$(not forced_retire(i,r,t))],
           cc_storage(i,sdbin) * hybrid_cc_derate(i,r,ccseason,sdbin,t) * CAP_SDBIN(i,v,r,ccseason,sdbin,t)
+         }
+
+*hybrid nuclear+storage
+    + sum{(i,v,sdbin)$[nuclear_stor(i)$valcap(i,v,r,t)$(not forced_retire(i,r,t))],
+          cc_storage(i,sdbin) * CAP_SDBIN(i,v,r,ccseason,sdbin,t)
          }
 
 *[plus] average capacity credit times capacity of VRE and storage
@@ -3228,6 +3238,8 @@ eq_battery_minduration(i,v,r,t)$[valcap(i,v,r,t)$tmodel(t)$newv(v)$(battery(i) o
     CAP(i,v,r,t) * minbatteryduration$battery(i)
 
     + CAP(i,v,r,t) * mintesduration$tes(i)
+
+    + CAP(i,v,r,t) * minnuclear_storduration$nuclear_stor(i)
 ;
 
 * ---------------------------------------------------------------------------
