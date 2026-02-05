@@ -5961,9 +5961,32 @@ $onlisting
 * total cost = cost(nuclear) * cap(nuclear) + cost(stor) * cap(stor)
 *            = cost(nuclear) * cap(nuclear) + cost(stor) * bcr * cap(nuclear)
 *            = [cost(nuclear) + cost(stor) * bcr ] * cap(nuclear)
-cost_cap(i,t)$nuclear_stor(i) = (cost_cap_nuclear_stor_p(i,t) - turbine_generator_cost - electrical_cost 
-                                 + bcr(i) * (cost_cap_nuclear_stor_s(i,t)-tes_ms_power_cycle)
-                                 +(1 + bcr(i)) * (turbine_generator_cost + electrical_cost));
+
+* Turbine generator + electrical equipment costs should scale with the nuclear portion cost over time.
+* Fractions provided are relative to cost_cap_nuclear_stor_p(i,t).
+parameter
+  turbine_generator_cost_nuc_stor(i,t) "--2004$/MW-- turbine generator cost component for nuclear+storage"
+  electrical_cost_nuc_stor(i,t)        "--2004$/MW-- electrical equipment cost component for nuclear+storage" ;
+
+* Default: regular nuclear reactor fractions
+turbine_generator_cost_nuc_stor(i,t)$nuclear_stor(i) = cost_cap_nuclear_stor_p(i,t) * 0.0392 ;
+electrical_cost_nuc_stor(i,t)$nuclear_stor(i)        = cost_cap_nuclear_stor_p(i,t) * 0.0632 ;
+
+* If/when an SMR-based nuclear+storage tech subset is introduced, apply these fractions instead:
+*   turbine: 0.0386
+*   electrical: 0.0946
+* (This requires a way to distinguish SMR-based nuclear+storage configurations in set logic. Not implemented yet.)
+
+* Compose nuclear+storage capex:
+* - Start from nuclear portion capex
+* - Remove turbine + electrical once (they'll be added back using the capital costs of the storage plant)
+* - Add turbine + electrical for the storage system which is the output of the plant. capital costs of storage system * (1 + bcr)
+cost_cap(i,t)$[nuclear_stor(i)$thermal_storage(i)] = (cost_cap_nuclear_stor_p(i,t)
+                                 - turbine_generator_cost_nuc_stor(i,t)
+                                 - electrical_cost_nuc_stor(i,t)
+                                 + (1 + bcr(i)) * cost_cap_nuclear_stor_s(i,t));
+cost_cap(i,t)$[nuclear_stor(i)$(not thermal_storage(i))] = cost_cap_nuclear_stor_p(i,t)
+                                 + bcr(i) * cost_cap_nuclear_stor_s(i,t) ;
 
 * --- Storage Duration ---
 
