@@ -17,10 +17,17 @@ CofireNew,p
 CofireOld,p
 distpv,p
 Gas-CC,p
+Gas-CC_H_1x1,p
+Gas-CC_H_2x1,p
 Gas-CC-CCS_mod,p
 Gas-CC-CCS_max,p
+Gas-CC_H_1x1-CCS_mod,p
+Gas-CC_H_1x1-CCS_max,p
+Gas-CC_H_2x1-CCS_mod,p
+Gas-CC_H_2x1-CCS_max,p
 Gas-CC-CCS-F1*Gas-CC-CCS-F3,p
 Gas-CT,p
+Gas-CT_aero,p
 H2-CT,p
 H2-CC,p
 geothermal,p

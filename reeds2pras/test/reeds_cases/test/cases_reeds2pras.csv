@@ -1,0 +1,9 @@
+,test
+endyear,2035
+yearset_suffix,5yr
+GSw_Region,st/CA.OR.ID.WY.NE.IA.IL
+GSw_GasCurve,2
+GSw_TransScen,VSC_all
+GSw_OffshoreZones,1
+GSw_OffshoreBackbone,1
+keep_augur_files,1

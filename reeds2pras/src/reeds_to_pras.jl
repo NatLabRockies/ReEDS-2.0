@@ -13,6 +13,10 @@
         Number of timesteps
     weather_year : Int
         The weather year for variable gen profiles and load
+    scheduled_outage : Bool
+        Flag for reading the scheduled_outage_hourly.h5 file for a monthly
+        scheduled outage rate values, similar to ReEDS. If false, a zero value
+        is assumed. Default is false. 
     hydro_energylim : Bool
         If this is false we process hydro with fixed capacity based one
         name plate from the max_cap file. If true, we process non-dispatchable
@@ -32,6 +36,7 @@ function reeds_to_pras(
     solve_year::Int64,
     timesteps::Int,
     weather_year::Int,
+    scheduled_outage::Bool = false, 
     hydro_energylim::Bool = false,
     pras_agg_ogs_lfillgas::Bool = false,
     pras_existing_unit_size::Bool = true,
@@ -48,6 +53,7 @@ function reeds_to_pras(
         timesteps,
         solve_year,
         hydro_energylim = hydro_energylim,
+        scheduled_outage =  scheduled_outage,
         pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
         pras_existing_unit_size = pras_existing_unit_size,
         pras_max_unitsize_prm = pras_max_unitsize_prm,

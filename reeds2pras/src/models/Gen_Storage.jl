@@ -44,6 +44,8 @@
         Carryover efficiency
     FOR : float
         Forced Outage Rate value
+    SOR : Vector{Float32}
+        Scheduled Outage Rate
     MTTR : integer
         Mean Time To Repair value
 
@@ -66,7 +68,8 @@ struct Gen_Storage <: Storage
     charge_eff::Float64
     discharge_eff::Float64
     carryover_eff::Float64
-    FOR::Float64
+    FOR::Vector{Float32} 
+    SOR::Vector{Float32}
     MTTR::Int64
 
     # Inner Constructors & Checks
@@ -85,7 +88,8 @@ struct Gen_Storage <: Storage
         charge_eff = 1.0,
         discharge_eff = 1.0,
         carryover_eff = 1.0,
-        FOR = 0.0,
+        FOR = zeros(Float32, timesteps),
+        SOR = zeros(Float32, timesteps),
         MTTR = 24,
     )
         all(charge_cap .>= 0.0) || error(
@@ -118,7 +122,7 @@ struct Gen_Storage <: Storage
         all(0.0 .<= [charge_eff, discharge_eff, carryover_eff] .<= 1.0) ||
             error("$(name) charge/discharge/carryover efficiency value is < 0.0 or > 1.0")
 
-        0.0 <= FOR <= 1.0 || error("$(name) FOR value is < 0 or > 1")
+        all(0.0 .<= FOR .<= 1.0) || error("$(name) FOR value is < 0 or > 1")
 
         MTTR > 0 || error("$(name) MTTR value is <= 0")
 
@@ -138,6 +142,7 @@ struct Gen_Storage <: Storage
             discharge_eff,
             carryover_eff,
             FOR,
+            SOR,
             MTTR,
         )
     end
@@ -145,15 +150,17 @@ end
 
 # Getter Functions
 
+#TODO: is SOR for grid injection enough? Do we need to derate energy capacity too?
+
 get_charge_capacity(stor::Gen_Storage) = permutedims(round.(Int, stor.charge_cap))
 
 get_discharge_capacity(stor::Gen_Storage) = permutedims(round.(Int, stor.discharge_cap))
-
-get_energy_capacity(stor::Gen_Storage) = permutedims(round.(Int, stor.energy_cap))
 
 get_inflow(stor::Gen_Storage) = permutedims(round.(Int, stor.inflow))
 
 get_grid_withdrawl_capacity(stor::Gen_Storage) =
     permutedims(round.(Int, stor.grid_withdrawl_cap))
 
-get_grid_injection_capacity(stor::Gen_Storage) = permutedims(round.(Int, stor.grid_inj_cap))
+
+get_grid_injection_capacity(stor::Gen_Storage) = 
+    permutedims(round.(Int, stor.grid_inj_cap .* (1 .-stor.SOR)))

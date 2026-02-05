@@ -6,6 +6,7 @@ import argparse
 import pandas as pd
 from glob import glob
 from runbatch import submit_slurm_parallel_jobs
+from runstatus import get_run_status
 
 #%% Argument inputs
 parser = argparse.ArgumentParser(description='Restart failed runs on the HPC')
@@ -41,27 +42,11 @@ include_finished = args.include_finished
 #%% Shared parameters
 reeds_path = os.path.dirname(os.path.abspath(__file__))
 #%% Get all runs
-runs_all = sorted(glob(os.path.join(reeds_path,'runs',batch_name+'*')))
-### Identify finished runs
-runs_finished = [
-    i for i in runs_all
-    if os.path.exists(os.path.join(i, 'outputs', 'reeds-report', 'report.xlsx'))
-]
-### Keep unfinished runs
-runs_unfinished = [i for i in runs_all if i not in runs_finished]
+dictruns = get_run_status(reeds_path, batch_name)
 
-### Get failed runs by identifying and excluding active runs
-sq = f'squeue -u {os.environ["USER"]} -o "%.200j"'
-sqout = subprocess.run(sq, capture_output=True, shell=True)
-runs_running = [
-    os.path.splitext(i.decode())[0] for i in sqout.stdout.split()
-    if i.decode().startswith(batch_name)
-]
-
-runs_failed = [
-    i for i in (runs_all if include_finished else runs_unfinished)
-    if os.path.basename(i) not in runs_running
-]
+runs_unfinished = dictruns['running'] + dictruns['failed']
+runs_failed = dictruns['failed']
+runs_running = dictruns['running']
 
 ### Take a look
 print('unfinished:', len(runs_unfinished))

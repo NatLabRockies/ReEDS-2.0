@@ -13,6 +13,7 @@ import json
 import numpy as np
 import pandas as pd
 import collections
+import pathlib
 import bokeh as bk
 import bokeh.io as bio
 import bokeh.layouts as bl
@@ -82,6 +83,7 @@ MAP_BOUNDARY_WIDTH = 0.1
 MAP_LINE_WIDTH = 2
 RANGE_OPACITY_MULT = 0.3
 RANGE_GLYPH_MAP = {'Line': 'Area', 'Dot': 'Bar', 'Dot-Line': 'Area'}
+NCOLS_DEFAULT = 4
 
 #List of widgets that use columns as their selectors
 WDG_COL = ['x', 'y', 'x_group', 'series', 'explode', 'explode_group']
@@ -89,7 +91,7 @@ WDG_COL = ['x', 'y', 'x_group', 'series', 'explode', 'explode_group']
 #List of widgets that don't use columns as selector and share general widget update function
 WDG_NON_COL = ['chart_type', 'range', 'y_agg', 'adv_op', 'explode_grid', 'adv_col_base',
     'adv_op2', 'adv_col_base2', 'adv_op3', 'adv_col_base3', 'plot_title', 'plot_title_size',
-    'sort_data', 'width', 'height', 'opacity', 'sync_axes', 'x_min', 'x_max', 'x_scale',
+    'sort_data', 'width', 'height', 'opacity', 'sync_axes', 'num_cols', 'x_min', 'x_max', 'x_scale',
     'x_title', 'series_limit', 'x_title_size', 'x_major_label_size', 'x_major_label_orientation',
     'y_min', 'y_max', 'y_scale', 'y_title', 'y_title_size', 'y_major_label_size', 'hist_num_bins', 'hist_weight',
     'circle_size', 'bar_width', 'cum_sort', 'line_width', 'range_show_glyphs', 'net_levels', 'bokeh_tools',
@@ -107,6 +109,164 @@ GL = {'df_source':None, 'df_plots':None, 'columns':None, 'data_source_wdg':None,
 #os globals
 this_dir_path = os.path.dirname(os.path.realpath(__file__))
 out_path = this_dir_path + '/out'
+
+#Add styles.css text for use in layouts
+DESCRIPTION_CSS = bm.InlineStyleSheet(css='''
+    :host{
+        font-size: 90%;
+    }
+''')
+WIDGETS_CSS = bm.InlineStyleSheet(css='''
+    :host{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+        width: 225px !important;
+        height: auto !important;
+        overflow-y: scroll !important;
+        padding: 5px !important;
+    }
+''')
+PLOTS_CSS = bm.InlineStyleSheet(css='''
+    :host{
+        position: static !important;
+        margin-left: 250px !important;
+        width: auto !important;
+        height: auto !important;
+        display: inline-block !important;
+        flex-shrink: 1 !important;
+    }
+''')
+DROPDOWN_CSS = bm.InlineStyleSheet(css='''
+    button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-weight: bold !important;
+        color: blue !important;
+        cursor: pointer !important;
+        text-decoration: underline !important;
+    }
+''')
+FILTER_CSS = bm.InlineStyleSheet(css='''
+    button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-weight: bold !important;
+        color: purple !important;
+        cursor: pointer !important;
+        text-decoration: underline !important;
+    }
+''')
+legend_css_text = ('''
+    .legend-drop{
+        border: 1px solid lightgrey;
+        padding: 10px;
+    }
+    .legend-color{
+        width: 20px;
+        height: 10px;
+        display: inline-block;
+        margin-right: 10px
+    }
+
+''')
+
+config_css_text = ('''
+    .config-display-title{
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    .config-display-key{
+        font-weight: bold;
+    }
+''')
+def _new_legend_css():
+    """Return a fresh InlineStyleSheet for legend blocks to avoid cross-document reuse errors."""
+    return bm.InlineStyleSheet(css=legend_css_text)
+
+def _new_config_css():
+    """Return a fresh InlineStyleSheet for config blocks to avoid cross-document reuse errors."""
+    return bm.InlineStyleSheet(css=config_css_text)
+
+def _get_wdgs_from_classes(wdg, classes):
+    """
+    Return list of widgets from wdg that have any of the specified css classes.
+
+    `wdg` is the OrderedDict of bokeh model widgets.
+    `classes` is a list of css class strings.
+    Returns `wdg_targets`, a list of bokeh model widgets from `wdg`
+
+    """
+    wdg_targets = []
+    cls_set = set(classes)
+    for model in wdg.values():
+        css = getattr(model, "css_classes", []) or []
+        if css and cls_set.intersection(css):
+            wdg_targets.append(model)
+    return wdg_targets
+
+def attach_dropdown_callbacks(wdg):
+    """
+    Attach Bokeh callbacks to our '...-dropdown' headings so they
+    show/hide their associated widgets.
+
+    `wdg` is the OrderedDict returned by build_data_source_wdg or build_widgets.
+    """
+
+    toggle_visibility_wdgname_class_map = {
+        'data_dropdown': ['data-drop'],
+        'chart_type_dropdown': ['chart-drop'],
+        'x_dropdown': ['x-drop'],
+        'y_dropdown': ['y-drop'],
+        'series_dropdown': ['series-drop'],
+        'explode_dropdown': ['explode-drop'],
+        'adv_dropdown': ['adv-drop'],
+        'adjustments': ['adjust-drop'],
+        'map_adjustments': ['map-drop'],
+        'auto_update_dropdown': ['update-drop'],
+        'download_dropdown': ['download-drop'],
+        'legend_dropdown': ['legend-drop'],
+        'reeds_vars': ['reeds-vars-drop'],
+        'meta': ['meta-drop'],
+        'scenario_filter_dropdown': ['scenario-filter-drop'],
+        'report_dropdown': ['report-drop'],
+        'filters': ['filter-head', 'filters-update'],
+    }
+
+    for name, model in wdg.items():
+        if name in toggle_visibility_wdgname_class_map:
+            # Add general toggle visibility callback
+            targets = _get_wdgs_from_classes(wdg, toggle_visibility_wdgname_class_map[name])
+            def _toggle_visibility(targets=targets):
+                for m in targets:
+                    m.visible = not m.visible
+            model.on_click(_toggle_visibility)
+        if name == 'filters':
+            # When 'filters' is clicked, hide the 'filter-drop' classes (in addition to toggling the other widgets)
+            filter_drop_targets = _get_wdgs_from_classes(wdg, ['filter-drop'])
+            def _hide_filter_drop_targets(filter_drop_targets=filter_drop_targets):
+                for m in filter_drop_targets:
+                    m.visible = False
+            model.on_click(_hide_filter_drop_targets)
+        if name.startswith('heading_filter_'):
+            # Per-column filter headings toggle their own controls
+            filter_name = name.replace('heading_filter_', '')
+            column_targets = []
+            for prefix in ('filter_sel_all_', 'filter_sel_none_', 'filter_'):
+                key = prefix + filter_name
+                column_targets.append(wdg[key])
+            def _toggle_filter_visibility(column_targets=column_targets):
+                for m in column_targets:
+                    m.visible = not m.visible
+            model.on_click(_toggle_filter_visibility)
 
 def initialize():
     '''
@@ -130,8 +290,8 @@ def initialize():
 
     #build widgets and plots
     GL['data_source_wdg'] = build_data_source_wdg(data_type, data_source)
-    GL['controls'] = bl.column(list(GL['data_source_wdg'].values()), css_classes=['widgets_section'])
-    GL['plots'] = bl.column([], css_classes=['plots_section'])
+    GL['controls'] = bl.column(list(GL['data_source_wdg'].values()), css_classes=['widgets_section'], stylesheets=[WIDGETS_CSS])
+    GL['plots'] = bl.column([], css_classes=['plots_section'], stylesheets=[PLOTS_CSS])
     layout = bl.row(GL['controls'], GL['plots'], css_classes=['full_layout'])
 
     if data_source != '':
@@ -216,7 +376,7 @@ def static_report(data_type, data_source, static_presets, report_path, report_fo
             excel_meta.append(vwc['name'] + ': ' + str(vwc['val']))
         pd.Series(excel_meta).to_excel(excel_report, 'meta', index=False, header=False)
     if 'html' in report_format:
-        with open(this_dir_path + '/templates/static/index.html', 'r') as template_file:
+        with open(this_dir_path + '/templates/index.html', 'r') as template_file:
             template_string=template_file.read()
         template = ji.Template(template_string)
         resources = br.Resources()
@@ -258,8 +418,8 @@ def static_report(data_type, data_source, static_presets, report_path, report_fo
             preset_wdg(preset, download_full_source)
             if 'html' in report_format and (download_full_source == False):
                 title = bmw.Div(text='<h2 id="section-' + str(sec_i) + '">' + str(sec_i) + '. ' + name + '</h2>')
-                legend = bmw.Div(text=GL['widgets']['legend'].text)
-                display_config = bmw.Div(text=GL['widgets']['display_config'].text)
+                legend = bmw.Div(text=GL['widgets']['legend'].text, stylesheets=[_new_legend_css()])
+                display_config = bmw.Div(text=GL['widgets']['display_config'].text, stylesheets=[_new_config_css()])
                 title_row = bl.row(title)
                 content_row = bl.row(GL['plots'].children + [legend] + [display_config])
                 if html_num == 'one':
@@ -298,7 +458,7 @@ def static_report(data_type, data_source, static_presets, report_path, report_fo
         except Exception:
             logger.info('***Error in section ' + str(sec_i) + '...\n' + traceback.format_exc())
             if html_num == 'one':
-                static_plots.append(bl.row(bmw.Div(text='<h2 id="section-' + str(sec_i) + '" class="error">' + str(sec_i) + '. ' + name + '. ERROR!</h2>')))
+                static_plots.append(bl.row(bmw.Div(text='<h2 id="section-' + str(sec_i) + '" style="color:red;text-decoration:underline">' + str(sec_i) + '. ' + name + '. ERROR!</h2>')))
         sec_i += 1
     if 'excel' in report_format:
         excel_report.close()
@@ -554,11 +714,15 @@ def build_data_source_wdg(data_type=DEFAULT_DATA_TYPE, data_source=''):
     '''
     wdg = collections.OrderedDict()
     wdg['readme'] = bmw.Div(text='<a href="https://github.nrel.gov/ReEDS/bokehpivot" target="_blank">README</a>')
-    wdg['data_dropdown'] = bmw.Div(text='Data Source (required)', css_classes=['data-dropdown'])
+    wdg['data_dropdown'] = bmw.Button(label='Data Source (required)', css_classes=['data-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['data_type'] = bmw.Select(title='Type', value=data_type, options=DATA_TYPE_OPTIONS, css_classes=['wdgkey-data-type', 'data-drop'])
     wdg['data'] = bmw.TextInput(title='Path', value=data_source, css_classes=['wdgkey-data', 'data-drop'])
     wdg['data_type'].on_change('value', update_data_type)
     wdg['data'].on_change('value', update_data)
+
+    # Attach dropdown behavior for Data Source header
+    attach_dropdown_callbacks(wdg)
+
     return wdg
 
 def get_df_csv(data_source):
@@ -581,6 +745,8 @@ def get_df_csv(data_source):
     sources = data_source.split('|')
     for src in sources:
         src = src.strip()
+        if not os.path.exists(src):
+            raise FileNotFoundError(f"The specified path does not exist: {src}")
         if os.path.isdir(src):
             #if this is a directory, get all csv within it, assuming they are structured the same way, and add a column for filename
             for file in os.listdir(src):
@@ -619,7 +785,7 @@ def get_wdg_csv():
         topwdg (ordered dict): Dictionary of bokeh.model.widgets.
     '''
     topwdg = collections.OrderedDict()
-    topwdg['report_dropdown'] = bmw.Div(text='Build Report', css_classes=['report-dropdown'])
+    topwdg['report_dropdown'] = bmw.Button(label='Build Report', css_classes=['report-dropdown'], stylesheets=[DROPDOWN_CSS])
     topwdg['report_custom'] = bmw.TextInput(title='Enter path to report file', value='', css_classes=['report-drop'], visible=False)
     topwdg['report_format'] = bmw.TextInput(title='Enter type(s) of report (html,excel,csv)', value='html,excel', css_classes=['report-drop'], visible=False)
     topwdg['report_debug'] = bmw.Select(title='Debug Mode', value='No', options=['Yes','No'], css_classes=['report-drop'], visible=False)
@@ -689,27 +855,27 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     logger.info('***Build main widgets...')
 
     wdg = collections.OrderedDict()
-    wdg['chart_type_dropdown'] = bmw.Div(text='Chart', css_classes=['chart-dropdown'])
+    wdg['chart_type_dropdown'] = bmw.Button(label='Chart', css_classes=['chart-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['chart_type'] = bmw.Select(title='Chart Type', value='Dot', options=CHARTTYPES, css_classes=['wdgkey-chart_type', 'chart-drop'], visible=False)
     wdg['range'] = bmw.Select(title='Add Ranges (Line and Dot only)', value='No', options=['No', 'Within Series', 'Between Series', 'Boxplot'], css_classes=['wdgkey-range', 'chart-drop'], visible=False)
-    wdg['x_dropdown'] = bmw.Div(text='X-Axis (required)', css_classes=['x-dropdown'])
+    wdg['x_dropdown'] = bmw.Button(label='X-Axis (required)', css_classes=['x-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['x'] = bmw.Select(title='X-Axis (required)', value='None', options=['None'] + cols['x-axis'] + ['histogram_x'], css_classes=['wdgkey-x', 'x-drop'], visible=False)
     wdg['x_group'] = bmw.Select(title='Group X-Axis By', value='None', options=['None'] + cols['seriesable'], css_classes=['wdgkey-x_group', 'x-drop'], visible=False)
-    wdg['y_dropdown'] = bmw.Div(text='Y-Axis (required)', css_classes=['y-dropdown'])
+    wdg['y_dropdown'] = bmw.Button(label='Y-Axis (required)', css_classes=['y-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['y'] = bmw.Select(title='a (required)', value='None', options=['None'] + cols['y-axis'], css_classes=['wdgkey-y', 'y-drop'], visible=False)
     wdg['y_b'] = bmw.Select(title='b (optional, no update)', value='None', options=['None'] + cols['y-axis'], css_classes=['wdgkey-y_b', 'y-drop'], visible=False)
     wdg['y_c'] = bmw.Select(title='c (optional, no update)', value='None', options=['None'] + cols['y-axis'], css_classes=['wdgkey-y_c', 'y-drop'], visible=False)
     wdg['y_agg'] = bmw.Select(title='Y-Axis Aggregation', value='sum(a)', options=AGGREGATIONS, css_classes=['wdgkey-y_agg', 'y-drop'], visible=False)
-    wdg['series_dropdown'] = bmw.Div(text='Series', css_classes=['series-dropdown'])
+    wdg['series_dropdown'] = bmw.Button(label='Series', css_classes=['series-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['series'] = bmw.Select(title='Separate Series By', value='None', options=['None'] + cols['seriesable'],
         css_classes=['wdgkey-series', 'series-drop'], visible=False)
     wdg['series_limit'] = bmw.TextInput(title='Number of series to show', value='All', css_classes=['wdgkey-series', 'series-drop'], visible=False)
-    wdg['explode_dropdown'] = bmw.Div(text='Explode', css_classes=['explode-dropdown'])
+    wdg['explode_dropdown'] = bmw.Button(label='Explode', css_classes=['explode-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['explode'] = bmw.Select(title='Explode By', value='None', options=['None'] + cols['seriesable'], css_classes=['wdgkey-explode', 'explode-drop'], visible=False)
     wdg['explode_group'] = bmw.Select(title='Group Exploded Charts By', value='None', options=['None'] + cols['seriesable'],
         css_classes=['wdgkey-explode_group', 'explode-drop'], visible=False)
     wdg['explode_grid'] = bmw.Select(title='Make Grid Plot', value='No', options=['Yes','No'], css_classes=['wdgkey-explode_grid', 'explode-drop'], visible=False)
-    wdg['adv_dropdown'] = bmw.Div(text='Operations', css_classes=['adv-dropdown'])
+    wdg['adv_dropdown'] = bmw.Button(label='Operations', css_classes=['adv-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['adv_op'] = bmw.Select(title='First Operation', value='None', options=['None', 'Difference', 'Ratio'], css_classes=['wdgkey-adv_op', 'adv-drop'], visible=False)
     wdg['adv_col'] = bmw.Select(title='Operate Across', value='None', options=['None'] + cols['all'], css_classes=['wdgkey-adv_col', 'adv-drop'], visible=False)
     wdg['adv_col_base'] = bmw.Select(title='Base', value='None', options=['None'], css_classes=['wdgkey-adv_col_base', 'adv-drop'], visible=False)
@@ -719,13 +885,13 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     wdg['adv_op3'] = bmw.Select(title='Third Operation', value='None', options=['None', 'Difference', 'Ratio'], css_classes=['wdgkey-adv_op', 'adv-drop'], visible=False)
     wdg['adv_col3'] = bmw.Select(title='Operate Across', value='None', options=['None'] + cols['all'], css_classes=['wdgkey-adv_col', 'adv-drop'], visible=False)
     wdg['adv_col_base3'] = bmw.Select(title='Base', value='None', options=['None'], css_classes=['wdgkey-adv_col_base', 'adv-drop'], visible=False)
-    wdg['filters'] = bmw.Div(text='Filters', css_classes=['filters-dropdown'])
+    wdg['filters'] = bmw.Button(label='Filters', css_classes=['filters-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['filters_update'] = bmw.Button(label='Update Filters', button_type='success', css_classes=['filters-update'], visible=False)
     for j, col in enumerate(cols['filterable']):
         val_list = [str(i) for i in sorted(df_source[col].unique().tolist())]
-        wdg['heading_filter_'+str(j)] = bmw.Div(text=col, css_classes=['filter-head'], visible=False)
-        wdg['filter_sel_all_'+str(j)] = bmw.Button(label='Select All', button_type='success', css_classes=['filter-drop','select-all-none'], visible=False)
-        wdg['filter_sel_none_'+str(j)] = bmw.Button(label='Select None', button_type='success', css_classes=['filter-drop','select-all-none'], visible=False)
+        wdg['heading_filter_'+str(j)] = bmw.Button(label=col, css_classes=['filter-head'], visible=False, stylesheets=[FILTER_CSS])
+        wdg['filter_sel_all_'+str(j)] = bmw.Button(label='Select All', button_type='success', css_classes=['filter-drop'], visible=False)
+        wdg['filter_sel_none_'+str(j)] = bmw.Button(label='Select None', button_type='success', css_classes=['filter-drop'], visible=False)
         wdg['filter_'+str(j)] = bmw.CheckboxGroup(labels=val_list, active=list(range(len(val_list))), css_classes=['wdgkey-filter_'+str(j), 'filter-drop'], visible=False)
         select_all_callback = bmc.CustomJS(args=dict(cb_wdg_fil=wdg['filter_'+str(j)]), code="""
             cb_wdg_fil.active = Array.from(Array(cb_wdg_fil.labels.length).keys())
@@ -737,13 +903,14 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
         """)
         wdg['filter_sel_all_'+str(j)].js_on_event(bk.events.ButtonClick, select_all_callback)
         wdg['filter_sel_none_'+str(j)].js_on_event(bk.events.ButtonClick, select_none_callback)
-    wdg['adjustments'] = bmw.Div(text='Plot Adjustments', css_classes=['adjust-dropdown'])
+    wdg['adjustments'] = bmw.Button(label='Plot Adjustments', css_classes=['adjust-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['width'] = bmw.TextInput(title='Plot Width (px)', value=str(WIDTH), css_classes=['wdgkey-width', 'adjust-drop'], visible=False)
     wdg['height'] = bmw.TextInput(title='Plot Height (px)', value=str(HEIGHT), css_classes=['wdgkey-height', 'adjust-drop'], visible=False)
     wdg['plot_title'] = bmw.TextInput(title='Plot Title', value='', css_classes=['wdgkey-plot_title', 'adjust-drop'], visible=False)
     wdg['plot_title_size'] = bmw.TextInput(title='Plot Title Font Size', value=str(PLOT_FONT_SIZE), css_classes=['wdgkey-plot_title_size', 'adjust-drop'], visible=False)
     wdg['opacity'] = bmw.TextInput(title='Opacity (0-1)', value=str(OPACITY), css_classes=['wdgkey-opacity', 'adjust-drop'], visible=False)
     wdg['sync_axes'] = bmw.Select(title='Sync Axes', value='Yes', options=['Yes', 'No'], css_classes=['adjust-drop'], visible=False)
+    wdg['num_cols'] = bmw.TextInput(title='Plots Per Row', value=str(NCOLS_DEFAULT), css_classes=['adjust-drop'], visible=False)
     wdg['x_scale'] = bmw.TextInput(title='X Scale', value=str(X_SCALE), css_classes=['wdgkey-x_scale', 'adjust-drop'], visible=False)
     wdg['x_min'] = bmw.TextInput(title='X Min', value='', css_classes=['wdgkey-x_min', 'adjust-drop'], visible=False)
     wdg['x_max'] = bmw.TextInput(title='X Max', value='', css_classes=['wdgkey-x_max', 'adjust-drop'], visible=False)
@@ -760,7 +927,7 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     wdg['y_major_label_size'] = bmw.TextInput(title='Y Labels Font Size', value=str(PLOT_AXIS_LABEL_SIZE), css_classes=['wdgkey-y_major_label_size', 'adjust-drop'], visible=False)
     wdg['circle_size'] = bmw.TextInput(title='Circle Size (Dot Only)', value=str(CIRCLE_SIZE), css_classes=['wdgkey-circle_size', 'adjust-drop'], visible=False)
     wdg['bar_width'] = bmw.TextInput(title='Bar Width (Bar Only)', value=str(BAR_WIDTH), css_classes=['wdgkey-bar_width', 'adjust-drop'], visible=False)
-    wdg['bar_width_desc'] = bmw.Div(text='<strong>Flags</strong> <em>w</em>: use csv file for widths, <em>c</em>: convert x axis to quantitative based on widths in csv file', css_classes=['adjust-drop', 'description'], visible=False)
+    wdg['bar_width_desc'] = bmw.Div(text='<strong>Flags</strong> <em>w</em>: use csv file for widths, <em>c</em>: convert x axis to quantitative based on widths in csv file', css_classes=['adjust-drop'], stylesheets=[DESCRIPTION_CSS], visible=False)
     wdg['sort_data'] = bmw.Select(title='Sort Data', value='Yes', options=['Yes', 'No'], css_classes=['wdgkey-sort_data', 'adjust-drop'], visible=False)
     wdg['cum_sort'] = bmw.Select(title='Cumulative Sort', value='None', options=['None', 'Ascending', 'Descending'], css_classes=['wdgkey-cum_sort','adjust-drop'], visible=False)
     wdg['hist_num_bins'] = bmw.TextInput(title='Histogram # of bins', value=str(HIST_NUM_BINS), css_classes=['wdgkey-hist_num_bins', 'adjust-drop'], visible=False)
@@ -770,20 +937,20 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     wdg['net_levels'] = bmw.Select(title='Add Net Levels to Stacked', value='Yes', options=['Yes','No'], css_classes=['wdgkey-net_levels', 'adjust-drop'], visible=False)
     wdg['bokeh_tools'] = bmw.Select(title='Show Bokeh Tools', value='Yes', options=['Yes','No'], css_classes=['wdgkey-bokeh_tools', 'adjust-drop'], visible=False)
     wdg['custom_styles'] = bmw.TextInput(title='Custom Styles CSV', value='', css_classes=['wdgkey-custom_styles', 'adjust-drop'], visible=False)
-    wdg['map_adjustments'] = bmw.Div(text='Map Adjustments', css_classes=['map-dropdown'])
+    wdg['map_adjustments'] = bmw.Button(label='Map Adjustments', css_classes=['map-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['map_bin'] = bmw.Select(title='Bin Type', value='Auto Equal Num', options=['Auto Equal Num', 'Auto Equal Width', 'Manual'], css_classes=['wdgkey-map_bin', 'map-drop'], visible=False)
     wdg['map_num'] = bmw.TextInput(title='# of bins (Auto Only)', value=str(MAP_NUM_BINS), css_classes=['wdgkey-map_num', 'map-drop'], visible=False)
     wdg['map_nozeros'] = bmw.Select(title='Ignore Zeros', value='Yes', options=['Yes', 'No'], css_classes=['wdgkey-map_nozeros', 'map-drop'], visible=False)
     wdg['map_palette'] = bmw.TextInput(title='Map Palette', value=MAP_PALETTE, css_classes=['wdgkey-map_palette', 'map-drop'], visible=False)
-    wdg['map_palette_desc'] = bmw.Div(text='See <a href="https://bokeh.pydata.org/en/latest/docs/reference/palettes.html" target="_blank">palette options</a> or all_red, all_blue, all_green, all_gray. Palette must accommodate # of bins', css_classes=['map-drop', 'description'], visible=False)
+    wdg['map_palette_desc'] = bmw.Div(text='See <a href="https://bokeh.pydata.org/en/latest/docs/reference/palettes.html" target="_blank">palette options</a> or all_red, all_blue, all_green, all_gray. Palette must accommodate # of bins', css_classes=['map-drop'], stylesheets=[DESCRIPTION_CSS], visible=False)
     wdg['map_palette_2'] = bmw.TextInput(title='Map Palette 2 (Optional)', value='', css_classes=['wdgkey-map_palette_2', 'map-drop'], visible=False)
-    wdg['map_palette_2_desc'] = bmw.Div(text='Bins will be split between palettes.', css_classes=['map-drop', 'description'], visible=False)
+    wdg['map_palette_2_desc'] = bmw.Div(text='Bins will be split between palettes.', css_classes=['map-drop'], stylesheets=[DESCRIPTION_CSS], visible=False)
     wdg['map_palette_break'] = bmw.TextInput(title='Dual Palette Breakpoint (Optional)', value='', css_classes=['wdgkey-map_palette_break', 'map-drop'], visible=False)
-    wdg['map_palette_break_desc'] = bmw.Div(text='The bin that contains this breakpoint will divide the palettes.', css_classes=['map-drop', 'description'], visible=False)
+    wdg['map_palette_break_desc'] = bmw.Div(text='The bin that contains this breakpoint will divide the palettes.', css_classes=['map-drop'], stylesheets=[DESCRIPTION_CSS], visible=False)
     wdg['map_min'] = bmw.TextInput(title='Minimum (Equal Width Only)', value='', css_classes=['wdgkey-map_min', 'map-drop'], visible=False)
     wdg['map_max'] = bmw.TextInput(title='Maximum (Equal Width Only)', value='', css_classes=['wdgkey-map_max', 'map-drop'], visible=False)
     wdg['map_manual'] = bmw.TextInput(title='Manual Breakpoints (Manual Only)', value='', css_classes=['wdgkey-map_manual', 'map-drop'], visible=False)
-    wdg['map_manual_desc'] = bmw.Div(text='Comma separated list of values (e.g. -10,0,0.5,6), with one fewer value than # of bins', css_classes=['map-drop', 'description'], visible=False)
+    wdg['map_manual_desc'] = bmw.Div(text='Comma separated list of values (e.g. -10,0,0.5,6), with one fewer value than # of bins', css_classes=['map-drop'], stylesheets=[DESCRIPTION_CSS], visible=False)
     wdg['map_width'] = bmw.TextInput(title='Map Width (px)', value=str(MAP_WIDTH), css_classes=['wdgkey-map_width', 'map-drop'], visible=False)
     wdg['map_font_size'] = bmw.TextInput(title='Title Font Size', value=str(MAP_FONT_SIZE), css_classes=['wdgkey-map_font_size', 'map-drop'], visible=False)
     wdg['map_boundary_width'] = bmw.TextInput(title='Boundary Line Width', value=str(MAP_BOUNDARY_WIDTH), css_classes=['wdgkey-map_boundary_width', 'map-drop'], visible=False)
@@ -792,11 +959,11 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     wdg['map_arrows'] = bmw.Select(title='Add Arrows', value='No', options=['Yes','No'], css_classes=['wdgkey-map_arrows', 'map-drop'], visible=False)
     wdg['map_arrow_size'] = bmw.TextInput(title='Arrow Size (px)', value='7', css_classes=['wdgkey-map_arrow_size', 'map-drop'], visible=False)
     wdg['map_arrow_loc'] = bmw.TextInput(title='Arrow Location (0=start, 1=end)', value='0.8', css_classes=['wdgkey-map_arrow_loc', 'map-drop'], visible=False)
-    wdg['auto_update_dropdown'] = bmw.Div(text='Auto/Manual Update', css_classes=['update-dropdown'])
+    wdg['auto_update_dropdown'] = bmw.Button(label='Auto/Manual Update', css_classes=['update-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['auto_update'] = bmw.Select(title='Auto Update (except filters)', value='Enable', options=['Enable', 'Disable'], css_classes=['update-drop'], visible=False)
     wdg['update'] = bmw.Button(label='Manual Update', button_type='success', css_classes=['update-drop'], visible=False)
     wdg['render_plots'] = bmw.Select(title='Render Plots', value='Yes', options=['Yes', 'No'], css_classes=['update-drop'], visible=False)
-    wdg['download_dropdown'] = bmw.Div(text='Download/Export', css_classes=['download-dropdown'])
+    wdg['download_dropdown'] = bmw.Button(label='Download/Export', css_classes=['download-dropdown'], stylesheets=[DROPDOWN_CSS])
     wdg['download_date'] = bmw.Select(title='Add Date', value='Yes', options=['Yes', 'No'], css_classes=['download-drop'], visible=False)
     wdg['download_prefix'] = bmw.TextInput(title='Prefix', value='', css_classes=['download-drop'], visible=False)
     wdg['download_all'] = bmw.Button(label='All Files of View', button_type='success', css_classes=['download-drop'], visible=False)
@@ -806,9 +973,12 @@ def build_widgets(df_source, cols, init_load=False, init_config={}, wdg_defaults
     wdg['download_report'] = bmw.Button(label='Python Report of View', button_type='success', css_classes=['download-drop'], visible=False)
     wdg['download_preset'] = bmw.Button(label='Preset of View', button_type='success', css_classes=['download-drop'], visible=False)
     wdg['download_source'] = bmw.Button(label='CSV of Full Data Source', button_type='success', css_classes=['download-drop'], visible=False)
-    wdg['legend_dropdown'] = bmw.Div(text='Legend', css_classes=['legend-dropdown'])
-    wdg['legend'] = bmw.Div(text='', css_classes=['legend-drop'])
-    wdg['display_config'] = bmw.Div(text='', css_classes=['display-config'])
+    wdg['legend_dropdown'] = bmw.Button(label='Legend', css_classes=['legend-dropdown'], stylesheets=[DROPDOWN_CSS])
+    wdg['legend'] = bmw.Div(text='', css_classes=['legend-drop'], stylesheets=[_new_legend_css()])
+    wdg['display_config'] = bmw.Div(text='', css_classes=['display-config'], stylesheets=[_new_config_css()])
+
+    # Attach dropdown behavior for all main sections
+    attach_dropdown_callbacks(wdg)
 
     #save defaults
     save_wdg_defaults(wdg, wdg_defaults)
@@ -1107,9 +1277,10 @@ def create_figures(df_plots, wdg, cols, custom_colors):
     set_axis_bounds(df_plots, plot_list, wdg, cols)
     if wdg['explode_grid'].value == 'Yes':
         ncols = len(df_plots_cp[wdg['explode'].value].unique())
-        plot_list = [bl.gridplot(plot_list, ncols=ncols)]
+    else:
+        ncols = int(wdg['num_cols'].value)
     logger.info('***Done Building Figures.\n')
-    return plot_list
+    return plot_list, ncols
 
 def set_axis_bounds(df, plots, wdg, cols):
     '''
@@ -1847,7 +2018,7 @@ def build_legend(labels, colors):
     legend_string = ''
     for i, txt in enumerate(labels):
         legend_string += '<div class="legend-entry"><span class="legend-color" style="background-color:' + str(colors[i]) + ';"></span>'
-        legend_string += f'<span class="legend-text" style="color: {colors[i]};"><b>' + str(txt) +'</b></span></div>'
+        legend_string += f'<span class="legend-text">' + str(txt) +'</span></div>'
     return legend_string
 
 def display_config(wdg, wdg_defaults):
@@ -1868,7 +2039,7 @@ def display_config(wdg, wdg_defaults):
             item_string = False
             if isinstance(wdg[key], bmw.groups.AbstractGroup) and wdg[key].active != wdg_defaults[key]:
                 if key.startswith('filter_'):
-                    label = 'filter-' + wdg['heading_'+key].text
+                    label = 'filter-' + wdg['heading_'+key].label
                 item_string = ''
                 active_indices = wdg[key].active
                 for i in active_indices:
@@ -2103,14 +2274,15 @@ def update_plots():
 
     GL['df_plots'] = set_df_plots(GL['df_source'], GL['columns'], GL['widgets'], GL['custom_sorts'])
     if GL['widgets']['render_plots'].value == 'Yes':
+        ncols = int(GL['widgets']['num_cols'].value)
         if GL['widgets']['chart_type'].value in ['Line Map','Area Map']:
             figs, breakpoints = create_maps(GL['df_plots'], GL['widgets'], GL['columns'])
             legend_text = build_map_legend(GL['widgets'], breakpoints)
         else:
-            figs = create_figures(GL['df_plots'], GL['widgets'], GL['columns'], GL['custom_colors'])
+            figs, ncols = create_figures(GL['df_plots'], GL['widgets'], GL['columns'], GL['custom_colors'])
             legend_text = build_plot_legend(GL['df_plots'], GL['widgets'], GL['custom_sorts'], GL['custom_colors'])
         GL['widgets']['legend'].text = legend_text
-        GL['plots'].children = figs
+        GL['plots'].children = [bl.gridplot(figs, ncols=ncols)]
 
 def download_url(dir_path='', auto_open=True):
     '''
@@ -2220,12 +2392,13 @@ def download_html(dir_path='', auto_open=True):
         else:
             html_path = dir_path + '/' + prefix + 'view.html'
         static_plots = []
-        legend = bmw.Div(text=GL['widgets']['legend'].text)
-        display_config = bmw.Div(text=GL['widgets']['display_config'].text)
+        #Use fresh stylesheets for each document to avoid duplicate ownership errors.
+        legend = bmw.Div(text=GL['widgets']['legend'].text, stylesheets=[_new_legend_css()])
+        display_config = bmw.Div(text=GL['widgets']['display_config'].text, stylesheets=[_new_config_css()])
         plots = GL['plots'].children
         GL['plots'].children = []
         static_plots.append(bl.row(plots + [legend] + [display_config]))
-        with open(this_dir_path + '/templates/static/index.html', 'r') as template_file:
+        with open(this_dir_path + '/templates/index.html', 'r') as template_file:
             template_string=template_file.read()
         template = ji.Template(template_string)
         resources = br.Resources()
@@ -2247,11 +2420,11 @@ def download_all():
     prefix, suffix = get_prefix_suffix()
     dir_path = out_path + '/' + prefix + 'view' + suffix
     os.makedirs(dir_path)
+    download_html(dir_path, False)
     download_csv(dir_path, False)
     download_url(dir_path, False)
     download_report(dir_path, False)
     download_preset(dir_path, False)
-    download_html(dir_path, False)
 
 def download_source(dir_path='', auto_open=True):
     '''

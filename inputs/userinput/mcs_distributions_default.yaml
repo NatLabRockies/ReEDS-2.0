@@ -153,28 +153,28 @@
 ### ---------------------------------------------------###
 - name: load_country
   assignments_list: 
-    - GSw_EFS1_AllYearLoad: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
   dist: dirichlet
   dist_params: [1, 1]
   weight_r: country
 
 - name: load_st
   assignments_list: 
-    - GSw_EFS1_AllYearLoad: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
   dist: dirichlet
   dist_params: [1, 1]
   weight_r: st
 
 - name: load_ba
   assignments_list: 
-    - GSw_EFS1_AllYearLoad: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
   dist: dirichlet
   dist_params: [1, 1]
   weight_r: ba
 
 - name: load_discrete_st
   assignments_list: 
-    - GSw_EFS1_AllYearLoad: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
   dist: discrete
   dist_params: [1, 1]
   weight_r: st

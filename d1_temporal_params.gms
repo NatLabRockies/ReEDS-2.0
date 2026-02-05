@@ -617,7 +617,7 @@ dayhours(h)$[sum{(i,v,r,t)$[pv(i)$valgen(i,v,r,t)], m_cf(i,v,r,h,t) }] = yes ;
 if(%cur_year% = sum{t$tfirst(t), yeart(t) },
     wat_supply_init(wst,r) = sum{(i,v,h,t)$[h_rep(h)$valcap(i,v,r,t)$initv(v)$i_wst(i,wst)$tfirst(t)],
                                 hours(h)
-                                * (sum{w$i_w(i,w), m_capacity_exog(i,v,r,t) * water_rate(i,w,r)}) 
+                                * (sum{w$i_w(i,w), m_capacity_exog(i,v,r,t) * water_rate(i,w)}) 
                                 * (1 + sum{szn, h_szn(h,szn) * seas_cap_frac_delta(i,v,r,szn,t)})
                                 } / 1E6 ;
 
@@ -772,6 +772,20 @@ $onlisting
 load_exog(r,allh,t) = 0 ;
 load_exog(r,h,t) = load_allyear(r,h,t) / (1.0 - distloss) ;
 
+* update PRM as needed to address unserved energy in PRAS
+$onempty
+parameter prm_stress(r,t) "--fraction-- planning reserve margin by BA, updated by stress_periods.py"
+/ 
+$offlisting
+$ondelim
+$include inputs_case%ds%stress%stress_year%%ds%prm_stress.csv
+$offdelim
+$onlisting
+/ ;
+$offempty
+
+prm(r,t)$[prm_stress(r,t)] = prm_stress(r,t) ;
+
 * Stress-period load is scaled up by PRM
 load_exog(r,h,t)$h_stress(h) = load_exog(r,h,t) * (1 + prm(r,t)) ;
 
@@ -808,8 +822,6 @@ maxload_szn(r,h,t,szn)
     $[(smax(hh$[h_szn(hh,szn)], load_exog_static(r,hh,t))
        = load_exog_static(r,h,t))
     $h_szn(h,szn)$Sw_OpRes] = yes ;
-
-
 
 set h_ccseason_prm(allh,ccseason) "peak-load hour for the entire modeled system by ccseason"
 /

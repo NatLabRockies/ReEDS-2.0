@@ -3,6 +3,8 @@ CoalOldUns_CoalOldScr,CoalOldUns,CoalOldScr
 CoalOldUns_CofireOld,CoalOldUns,CofireOld
 CoalOldScr_CofireOld,CoalOldScr,CofireOld
 Gas-CC_Gas-CC-CCS_mod,Gas-CC,Gas-CC-CCS_mod
+Gas-CC_H_1x1_Gas-CC_H_1x1-CCS_mod,Gas-CC_H_1x1,Gas-CC_H_1x1-CCS_mod
+Gas-CC_H_2x1_Gas-CC_H_2x1-CCS_mod,Gas-CC_H_2x1,Gas-CC_H_2x1-CCS_mod
 Coal-IGCC_coal-CCS_mod,Coal-IGCC,coal-CCS_mod
 coal-new_coal-CCS_mod,coal-new,coal-CCS_mod
 CoalOldScr_coal-CCS_mod,CoalOldScr,coal-CCS_mod
@@ -10,6 +12,8 @@ CoalOldUns_coal-CCS_mod,CoalOldUns,coal-CCS_mod
 CofireNew_coal-CCS_mod,CofireNew,coal-CCS_mod
 CofireOld_coal-CCS_mod,CofireOld,coal-CCS_mod
 Gas-CC_Gas-CC-CCS_max,Gas-CC,Gas-CC-CCS_max
+Gas-CC_H_1x1_Gas-CC_H_1x1-CCS_max,Gas-CC_H_1x1,Gas-CC_H_1x1-CCS_max
+Gas-CC_H_2x1_Gas-CC_H_2x1-CCS_max,Gas-CC_H_2x1,Gas-CC_H_2x1-CCS_max
 Coal-IGCC_coal-CCS_max,Coal-IGCC,coal-CCS_max
 coal-new_coal-CCS_max,coal-new,coal-CCS_max
 CoalOldScr_coal-CCS_max,CoalOldScr,coal-CCS_max

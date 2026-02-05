@@ -305,9 +305,9 @@ def main(reeds_path, inputs_case):
     retscen = sw.retscen
     mindev = int(sw.mindev)
     GSw_WaterMain = sw.GSw_WaterMain    
-    GSw_CoalRetire = int(sw.GSw_CoalRetire)
+    GSw_RetireYears_Coal = int(sw.GSw_RetireYears_Coal)
+    GSw_RetireYears_Thermal = int(sw.GSw_RetireYears_Thermal)
     GSw_Clean_Air_Act = int(sw.GSw_Clean_Air_Act)
-    coalretireyrs = int(sw.coalretireyrs)
 
     #%%
     # Inflation factor 1987$ to 2004$
@@ -352,7 +352,7 @@ def main(reeds_path, inputs_case):
         indat['tech'] = indat.coolingwatertech
 
     ### NOTE: New addition for columns AO:AR, AW:AX in the plant file
-    ad = indat[["tech", "r", "ctt", "resource_region", "summer_power_capacity_MW", "TC_WIN", retscen,
+    ad = indat[["tech", "r", "ctt", "summer_power_capacity_MW", "TC_WIN", retscen,
                 "StartYear", "IsExistUnit", "HeatRate", "T_VOM", "T_FOM",
                 "T_CCSROV", "T_CCSF", "T_CCSV", "T_CCSHR", "T_CCSCAPA", "T_CCSLOC"]].copy() 
 
@@ -361,7 +361,6 @@ def main(reeds_path, inputs_case):
         'tech'   : 'TECH',
         'r'      : 'r',
         'ctt'    : 'ctt',
-        'resource_region' : 'resource.region',
         'summer_power_capacity_MW'    : 'Summer.capacity',
         'TC_WIN' : 'Winter.capacity',
         retscen  : 'RetireYear',
@@ -387,32 +386,52 @@ def main(reeds_path, inputs_case):
     # rate but O&M costs are assumed
     df = ad[(~ad.HR.isna()) & (~ad.TECH.isin(['geohydro_allkm', 'CofireNew']))]
 
-    # Adjust coal retirement dates based on switch
+    # Adjust retirement dates of coal specifically or thermal techs generally based on switch
+
     tech_table = pd.read_csv(
         os.path.join(inputs_case, 'tech-subset-table.csv')).set_index('Unnamed: 0')
     coal_techs = [x.lower() for x in tech_table[tech_table['COAL'] == 'YES'].index.values.tolist()]
+    thermal_techs = [x.lower() for x in tech_table[(tech_table['COAL'] == 'YES') | 
+                                                   (tech_table['GAS'] == 'YES') | 
+                                                   (tech_table['NUCLEAR'] == 'YES') |
+                                                   (tech_table['OGS'] == 'YES')].index.values.tolist()]
 
     current_yr = datetime.date.today().year
+    
+    if GSw_RetireYears_Thermal == 0:
+        # Thermal retirements are not adjusted, data is straight from EIA unit database
+        # Coal retirement can be adjusted separately when GSw_RetireYears_Thermal = 0
+        # if GSw_RetireYears_Coal = 0, coal retirements are not adjusted, data is straight from EIA unit database
+        if GSw_RetireYears_Coal < 0:
+            # For coal units with retire year before current_yr - GSw_RetireYears_Coal, they are forced to retire in current_yr.
+            # For coal units with retire year after or equal to current_yr - GSw_RetireYears_Coal, their lifetime is shorted by |GSw_RetireYears_Coal|.
+            df.loc[(df['RetireYear'] < current_yr - GSw_RetireYears_Coal) & (df['RetireYear'] > current_yr)
+                & (df['TECH'].isin(coal_techs)), 'RetireYear'] = current_yr
+            df.loc[(df['RetireYear'] >= current_yr - GSw_RetireYears_Coal) & (df['TECH'].isin(coal_techs)),
+                'RetireYear'] += GSw_RetireYears_Coal
 
-    # if GSw_CoalRetire = 0, then lifetime coal retirements are not adjusted, data is just straight from EIA unit database
+        elif GSw_RetireYears_Coal > 0:
+            # Lifetime of all currently operating coal units is extended by GSw_RetireYears_Coal
+            df.loc[(df['RetireYear'] > current_yr) & (df['TECH'].isin(coal_techs)),
+                'RetireYear'] += GSw_RetireYears_Coal
 
-    # if GSw_CoalRetire = 1, 
-        # For units with retire years sooner than current_yr + coalretireyrs, those units are forced to retire in this year.
-        # For units with retire years after or equal to current_yr + coalretireyrs, their lifetime is shorted by 'coalretireyrs'.
-    if GSw_CoalRetire == 1:
-        df.loc[(df['RetireYear'] < current_yr + coalretireyrs) & (df['RetireYear'] > current_yr)
-               & (df['TECH'].isin(coal_techs)), 'RetireYear'] = current_yr
-        df.loc[(df['RetireYear'] >= current_yr + coalretireyrs) & (df['TECH'].isin(coal_techs)),
-               'RetireYear'] -= coalretireyrs
+    # Adjust thermal techs' retirement dates when GSw_RetireYears_Thermal != 0
+    elif GSw_RetireYears_Thermal < 0:
+        # For thermal units with retire year before current_yr - GSw_RetireYears_Thermal, they are forced to retire in current_yr.
+        # For thermal units with retire year after or equal to current_yr - GSw_RetireYears_Thermal, their lifetime is shorted by |GSw_RetireYears_Thermal|.
+        df.loc[(df['RetireYear'] < current_yr - GSw_RetireYears_Thermal) & (df['RetireYear'] > current_yr)
+               & (df['TECH'].isin(thermal_techs)), 'RetireYear'] = current_yr
+        df.loc[(df['RetireYear'] >= current_yr - GSw_RetireYears_Thermal) & (df['TECH'].isin(thermal_techs)),
+               'RetireYear'] += GSw_RetireYears_Thermal
 
-    # if GSw_CoalRetire = 2, then increase the lifetime of all currently operating coal units by 'coalretireyrs'
-    elif GSw_CoalRetire == 2:
-        df.loc[(df['RetireYear'] > current_yr) & (df['TECH'].isin(coal_techs)),
-               'RetireYear'] += coalretireyrs
-
+    elif GSw_RetireYears_Thermal > 0:
+        # Lifetime of all currently operating thermal units is extended by GSw_RetireYears_Thermal
+        df.loc[(df['RetireYear'] > current_yr) & (df['TECH'].isin(thermal_techs)),
+               'RetireYear'] += GSw_RetireYears_Thermal
+        
     # Group up similar generators
     dat = df.groupby([
-        'TECH', 'r', 'HR', 'resource.region', 'onlineyear', 
+        'TECH', 'r', 'HR', 'onlineyear', 
         'RetireYear', 'VOM', 'FOM',"CCS_Retro_OvernightCost", "CCS_Retro_FOM", 
         "CCS_Retro_VOM", "CCS_Retro_HR", "CCS_Retro_CapAdjust", "CCS_Retro_LocFactor",
     ])[['Summer.capacity','Winter.capacity']].sum().reset_index()

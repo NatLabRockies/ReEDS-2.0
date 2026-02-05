@@ -1275,12 +1275,6 @@
   - [cs.csv](/inputs/ctus/cs.csv)
 ---
 
-  - [r_cs.csv](/inputs/ctus/r_cs.csv)
----
-
-  - [r_cs_distance_mi.csv](/inputs/ctus/r_cs_distance_mi.csv)
----
-
 
 <a id='inputs-degradation'></a>
 #### inputs/degradation
@@ -1947,9 +1941,6 @@
   - [demand_AEO_2023_reference.csv](/inputs/load/demand_AEO_2023_reference.csv)
 ---
 
-  - [demand_flat_2020_onward.csv](/inputs/load/demand_flat_2020_onward.csv)
----
-
   - [EER_100by2050_load_hourly.h5](/inputs/load/EER_100by2050_load_hourly.h5)
 ---
 
@@ -2125,7 +2116,7 @@
 ---
 
   - [h2-combustion_ATB_2024.csv](/inputs/plant_characteristics/h2-combustion_ATB_2024.csv)
-    - **Description:** Hydrogen CT and CC plant costs generated in preprocessing from moderate case NREL ATB 2024 data
+    - **Description:** Hydrogen CT and CC plant costs generated in preprocessing from moderate case NLR ATB 2024 data
 ---
 
   - [heat_rate_adj.csv](/inputs/plant_characteristics/heat_rate_adj.csv)
@@ -3410,22 +3401,6 @@
   - [upv-reference_ba.h5](/inputs/variability/multi_year/upv-reference_ba.h5)
     - **File Type:** Resource supply curve
     - **Description:** Utility scale photovoltaics resource supply curve using Reference access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [upv_140AC-reference_ba.h5](/inputs/variability/multi_year/upv_140AC-reference_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Utility scale photovoltaics resource supply curve (AC, using a 1.40 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [upv_220AC-reference_ba.h5](/inputs/variability/multi_year/upv_220AC-reference_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Utility scale photovoltaics resource supply curve (AC, using a 2.20 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.
     - **Indices:** v,r,t
     - **Dollar year:** N/A
     - **Citation:** N/A

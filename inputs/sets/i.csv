@@ -20,13 +20,20 @@ CofireOld
 csp-ns
 distpv
 Gas-CC
+Gas-CC_H_1x1
+Gas-CC_H_2x1
 Gas-CC-CCS_mod
 Gas-CC-CCS_max
+Gas-CC_H_1x1-CCS_mod
+Gas-CC_H_1x1-CCS_max
+Gas-CC_H_2x1-CCS_mod
+Gas-CC_H_2x1-CCS_max
 * flexible CCS technology options that use natural gas as fuel
 Gas-CC-CCS-F1
 Gas-CC-CCS-F2
 Gas-CC-CCS-F3
 Gas-CT
+Gas-CT_aero
 H2-CT
 H2-CC
 geothermal
@@ -229,6 +236,10 @@ CoalOldUns_CofireOld
 CoalOldScr_CofireOld
 coal-new_CofireNew
 Gas-CC_Gas-CC-CCS_mod
+Gas-CC_H_1x1_Gas-CC_H_1x1-CCS_mod
+Gas-CC_H_2x1_Gas-CC_H_2x1-CCS_mod
+Gas-CC_H_1x1_Gas-CC_H_1x1-CCS_max
+Gas-CC_H_2x1_Gas-CC_H_2x1-CCS_max
 Coal-IGCC_coal-CCS_mod
 coal-new_coal-CCS_mod
 CoalOldScr_coal-CCS_mod

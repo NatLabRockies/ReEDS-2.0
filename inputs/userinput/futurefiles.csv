@@ -76,6 +76,7 @@ cost_opres.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 cost_vom_mult.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 cost_vom.csv,.csv,0,None,t,"i,v,r",0,0,constant,0,None,done,constant
 county2zone.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
+county2zone_original.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 crf_co2_incentive.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; handled in calc_financial_inputs.py,
 crf_h2_incentive.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; handled in calc_financial_inputs.py,
 crf.csv,.csv,1,None,0,None,0,None,constant,None,None,done; seems to be handled in calc_financial_inputs.py,constant
@@ -86,6 +87,7 @@ csapr_group2_ex.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 csapr_ozone_season.csv,.csv,0,None,wide,"st,csapr_cat",1,0,constant,None,None,done,constant
 csp.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
 ctt.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
+ctus_r_cs_spurlines_200mi.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 currency_incentives.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 d_szn_1yr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 d_szn_7yr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -101,6 +103,7 @@ diagnose.gms,.gms,1,None,9999,None,9999,0,constant,None,None,new; seems to be ha
 disagg_geosize.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 disagg_hydroexist.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 disagg_population.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
+disagg_state_lpf.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 disagg_translinesize.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 distance_reinforcement.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 distance_spur.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -243,7 +246,6 @@ ivt.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done (special case: ivt 
 lcclike.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 load_2010.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 load_allyear.csv,.csv,0,None,t,"*r,h",0,0,linear_5,0,None,done,linear_5
-load_hourly.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new; used to create load.h5 so no need to forecast,
 load_multiplier.csv,.csv,0,None,year,r,0,0,linear_5,0,None,done,linear_5
 load.h5,.h5,0,None,year,datetime,1,keepindex,linear_5,None,None,done,linear_5
 loadsite_annual.csv,.csv,0,None,t,*loadsitereg,9999,0,constant,0,None,,
@@ -374,7 +376,6 @@ r_rr_adj.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 ramprate.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 ramptime.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 rb_aggreg.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
-recf_csp.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
 recf_distpv.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
 recf_upv_140AC.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
 recf_upv_220AC.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
@@ -434,7 +435,6 @@ storinmaxfrac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 stressperiods_user.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; check if we need to expand the input file,
 superpeak_hour_mapper.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 supply_chain_adjust.csv,.csv,0,None,0,None,0,None,constant,None,None,new,
-supplycurve_csp.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 supplycurve_egs.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 supplycurve_geohydro.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 supplycurve_upv.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,

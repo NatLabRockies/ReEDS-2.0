@@ -33,7 +33,7 @@ def get_remote_path(local):
         elif os.environ.get('NREL_CLUSTER') == 'eagle':
             remotepath = '/shared-projects/reeds'
         else:
-            raise Exception(f"Detected {os.environ.get('NREL_CLUSTER')} as NREL Cluster; "
+            raise Exception(f"Detected {os.environ.get('NREL_CLUSTER')} as NLR Cluster; "
                             "only 'eagle' and 'kestrel' are supported")
     else:
         # if not on the hpc running link to nrelnas01 and set local to true

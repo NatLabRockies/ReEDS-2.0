@@ -11,7 +11,7 @@ Before running this script for the first time, you'll need to install the Tablea
 `pip install tableauhyperapi`
 
 
-Note that if you're pulling ReEDS-to-PLEXOS results into Tableau, you'll also need to have the [h5plexos](https://github.com/NREL/h5plexos) package installed.
+Note that if you're pulling ReEDS-to-PLEXOS results into Tableau, you'll also need to have the [h5plexos](https://github.com/NatLabRockies/h5plexos) package installed.
 
 ### Example call:
 

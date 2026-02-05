@@ -3,7 +3,7 @@ ENV["JULIA_PKG_SERVER_REGISTRY_PREFERENCE"] = "eager"
 import Pkg
 Pkg.Registry.update()
 Pkg.Registry.add("General")
-Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/NREL/JuliaRegistry.git"))
+Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/NatLabRockies/JuliaRegistry.git"))
 Pkg.instantiate()
 
 Pkg.add("Random123")

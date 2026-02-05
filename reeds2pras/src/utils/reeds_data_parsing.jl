@@ -79,7 +79,7 @@ function process_lines(
     function keep_line(from_pca, to_pca)
         from_idx = findfirst(x -> x == from_pca, regions)
         to_idx = findfirst(x -> x == to_pca, regions)
-        return ~isnothing(from_idx) && ~isnothing(to_idx) && (from_idx < to_idx)
+        return !isnothing(from_idx) && !isnothing(to_idx) && (from_idx < to_idx)
     end
     system_line_naming_data =
         DataFrames.subset(line_base_cap_data, [:r, :rr] => DataFrames.ByRow(keep_line))
@@ -231,7 +231,10 @@ end
         Number of slices to disaggregate the capacity
     year : int
         Year associated with the capacity
-
+    scheduled_outage_hourly: Union{Nothing, DataFrames.DataFrame}
+        a dataframe of hourly scheduled outage rates
+        (if the scheduled_outage_rate file is read). If no file is read, a default 
+        nothing is used. 
     Returns
     -------
     all_generators : Generator[]
@@ -247,6 +250,7 @@ function process_thermals_with_disaggregation(
     timesteps::Int,
     year::Int,
     mttr_dict::Dict;
+    scheduled_outage_hourly::Union{Nothing, DataFrames.DataFrame},
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
     pras_max_unitsize_prm = true,
@@ -283,6 +287,11 @@ function process_thermals_with_disaggregation(
             )
         end
 
+        gen_sor = zeros(Float32, timesteps)
+        if !isnothing(scheduled_outage_hourly) && tech in DataFrames.names(scheduled_outage_hourly)
+            gen_sor = scheduled_outage_hourly[!, tech]
+        end
+
         mttr = Int64(mttr_dict[tech])
 
         generator_array = disagg_existing_capacity(
@@ -295,6 +304,7 @@ function process_thermals_with_disaggregation(
             timesteps,
             year,
             mttr,
+            gen_sor,
             pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
             pras_existing_unit_size = pras_existing_unit_size,
             # Use PRM MW if pras_max_unitsize_prm switch is on; otherwise ignore by setting to 0
@@ -326,7 +336,10 @@ end
         Number of slices to disaggregate the capacity
     year : int
         Year associated with the capacity
-
+    scheduled_outage_hourly: Union{Nothing, DataFrames.DataFrame}
+        a dataframe of hourly scheduled outage rates
+        (if the scheduled_outage_rate file is read). If no file is read, a default 
+        nothing is used. 
     Returns
     -------
 """
@@ -340,6 +353,7 @@ function process_hd_as_generator!(
     timesteps::Int,
     year::Int,
     mttr_dict::Dict,
+    scheduled_outage_hourly::Union{Nothing, DataFrames.DataFrame},
 )
 
     # split-apply-combine to handle differently vintaged entries
@@ -367,6 +381,11 @@ function process_hd_as_generator!(
 
         mttr = Int64(mttr_dict[tech])
 
+        gen_sor = zeros(Float32, timesteps)
+        if !isnothing(scheduled_outage_hourly) && tech in DataFrames.names(scheduled_outage_hourly)
+            gen_sor = scheduled_outage_hourly[!, tech]
+        end 
+
         generator_array = disagg_existing_capacity(
             unitdata,
             unitsize_dict,
@@ -377,6 +396,7 @@ function process_hd_as_generator!(
             timesteps,
             year,
             mttr,
+            gen_sor,
         )
         append!(all_generators, generator_array)
     end
@@ -394,7 +414,10 @@ end
         Vector of ReEDS Generators
     ReEDS_data : DataFrames.DataFrame
         A dataset from the ReEDS Program
-
+    scheduled_outage_hourly: Union{Nothing, DataFrames.DataFrame}
+        a dataframe of hourly scheduled outage rates
+        (if the scheduled_outage_rate file is read). If no file is read, a default 
+        nothing is used. 
     Returns
     -------
     generators_array : Vector{<:ReEDS2PRAS.Generator}
@@ -420,7 +443,7 @@ function process_vg(
                 capacity = profile,
                 type = tech,
                 legacy = "New",
-                FOR = 0.,
+                FOR = zeros(Float32, timesteps),
                 MTTR = 24,
             ),
         )
@@ -448,6 +471,10 @@ end
         number of timesteps
     year : Int64
         ReEDS target simulation year
+    scheduled_outage_hourly: Union{Nothing, DataFrames.DataFrame}
+        a dataframe of hourly scheduled outage rates
+        (if the scheduled_outage_rate file is read). If no file is read, a default 
+        nothing is used. 
     hydro_energylim : Bool
         a flag which allows users to choose whether to model HD 
         devices as flat generators, or as variable generator for 
@@ -470,12 +497,13 @@ function process_hydro(
     hydro_disp_capacities::DataFrames.DataFrame,
     hydro_non_disp_capacities::DataFrames.DataFrame,
     FOR_dict::Dict,
-    forcedoutage_hourly,
+    forcedoutage_hourly::DataFrames.DataFrame,
     ReEDS_data,
     year::Int64,
     timesteps::Int,
     mttr_dict::Dict,
     unitsize_dict;
+    scheduled_outage_hourly::Union{Nothing, DataFrames.DataFrame},
     hydro_energylim = false,
 )
 
@@ -493,6 +521,7 @@ function process_hydro(
             timesteps,
             year,
             mttr_dict,
+            scheduled_outage_hourly,
         )
 
         process_hd_as_generator!(
@@ -505,6 +534,7 @@ function process_hydro(
             timesteps,
             year,
             mttr_dict,
+            scheduled_outage_hourly
         )
         genstor_array = Gen_Storage[]
 
@@ -571,6 +601,11 @@ function process_hydro(
         name = "$(category)_$(string(row.r))"
         region = string(row.r)
 
+        gen_sor = zeros(Float32, timesteps)
+        if !isnothing(scheduled_outage_hourly) && category in DataFrames.names(scheduled_outage_hourly)
+            gen_sor = scheduled_outage_hourly[!, category]
+        end
+
         mttr = Int64(mttr_dict[category])
         
         # - Charging to genstore is limited by charge_capacity whether from grid or from 
@@ -594,7 +629,8 @@ function process_hydro(
                 grid_inj_cap = repeat(dispatch_limit, num_years),
                 type = category,
                 legacy = "New",
-                FOR = 0.0, 
+                FOR = zeros(Float32, timesteps), 
+                SOR = gen_sor,
                 MTTR = mttr,
             ),
         )
@@ -630,6 +666,10 @@ function process_hydro(
         category = string(row.i)
         name = "$(category)_$(string(row.r))"
         region = string(row.r)
+        gen_sor = zeros(Float32, timesteps)
+        if !isnothing(scheduled_outage_hourly) && category in DataFrames.names(scheduled_outage_hourly)
+            gen_sor = scheduled_outage_hourly[!, category]
+        end
         mttr = Int64(mttr_dict[category])
 
         push!(
@@ -642,7 +682,8 @@ function process_hydro(
                 capacity = repeat(hourly_capacity, num_years),
                 type = category,
                 legacy = "New",
-                FOR = 0.0, 
+                FOR = zeros(Float32, timesteps),
+                SOR = gen_sor,
                 MTTR = mttr,
             ),
         )
@@ -667,7 +708,10 @@ end
         Number of timesteps
     year : Int64
         simulated time period
-
+    scheduled_outage_hourly: Union{Nothing, DataFrames.DataFrame}
+        a dataframe of hourly scheduled outage rates
+        (if the scheduled_outage_rate file is read). If no file is read, a default 
+        nothing is used. 
     Returns
     -------
     storages_array : Storage[]
@@ -676,10 +720,12 @@ end
 function process_storages(
     storage_builds::DataFrames.DataFrame,
     FOR_dict::Dict,
+    forcedoutage_hourly::DataFrames.DataFrame,
     unitsize_dict::Dict,
     ReEDS_data,
     timesteps::Int,
-    mttr_dict::Dict,
+    mttr_dict::Dict;
+    scheduled_outage_hourly::Union{Nothing, DataFrames.DataFrame}
 )
     storage_energy_capacity_data = get_storage_energy_capacity_data(ReEDS_data)
     @debug "storage_energy_capacity_data is $(storage_energy_capacity_data)"
@@ -709,8 +755,24 @@ function process_storages(
 
     storages_array = Storage[]
     for (idx, row) in enumerate(eachrow(storage_builds))
+        gen_sor = zeros(Float32, timesteps)
+        storage_type = string(row.i)
+        if !isnothing(scheduled_outage_hourly) && storage_type in DataFrames.names(scheduled_outage_hourly)
+            gen_sor = scheduled_outage_hourly[!, storage_type]
+        end
+
         name = "$(string(row.i))|$(string(row.r))"
-        gen_for = FOR_dict[string(row.i)]
+
+        gen_for = nothing
+        if (name in DataFrames.names(forcedoutage_hourly))
+            gen_for = forcedoutage_hourly[!, name]
+        else
+            gen_for = fill(Float32(FOR_dict[lowercase(storage_type)]), timesteps)
+            @info(
+                "$name was not found in forcedoutage_hourly so using " *
+                "static value of $(FOR_dict[storage_type]) from outage_forced_static.csv")
+        end
+
         name = "$(name)|"#append for later matching
         mttr = Int64(mttr_dict[string(row.i)])
 
@@ -726,12 +788,13 @@ function process_storages(
                     charge_cap = row.MW,
                     discharge_cap = row.MW,
                     ## Battery FOR is applied to energy capacity, not power capacity
-                    energy_cap = round(Int, row.MW) * storage_duration * (1 - gen_for),
+                    energy_cap = row.MW * storage_duration * (1 .- gen_for),
                     legacy = "New",
                     charge_eff = efficiency["charge"][string(row.i)],
                     discharge_eff = efficiency["discharge"][string(row.i)],
                     carryover_eff = 1.0,
-                    FOR = 0.0,
+                    FOR = zeros(Float32, timesteps),
+                    SOR = gen_sor,
                     MTTR = mttr,
                 ),
             )
@@ -749,6 +812,7 @@ function process_storages(
                 gen_for,
                 timesteps,
                 mttr,
+                gen_sor, 
             )
         end
     end
@@ -774,6 +838,8 @@ end
         The associated balancing authority (PCA).
     gen_for : float
         The forced outage rate associated with the generator.
+    gen_sor : float
+        The scheduled outage rate associated with the generator.        
     timesteps : Int
         Number of timesteps.
     year : int
@@ -805,7 +871,8 @@ function disagg_existing_capacity(
     gen_for::Vector{Float32},
     timesteps::Int,
     year::Int,
-    mttr::Int;
+    mttr::Int,
+    gen_sor::Union{Nothing, Vector{Float32}} = nothing;
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
     max_unit_mw = 0,
@@ -838,6 +905,7 @@ function disagg_existing_capacity(
             gen_for,
             timesteps,
             mttr,
+            gen_sor,
         )
         return generators_array
     # If the FOR is zero, no need to disaggregate, so put all capacity in one unit
@@ -851,6 +919,7 @@ function disagg_existing_capacity(
                 fuel = tech,
                 legacy = "New",
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = mttr,
             ),
         ]
@@ -896,6 +965,7 @@ function disagg_existing_capacity(
             fuel = tech,
             legacy = "Existing",
             FOR = gen_for,
+            SOR = gen_sor,
             MTTR = mttr,
         )
         push!(generators_array, gen)
@@ -912,6 +982,7 @@ function disagg_existing_capacity(
             gen_for,
             timesteps,
             mttr,
+            gen_sor,
         )
     end
 
@@ -943,6 +1014,8 @@ end
         power control authority of the generator unit
     gen_for : float
         generation forecast
+    gen_sor : float
+        The scheduled outage rate associated with the generator.
     timesteps : Int
         number of timesteps
     MTTR : int
@@ -962,6 +1035,7 @@ function add_new_capacity!(
     gen_for::Vector{Float32},
     timesteps::Int,
     MTTR::Int,
+    gen_sor::Union{Nothing, Vector{Float32}} = nothing,
 )
     n_gens = floor(Int, new_capacity / unit_capacity)
     if n_gens == 0
@@ -975,6 +1049,7 @@ function add_new_capacity!(
                 fuel = tech,
                 legacy = "New",
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )
@@ -991,6 +1066,7 @@ function add_new_capacity!(
                 fuel = tech,
                 legacy = "New",
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )
@@ -1009,6 +1085,7 @@ function add_new_capacity!(
                 fuel = tech,
                 legacy = "New",
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )
@@ -1022,7 +1099,6 @@ end
     new_duration, which will be picked up by multiple dispatch
     and leading to Battery{} model handling
 """
-
 function add_new_capacity!(
     generators_array::Vector{<:Any},
     new_capacity::Int,
@@ -1032,9 +1108,10 @@ function add_new_capacity!(
     unit_capacity::Int,
     tech::AbstractString,
     pca::AbstractString,
-    gen_for::Float64,
+    gen_for::Vector{Float32},
     timesteps::Int,
     MTTR::Int,
+    gen_sor::Union{Nothing, Vector{Float32}} = nothing,
 )
     n_gens = floor(Int, new_capacity / unit_capacity)
     if n_gens == 0
@@ -1047,12 +1124,13 @@ function add_new_capacity!(
                 type = tech,
                 charge_cap = new_capacity,
                 discharge_cap = new_capacity,
-                energy_cap = round(Int, new_capacity) * new_duration,
+                energy_cap = fill(Float64(new_capacity * new_duration), timesteps),
                 legacy = "New",
                 charge_eff = charge_eff,
                 discharge_eff = discharge_eff,
                 carryover_eff = 1.0,
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )
@@ -1068,12 +1146,13 @@ function add_new_capacity!(
                 type = tech,
                 charge_cap = unit_capacity,
                 discharge_cap = unit_capacity,
-                energy_cap = round(Int, unit_capacity) * new_duration,
+                energy_cap = fill(Float64(unit_capacity * new_duration), timesteps),
                 legacy = "New",
                 charge_eff = charge_eff,
                 discharge_eff = discharge_eff,
                 carryover_eff = 1.0,
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )
@@ -1091,12 +1170,13 @@ function add_new_capacity!(
                 type = tech,
                 charge_cap = remainder,
                 discharge_cap = remainder,
-                energy_cap = round(Int, remainder) * new_duration,
+                energy_cap = fill(Float64(remainder * new_duration), timesteps),
                 legacy = "New",
                 charge_eff = charge_eff,
                 discharge_eff = discharge_eff,
                 carryover_eff = 1.0,
                 FOR = gen_for,
+                SOR = gen_sor,
                 MTTR = MTTR,
             ),
         )

@@ -1194,6 +1194,10 @@ def plot_trans_vsc(
     dfplot['rr_x'] = dfplot.rr.map(dfba.x)
     dfplot['rr_y'] = dfplot.rr.map(dfba.y)
 
+    if not len(dfplot):
+        print('plot_trans_vsc(): No VSC lines, so no plot is generated')
+        return None, None
+
     ### Plot it
     if (not f) and (not ax):
         plt.close()
@@ -4247,7 +4251,7 @@ def plot_stressperiod_days(case, repcolor='k', sharey=False, figsize=(10,5)):
         index=timeindex,
         data=timeindex.map(lambda x: x.isin(rep_hours)).astype(int),
     )
-    ### Want a dict of dataframes with 8760 index, columns for rep,2007,...,2013,
+    ### Want a dict of dataframes with 8760 index, columns for 'rep' + RA years,
     ### and keys for solve years
     dfplot = {}
     ### Get stress period IDs from output generation
@@ -4258,7 +4262,7 @@ def plot_stressperiod_days(case, repcolor='k', sharey=False, figsize=(10,5)):
         y for y in sorted(gen_h_stress.t.unique())
         if int(y) >= int(sw.GSw_StartMarkets)
     ]
-    colors = plots.rainbowmapper(range(2007,2014))
+    colors = plots.rainbowmapper(sw.resource_adequacy_years_list)
     rep = f"rep ({sw.GSw_HourlyWeatherYears.replace('_',',')})"
     colors[rep] = repcolor
 
@@ -4272,7 +4276,7 @@ def plot_stressperiod_days(case, repcolor='k', sharey=False, figsize=(10,5)):
             dictout = {}
         else:
             dictout = {rep: dfrep}
-        for y in range(2007,2014):
+        for y in sw.resource_adequacy_years_list:
             yearstarts = [i for i in t2starts[t] if i.year == y]
             yearstarts_aligned = [
                 pd.Timestamp(f'{yplot}-{i.month}-{i.day} 00:00', tz='Etc/GMT+6')
@@ -6018,6 +6022,8 @@ def plot_capacity_offline(
     }, axis=1)
     dftemp.index = pd.to_datetime(
         temperatures.index.strftime('%Y-%m-%d').drop_duplicates())
+    ## Include all weather years so we don't interpolate the gap
+    dftemp = dftemp.reindex(pd.date_range(dftemp.index[0], dftemp.index[-1], freq='D'))
 
     ### Get GW capacity offline, with same index as temperatures
     capacity_offline = reeds.io.read_output(case, 'capacity_offline')
@@ -6155,7 +6161,10 @@ def plot_capacity_offline(
     topax.yaxis.set_major_locator(mpl.ticker.MultipleLocator(20))
     topax.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
     botax.set_ylabel('Daily temperature range [°C]', y=0, ha='left', color=tempcolor)
-    topax.set_xlim(pd.Timestamp('2007-01-01'), pd.Timestamp('2013-12-31 23:00'))
+    topax.set_xlim(
+        pd.Timestamp(f'{sw.resource_adequacy_years_list[0]}-01-01'),
+        pd.Timestamp(f'{sw.resource_adequacy_years_list[-1]}-12-31 23:00')
+    )
     topax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
     plots.despine(ax)
 
@@ -6250,48 +6259,492 @@ def map_outage_days(
     return f, ax, outage_dates
 
 
-def layout_case_year_plots(
-    cases,
-    years,
-    oneaxis='columns',
-    yearaxis='rows',
-):
+def get_cf_map(case, tech='wind-ons', timestamp=None, recf=None):
     """
-    Lay out series of cases and years into 
-    Returns:
-    tuple: (nrows, ncols, coords) [int, int, dict]
-    - coords: {(case, year): (row, col)}
-      or {(case, year): row} or {(case, year): col} if one axis
+    Map (r,class)-resolution CF
+
+    Arguments
+    ---------
+    case (str): Path to a ReEDS case
+    tech: 'wind-ons', 'upv', or 'wind-ofs'
+    timestamp: If provided, report average CF over the timestamp; if None, report average
+        CF over full weather range. Can be any time string parseable by pandas, for example:
+        '2010', 'July 2011', '2012-10-31'
+    recf: CF dataframe loaded from recf.h5. Optional, for speed; if not provided, will
+        be read from {case}/inputs_case/recf.h5.
+
+    Returns
+    -------
+    pd.DataFrame: Supply curve dataframe with a 'cf' column and 'sc_point_gid' index
     """
-    numcases = len(cases)
-    numyears = len(years)
-    if (len(years) == 1) or (numcases == 1):
-        if oneaxis in ['column', 'columns', 1, 'wide']:
-            nrows, ncols = 1, max(numyears, numcases)
-        else:
-            nrows, ncols = max(numyears, numcases), 1
-        plotindex = 't' if numyears > 1 else 'case'
-        nrows, ncols, coords = reeds.plots.get_coordinates(
-            [(c, years[0]) for c in cases] if plotindex == 'case'
-            else [(y, cases[0]) for y in years],
-            nrows=nrows, ncols=ncols,
+    scalars = reeds.io.get_scalars(case)
+    if recf is None:
+        ## Get CF
+        recf = reeds.io.read_file(
+            os.path.join(case, 'inputs_case', 'recf.h5'), parse_timestamps=True,
+        )
+    if not isinstance(recf.columns, pd.core.indexes.multi.MultiIndex):
+        recf.columns = pd.MultiIndex.from_tuples(
+            recf.columns.map(lambda x: tuple(x.split('|'))),
+            names=['i','r'],
+        )
+    ## Downselect to time range and technology of interest
+    if timestamp is None:
+        cf = recf.mean()
+    else:
+        try:
+            cf = recf.loc[timestamp].mean()
+        except (ValueError, IndexError):
+            cf = recf.loc[reeds.timeseries.h2timestamp(timestamp)].mean()
+    cf = cf.loc[cf.index.get_level_values('i').str.startswith(tech)].copy()
+    ## UPV is AC_out/DC_cap = CF_DC, so multiply by ILR to get CF_AC
+    if tech == 'upv':
+        cf *= scalars.ilr_utility
+
+    ## Get mapping from sites to region/class
+    dfsc = pd.read_csv(
+        os.path.join(case, 'inputs_case', f'supplycurve_{tech}.csv'),
+        index_col='sc_point_gid',
+    ).rename(columns={'region':'r'})
+    dfsc['i'] = tech + '_' + dfsc['class'].astype(str)
+    sitemap = reeds.io.get_sitemap(offshore=(True if tech == 'wind-ofs' else False))
+    dfsc['geometry'] = dfsc.index.map(sitemap.geometry)
+    dfsc = gpd.GeoDataFrame(dfsc)
+    dfsc['cf'] = dfsc[['i','r']].merge(cf.rename('cf'), on=['i','r'], how='left').cf.values
+
+    ## Convert to polygons
+    dfsc['geometry'] = dfsc.buffer(11530/2, cap_style='square')
+
+    return dfsc
+
+
+def label_region_value(df, ax, column, fmt='{:.2f}', color='k', fontsize=8, **kwargs):
+    """kwargs are passed to patheffects.withStroke()"""
+    pe_kwargs = {**{'linewidth':1.5, 'foreground':'w', 'alpha':1}, **kwargs}
+    for r, row in df.iterrows():
+        ax.annotate(
+            fmt.format(row[column]),
+            (row.geometry.centroid.x, row.geometry.centroid.y),
+            ha='center', va='center', fontsize=fontsize,
+            color=color,
+            path_effects=[pe.withStroke(**pe_kwargs)],
+            zorder=1e9,
+        )
+
+
+def map_stressors(case, t, iteration=0, seed=True, outage_type='forced', debug=False):
+    """
+    Map demand, wind/PV CF, and outage rate for stress periods.
+    Returns an iterator over stress periods. Use as follows:
+        ```python
+        plot_generator = map_stressors()
+        while True:
+            try:
+                f, ax, df, plotlabel = next(plot_generator)
+                plt.savefig(plotlabel)
+            except StopIteration:
+                break
+        ```
+
+    Notes
+    -----
+    Maps: wind CF (daily mean), PV CF (daily mean), load (daily max),
+    temperature (min or max).
+    Show the percentage ranking of that day for that region out of whole weather sample.
+    Could also include profiles for (that region, that + neighbors, or all regions?)
+    for the day and the days before and after.
+    Same for outage rates (not actual outages).
+    """
+    ### Plot setup
+    cmaps = {
+        'load': cmocean.cm.rain,
+        # 'load': plt.cm.turbo,
+        # 'wind-ons': cmocean.cm.ice_r,
+        'wind-ons': cmocean.cm.ice,
+        'upv': cmocean.cm.solar,
+        'temperature': cmocean.cm.balance,
+        'rank': plt.cm.turbo,
+        'outage': cmocean.cm.amp,
+    }
+    labels = {
+        'wind-ons':'Wind', 'upv':'PV',
+        'forced':'Forced', 'scheduled':'Scheduled', 'both':'Total',
+    }
+    outage_techs = {
+        'Combined cycle': 'gas-cc',
+        'Combustion turbine': 'gas-ct',
+        'Steam turbine': 'coal-new',
+        'Nuclear': 'nuclear',
+    }
+    kwargs_colorbarhist = {
+        'nbins': 41,
+        'histratio': 1.25,
+        'orientation': 'horizontal',
+        'cbarhoffset': -1,
+        'cbarheight': 0.35,
+        'cbarwidth': 0.05,
+        'cbarbottom': 0.05,
+    }
+
+    ### Shared inputs
+    sw = reeds.io.get_switches(case)
+    hierarchy = reeds.io.get_hierarchy(case)
+    dfmap = reeds.io.get_dfmap(case)
+
+    ### Derived inputs
+    criterion = sw.GSw_PRM_StressThreshold.split('/')[0]
+    level = criterion.split('_')[0]
+    regions = hierarchy[level].unique()
+    region2rs = {
+        region: hierarchy.loc[hierarchy[level] == region].index
+        for region in regions
+    }
+    dfba = dfmap['r'].copy()
+    dflevel = dfmap[level].copy()
+
+    ### Get the data
+    augur_files = {
+        'vre_gen': os.path.join(case, 'ReEDS_Augur', 'augur_data', f'pras_vre_gen_{t}.h5'),
+        'load': os.path.join(case, 'ReEDS_Augur', 'augur_data', f'pras_load_{t}.h5'),
+    }
+    if any([not os.path.exists(fpath) for fpath in augur_files.values()]):
+        import ReEDS_Augur.prep_data as prep_data
+        prep_data.main(t, case, iteration)
+
+    vre_gen = reeds.io.read_file(augur_files['vre_gen'], parse_timestamps=True)
+    vre_gen.columns = pd.MultiIndex.from_tuples(
+        vre_gen.columns.map(lambda x: tuple(x.split('|'))),
+        names=['i','r'],
+    )
+
+    load = reeds.io.read_file(augur_files['load'], parse_timestamps=True)
+
+    recf = reeds.io.read_file(
+        os.path.join(case, 'inputs_case', 'recf.h5'),
+        parse_timestamps=True,
+    )
+    recf.columns = pd.MultiIndex.from_tuples(
+        recf.columns.map(lambda x: tuple(x.split('|'))),
+        names=['i','r'],
+    )
+
+    temperatures = reeds.io.get_temperatures(case)
+    ## Would be better to fix region aggregation upstream
+    hierarchy_original = reeds.io.get_hierarchy(case, original=True)
+    r2aggreg = hierarchy_original.aggreg
+    temperatures = temperatures.rename(columns=r2aggreg).groupby('r', axis=1).mean()
+    temperature_region = pd.concat({
+        region: temperatures[region2rs[region]].mean(axis=1)
+        for region in regions
+    }, axis=1)
+    temperature_region_day = {
+        agg:
+        temperature_region.groupby(
+            [temperature_region.index.year, temperature_region.index.month, temperature_region.index.day]
+        )
+        .agg(agg)
+        for agg in ['min', 'max', 'mean']
+    }
+
+    ### Daily generation
+    load_region = {
+        region:
+        load[region2rs[region]].sum(axis=1)
+        .groupby([load.index.year, load.index.month, load.index.day])
+        .max()
+        .sort_values()
+        for region in regions
+    }
+    ranks = np.linspace(0,100,len(load_region[list(load_region.keys())[0]]))
+    load_rank = pd.concat({
+        region: pd.Series(index=load_region[region].index, data=ranks)
+        for region in regions
+    }, axis=1)
+
+    vre_gen_region = {
+        (tech, region):
+        (
+            vre_gen[tech][region2rs[region]].sum(axis=1)
+            .groupby([vre_gen.index.year, vre_gen.index.month, vre_gen.index.day])
+            .sum()
+            .sort_values()
+        )
+        for tech in ['upv', 'wind-ons']
+        for region in regions
+    }
+    vre_gen_rank = pd.concat({
+        key: pd.Series(index=vre_gen_region[key].index, data=ranks)
+        for key in vre_gen_region
+    }, axis=1)
+
+    temperature_rank = pd.concat({
+        region: pd.Series(
+            index=temperature_region_day['mean'].loc[load_region[region].index][region].sort_values().index,
+            data=ranks,
+        )
+        for region in regions
+    }, axis=1)
+
+    ### Outage rates
+    if outage_type == 'both':
+        outage_hourly = reeds.io.get_outage_hourly(case, 'forced').add(
+            reeds.io.get_outage_hourly(case, 'scheduled'),
+            fill_value=0,
         )
     else:
-        if yearaxis in ['row', 'rows', 0, 'long', 'tall']:
-            nrows, ncols = numyears, numcases
-            coords = {
-                (case, t): (row, col)
-                for (row, t) in enumerate(years)
-                for (col, case) in enumerate(cases)
-            }
-        else:
-            nrows, ncols = numcases, numyears
-            coords = {
-                (case, t): (row, col)
-                for (row, case) in enumerate(cases)
-                for (col, t) in enumerate(years)
-            }
+        outage_hourly = reeds.io.get_outage_hourly(case, outage_type)
+    ## Downselect to modeled techs and convert to percent
+    outage_hourly = outage_hourly[list(outage_techs.values())].copy() * 100
+    outage_daily = outage_hourly.groupby(
+        [outage_hourly.index.year, outage_hourly.index.month, outage_hourly.index.day]
+    ).mean()
 
+    outage_region = outage_daily.copy()
+    outage_region.columns = outage_daily.columns.map(lambda x: (x[0], hierarchy[level][x[1]]))
+    outage_region = outage_region.groupby(['i','r'], axis=1).mean()
+
+    ### Set up the plot
+    nrows, ncols = 3, 4
+    vmin = {
+        'load': (pd.concat(load_region, axis=1).min() / pd.concat(load_region, axis=1).max()).min(),
+        'wind-ons': 0,
+        'upv': 0,
+        'temperature': reeds.units.c2f(-20),
+        'outage': 0,
+    }
+    vmax = {
+        'load': 1,
+        'wind-ons': 0.8,
+        'upv': 0.5,
+        'temperature': reeds.units.c2f(40),
+        'outage': 40,
+    }
+
+    ### Get the days to run
+    _plot_days = []
+    if seed:
+        forceperiods = (
+            pd.read_csv(
+                os.path.join(case, 'inputs_case', f'stress{t}i{iteration}', 'forceperiods.csv')
+            )
+            .drop(columns=['reason', 'yperiod'], errors='ignore')
+            .rename(columns={'region':'r', 'year':'y', 'property':'reason'})
+        )
+        forceperiods['datetime'] = forceperiods.szn.map(reeds.timeseries.h2timestamp)
+        # forceperiods['timestamp'] = forceperiods.datetime.dt.strftime('%Y-%m-%d')
+        forceperiods['m'] = forceperiods.datetime.dt.month
+        forceperiods['d'] = forceperiods.datetime.dt.day
+        forceperiods['reason'] = 'seed_' + forceperiods['reason']
+        _plot_days.append(forceperiods)
+    ## If this iteration didn't meet the reliability threshold, include the added stress periods
+    fpath_new_stress_periods = os.path.join(
+        case, 'inputs_case', f'stress{t}i{iteration+1}', 'new_stress_periods.csv'
+    )
+    if os.path.exists(fpath_new_stress_periods):
+        new_stress_periods = (
+            pd.read_csv(fpath_new_stress_periods)
+            .drop(columns=['Unnamed: 0', 'criterion'], errors='ignore')
+            .rename(columns={'periodtype':'reason', 'actual_period':'szn'})
+        )
+        _plot_days.append(new_stress_periods)
+
+    if not len(_plot_days):
+        return None, None, None, None
+
+    plot_days = (
+        pd.concat(_plot_days, axis=0, ignore_index=True)
+        .drop(columns=['datetime'], errors='ignore')
+    )
+    plot_days['timestamp'] = plot_days.apply(lambda row: f'{row.y}-{row.m:02}-{row.d:02}', axis=1)
+
+    ### Loop over days
+    for i, day in plot_days.iterrows():
+        y, m, d = day.y, day.m, day.d
+        timestamp = day.timestamp
+        focus_region = day.r
+        if 'EUE' in day.reason:
+            highlight_level = level
+            plotlabel = f'{timestamp}: {focus_region}, EUE = {day.EUE_MWh/1e3:.1f} GWh'
+        elif ('before' in day.reason) or ('after' in day.reason):
+            highlight_level = level
+            plotlabel = f"{timestamp}: {focus_region}, shoulder ({day.reason.split('_')[0]})"
+        elif day.reason == 'seed_load':
+            highlight_level = sw.GSw_PRM_StressSeedLoadLevel
+            plotlabel = f'{timestamp}: {focus_region}, peak load'
+        elif day.reason.startswith('seed'):
+            highlight_level = sw.GSw_PRM_StressSeedMinRElevel
+            plotlabel = f"{timestamp}: {focus_region}, minumum {labels[day.reason.split('_')[1]]}"
+        else:
+            print(f'Invalid stress period: {day.reason}')
+            continue
+
+        ### Plot it
+        plt.close()
+        f,ax = plt.subplots(
+            nrows, ncols, figsize=(13.33, 6.88), sharex=True, sharey=True,
+        )
+        ### First row: Daily load, PV CF, wind CF, temperature
+        ## Load
+        dfba['load'] = load.loc[timestamp].max() / load.max()
+        dfba.plot(
+            ax=ax[0,0], column='load',
+            cmap=cmaps['load'], vmin=vmin['load'], vmax=vmax['load'],
+        )
+        ax[0,0].set_title('Demand [% of peak]', y=0.9)
+        plots.addcolorbarhist(
+            f, ax[0,0], dfba['load'],
+            cmap=cmaps['load'], vmin=vmin['load'], vmax=vmax['load'],
+            **kwargs_colorbarhist,
+        )
+        ## Wind, PV
+        if not debug:
+            for tech, col in [('wind-ons', 1), ('upv', 2)]:
+                dfmap['country'].plot(ax=ax[0,col], facecolor='k', edgecolor='none', zorder=-1e3)
+                dfsc = reeds.reedsplots.get_cf_map(
+                    case, tech=tech, timestamp=timestamp, recf=recf,
+                )
+                dfsc.plot(
+                    ax=ax[0,col], column='cf',
+                    cmap=cmaps[tech], vmin=vmin[tech], vmax=vmax[tech],
+                )
+                ax[0,col].set_title(f'{labels.get(tech,tech)} CF [%]', y=0.9)
+                plots.addcolorbarhist(
+                    f, ax[0,col], dfsc['cf'],
+                    cmap=cmaps[tech], vmin=vmin[tech], vmax=vmax[tech],
+                    **kwargs_colorbarhist,
+                )
+        ## Temperature
+        dfba['temperature'] = temperatures.loc[timestamp].mean().map(reeds.units.c2f)
+        dfba.plot(
+            ax=ax[0,3], column='temperature',
+            cmap=cmaps['temperature'], vmin=vmin['temperature'], vmax=vmax['temperature'],
+        )
+        ax[0,3].set_title('Temperature [°F]', y=0.9)
+        plots.addcolorbarhist(
+            f, ax[0,3], dfba['temperature'],
+            cmap=cmaps['temperature'], vmin=vmin['temperature'], vmax=vmax['temperature'],
+            **kwargs_colorbarhist,
+        )
+
+        ### Second row: Load/PV/wind/temp percentile out of all weather years
+        ## Load
+        dflevel['load_rank'] = load_rank.loc[(y,m,d)]
+        dflevel.plot(
+            ax=ax[1,0], column='load_rank', cmap=cmaps['rank'], vmin=0, vmax=100,
+        )
+        label_region_value(
+            df=dflevel, ax=ax[1,0], column='load_rank', fmt='{:.0f}%',
+            linewidth=2.0, alpha=0.8,
+        )
+        ax[1,0].set_title('Demand', y=0.9)
+        plots.addcolorbarhist(
+            f, ax[1,0], dflevel['load_rank'],
+            cmap=cmaps['rank'], vmin=0, vmax=100, **kwargs_colorbarhist,
+        )
+        ## Wind, PV
+        for tech, col in [('wind-ons', 1), ('upv', 2)]:
+            dflevel[f'{tech}_rank'] = vre_gen_rank[tech].loc[(y,m,d)]
+            dflevel.plot(
+                ax=ax[1,col], column=f'{tech}_rank', cmap=cmaps['rank'], vmin=0, vmax=100,
+            )
+            label_region_value(
+                df=dflevel, ax=ax[1,col], column=f'{tech}_rank', fmt='{:.0f}%',
+                linewidth=2.0, alpha=0.8,
+            )
+            ax[1,col].set_title(labels.get(tech,tech), y=0.9)
+            plots.addcolorbarhist(
+                f, ax[1,col], dflevel[f'{tech}_rank'],
+                cmap=cmaps['rank'], vmin=0, vmax=100, **kwargs_colorbarhist,
+            )
+        ## Temperature
+        dflevel['temperature_rank'] = temperature_rank.loc[(y,m,d)]
+        dflevel.plot(
+            ax=ax[1,3], column='temperature_rank', cmap=cmaps['rank'], vmin=0, vmax=100,
+        )
+        label_region_value(
+            df=dflevel, ax=ax[1,3], column='temperature_rank', fmt='{:.0f}%',
+            linewidth=2.0, alpha=0.8,
+        )
+        ax[1,3].set_title('Temperature', y=0.9)
+        plots.addcolorbarhist(
+            f, ax[1,3], dflevel['temperature_rank'],
+            cmap=cmaps['rank'], vmin=0, vmax=100, **kwargs_colorbarhist,
+        )
+
+        ### Third row: CC/CT/ST/NU outage rate
+        for col, (label, tech) in enumerate(outage_techs.items()):
+            dfba[f'outage_{tech}'] = outage_daily.loc[(y,m,d), tech]
+            dfba.plot(
+                ax=ax[2,col], column=f'outage_{tech}',
+                cmap=cmaps['outage'], vmin=vmin['outage'], vmax=vmax['outage'],
+            )
+            dflevel[f'outage_{tech}'] = outage_region.loc[(y,m,d), tech]
+            label_region_value(
+                df=dflevel, ax=ax[2,col], column=f'outage_{tech}', fmt='{:.0f}%',
+                linewidth=2.0, alpha=0.8,
+            )
+            ax[2,col].set_title(label, y=0.9)
+            plots.addcolorbarhist(
+                f, ax[2,col], dfba[f'outage_{tech}'],
+                cmap=cmaps['outage'], vmin=vmin['outage'], vmax=vmax['outage'],
+                **kwargs_colorbarhist,
+            )
+
+        ### Formatting
+        ax[0,0].annotate(
+            plotlabel,
+            (0.05, 1.1), xycoords='axes fraction',
+            fontsize='xx-large', annotation_clip=False,
+        )
+        ax[1,0].annotate(
+            f'{sw.num_resource_adequacy_years}-year\npercentile',
+            (-0.06, 0.5), xycoords='axes fraction',
+            rotation=90, va='center', ha='center',
+            fontsize='x-large', weight='bold',
+        )
+        ax[2,0].annotate(
+            f'{labels.get(outage_type,outage_type)}\noutage rate',
+            (-0.06, 0.5), xycoords='axes fraction',
+            rotation=90, va='center', ha='center',
+            fontsize='x-large', weight='bold',
+        )
+        for row in range(nrows):
+            for col in range(ncols):
+                ax[row,col].axis('off')
+                dflevel.plot(ax=ax[row,col], facecolor='none', edgecolor='k', lw=0.25, zorder=1e7)
+                ## Highlight the focus region
+                for i, (c, lw) in enumerate([('w', 2.0), ('k', 1.0)]):
+                    dfmap[highlight_level].loc[[focus_region]].plot(
+                        ax=ax[row,col], facecolor='none', edgecolor=c, lw=lw, zorder=(1e7+i),
+                    )
+        ## Keep the data for debugging
+        dfout = {'dfba':dfba, 'dflevel':dflevel}
+        yield f, ax, dfout, plotlabel
+
+
+def layout_subplots(row_list, col_list, oneaxis='columns'):
+    """
+    Lay out series of row_list (e.g. cases) and col_list (e.g. years) into array of subplots,
+    even if one of the lists has only one element.
+
+    Returns:
+        tuple: (nrows, ncols, coords) [int, int, dict]
+        - coords: {(row_label, col_label): (row, col)}
+          or {(row_label, col_label): row} or {(row_label, col_label): col} if one axis
+    """
+    numcols = len(col_list)
+    numrows = len(row_list)
+    if (len(row_list) == 1) or (numcols == 1):
+        if oneaxis in ['column', 'columns', 1, 'wide']:
+            nrows, ncols = 1, max(numrows, numcols)
+        else:
+            nrows, ncols = max(numrows, numcols), 1
+    else:
+        nrows, ncols = numrows, numcols
+    nrows, ncols, coords = reeds.plots.get_coordinates(
+        [(r, c) for r in row_list for c in col_list],
+        nrows=nrows, ncols=ncols,
+    )
     return nrows, ncols, coords
 
 
@@ -6335,11 +6788,10 @@ def map_output_byyear(
     _vmin = float(dfall.min().min() if vmin is None else vmin)
     _vmax = float(dfall.max().max() if vmax is None else vmax)
     ## Arrange subplots
-    nrows, ncols, coords = layout_case_year_plots(
-        cases=plotcases,
-        years=years,
+    nrows, ncols, coords = layout_subplots(
+        row_list=titles,
+        col_list=years,
         oneaxis=oneaxis,
-        yearaxis=yearaxis,
     )
     ## Plot it
     plt.close()
@@ -6349,7 +6801,7 @@ def map_output_byyear(
     )
     for title, case in zip(titles, plotcases):
         for year in years:
-            _ax = (ax if len(coords) == 1 else ax[coords[case, year]])
+            _ax = (ax if len(coords) == 1 else ax[coords[title, year]])
             ## Background
             dfmap['country'].plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.5, zorder=1e9)
             dfmap['r'].plot(ax=_ax, facecolor='none', edgecolor='C7', lw=0.2, zorder=1e8)

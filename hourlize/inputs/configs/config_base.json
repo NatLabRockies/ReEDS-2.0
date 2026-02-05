@@ -33,21 +33,26 @@
   },
 
   "load": {
-    "load_default": "{reeds_path}/inputs/load/historic_load_hourly.h5",
-    "load_multiplier": "{reeds_path}/inputs/load/demand_AEO_2023_reference.csv",
-    "ba_frac_path":"{hourlize_path}/inputs/load/load_participation_factors_st_to_ba.csv",
-    "calibrate_path":"{hourlize_path}/inputs/load/EIA_loadbystate.csv", 
-    "calibrate_type":"all_years",
-    "calibrate_year":2010,
-    "dtypeLoad":"np.float32",
-    "hourly_out_years": "{eval_list(range(2021,2051))}",
-    "hourly_process":true,
-    "inputfiles": ["calibrate_path", "ba_frac_path", "hierarchy_path", "load_default"],
-    "load_source_hr_type":"begin",
-    "load_source_timezone":"Etc/GMT+5",
-    "load_source": "/projects/decarbsagen/ahamilto/EER_load_ingest/ReEDS-2.0/hourlize/eer_to_reeds/outputs/load_hourly_ba_EST_EER_baseline_2025-05-21_07-31-08",
-    "us_only":true,
-    "use_default_before_yr": 2021
+    "inputfiles": [],
+    "legacy_ba_state_map_file": "{hourlize_path}/inputs/load/legacy_ba_state_map.csv",
+    "legacy_ba_timezone_file": "{hourlize_path}/inputs/load/legacy_ba_timezone.csv",
+    "load_source": "/projects/eerload/source_eer_load_profiles/20250512_eer_download/shape_outputs_2025-05-12",
+    "load_source_timezone":"Etc/GMT+6",
+    "model_years": [2021, 2025, 2030, 2035, 2040, 2045, 2050],
+    "replace_sectors": [],
+    "replace_states": "all",
+    "replacement_share": {
+      "2021": 1,
+      "2025": 1,
+      "2030": 1,
+      "2035": 1,
+      "2040": 1,
+      "2045": 1,
+      "2050": 1
+    },
+    "scenarios": ["IRA cons", "central", "baseline"],
+    "sector_config_file": "{hourlize_path}/inputs/load/sector_config.json",
+    "weather_years": [2007,2008,2009,2010,2011,2012,2013,2016,2017,2018,2019,2020,2021,2022,2023]
   }
   
 }

@@ -90,7 +90,7 @@ def get_latlonlabels(df, lat=None, lon=None, columns=None):
             if col.lower().strip() in lon_candidates:
                 lonlabel = col
                 break
-    
+
     return latlabel, lonlabel
 
 
@@ -163,11 +163,11 @@ def rainbowmapper(iterable, colormap=None, explicitcolors=False, categorical=Fal
 ### Plotting
 
 def addcolorbarhist(
-    f, ax0, data, 
+    f, ax0, data,
     title=None,
-    cmap=plt.cm.viridis, 
+    cmap=plt.cm.viridis,
     bins=None,
-    nbins=201, 
+    nbins=201,
     vmin='default',
     vmax='default',
     cbarleft=1.05,
@@ -194,7 +194,7 @@ def addcolorbarhist(
     * cmap must a colormap object (e.g. plt.cm.viridis)
     * data should be of type np.array
     """
-    
+
     ########################
     ### Imports and warnings
     import matplotlib as mpl
@@ -207,7 +207,7 @@ def addcolorbarhist(
         vmin = data.min()
     if vmax == 'default':
         vmax = data.max()
-        
+
     if bins is None:
         bins = np.linspace(vmin, vmax, nbins)
     elif type(bins) is np.ndarray:
@@ -217,7 +217,7 @@ def addcolorbarhist(
         print(type(nbins, nbins))
         raise Exception('Specify bins as np.ndarray or nbins as int')
     ax0x0, ax0y0, ax0width, ax0height = ax0.get_position().bounds
-    
+
     ### Defaults for colorbar position
     if (cbarbottom is None) and (orientation == 'horizontal'):
         cbarbottom = 1.05
@@ -244,7 +244,7 @@ def addcolorbarhist(
         caxbottom = ax0y0 + ax0height * cbarbottom
         caxwidth = cbarheight * ax0width
         caxheight = cbarwidth * ax0height
-        
+
         cax = f.add_axes([caxleft, caxbottom, caxwidth, caxheight])
 
         cbar = mpl.colorbar.ColorbarBase(
@@ -270,7 +270,7 @@ def addcolorbarhist(
 
         hax = f.add_axes([haxleft, haxbottom, haxwidth, haxheight])
         ### Plot the histogram
-        hax.hist(data_hist, bins=bins, color=histcolor, 
+        hax.hist(data_hist, bins=bins, color=histcolor,
                  log=log, orientation='vertical')
         hax.set_xlim(vmin, vmax)
         hax.axis('off')
@@ -289,7 +289,7 @@ def addcolorbarhist(
             }
             xy['bottom center'], xy['top center'] = xy['bottom'], xy['top']
             xy['center bottom'], xy['center top'] = xy['bottom'], xy['top']
-            
+
             va = {
                 'bottom': 'top',
                 'top': 'bottom',
@@ -300,7 +300,7 @@ def addcolorbarhist(
             }
             va['bottom center'], va['top center'] = va['bottom'], va['top']
             va['center bottom'], va['center top'] = va['bottom'], va['top']
-            
+
             ha = {
                 'bottom': 'center',
                 'top': 'center',
@@ -332,7 +332,7 @@ def addcolorbarhist(
         if extend != 'neither':
             cax.set_xticks(xticks)
             cax.set_xticklabels(xticklabels)
-    
+
     ### Vertical orientation
     elif orientation in ['vertical', 'vert', 'v', None]:
         caxleft = ax0width + ax0x0 + (ax0width * (cbarleft - 1))
@@ -365,7 +365,7 @@ def addcolorbarhist(
 
         hax = f.add_axes([haxleft, haxbottom, haxwidth, haxheight])
 
-        hax.hist(data_hist, bins=bins, color=histcolor, 
+        hax.hist(data_hist, bins=bins, color=histcolor,
                  log=log, orientation='horizontal')
         hax.set_ylim(vmin, vmax)
         hax.axis('off')
@@ -435,22 +435,22 @@ def plot2dhistarray(xdata, ydata, logcolor=True, bins=None,
     """
     ### Format inputs
     if isinstance(bins, int):
-        bins = [np.linspace(min(xdata), max(xdata), bins), 
+        bins = [np.linspace(min(xdata), max(xdata), bins),
                 np.linspace(min(ydata), max(ydata), bins)]
     elif isinstance(bins, tuple):
         if isinstance(bins[0], int) and isinstance(bins[1], int):
-            bins = [np.linspace(min(xdata), max(xdata), bins[0]), 
+            bins = [np.linspace(min(xdata), max(xdata), bins[0]),
                     np.linspace(min(ydata), max(ydata), bins[1])]
         elif (isinstance(bins[0], np.ndarray) and (isinstance(bins[1], np.ndarray))):
             pass
     elif isinstance(bins, np.ndarray):
         bins = [bins, bins]
     elif bins is None:
-        bins = [np.linspace(min(xdata), max(xdata), 101), 
+        bins = [np.linspace(min(xdata), max(xdata), 101),
                 np.linspace(min(ydata), max(ydata), 101)]
 
     if gridspec_kw is None:
-        gridspec_kw = {'height_ratios': [1,6], 'width_ratios': [6,1], 
+        gridspec_kw = {'height_ratios': [1,6], 'width_ratios': [6,1],
                        'hspace':0.02, 'wspace': 0.02}
     ### Procedure
     f, ax = plt.subplots(
@@ -484,7 +484,7 @@ def plot2dhistarray(xdata, ydata, logcolor=True, bins=None,
 def plotquarthist(
     ax, dfplot,
     histpad=0.1, quartpad=-0.1, pad=None,
-    squeeze=0.7, 
+    squeeze=0.7,
     plothist=True,
     number_of_bins=101,
     alpha=0.6,
@@ -500,7 +500,7 @@ def plotquarthist(
     medianmarker='o',
     mediansize=15,
     cicolor='0.75',
-    ciwidth=3, 
+    ciwidth=3,
     histcolor=None,
     density=False,
     spines=['left', 'bottom'],
@@ -523,7 +523,7 @@ def plotquarthist(
     if hist_range is None:
         hist_range = (dfplot.min().min(), dfplot.max().max())
     else:
-        assert (len(hist_range)==2 or type(hist_range) in [float, int]) 
+        assert (len(hist_range)==2 or type(hist_range) in [float, int])
 
     labels = list(dfplot.columns)
     data_sets = [dfplot[label].dropna().values for label in labels]
@@ -603,7 +603,7 @@ def plotquarthist(
                 c = histcolor[i]
             elif isinstance(histcolor, dict):
                 c = histcolor[labels[i]]
-            else: 
+            else:
                 c = histcolor
             ### Plot bars
             if direction == 'right':
@@ -621,19 +621,19 @@ def plotquarthist(
     ### Quartlines
     ## Whiskers and outliers
     ax.boxplot(
-        data_sets, 
+        data_sets,
         positions=(x_locations + quartpad * xscale),
         showcaps=False, showbox=False,
-        medianprops={'color': 'none', 'linewidth': 0}, 
+        medianprops={'color': 'none', 'linewidth': 0},
         whiskerprops=whiskerprops,
         flierprops=flierprops,
         zorder=4998
     )
     ## Medians
-    ax.scatter(x_locations + quartpad * xscale, 
+    ax.scatter(x_locations + quartpad * xscale,
                medians,
                zorder=5000, marker=medianmarker, s=mediansize,
-               c=medianfacecolor, edgecolor=medianedgecolor, 
+               c=medianfacecolor, edgecolor=medianedgecolor,
     )
     ## Botstrapped 95% confidence intervals for median
     for i in range(len(data_sets)):
@@ -643,10 +643,10 @@ def plotquarthist(
         else:
             c = cicolor
         ### Plot median bars
-        ax.plot(np.array([x_locations[i], x_locations[i]]) + (quartpad * xscale), 
+        ax.plot(np.array([x_locations[i], x_locations[i]]) + (quartpad * xscale),
                 [cilos[i], cihis[i]],
                 zorder=4999, solid_capstyle='butt',
-                lw=ciwidth, c=c, 
+                lw=ciwidth, c=c,
     )
 
     ### Axis formatting
@@ -656,17 +656,17 @@ def plotquarthist(
         if (xticklabelrotation == 0) or (xticklabelrotation >= 60):
             ax.set_xticklabels(labels, rotation=xticklabelrotation)
         else:
-            ax.set_xticklabels(labels, rotation=xticklabelrotation, 
+            ax.set_xticklabels(labels, rotation=xticklabelrotation,
                 ha='right', rotation_mode='anchor')
         if plothist and (direction == 'right'):
-            ax.set_xlim(x_locations[0] - 5 * abs(quartpad) * xscale, 
+            ax.set_xlim(x_locations[0] - 5 * abs(quartpad) * xscale,
                         (x_locations[-1] + max(scaled_data_sets[-1])
                          + 1.5 * abs(histpad) * xscale)
                         )
         elif plothist and (direction == 'left'):
             ## Provide some extra padding on the left
-            ax.set_xlim((x_locations[0] - max(scaled_data_sets[0]) 
-                         - 1.5 * abs(histpad) * xscale), 
+            ax.set_xlim((x_locations[0] - max(scaled_data_sets[0])
+                         - 1.5 * abs(histpad) * xscale),
                         x_locations[-1] + 3 * abs(quartpad) * xscale
                         )
         ax.tick_params(axis='both', direction='out', top=False, right=False)
@@ -678,7 +678,7 @@ def plotquarthist(
 
 
 def plotquartiles(
-    dfframe=None, ax=None, 
+    dfframe=None, ax=None,
     innerband=['25%','75%'],
     outerband=['2.5%','97.5%'],
     inner=True, outer=True, minmax=True, median=True,
@@ -719,7 +719,7 @@ def plotquartiles(
             dfdescribe.columns.values,
             dfdescribe.loc[innerband[0]].values,
             dfdescribe.loc[innerband[1]].values,
-            color=color, lw=0, alpha=alpha*2, 
+            color=color, lw=0, alpha=alpha*2,
             label=labels.get('inner','_nolabel_'),
         )
     ### Outer band
@@ -728,7 +728,7 @@ def plotquartiles(
             dfdescribe.columns.values,
             dfdescribe.loc[outerband[0]].values,
             dfdescribe.loc[outerband[1]].values,
-            color=color, lw=0, alpha=alpha, 
+            color=color, lw=0, alpha=alpha,
             label=labels.get('outer','_nolabel_'),
         )
     ### Median
@@ -743,7 +743,7 @@ def plotquartiles(
             dfdescribe.columns.values,
             dfdescribe.loc['min'].values,
             dfdescribe.loc['max'].values,
-            color=color, lw=0, alpha=alpha/2, 
+            color=color, lw=0, alpha=alpha/2,
             label=labels.get('minmax','_nolabel_'),
         )
 
@@ -751,13 +751,13 @@ def plotquartiles(
     for line in lines:
         ax.plot(
             dfdescribe.columns.values, dfdescribe.loc[line].values,
-            color=color, label=labels.get(line,'_nolabel_'), 
+            color=color, label=labels.get(line,'_nolabel_'),
             lw=lws[line], ls=linestyles[line])
 
 
 ###### fill_between
 def subplotpercentiles(ax, dfplot, datacolumn, tracecolumn, subplotcolumn=None,
-    colordict=None, traceorder=None, ylimits=None, xdivs=2, 
+    colordict=None, traceorder=None, ylimits=None, xdivs=2,
     plottype='line', fillto=0, ascending=True, **kwargs
     ):
     """
@@ -768,7 +768,7 @@ def subplotpercentiles(ax, dfplot, datacolumn, tracecolumn, subplotcolumn=None,
         tracevals.sort()
     else:
         tracevals = traceorder
-        
+
     ### Get colors
     if colordict is None:
         colors = ['C{}'.format(i%10) for i in range(len(tracevals))]
@@ -800,14 +800,14 @@ def subplotpercentiles(ax, dfplot, datacolumn, tracecolumn, subplotcolumn=None,
                 ].sort_values(ascending=ascending)
                 ax.fill_between(x, y, y2, label=traceval,
                         color=colordict[traceval], **kwargs)
-                
+
         ax.set_xlim(0,100)
         ax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(xdivs))
-        ax.tick_params(axis='both', which='major', direction='in', 
+        ax.tick_params(axis='both', which='major', direction='in',
                        top=True, right=True, length=4)
-        ax.tick_params(axis='x', which='minor', direction='in', 
+        ax.tick_params(axis='x', which='minor', direction='in',
                        top=True, length=3, color='k')
-    
+
     [line.set_zorder(10) for line in ax.lines] # lines on top of axes
     ax.set_ylabel(datacolumn, fontsize='x-large', weight='bold')
 
@@ -825,8 +825,8 @@ def subplotpercentiles(ax, dfplot, datacolumn, tracecolumn, subplotcolumn=None,
 
 def plotpercentiles(dfplot, datacolumn, tracecolumn, subplotcolumn=None,
     colordict=None, figsize=None, unsubplot=False,
-    traceorder=None, subplotorder=None, ylimits=None, 
-    xdivs=2, dpi=None, 
+    traceorder=None, subplotorder=None, ylimits=None,
+    xdivs=2, dpi=None,
     ):
     """
     """
@@ -847,7 +847,7 @@ def plotpercentiles(dfplot, datacolumn, tracecolumn, subplotcolumn=None,
     else:
         ncols = len(subplotorder) + int(unsubplot)
         subplotvals = subplotorder
-        
+
     if figsize is None:
         figsize = (ncols*2, 3)
 
@@ -879,13 +879,13 @@ def plotpercentiles(dfplot, datacolumn, tracecolumn, subplotcolumn=None,
                 ax[j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(xdivs))
                 ax[j].set_title(subplotvals[j], weight='bold', fontname='Arial')
                 ax[j].tick_params(
-                    axis='both', which='major', direction='in', 
+                    axis='both', which='major', direction='in',
                     top=True, right=True, length=4)
                 ax[j].tick_params(
-                    axis='x', which='minor', direction='in', 
+                    axis='x', which='minor', direction='in',
                     top=True, length=3, color='k')
                 [line.set_zorder(10) for line in ax[j].lines] # lines on top of axes
-            
+
             ### Plot the all-data subplot
             if unsubplot:
                 dfpanel = dfplot.loc[
@@ -898,13 +898,13 @@ def plotpercentiles(dfplot, datacolumn, tracecolumn, subplotcolumn=None,
                 ax[-1].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(xdivs))
                 ax[-1].set_title('All', weight='bold', fontname='Arial')
                 ax[-1].tick_params(
-                    axis='both', which='major', direction='in', 
+                    axis='both', which='major', direction='in',
                     top=True, right=True, length=4)
                 ax[-1].tick_params(
-                    axis='x', which='minor', direction='in', 
+                    axis='x', which='minor', direction='in',
                     top=True, length=3, color='k')
                 [line.set_zorder(10) for line in ax[-1].lines] # lines on top of axes
-                
+
             ### Label the leftmost axis
             ax[0].set_ylabel(datacolumn, fontsize='x-large', weight='bold')
         else:
@@ -917,10 +917,10 @@ def plotpercentiles(dfplot, datacolumn, tracecolumn, subplotcolumn=None,
             ax.set_xlim(0,100)
             ax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(xdivs))
             ax.tick_params(
-                axis='both', which='major', direction='in', 
+                axis='both', which='major', direction='in',
                 top=True, right=True, length=4)
             ax.tick_params(
-                axis='x', which='minor', direction='in', 
+                axis='x', which='minor', direction='in',
                 top=True, length=3, color='k')
             [line.set_zorder(10) for line in ax.lines] # lines on top of axes
             ax.set_ylabel(datacolumn, fontsize='x-large', weight='bold')
@@ -951,8 +951,8 @@ def get_aea_bounds(dfplot, buffer=1.05, lat_1=29.5, lat_2=45.5):
     """
     import pyproj
     latlabel, lonlabel = get_latlonlabels(dfplot)
-    
-    
+
+
     bound = [
         dfplot[lonlabel].min(), dfplot[latlabel].min(),
         dfplot[lonlabel].max(), dfplot[latlabel].max()
@@ -981,7 +981,7 @@ def get_aea_bounds(dfplot, buffer=1.05, lat_1=29.5, lat_2=45.5):
     # cop = {'type':'Polygon','coordinates':[zip(x,y)]}
     width = 2 * max([abs(i) for i in x]) * buffer
     height = 2 * max([abs(i) for i in y]) * buffer
-    
+
     bounds = {
         'lat_1': lat1, 'lat_2': lat2,
         'lon_0': lon_0, 'lat_0': lat_0,
@@ -990,8 +990,8 @@ def get_aea_bounds(dfplot, buffer=1.05, lat_1=29.5, lat_2=45.5):
     return bounds
 
 
-def draw_screen_poly(poly, m, 
-    cvalue=0.5, cmap=plt.cm.viridis, 
+def draw_screen_poly(poly, m,
+    cvalue=0.5, cmap=plt.cm.viridis,
     facecolor=None, edgecolor='none',
     alpha=1, ax=None,
     linewidth=None,
@@ -1032,7 +1032,7 @@ def draw_screen_poly(poly, m,
 
 
 def plotusascattermap(
-    dfplot, colorcolumn=None, sizecolumn=None, filterdict=None, sort=True, 
+    dfplot, colorcolumn=None, sizecolumn=None, filterdict=None, sort=True,
     basemap=None, cmap=cmocean.cm.rain, mappath=None,
     facecolor='w', edgecolor='w', latlonlabels=None,
     markersize=None, marker='o', figsize=(10,7.5), dpi=None,
@@ -1040,12 +1040,12 @@ def plotusascattermap(
     colorbarhist=True, colorbarkwargs={}, colorbartitle=None,
     statelinewidths=0.25, bounds='usa', downloadmap=False,
     markeredgecolor=None, markerlw=None, f=None, ax=None,
-    maskwater=False, masklakes=False, buffer=1.05, 
+    maskwater=False, masklakes=False, buffer=1.05,
     alpha=1, markerfacecolor='C3', **plotkwargs):
     """
     Inputs
     ------
-    * bounds: 'usa', 'CA', or dict with keys in 
+    * bounds: 'usa', 'CA', or dict with keys in
     ['lat_1','lat_2','lon_0','lat_0','width','height']
 
     References
@@ -1119,10 +1119,10 @@ def plotusascattermap(
         dictbounds = {'lat_1': 29.5, 'lat_2': 45.5, 'lon_0': -79.5, 'lat_0': 35.8}
     elif bounds in ['data','bounds','zoom','buffer']:
         dictbounds = get_aea_bounds(dfplot, buffer=buffer)
-        
+
     projstring = '+proj=aea +lat_1={} +lat_2={} +lat_0={} +lon_0={}'.format(
         dictbounds['lat_1'], dictbounds['lat_2'], dictbounds['lat_0'], dictbounds['lon_0'])
-    
+
     ### Load basemap if necessary
     if not basemap:
 
@@ -1156,7 +1156,7 @@ def plotusascattermap(
              'Puerto Rico','United States Virgin Islands',
              'Alaska', 'Hawaii']))
     ]
-    
+
     ### Use passed axis, or draw new plot and axis
     if (f is None) or (ax is None):
         ### Draw the plot
@@ -1272,7 +1272,7 @@ def plotusascattermap(
     #         else:
     #             cvalue = markerfacecolor
     #         draw_screen_poly(
-    #             dfmap.loc[index,'geometry'], m_in, ax=ax, 
+    #             dfmap.loc[index,'geometry'], m_in, ax=ax,
     #             cvalue=cvalue, alpha=alpha,
     #             facecolor=None if colorcolumn is not None else markerfacecolor,
     #             edgecolor=markeredgecolor,
@@ -1329,31 +1329,31 @@ def sparkline(ax, dsplot, endlabels=True,
     if endlabels:
         ## Left
         ax.annotate(
-            s='{:.1f}'.format(dsplot.iloc[0]), 
+            s='{:.1f}'.format(dsplot.iloc[0]),
             xy=(dsplot.index[0], dsplot.iloc[0]),
-            xycoords='data', xytext=(-endlabelxpad,endlabelypad), 
+            xycoords='data', xytext=(-endlabelxpad,endlabelypad),
             textcoords='offset points',
             horizontalalignment='right', verticalalignment='center')
         ## Right
         ax.annotate(
-            s='{:.1f}'.format(dsplot.iloc[-1]), 
+            s='{:.1f}'.format(dsplot.iloc[-1]),
             xy=(dsplot.index[-1], dsplot.iloc[-1]),
-            xycoords='data', xytext=(endlabelxpad,endlabelypad), 
+            xycoords='data', xytext=(endlabelxpad,endlabelypad),
             textcoords='offset points',
             horizontalalignment='left', verticalalignment='center')
 
 
-def plotyearbymonth(dfs, plotcols=None, colors=None, 
+def plotyearbymonth(dfs, plotcols=None, colors=None,
     style='fill', lwforline=1, ls='-', figsize=(12,6), dpi=None,
     normalize=False, alpha=1, f=None, ax=None):
     """
     """
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     def monthifier(x):
         return pd.Timestamp('2001-01-{} {:02}:00'.format(x.day, x.hour))
-    
+
     if (f is None) and (ax is None):
         f,ax=plt.subplots(12,1,figsize=figsize,sharex=True,sharey=True, dpi=dpi)
     else:
@@ -1363,7 +1363,7 @@ def plotyearbymonth(dfs, plotcols=None, colors=None,
         if isinstance(dfs, pd.Series):
             plotcols = str(dfs.name)
             dfs = pd.DataFrame(dfs.rename(plotcols))
-                
+
         if isinstance(dfs, pd.DataFrame):
             if plotcols is None:
                 plotcols = dfs.columns.tolist()
@@ -1377,14 +1377,14 @@ def plotyearbymonth(dfs, plotcols=None, colors=None,
                 if style in ['fill', 'fill_between', 'f']:
                     ax[i].fill_between(
                         dfplot.index, dfplot[plotcols].values, lw=0, alpha=alpha,
-                        color=(colors if type(colors) in [str,mpl.colors.ListedColormap] 
+                        color=(colors if isinstance(colors, (str, mpl.colors.ListedColormap, tuple))
                                else ('C0' if colors is None else colors[0])))
                 elif style in ['line', 'l']:
                     ax[i].plot(
                         dfplot.index, dfplot[plotcols].values, lw=lwforline, alpha=alpha, ls=ls,
-                        color=(colors if type(colors) in [str,mpl.colors.ListedColormap] 
+                        color=(colors if isinstance(colors, (str, mpl.colors.ListedColormap, tuple))
                                else ('C0' if colors is None else colors[0])))
-                    
+
             elif isinstance(plotcols, list):
                 if isinstance(colors, str):
                     colors = [colors]*len(plotcols)
@@ -1397,12 +1397,12 @@ def plotyearbymonth(dfs, plotcols=None, colors=None,
                     dfplot.index = dfplot.index.map(monthifier)
 
                     if style in ['fill', 'fill_between', 'f']:
-                        ax[i].fill_between(dfplot.index, dfplot[plotcol].values, 
+                        ax[i].fill_between(dfplot.index, dfplot[plotcol].values,
                                            lw=0, alpha=alpha, color=colors[j], label=plotcol)
                     elif style in ['line', 'l']:
-                        ax[i].plot(dfplot.index, dfplot[plotcol].values, 
+                        ax[i].plot(dfplot.index, dfplot[plotcol].values,
                                    lw=lwforline, alpha=alpha, ls=ls, color=colors[j], label=plotcol)
-                                        
+
         ax[i].set_ylabel(month, rotation=0, ha='right', va='top')
         for which in ['left', 'right', 'top', 'bottom']:
                      ax[i].spines[which].set_visible(False)
@@ -1416,7 +1416,7 @@ def plotyearbymonth(dfs, plotcols=None, colors=None,
     else:
         pass
         # ax[0].set_ylim(0,dfs[plotcols].max())
-    
+
     return f, ax
 
 
@@ -1460,7 +1460,7 @@ def add_parasite_axis_converter(
     oldlim = ax.get_ylim()
     newlim = [converter(oldend,**converterparams)
               for oldend in oldlim]
-    
+
     ### Add the parasite
     par = ax.twinx()
     par.spines[side].set_position(('axes',offset))
@@ -1481,11 +1481,11 @@ def add_parasite_axis_converter(
     if ylabel:
         par.set_ylabel(ylabel)
     par.tick_params(axis='y', which='both', direction=tickdirection)
-    
+
     return par
 
 
-def _despine_sub(ax, 
+def _despine_sub(ax,
     top=False, right=False, left=True, bottom=True,
     direction='out'):
     """
@@ -1499,11 +1499,11 @@ def _despine_sub(ax,
     if not bottom:
         ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis='both', which='both',
-                   direction=direction, 
-                   top=top, right=right, 
+                   direction=direction,
+                   top=top, right=right,
                    left=left, bottom=bottom)
 
-def despine(ax=None, 
+def despine(ax=None,
     top=False, right=False, left=True, bottom=True,
     direction='out'):
     """
@@ -1566,8 +1566,8 @@ def trim_subplots(ax, nrows, ncols, nsubplots):
 
 def patchlegend(colors, edgecolor='none', alpha=1, reverse=False, **kwargs):
     patches = [mpl.patches.Patch(
-                   facecolor=colors[i], 
-                   edgecolor=edgecolor, 
+                   facecolor=colors[i],
+                   edgecolor=edgecolor,
                    alpha=alpha,
                    label=i)
                for i in colors.keys()]
@@ -1666,7 +1666,7 @@ def annotate(ax, label, x, offset, decimals=0, tail='', **kwargs):
         raise ValueError('Need to specify an x value in the plotted trace')
     y = ax.get_lines()[lineindex]._yorig[pointindex]
     color = ax.get_lines()[lineindex]._color
-    
+
     ### Get kwargs
     noteprops = {
         'fontsize':'medium',
@@ -1767,7 +1767,7 @@ def optimize_label_positions(
         raise ValueError('optimize_label_positions is infeasible; try a smaller mindistance')
 
     ylabel = [YLABEL[i].varValue for i in index]
-        
+
     if debug:
         out = {
             'ylabel': ylabel,
@@ -1931,7 +1931,7 @@ def waterfall(
     else:
         dfplot['color'] = positive_color
         dfplot.loc[dfplot['input'] < 0, 'color'] = negative_color
-    
+
     ### Get the axis span
     span = dfplot['cumsum'].max() - dfplot['cumsum'].min()
 
@@ -1968,7 +1968,7 @@ def waterfall(
                 ha='center', va=('bottom' if (row.input > 0) else 'top'),
                 annotation_clip=False, fontsize=barannotatesize,
             )
-            
+
 
     ### Formatting
     if zero_width:

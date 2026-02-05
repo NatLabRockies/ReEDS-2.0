@@ -1,7 +1,14 @@
 Gas-CT,0.07
+Gas-CT_aero,0.07
 Gas-CC,0.1
+Gas-CC_H_1x1,0.1
+Gas-CC_H_2x1,0.1
 Gas-CC-CCS_mod,0.1
 Gas-CC-CCS_max,0.1
+Gas-CC_H_1x1-CCS_mod,0.1
+Gas-CC_H_1x1-CCS_max,0.1
+Gas-CC_H_2x1-CCS_mod,0.1
+Gas-CC_H_2x1-CCS_max,0.1
 Gas-CC-CCS-F1,0.1
 Gas-CC-CCS-F2,0.1
 Gas-CC-CCS-F3,0.1

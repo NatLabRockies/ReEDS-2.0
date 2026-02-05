@@ -272,7 +272,7 @@ dfwrite['always_radial'] = (~dictin['offshore_meshed']['dist_spur_km'].isnull())
 
 ## For always-radial sites, get the zone from the FIPS (which comes from the POI via
 ## scpointgid2fips) instead of from Zone_ReEDS
-county2zone = reeds.inputs.get_county2zone()
+county2zone = reeds.io.get_county2zone()
 dfwrite.loc[dfwrite.always_radial == 1, 'ba'] = (
     dfwrite.loc[dfwrite.always_radial == 1, 'FIPS'].map(county2zone)
 )

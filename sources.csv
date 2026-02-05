@@ -214,8 +214,6 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/county2zone.csv,/inputs,county2zone,.csv,,,,,,
 /inputs/ctus/co2_site_char.csv,/inputs/ctus,co2_site_char,.csv,,,2018,,,
 /inputs/ctus/cs.csv,/inputs/ctus,cs,.csv,,,,,,
-/inputs/ctus/r_cs.csv,/inputs/ctus,r_cs,.csv,,,,,,
-/inputs/ctus/r_cs_distance_mi.csv,/inputs/ctus,r_cs_distance_mi,.csv,,,,,,
 /inputs/degradation/degradation_annual_default.csv,/inputs/degradation,degradation_annual_default,.csv,,,,,,
 /inputs/demand_response/ev_load_Baseline.h5,/inputs/demand_response,ev_load_Baseline,.h5,Baseline electricity load from EV charging by timeslice h and year t,,,,inputs,MW
 /inputs/demand_response/evmc_rsc_Baseline.csv,/inputs/demand_response,evmc_rsc_Baseline,.csv,,,,,,
@@ -243,7 +241,7 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/emission_constraints/csapr_group1_ex.csv,/inputs/emission_constraints,csapr_group1_ex,.csv,,,,,,
 /inputs/emission_constraints/csapr_group2_ex.csv,/inputs/emission_constraints,csapr_group2_ex,.csv,,,,,,
 /inputs/emission_constraints/csapr_ozone_season.csv,/inputs/emission_constraints,csapr_ozone_season,.csv,,,,,,
-/inputs/emission_constraints/emitrate.csv,/inputs/emission_constraints,emitrate,.csv,"Emition rates for thermal generator for SO2, NOx, and CO2","i,e",,,,
+/inputs/emission_constraints/emitrate.csv,/inputs/emission_constraints,emitrate,.csv,Emition rates for thermal generators with values from Table 5 of https://docs.nrel.gov/docs/fy25osti/93005.pdf,"i,e",,,,
 /inputs/emission_constraints/gwp.csv,/inputs/emission_constraints,gwp,.csv,,,,,,
 /inputs/emission_constraints/methane_leakage_rate.csv,/inputs/emission_constraints,methane_leakage_rate,.csv,,,,,,
 /inputs/emission_constraints/ng_crf_penalty.csv,/inputs/emission_constraints,ng_crf_penalty,.csv,Cost adjustment for NG techs in scenarios with national decarbonization targets,allt,N/A,https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1220,Inputs,rate (unitless)
@@ -274,7 +272,7 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/financials/incentives_obbba.csv,/inputs/financials,incentives_obbba,.csv,,,,,,
 /inputs/financials/incentives_obbba_conservative.csv,/inputs/financials,incentives_obbba_conservative,.csv,,,,,,
 /inputs/financials/inflation_default.csv,/inputs/financials,inflation_default,.csv,Annual inflation factors from 1914 through 2200; historical values use the avg-avg values from https://www.usinflationcalculator.com/inflation/consumer-price-index-and-annual-percent-changes-from-1913-to-2008/,t,,,,
-/inputs/financials/nuclear_energy_communities.csv,/inputs/financials,nuclear_energy_communities,.csv,Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL, INL, ORNL, SNL, LLNL, Argonne, and LANL) has been at least 0.17 percent of the MSA's total employment at any point since 2010.,,,,,
+/inputs/financials/nuclear_energy_communities.csv,/inputs/financials,nuclear_energy_communities,.csv,"""Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL, INL, ORNL, SNL, LLNL, Argonne, and LANL) has been at least 0.17 percent of the MSA's total employment at any point since 2010.""",,,,,
 /inputs/financials/reg_cap_cost_diff_default.csv,/inputs/financials,reg_cap_cost_diff_default,.csv,region-specific differences for capital cost of all resources. Add to 1 to produce a multiplier,"i,r",,,parameter,
 /inputs/financials/retire_penalty.csv,/inputs/financials,retire_penalty,.csv,,,,,,
 /inputs/financials/supply_chain_adjust.csv,/inputs/financials,supply_chain_adjust,.csv,,,,,,
@@ -340,10 +338,12 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/load/Clean2035_LTS_load_hourly.h5,/inputs/load,Clean2035_LTS_load_hourly,.h5,,,,,,
 /inputs/load/Clean2035clip1pct_load_hourly.h5,/inputs/load,Clean2035clip1pct_load_hourly,.h5,,,,,,
 /inputs/load/Commercial_GHP_Delta.csv,/inputs/load,Commercial_GHP_Delta,.csv,,,,,,
-/inputs/load/demand_AEO_2023_high.csv,/inputs/load,demand_AEO_2023_high,.csv,,,,,,
-/inputs/load/demand_AEO_2023_low.csv,/inputs/load,demand_AEO_2023_low,.csv,,,,,,
-/inputs/load/demand_AEO_2023_reference.csv,/inputs/load,demand_AEO_2023_reference,.csv,,,,,,
-/inputs/load/demand_flat_2020_onward.csv,/inputs/load,demand_flat_2020_onward,.csv,,,,,,
+/inputs/load/demand_AEO_2023_high.csv,/inputs/load,demand_AEO_2023_high,.csv,Load growth projection from the AEO2023 High Economic Growth scenario,,,,,unitless
+/inputs/load/demand_AEO_2023_low.csv,/inputs/load,demand_AEO_2023_low,.csv,Load growth projection from the AEO2023 Low Economic Growth scenario,,,,,unitless
+/inputs/load/demand_AEO_2023_reference.csv,/inputs/load,demand_AEO_2023_reference,.csv,Load growth projection from the AEO2023 Reference scenario,,,,,unitless
+/inputs/load/demand_AEO_2025_high.csv,/inputs/load,demand_AEO_2025_high,.csv,Load growth projection from the AEO2025 High Economic Growth scenario,,,,,unitless
+/inputs/load/demand_AEO_2025_low.csv,/inputs/load,demand_AEO_2025_low,.csv,Load growth projection from the AEO2025 Low Economic Growth scenario,,,,,unitless
+/inputs/load/demand_AEO_2025_reference.csv,/inputs/load,demand_AEO_2025_reference,.csv,Load growth projection from the AEO2025 Reference scenario,,,,,unitless
 /inputs/load/EER_100by2050_load_hourly.h5,/inputs/load,EER_100by2050_load_hourly,.h5,,,,,,
 /inputs/load/EER_Baseline_AEO2022_load_hourly.h5,/inputs/load,EER_Baseline_AEO2022_load_hourly,.h5,,,,,,
 /inputs/load/EER_IRAlow_load_hourly.h5,/inputs/load,EER_IRAlow_load_hourly,.h5,,,,,,
@@ -537,7 +537,7 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/state_policies/hydrofrac_policy.csv,/inputs/state_policies,hydrofrac_policy,.csv,,,,,,
 /inputs/state_policies/ng_crf_penalty_st.csv,/inputs/state_policies,ng_crf_penalty_st,.csv,Cost adjustment for NG techs in states where all NG techs must be retired by a certain year,"allt,st",N/A,https://github.nrel.gov/ReEDS/ReEDS-2.0/pull/1220,Inputs,rate (unitless)
 /inputs/state_policies/nuclear_subsidies.csv,/inputs/state_policies,nuclear_subsidies,.csv,,,,,,
-/inputs/state_policies/offshore_req_default.csv,/inputs/state_policies,offshore_req_default,.csv,default state mandates of offshore wind capacity,"st,allt",,,Inputs,
+/inputs/state_policies/offshore_req_default.csv,/inputs/state_policies,offshore_req_default,.csv,"default state mandates of offshore wind capacity, updated in November 2025","st,allt",,,Inputs,MW
 /inputs/state_policies/oosfrac.csv,/inputs/state_policies,oosfrac,.csv,Defines the fraction of renewable and clean energy credits can be purchased from out of state (oos). Applied for RPS and CES,,,,,
 /inputs/state_policies/recstyle.csv,/inputs/state_policies,recstyle,.csv,"Indication for how to apply state requirement (0 = end-use sales, 1 = bus-bar sales, 2 = generation). Default is 0.",,,,,
 /inputs/state_policies/rectable.csv,/inputs/state_policies,rectable,.csv,Table defining which states are allowed to trade RECs,,,,,
@@ -601,18 +601,17 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/supply_curve/sc_point_gid_old2new.csv,/inputs/supply_curve,sc_point_gid_old2new,.csv,,,,,,
 /inputs/supply_curve/sitemap.h5,/inputs/supply_curve,sitemap,.h5,,,,,,
 /inputs/supply_curve/spurline_cost.csv,/inputs/supply_curve,spurline_cost,.csv,,,,,,
-/inputs/supply_curve/supplycurve_csp-reference.csv,/inputs/supply_curve,supplycurve_csp-reference,.csv,,,,,,
 /inputs/supply_curve/supplycurve_egs-reference.csv,/inputs/supply_curve,supplycurve_egs-reference,.csv,,,,,,
 /inputs/supply_curve/supplycurve_geohydro-reference.csv,/inputs/supply_curve,supplycurve_geohydro-reference,.csv,,,,,,
-/inputs/supply_curve/supplycurve_upv-limited.csv,/inputs/supply_curve,supplycurve_upv-limited,.csv,,,,,,
-/inputs/supply_curve/supplycurve_upv-open.csv,/inputs/supply_curve,supplycurve_upv-open,.csv,,,,,,
-/inputs/supply_curve/supplycurve_upv-reference.csv,/inputs/supply_curve,supplycurve_upv-reference,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ofs-limited.csv,/inputs/supply_curve,supplycurve_wind-ofs-limited,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ofs-open.csv,/inputs/supply_curve,supplycurve_wind-ofs-open,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ofs-reference.csv,/inputs/supply_curve,supplycurve_wind-ofs-reference,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ons-limited.csv,/inputs/supply_curve,supplycurve_wind-ons-limited,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ons-open.csv,/inputs/supply_curve,supplycurve_wind-ons-open,.csv,,,,,,
-/inputs/supply_curve/supplycurve_wind-ons-reference.csv,/inputs/supply_curve,supplycurve_wind-ons-reference,.csv,,,,,,
+/inputs/supply_curve/supplycurve_upv-limited.csv,/inputs/supply_curve,supplycurve_upv-limited,.csv,UPV supply curve from reV for the limited siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+/inputs/supply_curve/supplycurve_upv-open.csv,/inputs/supply_curve,supplycurve_upv-open,.csv,UPV supply curve from reV for the open siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+/inputs/supply_curve/supplycurve_upv-reference.csv,/inputs/supply_curve,supplycurve_upv-reference,.csv,UPV supply curve from reV for the reference siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+/inputs/supply_curve/supplycurve_wind-ofs-limited.csv,/inputs/supply_curve,supplycurve_wind-ofs-limited,.csv,Offshore sind supply curve from reV for the limited siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
+/inputs/supply_curve/supplycurve_wind-ofs-open.csv,/inputs/supply_curve,supplycurve_wind-ofs-open,.csv,Offshore wind supply curve from reV for the open siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
+/inputs/supply_curve/supplycurve_wind-ofs-reference.csv,/inputs/supply_curve,supplycurve_wind-ofs-reference,.csv,Offshore wind supply curve from reV for the reference siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
+/inputs/supply_curve/supplycurve_wind-ons-limited.csv,/inputs/supply_curve,supplycurve_wind-ons-limited,.csv,Land-based wind supply curve from reV for the limited siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
+/inputs/supply_curve/supplycurve_wind-ons-open.csv,/inputs/supply_curve,supplycurve_wind-ons-open,.csv,Land-based wind supply curve from reV for the open siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
+/inputs/supply_curve/supplycurve_wind-ons-reference.csv,/inputs/supply_curve,supplycurve_wind-ons-reference,.csv,Land-based wind supply curve from reV for the reference siting scenario,,specified in inputs/supply_curve/dollaryear.csv,https://docs.nrel.gov/docs/fy25osti/91900.pdf,,
 /inputs/supply_curve/trans_intra_cost_adder.csv,/inputs/supply_curve,trans_intra_cost_adder,.csv,,,,,,
 /inputs/tech-subset-table.csv,/inputs,tech-subset-table,.csv,Maps all technologies to specific subsets of technologies,,,,,
 /inputs/techs/tech_resourceclass.csv,/inputs/techs,tech_resourceclass,.csv,,,,,,
@@ -666,14 +665,11 @@ RelativeFilePath,RelativeFolderPath,FileName_new,FileExtension,Description_new,I
 /inputs/valuestreams/var_map.csv,/inputs/valuestreams,var_map,.csv,,,,,,
 /inputs/variability/ccseason_dates.csv,/inputs/variability,ccseason_dates,.csv,,,,,,
 /inputs/variability/month2quarter.csv,/inputs/variability,month2quarter,.csv,,,,,,
-/inputs/variability/multi_year/csp-none_ba.h5,/inputs/variability/multi_year,csp-none_ba,.h5,Concentrated Solar Power resource supply curve. Data is a capacity factor i.e. a fraction.,,,,,
 /inputs/variability/multi_year/distpv-reference_ba.h5,/inputs/variability/multi_year,distpv-reference_ba,.h5,Distributed photovoltaics resource supply curve. Data is a capacity factor i.e. a fraction.,"r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/temperature_celsius-ba.h5,/inputs/variability/multi_year,temperature_celsius-ba,.h5,,,,,,
 /inputs/variability/multi_year/upv-limited_ba.h5,/inputs/variability/multi_year,upv-limited_ba,.h5,Utility scale photovoltaics resource supply curve using Limited access assumptions. Data is a capacity factor i.e. a fraction.,"v,r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/upv-open_ba.h5,/inputs/variability/multi_year,upv-open_ba,.h5,Utility scale photovoltaics resource supply curve using Open access assumptions. Data is a capacity factor i.e. a fraction.,"v,r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/upv-reference_ba.h5,/inputs/variability/multi_year,upv-reference_ba,.h5,Utility scale photovoltaics resource supply curve using Reference access assumptions. Data is a capacity factor i.e. a fraction.,"v,r,t",N/A,N/A,Resource supply curve,
-/inputs/variability/multi_year/upv_140AC-reference_ba.h5,/inputs/variability/multi_year,upv_140AC-reference_ba,.h5,"Utility scale photovoltaics resource supply curve (AC, using a 1.40 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.","v,r,t",N/A,N/A,Resource supply curve,
-/inputs/variability/multi_year/upv_220AC-reference_ba.h5,/inputs/variability/multi_year,upv_220AC-reference_ba,.h5,"Utility scale photovoltaics resource supply curve (AC, using a 2.20 Inverter Load Ratio) using Reference access assumptions. Data is a capacity factor i.e. a fraction.","v,r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/wind-ofs-limited_ba.h5,/inputs/variability/multi_year,wind-ofs-limited_ba,.h5,Offshore wind resource supply curve using Limited access assumptions. Data is a capacity factor i.e. a fraction.,"v,r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/wind-ofs-open_ba.h5,/inputs/variability/multi_year,wind-ofs-open_ba,.h5,Offshore wind resource supply curve using Open access assumptions. Data is a capacity factor i.e. a fraction.,"v,r,t",N/A,N/A,Resource supply curve,
 /inputs/variability/multi_year/wind-ofs-reference_ba.h5,/inputs/variability/multi_year,wind-ofs-reference_ba,.h5,,,,,,

@@ -1,16 +1,10 @@
 """
-@author: pbrown
-@date: 20201104 14:47
-* Adapted from input_processing/R/writesupplycurves.R
-* All supply curves are organized by BA
-
 This script gathers supply curve data for on/offshore wind, upv, csp, hydro, and
 psh into a single inputs_case file, rsc_combined.csv. 
 
 This script contains additional procedures for gathering geothermal supply curve data
 and EV managed charging supply curve data, and spurline supply curve data
 into various separate inputs_case files.
-
 """
 
 # %% ===========================================================================
@@ -21,6 +15,7 @@ import argparse
 import numpy as np
 import os
 import sys
+import h5py
 import datetime
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -87,10 +82,18 @@ def agg_supplycurve(
     """
     ### Get inputs
     dfin = reeds.io.assemble_supplycurve(
-        scfile=os.path.join(scpath),
+        scfile=scpath,
         case=os.path.dirname(os.path.normpath(inputs_case)),
         agg=AggregateRegions,
     ).reset_index().drop(columns=['FIPS','cf'], errors='ignore')
+    ## Convert dollar year and recalculate total cost
+    transcost_cols = [c for c in dfin if 'cost' in c]
+    dfin.loc[:, transcost_cols] *= deflate['interconnection']
+    deflate_scen = os.path.splitext(os.path.basename(scpath))[0]
+    dfin['capital_adder_per_mw'] *= deflate[deflate_scen]
+    dfin['supply_curve_cost_per_mw'] = dfin[
+        ['capital_adder_per_mw', 'cost_total_trans_usd_per_mw']
+    ].sum(axis=1)
     ### Define the aggregation settings
     ## Cost and distance are weighted averages, with capacity as the weighting factor
     aggs = {'capacity': 'sum', 'sc_point_gid': list}
@@ -99,7 +102,6 @@ def agg_supplycurve(
         col: aggs.get(col, wm(dfin)) for col in dfin
         if col not in index_cols
     }
-    cost_adder_cols = ['cost_total_trans_usd_per_mw', 'capital_adder_per_mw']
 
     ### Assign bins
     if dfin.empty:
@@ -117,11 +119,6 @@ def agg_supplycurve(
     ### Clip negative costs and costs above cutoff
     dfout.supply_curve_cost_per_mw = dfout.supply_curve_cost_per_mw.clip(lower=0, upper=spur_cutoff)
 
-    # Convert dollar year
-    deflate_scen = os.path.basename(scpath).replace('.csv','')
-    cost_adder_cols = [c for c in dfout if c in ['cost_total_trans_usd_per_mw', 'capital_adder_per_mw']]
-    dfout[['supply_curve_cost_per_mw'] + cost_adder_cols] *= deflate[deflate_scen]
-
     return dfin, dfout
 
 
@@ -135,7 +132,7 @@ def main(
 ):
     # #%% Settings for testing
     # reeds_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # inputs_case = os.path.join(reeds_path,'runs','v20250821_revM0_Pennsylvania','inputs_case')
+    # inputs_case = os.path.join(reeds_path,'runs','v20251209_scM0_Pacific','inputs_case')
     # AggregateRegions = 1
     # rsc_wsc_dat = None
     # write = True
@@ -174,12 +171,19 @@ def main(
     ].shape[0]
 
     # Read in dollar year conversions for RSC data
-    dollaryear = pd.read_csv(os.path.join(inputs_case, "dollaryear_sc.csv"))
-    deflator = pd.read_csv(os.path.join(inputs_case, "deflator.csv"))
-    deflator.columns = ["Dollar.Year", "Deflator"]
-    deflate = dollaryear.merge(deflator, on="Dollar.Year", how="left").set_index(
-        "Scenario"
-    )["Deflator"]
+    dollaryear = pd.read_csv(
+        os.path.join(inputs_case, 'dollaryear_sc.csv'), index_col='Scenario',
+    ).squeeze(1)
+    ## Interconnection cost dollar year is stored as metadata
+    fpath_interconnection = os.path.join(
+        reeds_path, 'inputs', 'supply_curve', 'interconnection_land.h5'
+    )
+    with h5py.File(fpath_interconnection, 'r') as f:
+        dollaryear['interconnection'] = f['data'].attrs['dollaryear']
+    deflator = pd.read_csv(
+        os.path.join(inputs_case, 'deflator.csv'), index_col='*Dollar.Year',
+    ).squeeze(1)
+    deflate = dollaryear.map(deflator).rename('Deflator')
 
     #%% Load the existing RSC capacity (PV plants, wind, and CSP) if not provided in main function call
     if rsc_wsc_dat is None:
@@ -466,8 +470,8 @@ def main(
 
     # %% Geothermal
     if int(sw["GSw_Geothermal"]):
-        use_geohydro_rev_sc = geohydrosupplycurve == "reV"
-        use_egs_rev_sc = egssupplycurve == "reV"
+        use_geohydro_rev_sc = (geohydrosupplycurve == "reV")
+        use_egs_rev_sc = (egssupplycurve == "reV")
     else:
         use_geohydro_rev_sc = False
         use_egs_rev_sc = False
@@ -960,7 +964,7 @@ def main(
     ### Get interconnection cost for reV sites within modeled area
     interconnection_cost = reeds.io.assemble_supplycurve()
     sitemap = reeds.io.get_sitemap()
-    county2zone = reeds.inputs.get_county2zone(os.path.dirname(os.path.normpath(inputs_case)))
+    county2zone = reeds.io.get_county2zone(os.path.dirname(os.path.normpath(inputs_case)))
     interconnection_cost['r'] = interconnection_cost.index.map(sitemap.FIPS).map(county2zone)
     val_r = pd.read_csv(
         os.path.join(inputs_case, 'val_r.csv'),

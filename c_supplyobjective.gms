@@ -79,7 +79,7 @@ eq_ObjFn_inv(t)$tmodel(t)..
 
 * --- cost of water access---
                   + [ (8760/1E6) * sum{ (i,v,w,r)$[i_w(i,w)$valinv(i,v,r,t)], sum{wst$i_wst(i,wst),
-                                     m_watsc_dat(wst,"cost",r,t) } * water_rate(i,w,r) *
+                                     m_watsc_dat(wst,"cost",r,t) } * water_rate(i,w) *
                                         ( INV(i,v,r,t) + INV_REFURB(i,v,r,t)$[refurbtech(i)$Sw_Refurb] ) }
                       + sum{(rscbin,i,v,r)$[m_rscfeas(r,i,rscbin)$psh(i)],
                               sum{wst$i_wst(i,wst), m_watsc_dat(wst,"cost",r,t) } *

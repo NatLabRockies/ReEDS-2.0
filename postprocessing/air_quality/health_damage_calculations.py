@@ -74,7 +74,7 @@ def get_marginal_damage_rates(casepath):
     mds = mds.loc[mds['season'] == "annual"].copy()
 
     ### Map from counties to ReEDS BAs
-    county2zone = reeds.inputs.get_county2zone(casepath)
+    county2zone = reeds.io.get_county2zone(casepath)
     mds_mapped = (
         mds
         .assign(ba=mds.fips.map(county2zone))

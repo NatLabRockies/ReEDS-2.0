@@ -234,7 +234,7 @@ This section outlines the current ReEDS approach to versioning. You can find cur
 
 #### Versioning overview
 
-GitHub Releases are used to create ReEDS versions on a monthly cadence after a suite of tests are performed. More on ReEDS testing can be found [here](./Testing). More information on GitHub Releases can be found in the [GitHub Doc](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases). 
+GitHub Releases are used to create ReEDS versions on a monthly cadence after a suite of tests are performed. More information on GitHub Releases can be found in the [GitHub Doc](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases). 
 
 Releases are based on Git tags, and the proposed versioning scheme is `EPOCH.RELEASE.PATCH`. The components are: 
 - `EPOCH`: The current year, this will be incremented in January of each year (e.g., 2023)
@@ -411,11 +411,11 @@ Encase switch names (e.g., `GSw_Region`), variable/parameter names (e.g., `CAPTR
 Filepaths should start from the root of the ReEDS repo.
 ```
 
-- Don't copy figures from non-NREL authors, as permission would need to be requested to reproduce them.
+- Don't copy figures from non-NLR authors, as permission would need to be requested to reproduce them.
 Just cite the original publication.
 - Because the documentation is periodically released as a technical report, it should be written like other technical reports;
 to avoid plagiarism, text should not be copied and pasted from other sources (even if you wrote it).
-If a figure is reproduced from an NREL paper, cite the source;
+If a figure is reproduced from an NLR paper, cite the source;
 if you use a figure from the documentation in another paper, note that it's reproduced from the documentation and cite the documentation.
 - Save figures at a sufficiently high resolution to avoid fuzziness,
 but try to keep figure file sizes below 1 MB.

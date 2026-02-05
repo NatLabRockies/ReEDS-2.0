@@ -7,8 +7,11 @@ cofirenew,104
 cofireold,104
 biopower,104
 gas-cc,68
+gas-cc_h_1x1,68
+gas-cc_h_2x1,68
 h2-cc,68
 gas-ct,56
+gas-ct_aero,56
 h2-ct,56
 o-g-s,72
 nuclear,130
@@ -19,3 +22,7 @@ beccs_mod,335
 beccs_max,335
 gas-cc-ccs_mod,219
 gas-cc-ccs_max,219
+gas-cc_h_1x1-ccs_mod,219
+gas-cc_h_1x1-ccs_max,219
+gas-cc_h_2x1-ccs_mod,219
+gas-cc_h_2x1-ccs_max,219

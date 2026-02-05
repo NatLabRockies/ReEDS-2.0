@@ -1,54 +1,65 @@
 tech,MW,source
-gas-ct,233,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-h2-ct,233,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-o-g-s,233,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-h2-cc,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc-ccs,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc-ccs_mod,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc-ccs_max,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc_gas-cc-ccs,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc_gas-cc-ccs_mod,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-gas-cc_gas-cc-ccs_max,727,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-new,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-ccs,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-ccs_mod,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-ccs_max,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-new_coal-ccs_mod,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coal-igcc,634,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coaloldscr,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-coalolduns,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-cofirenew,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-cofireold,650,https://atb.nrel.gov/electricity/2022/fossil_energy_technologies
-beccs,50,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-beccs_mod,50,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-beccs_max,50,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-biopower,50,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-lfill-gas,50,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-nuclear,1117,https://atb.nrel.gov/electricity/2022/other_technologies_(eia) https://inis.iaea.org/collection/NCLCollectionStore/_Public/42/026/42026956.pdf
-nuclear-smr,600,https://atb.nrel.gov/electricity/2022/other_technologies_(eia)
-upv,100,https://atb.nrel.gov/electricity/2022/utility-scale_pv
-dupv,100,https://atb.nrel.gov/electricity/2022/utility-scale_pv
-wind-ons,200,https://atb.nrel.gov/electricity/2022/land-based_wind
-wind-ofs,1000,https://atb.nrel.gov/electricity/2022/offshore_wind
-battery,60,https://atb.nrel.gov/electricity/2022/utility-scale_battery_storage
-csp,104,https://atb.nrel.gov/electricity/2022/concentrating_solar_power
-pumped-hydro,1000,https://atb.nrel.gov/electricity/2022/pumped_storage_hydropower
-geothermal,30,https://atb.nrel.gov/electricity/2022/geothermal
-egs_allkm,30,https://atb.nrel.gov/electricity/2022/geothermal
-geohydro_allkm,30,https://atb.nrel.gov/electricity/2022/geothermal
-egs_nearfield,30,https://atb.nrel.gov/electricity/2022/geothermal
-hydro,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydnd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydsd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydsnd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydud,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydund,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydnpd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydnpnd,94,https://atb.nrel.gov/electricity/2022/hydropower
-hyded,94,https://atb.nrel.gov/electricity/2022/hydropower
-hydend,94,https://atb.nrel.gov/electricity/2022/hydropower
-can-imports,20000,set as an arbitrarily high number
-evmc,20000,set as an arbitrarily high number
-dr_shed,20000,set as an arbitrarily high number
+gas-ct,233,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies
+gas-ct_aero,211,https://www.eia.gov/analysis/studies/powerplants/capitalcost/pdf/capital_cost_AEO2025.pdf
+h2-ct,233,gas-ct assumption
+o-g-s,233,gas-ct assumption
+gas-cc,247,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies gives 727 for a 2x1 F-frame CC and cites https://www.osti.gov/servlets/purl/1961845/. Page 13 of the NETL reference indicates that comes from 2x 238.5 GTs + 1x 263 ST - auxiliary power. We average the constituent turbine capacities to get 247 MW.
+gas-cc_h_1x1,330,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies mentions 649MWe for a 1x1 H-frame CC and cites https://www.osti.gov/biblio/2376908. Page 6 indicates this comes from 1 CT + 1 ST - auxiliary power. We average the gross power capacity to get 330 MW.
+gas-cc_h_2x1,336,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies mentions 992MWe for a 2x1 H-frame CC and cites https://www.osti.gov/servlets/purl/1961845/. Page 17 of the NETL reference indicates that this comes from 2x343 GTs + 1x324 ST - auxiliary power. We average the constituent turbine capacities to get 336MW
+h2-cc,247,gas-cc assumption
+gas-cc-ccs,247,gas-cc assumption
+gas-cc-ccs_mod,247,gas-cc assumption
+gas-cc-ccs_max,247,gas-cc assumption
+gas-cc_h_1x1-ccs_mod,330,gas-cc_h_1x1 assumption
+gas-cc_h_1x1-ccs_max,330,gas-cc_h_1x1 assumption
+gas-cc_h_2x1-ccs_mod,336,gas-cc_h_2x1 assumption
+gas-cc_h_2x1-ccs_max,336,gas-cc_h_2x1 assumption
+gas-cc_gas-cc-ccs,247,gas-cc assumption
+gas-cc_gas-cc-ccs_mod,247,gas-cc assumption
+gas-cc_gas-cc-ccs_max,247,gas-cc assumption
+gas-cc_h_1x1_gas-cc_h_1x1-ccs_mod,330,gas-cc_h_1x1 assumption
+gas-cc_h_1x1_gas-cc_h_1x1-ccs_max,330,gas-cc_h_1x1 assumption
+gas-cc_h_2x1_gas-cc_h_2x1-ccs_mod,336,gas-cc_h_2x1 assumption
+gas-cc_h_2x1_gas-cc_h_2x1-ccs_max,336,gas-cc_h_2x1 assumption
+coal-new,650,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies
+coal-ccs,650,coal-new assumption
+coal-ccs_mod,650,coal-new assumption
+coal-ccs_max,650,coal-new assumption
+coal-new_coal-ccs_mod,650,coal-new assumption
+coal-igcc,641,https://atb.nrel.gov/electricity/2024/fossil_energy_technologies
+coaloldscr,650,coal-new assumption
+coalolduns,650,coal-new assumption
+cofirenew,650,coal-new assumption
+cofireold,650,coal-new assumption
+biopower,50,https://atb.nrel.gov/electricity/2024/biopower_(eia)
+beccs,50,biopower assumption
+beccs_mod,50,biopower assumption
+beccs_max,50,biopower assumption
+lfill-gas,50,biopower assumption
+nuclear,1000,https://atb.nrel.gov/electricity/2024/nuclear
+nuclear-smr,300,https://atb.nrel.gov/electricity/2024/nuclear
+upv,100,https://atb.nrel.gov/electricity/2024/utility-scale_pv
+dupv,100,upv assumption
+wind-ons,200,https://atb.nrel.gov/electricity/2024/land-based_wind
+wind-ofs,1008,https://atb.nrel.gov/electricity/2024/offshore_wind
+battery,60,https://atb.nrel.gov/electricity/2024/utility-scale_battery_storage
+csp,102,https://atb.nrel.gov/electricity/2024/concentrating_solar_power
+pumped-hydro,1000,https://atb.nrel.gov/electricity/2024/pumped_storage_hydropower
+geothermal,40,https://atb.nrel.gov/electricity/2024/geothermal
+egs_allkm,40,geothermal assumption
+geohydro_allkm,40,geothermal assumption
+egs_nearfield,40,geothermal assumption
+hydro,94,https://atb.nrel.gov/electricity/2024/hydropower
+hydd,94,hydro assumption
+hydnd,94,hydro assumption
+hydsd,94,hydro assumption
+hydsnd,94,hydro assumption
+hydud,94,hydro assumption
+hydund,94,hydro assumption
+hydnpd,94,hydro assumption
+hydnpnd,94,hydro assumption
+hyded,94,hydro assumption
+hydend,94,hydro assumption
+can-imports,20000,arbitrarily high (not disaggregated so doesn't matter)
+evmc,20000,arbitrarily high (not disaggregated so doesn't matter)
+dr_shed,20000,arbitrarily high (not disaggregated so doesn't matter)

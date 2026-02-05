@@ -3,7 +3,9 @@
 ### ===========================================================================
 
 import argparse
+import geopandas as gpd
 import pandas as pd
+from shapely import wkt
 import numpy as np
 import os
 import sys
@@ -128,6 +130,87 @@ def get_trancap_init(valid_regions, networksource='NARIS2024', level='r'):
             for r in [level, levell]:
                 trancap_init[n][r] = trancap_init[n][r].map(lambda x: itl_d.get(x,x))
     return trancap_init
+
+
+def calculate_adjacent_routes(dfzones):
+    routes_adjacent = dfzones.copy()
+    routes_adjacent['r_adj'] = routes_adjacent.apply(
+        axis=1,
+        func=lambda x: (
+            routes_adjacent.loc[(
+                routes_adjacent.touches(x['geometry'])
+                | routes_adjacent.overlaps(x['geometry'])
+            )]
+            .index
+            .values
+            .tolist()
+        )
+    )
+    # Reformat so that each row represents a pair of regions
+    routes_adjacent = (
+        routes_adjacent.drop(columns='geometry')
+        .explode('r_adj')
+        .reset_index(names=['r'])
+        .rename(columns={'r': '*r', 'r_adj': 'rr'})
+        [['*r', 'rr']]
+        .dropna()
+    )
+
+    return routes_adjacent
+
+
+def calculate_co2_storage_routes(dfzones, co2_storage_sites):
+    # Determine the storage sites that are within 200 miles
+    # of each region's transmission endpoint
+    region_centroids = (
+        gpd.GeoDataFrame(
+            dfzones[['x', 'y']],
+            geometry=gpd.points_from_xy(dfzones.x, dfzones.y),
+            crs=dfzones.crs
+        )
+        [['geometry']]
+        .rename_axis(index='*r')
+        .reset_index()
+    )
+    region_centroids['cs'] = region_centroids.apply(
+        axis=1,
+        func=lambda x: (
+            co2_storage_sites.loc[(
+                co2_storage_sites.distance(x['geometry']) / 1609.34 <= 200
+            )]
+            ['cs']
+            .tolist()
+        )
+    )
+
+    # Calculate the lengths of the spurlines between regions and storage sites,
+    # excluding routes not completely within the U.S.
+    routes_cs = (
+        region_centroids.explode('cs')
+        .merge(
+            co2_storage_sites[['cs', 'geometry']],
+            on='cs',
+            suffixes=('_region', '_site')
+        )
+        .assign(
+            geometry=lambda x: (
+                gpd.GeoSeries(x['geometry_region'])
+                .shortest_line(gpd.GeoSeries(x['geometry_site']))
+            )
+        )
+        [['*r', 'cs', 'geometry']]
+    )
+    routes_cs = gpd.GeoDataFrame(routes_cs, geometry='geometry', crs=dfzones.crs)
+    routes_cs = routes_cs.loc[(
+        routes_cs.within(
+            reeds.io.get_dfmap(levels=['country'])['country'].loc['USA','geometry']
+        )
+        | (routes_cs.length == 0)
+    )]
+    routes_cs['distance_m'] = routes_cs.length
+    routes_cs['miles'] = (routes_cs['distance_m'] / 1609.34).round(2)
+
+    return routes_cs
 
 
 #%% ===========================================================================
@@ -483,6 +566,56 @@ if len(transmission_cost_nonac):
     )
 else:
     pd.DataFrame(columns=['*r','rr','multiplier']).to_csv(fpath, index=False)
+
+
+# Get model regions
+dfzones = reeds.io.get_dfmap(
+    os.path.dirname(inputs_case),
+    levels=['r'],
+    exclude_water_areas=True
+)['r']
+
+#%%### Adjacent regions
+# Determine which pairs of model regions are adjacent to each other
+routes_adjacent = calculate_adjacent_routes(dfzones)
+routes_adjacent.to_csv(
+    os.path.join(inputs_case,'routes_adjacent.csv'),
+    index=False
+)
+
+#%%### CO2 storage sites
+# Determine spurline routes from model regions to carbon storage sites
+co2_storage_sites = reeds.io.get_co2_storage_sites()
+routes_cs = calculate_co2_storage_routes(dfzones, co2_storage_sites)
+routes_cs[['*r', 'cs']].to_csv(
+    os.path.join(inputs_case, 'r_cs.csv'), index=False
+)
+routes_cs[['*r', 'cs', 'miles']].to_csv(
+    os.path.join(inputs_case,'r_cs_distance_mi.csv'),
+    index=False
+)
+
+# Determine sites that have valid routes to model regions
+val_cs = pd.Series(routes_cs['cs'].unique())
+val_cs.to_csv(os.path.join(inputs_case, 'val_cs.csv'), header=False, index=False)
+
+# Subset CO2 site characteristics data to valid sites
+co2_site_char = pd.read_csv(os.path.join(inputs_case, 'co2_site_char.csv'))
+co2_site_char = co2_site_char.loc[co2_site_char['cs'].isin(val_cs)]
+co2_site_char.to_csv(os.path.join(inputs_case, 'co2_site_char.csv'), index=False)
+
+# Create WKT file of region-to-site spurlines
+r_cs_spurlines = (
+    routes_cs.loc[routes_cs['distance_m'] > 0]
+    .rename(columns={'*r': 'ba_str', 'cs': 'FmnID'})
+    .to_crs('EPSG:4326')
+    .assign(WKT=lambda x: x['geometry'].to_wkt())
+    [['ba_str', 'FmnID', 'distance_m', 'WKT']]
+)
+r_cs_spurlines.to_csv(
+    os.path.join(inputs_case,'ctus_r_cs_spurlines_200mi.csv'),
+    index=False
+)
 
 #%% Finish the timer
 reeds.log.toc(tic=tic, year=0, process='input_processing/transmission.py',

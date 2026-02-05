@@ -723,7 +723,7 @@ eq_cap_new_noret(i,v,r,t)$[valcap(i,v,r,t)$tmodel(t)$newv(v)$(not upgrade(i))
 
 * ---------------------------------------------------------------------------
 
-eq_cap_energy_new_noret(i,v,r,t)$[valcap(i,v,r,t)$tmodel(t)$battery(i)]..
+eq_cap_energy_new_noret(i,v,r,t)$[valcap(i,v,r,t)$tmodel(t)$battery(i)$(not Sw_PCM)]..
     
     sum{tt$[inv_cond(i,v,r,t,tt)$(tmodel(tt) or tfix(tt))$valcap(i,v,r,tt)],
               degrade(i,tt,t) * INV_ENERGY(i,v,r,tt)
@@ -3466,8 +3466,8 @@ eq_water_accounting(i,v,w,r,h,t)$[i_water(i)$valgen(i,v,r,t)$h_rep(h)$tmodel(t)$
 
     =e=
 
-*division by 1E6 to convert gal of water_rate(i,w,r) to Mgal
-    GEN(i,v,r,h,t) * hours(h) * water_rate(i,w,r) / 1E6
+*division by 1E6 to convert gal of water_rate(i,w) to Mgal
+    GEN(i,v,r,h,t) * hours(h) * water_rate(i,w) / 1E6
 ;
 
 * ---------------------------------------------------------------------------
@@ -3481,10 +3481,10 @@ eq_water_capacity_total(i,v,r,t)$[tmodel(t)$valcap(i,v,r,t)
     =e=
 
 *require enough water capacity to allow 100% capacity factor (8760 hour operation)
-*division by 1E6 to convert gal of water_rate(i,w,r) to Mgal
+*division by 1E6 to convert gal of water_rate(i,w) to Mgal
     sum{h$h_rep(h), hours(h)
     * sum{w$i_w(i,w),
-           CAP(i,v,r,t) * water_rate(i,w,r) }
+           CAP(i,v,r,t) * water_rate(i,w) }
     * (1 + sum{szn, h_szn(h,szn) * seas_cap_frac_delta(i,v,r,szn,t)})
     } / 1E6
 

@@ -159,14 +159,14 @@ def get_wdg_reeds(path, init_load, wdg_config, wdg_defaults, custom_sorts, custo
     topwdg = collections.OrderedDict()
 
     #Model Variables
-    topwdg['reeds_vars'] = bmw.Div(text='Model Variables', css_classes=['reeds-vars-dropdown'])
+    topwdg['reeds_vars'] = bmw.Button(label='Model Variables', css_classes=['reeds-vars-dropdown'], stylesheets=[core.DROPDOWN_CSS])
     topwdg['var_dollar_year'] = bmw.TextInput(title='Dollar Year', value=str(DEFAULT_DOLLAR_YEAR), css_classes=['wdgkey-dollar_year', 'reeds-vars-drop'], visible=False)
     topwdg['var_discount_rate'] = bmw.TextInput(title='Discount Rate', value=str(DEFAULT_DISCOUNT_RATE), css_classes=['wdgkey-discount_rate', 'reeds-vars-drop'], visible=False)
     topwdg['var_pv_year'] = bmw.TextInput(title='Present Value Reference Year', value=str(DEFAULT_PV_YEAR), css_classes=['wdgkey-pv_year', 'reeds-vars-drop'], visible=False)
     topwdg['var_end_year'] = bmw.TextInput(title='Present Value End Year', value=str(DEFAULT_END_YEAR), css_classes=['wdgkey-end_year', 'reeds-vars-drop'], visible=False)
 
     #Meta widgets
-    topwdg['meta'] = bmw.Div(text='Meta', css_classes=['meta-dropdown'])
+    topwdg['meta'] = bmw.Button(label='Meta', css_classes=['meta-dropdown'], stylesheets=[core.DROPDOWN_CSS])
     for col in reeds.columns_meta:
         if 'map' in reeds.columns_meta[col]:
             topwdg['meta_map_'+col] = bmw.TextInput(title='"'+col+ '" Map', value=reeds.columns_meta[col]['map'], css_classes=['wdgkey-meta_map_'+col, 'meta-drop'], visible=False)
@@ -181,6 +181,8 @@ def get_wdg_reeds(path, init_load, wdg_config, wdg_defaults, custom_sorts, custo
     for runs_path in runs_paths:
         runs_path = runs_path.replace('"', '')
         runs_path = runs_path.strip()
+        if not os.path.exists(runs_path):
+            raise FileNotFoundError(f"The specified path does not exist: {runs_path}")
         #if the path is pointing to a csv file, gather all scenarios from that file
         if os.path.isfile(runs_path) and runs_path.lower().endswith('.csv'):
             custom_sorts['scenario'] = []
@@ -215,7 +217,7 @@ def get_wdg_reeds(path, init_load, wdg_config, wdg_defaults, custom_sorts, custo
         topwdg.pop(key, None)
     if scenarios:
         labels = [a['name'] for a in scenarios]
-        topwdg['scenario_filter_dropdown'] = bmw.Div(text='Filter Scenarios', css_classes=['scenario-filter-dropdown'])
+        topwdg['scenario_filter_dropdown'] = bmw.Button(label='Filter Scenarios', css_classes=['scenario-filter-dropdown'], stylesheets=[core.DROPDOWN_CSS])
         topwdg['scenario_filter_sel_all'] = bmw.Button(label='Select All', button_type='success', css_classes=['scenario-filter-drop','select-all-none'], visible=False)
         topwdg['scenario_filter_sel_none'] = bmw.Button(label='Select None', button_type='success', css_classes=['scenario-filter-drop','select-all-none'], visible=False)
         topwdg['scenario_filter'] = bmw.CheckboxGroup(labels=labels, active=list(range(len(labels))), css_classes=['scenario-filter-drop'], visible=False)
@@ -223,7 +225,7 @@ def get_wdg_reeds(path, init_load, wdg_config, wdg_defaults, custom_sorts, custo
         options = [o for o in os.listdir(this_dir_path+'/reports/templates'+GLRD['report_subdir']) if o.endswith(".py")]
         options = ['custom'] + options
         scenario_names = [i['name'] for i in scenarios]
-        topwdg['report_dropdown'] = bmw.Div(text='Build Report', css_classes=['report-dropdown'])
+        topwdg['report_dropdown'] = bmw.Button(label='Build Report', css_classes=['report-dropdown'], stylesheets=[core.DROPDOWN_CSS])
         topwdg['report_options'] = bmw.Select(title='Report', value=options[0], options=options, css_classes=['report-drop'], visible=False)
         topwdg['report_custom'] = bmw.TextInput(title='If custom, enter path to file', value='', css_classes=['report-drop'], visible=False)
         topwdg['report_format'] = bmw.TextInput(title='Enter type(s) of report (html,excel,csv)', value='html,excel', css_classes=['report-drop'], visible=False)
@@ -234,6 +236,8 @@ def get_wdg_reeds(path, init_load, wdg_config, wdg_defaults, custom_sorts, custo
         topwdg['report_build_separate'] = bmw.Button(label='Build Separate Reports', button_type='success', css_classes=['report-drop'], visible=False)
 
         topwdg['result'] = bmw.Select(title='Result', value='None', options=['None']+list(reeds.results_meta.keys()), css_classes=['wdgkey-result'])
+    # Attach dropdown behavior
+    core.attach_dropdown_callbacks(topwdg)
     #save defaults
     core.save_wdg_defaults(topwdg, wdg_defaults)
     #set initial config

@@ -139,11 +139,14 @@ techmap = {
     **{f'battery_{i}':'Battery/PSH' for i in range(20)},
     **{'battery_li':'Battery/PSH', 'pumped-hydro':'Battery/PSH'},
     **dict(zip(
-        ['coal-igcc', 'coaloldscr', 'coalolduns', 'gas-cc', 'gas-ct', 'coal-new', 'o-g-s',],
+        ['coal-igcc', 'coaloldscr', 'coalolduns', 'gas-cc','gas-cc_h_1x1', 'gas-cc_h_2x1', 'gas-ct', 'gas-ct_aero', 'coal-new', 'o-g-s',],
         ['Fossil']*20)),
     **dict(zip(
         ['gas-cc_gas-cc-ccs_mod','gas-cc_gas-cc-ccs_max','gas-cc-ccs_mod','gas-cc-ccs_max',
-         'gas-cc_gas-cc-ccs_mod','coal-igcc_coal-ccs_mod','coal-new_coal-ccs_mod',
+        'gas-cc_gas-cc-ccs_mod','gas-cc_h_1x1_gas-cc_h_1x1-ccs_mod','gas-cc_h_1x1_gas-cc_h_1x1-ccs_max',
+        'gas-cc_h_2x1_gas-cc_h_2x1-ccs_mod','gas-cc_h_2x1_gas-cc_h_2x1-ccs_max',
+        'gas-cc_h_1x1-ccs_mod','gas-cc_h_1x1-ccs_max','gas-cc_h_2x1-ccs_mod','gas-cc_h_2x1-ccs_max',
+        'coal-igcc_coal-ccs_mod','coal-new_coal-ccs_mod',
         'coaloldscr_coal-ccs_mod','coalolduns_coal-ccs_mod','cofirenew_coal-ccs_mod',
         'cofireold_coal-ccs_mod','gas-cc_gas-cc-ccs_max','coal-igcc_coal-ccs_max',
         'coal-new_coal-ccs_max','coaloldscr_coal-ccs_max','coalolduns_coal-ccs_max',
@@ -731,8 +734,8 @@ aggtechsplot = {
     'Hydrogen\nturbine': ['h2-cc', 'h2-cc-upgrade', 'h2-ct', 'h2-ct-upgrade'],
     'Gas CCS': ['gas-cc-ccs_mod'],
     'Coal CCS': ['coal-ccs_mod'],
-    # 'Fossil\n(with CCS)': ['gas-cc-ccs_mod','coal-ccs_mod'],
-    'Fossil\n(w/o CCS)': ['gas-cc', 'gas-ct', 'o-g-s', 'coal', 'cofire'],
+    # 'Fossil\n(with CCS)': ['gas-cc-ccs_mod','gas-cc_h_1x1-ccs_mod','gas-cc_h_2x1-ccs_mod','coal-ccs_mod'],
+    'Fossil\n(w/o CCS)': ['gas-cc', 'gas-cc_h_1x1', 'gas-cc_h_2x1', 'gas-ct', 'gas-ct_aero', 'o-g-s', 'coal', 'cofire'],
 #     'CDR': ['dac', 'beccs'],
 #     'H2 production': ['smr', 'smr-ccs', 'electrolyzer'],
 }
@@ -991,9 +994,14 @@ aggstack = {
     'cofire':'Bio/BECCS',
 
     'gas-cc-ccs_mod':'Gas+CCS',
+    'gas-cc_h_1x1-ccs_mod':'Gas+CCS',
+    'gas-cc_h_2x1-ccs_mod':'Gas+CCS',
     'coal-ccs_mod':'Coal+CCS',
     'gas-cc':'Gas',
+    'gas-cc_h_1x1':'Gas',
+    'gas-cc_h_2x1':'Gas',
     'gas-ct':'Gas',
+    'gas-ct_aero':'Gas',
     'o-g-s':'Gas',
     'coal':'Coal',
 
@@ -1665,8 +1673,8 @@ stortechs = [f'battery_{i}' for i in [2,4,6,8,10]] + ['battery_li', 'pumped-hydr
 vretechs = ['upv','wind-ons','wind-ofs','distpv','csp']
 retechs = vretechs + ['hydro','geothermal','biopower']
 zctechs = vretechs + ['hydro','geothermal','nuclear','nuclear-smr']
-fossiltechs = ['coal','coal-ccs_mod','gas-cc','gas-cc-ccs_mod','gas-ct','o-g-s','cofire']
-reccsnuctechs = retechs + ['coal-ccs_mod','gas-cc-ccs_mod','nuclear','nuclear-smr']
+fossiltechs = ['coal','coal-ccs_mod','gas-cc','gas-cc_h_1x1','gas-cc_h_2x1','gas-cc-ccs_mod','gas-ct','gas-ct_aero','o-g-s','cofire']
+reccsnuctechs = retechs + ['coal-ccs_mod','gas-cc-ccs_mod','gas-cc_h_1x1-ccs_mod','gas-cc_h_2x1-ccs_mod','nuclear','nuclear-smr']
 
 dftotal = pd.concat({
     case:

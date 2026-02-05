@@ -683,7 +683,7 @@ watcap_new_out(i,r,t)$[valcap_irt(i,r,t)$i_water_cooling(i)] =
   sum{h$h_rep(h), 
     hours(h)
     * sum{w$[i_w(i,w)], 
-      water_rate(i,w,r) } 
+      water_rate(i,w) } 
       * ( sum{v$valinv(i,v,r,t), INV.l(i,v,r,t) + INV_REFURB.l(i,v,r,t)} 
         + sum{v$valcap(i,v,r,t), 
           (1-upgrade_derate(i,v,r,t)) * (UPGRADES.l(i,v,r,t) - UPGRADES_RETIRE.l(i,v,r,t))}$[upgrade(i)$Sw_Upgrades] ) 
@@ -695,7 +695,7 @@ watcap_new_ivrt(i,v,r,t)$[valcap(i,v,r,t)$i_water_cooling(i)] =
   sum{h$h_rep(h), 
     hours(h)
     * sum{w$[i_w(i,w)], 
-      water_rate(i,w,r) }
+      water_rate(i,w) }
       * ( [INV.l(i,v,r,t) + INV_REFURB.l(i,v,r,t)]$valinv(i,v,r,t) 
         + [(1-upgrade_derate(i,v,r,t)) * (UPGRADES.l(i,v,r,t) - UPGRADES_RETIRE.l(i,v,r,t))]$[upgrade(i)$valcap(i,v,r,t)$Sw_Upgrades] )
     * (1 + sum{szn, h_szn(h,szn) * seas_cap_frac_delta(i,v,r,szn,t)})
@@ -1297,7 +1297,7 @@ systemcost_techba("inv_itc_payments_negative_refurbishments",i,r,t)$tmodel_new(t
 
 systemcost_techba("inv_investment_water_access",i,r,t)$tmodel_new(t) =
 *cost of water access
-              + (8760/1E6) * sum{ (v,w)$[i_w(i,w)$valinv(i,v,r,t)], sum{wst$i_wst(i,wst), m_watsc_dat(wst,"cost",r,t)} * water_rate(i,w,r) *
+              + (8760/1E6) * sum{ (v,w)$[i_w(i,w)$valinv(i,v,r,t)], sum{wst$i_wst(i,wst), m_watsc_dat(wst,"cost",r,t)} * water_rate(i,w) *
                         ( INV.l(i,v,r,t) + INV_REFURB.l(i,v,r,t)$[refurbtech(i)$Sw_Refurb] ) }
               + sum{(rscbin,v)$[m_rscfeas(r,i,rscbin)$psh(i)], sum{wst$i_wst(i,wst), m_watsc_dat(wst,"cost",r,t) } *
                         ( INV_RSC.l(i,v,r,rscbin,t) * water_req_psh(r,rscbin) ) }

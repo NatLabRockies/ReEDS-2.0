@@ -75,7 +75,7 @@ year = args.year
 routes = args.routes
 
 # #%% Inputs for testing
-# case = os.path.join(reeds_path,'runs','v20250801_mainK0_USA_defaults')
+# case = os.path.join(reeds_path,'runs','v20251111_15M0_Pacific')
 # year = 0
 # routes = False
 # interactive = True
@@ -248,12 +248,12 @@ try:
         alpha=1.0, miles=300,
     )
     savename = f'map_translines_vsc-{year}.png'
-    if write:
+    if write and (f is not None):
         plt.savefig(os.path.join(savepath, savename))
+        print(savename)
     if interactive:
         plt.show()
     plt.close()
-    print(savename)
 except Exception:
     print('map_translines_vsc failed:')
     print(traceback.format_exc())

@@ -13,12 +13,19 @@
   CofireNew ,0.055
   CofireOld ,0.055
   Gas-CC  ,0.035
+  Gas-CC_H_1x1  ,0.035
+  Gas-CC_H_2x1  ,0.035
   Gas-CC-CCS_mod  ,0.035
   Gas-CC-CCS_max  ,0.035
+  Gas-CC_H_1x1-CCS_mod  ,0.035
+  Gas-CC_H_1x1-CCS_max  ,0.035
+  Gas-CC_H_2x1-CCS_mod  ,0.035
+  Gas-CC_H_2x1-CCS_max  ,0.035
   Gas-CC-CCS-F1  ,0.035
   Gas-CC-CCS-F2  ,0.035
   Gas-CC-CCS-F3  ,0.035
   Gas-CT  ,0.11
+  Gas-CT_aero  ,0.11
   geothermal  ,0
   Hydro ,0
   lfill-gas ,0

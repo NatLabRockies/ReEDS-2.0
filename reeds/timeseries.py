@@ -51,7 +51,6 @@ def timestamp2h(ts, GSw_HourlyType='day'):
     """
     Map actual timestamp to ReEDS period
     """
-    # ts = pd.Timestamp(year=2007, month=3, day=28)
     y = ts.year
     d = int(ts.strftime('%j').lstrip('0'))
     if GSw_HourlyType == 'wek':

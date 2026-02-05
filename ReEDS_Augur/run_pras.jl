@@ -49,6 +49,11 @@ function parse_commandline()
             arg_type = Int
             default = 0
             required = false
+        "--scheduled_outage"
+            help = "Include monthly scheduled outage"
+            arg_type = Int
+            default = 0
+            required = false            
         "--write_flow"
             help = "Write the hourly interface flows"
             arg_type = Int
@@ -246,6 +251,7 @@ function run_pras(pras_system_path::String, args::Dict)
     @info("Wrote PRAS EUE and LOLE to $(outfile)")
 
     #%%### Record more operational details if desired
+
     ### Flow
     if args["write_flow"] == 1
         dfflow = DF.DataFrame()
@@ -302,8 +308,10 @@ function run_pras(pras_system_path::String, args::Dict)
         for s in range(1, args["samples"])
             dictshort[s] = DF.DataFrame(
                 transpose(getindex.(results["short_samples"][:, :], s)),
-                regions
+                sys.regions.names
             )
+            # subset to regions (filter out DC regions) 
+            dictshort[s] = dictshort[s][:,findall(regions .∈ Ref(sys.regions.names))]
         end
         ## Write it
         shortfile = replace(outfile, ".h5"=>"-shortfall_samples.h5")
@@ -407,6 +415,7 @@ function main(args::Dict)
                 args["timesteps"],
                 args["weather_year"],
                 # Boolean switches: == to convert from integer to boolean
+                args["scheduled_outage"] == 1,
                 args["hydro_energylim"] == 1,
                 args["pras_agg_ogs_lfillgas"] == 1,
                 args["pras_existing_unit_size"] == 1,
@@ -431,26 +440,28 @@ end
 
 #%% Procedure
 if abspath(PROGRAM_FILE) == @__FILE__
-    # #%% Inputs for debugging
+    #%% Inputs for debugging
+    # julia --project=/path/to/ReEDS-2.0 --threads=1
     # args = Dict(
-    #     "reeds_path" => "/Users/pbrown/github2/ReEDS-2.0",
+    #     "reeds_path" => "/path/to/ReEDS-2.0",
     #     "reedscase" => (
-    #         "/Users/pbrown/github2/ReEDS-2.0/runs/"
-    #         *"v20250411_cleanupM1_Pacific"),
-    #     "solve_year" => 2026,
+    #         "/path/to/ReEDS-2.0/runs/"
+    #         *"runname"),
+    #     "solve_year" => 2035,
     #     "weather_year" => 2007,
     #     "samples" => 10,
     #     "iteration" => 0,
-    #     "timesteps" => 61320,
+    #     "timesteps" => 131400,
     #     "hydro_energylim" => 1,
-    #     "write_flow" => 1,
-    #     "write_surplus" => 1,
-    #     "write_energy" => 1,
+    #     "write_flow" => 0,
+    #     "write_surplus" => 0,
+    #     "write_energy" => 0,
     #     "write_shortfall_samples" => 1,
     #     "write_availability_samples" => 0,
     #     "overwrite" => 1,
     #     "debug" => 0,
     #     "include_samples" => 0,
+    #     "scheduled_outage" => 0,
     #     "pras_agg_ogs_lfillgas" => 0,
     #     "pras_existing_unit_size" => 1,
     #     "pras_max_unitsize_prm" => 1,

@@ -1,4 +1,4 @@
-# This file was created based on https://github.com/NREL/reVXOrdinances/blob/main/.pylintrc,
+# This file was created based on https://github.com/NatLabRockies/reVXOrdinances/blob/main/.pylintrc,
 # and then modified for the use with ReEDS-2.0
 [MAIN]
 

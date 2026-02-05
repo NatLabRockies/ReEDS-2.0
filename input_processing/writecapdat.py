@@ -356,6 +356,8 @@ def main(reeds_path, inputs_case, agglevel, regions):
         # Load in demo data and stack it on prescribed non-RSC 
         demo = pd.read_csv(
             os.path.join(inputs_case,'demonstration_plants.csv')).drop("notes", axis=1)
+        # Filter demonstration plants to regions in function call
+        demo = demo[demo['r'].isin(regions)]
         prescribed_nonRSC = pd.concat([prescribed_nonRSC,demo],sort=False)
 
     prescribed_nonRSC = (
@@ -518,6 +520,8 @@ def main(reeds_path, inputs_case, agglevel, regions):
     h2_ba_share.loc[2021:] = h2_ba_share.loc[2021:].interpolate('index')
     ## Only keep the modeled years
     h2_ba_share = h2_ba_share.loc[years].copy()
+    ## Reshape from wide to long format
+    h2_ba_share_out = h2_ba_share.reset_index().melt(id_vars='t', var_name='*r', value_name='fraction')[['*r','t','fraction']]
 
     # Calculating the consumption characteristics (has columns i, t, parameter, value)
     consume_char0 = pd.read_csv(
@@ -791,7 +795,8 @@ def main(reeds_path, inputs_case, agglevel, regions):
                 'rsc_wsc':rsc_wsc,
                 'hydcapadj_ccszn' : hydcapadj_ccszn[['*i','ccseason','r','value']],
                 'can_imports_capacity' : can_imports_capacity,
-                'geoexist' : geoexist
+                'geoexist' : geoexist,
+                'h2_ba_share': h2_ba_share_out
                 }
 
     return files_out 

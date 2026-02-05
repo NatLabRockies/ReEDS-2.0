@@ -131,7 +131,7 @@ $onlisting
 / ;
 $offempty
 
-* created in and mapped to hierarchy in ldc_prep.py
+* created in and mapped to hierarchy in recf.py
 set ccreg "capacity credit regions"
 /
 $offlisting
@@ -460,6 +460,7 @@ set
   geo_egs_nf(i)        "egs (near-field) technologies",
   h2_combustion(i)     "h2-ct and h2-cc technologies",
   h2_cc(i)             "h2-cc technologies"
+  h2_ct(i)             "h2-ct technologies",
   h2(i)                "hydrogen-producing technologies",
   hyd_add_pump(i)      "hydro techs with an added pump",
   hydro_d(i)           "dispatchable hydro technologies",
@@ -709,6 +710,22 @@ if(Sw_EVMC = 0,
   ban(i)$i_subsets(i,'evmc') = yes ;
 ) ;
 
+if(Sw_GasCT_Aero = 0,
+  ban('Gas-CT_aero') = yes ;
+) ;
+
+if(Sw_GasCC_H_1x1 = 0,
+  ban('Gas-CC_H_1x1') = yes ;
+  ban('Gas-CC_H_1x1-CCS_mod') = yes ;
+  ban('Gas-CC_H_1x1-CCS_max') = yes ;
+) ;
+
+if(Sw_GasCC_H_2x1 = 0,
+  ban('Gas-CC_H_2x1') = yes ;
+  ban('Gas-CC_H_2x1-CCS_mod') = yes ;
+  ban('Gas-CC_H_2x1-CCS_max') = yes ;
+) ;
+
 if(Sw_Geothermal = 0,
   ban(i)$i_subsets(i,'geo') = yes ;
 ) ;
@@ -786,7 +803,7 @@ $elseif.pshwat %GSw_PSHwatertypes% == 2
 $else.pshwat
 $endif.pshwat
 
-*** Restrict valcap for hybrid storage techs based on Sw_HybridPlant switch
+*** Ban hybrid storage techs based on Sw_HybridPlant switch
 * 0: Ban all storage, including CSP
 if(Sw_HybridPlant = 0,
  ban(i)$i_subsets(i,'storage_hybrid') = yes ;
@@ -821,7 +838,7 @@ $ifthen.pvb12 %GSw_PVB_Types% == '1'
     ban(i)$i_subsets(i,'pvb3') = yes ;
 $endif.pvb12
 
-*** Restrict valcap for storage techs based on Sw_Storage switch
+*** Ban storage techs based on Sw_Storage switch
 * 0: Ban all storage
 if(Sw_Storage = 0,
  ban(i)$i_subsets(i,'storage_standalone') = yes ;
@@ -967,6 +984,7 @@ geo_egs_allkm(i)$(not ban(i))       = yes$i_subsets(i,'geo_egs_allkm') ;
 geo_egs_nf(i)$(not ban(i))          = yes$i_subsets(i,'geo_egs_nf') ;
 h2_combustion(i)$(not ban(i))       = yes$i_subsets(i,'h2_combustion') ;
 h2_cc(i)$(not ban(i))               = yes$i_subsets(i,'h2_cc') ;
+h2_ct(i)$(not ban(i))               = yes$i_subsets(i,'h2_ct') ;
 h2(i)$(not ban(i))                  = yes$i_subsets(i,'h2') ;
 hydro_d(i)$(not ban(i))             = yes$i_subsets(i,'hydro_d') ;
 hydro_nd(i)$(not ban(i))            = yes$i_subsets(i,'hydro_nd') ;
@@ -1064,12 +1082,14 @@ $onlisting
 storage_interday(i)$(Sw_InterDayLinkage = 0) = no ;
 
 $onempty
-table water_with_cons_rate(i,ctt,w,r) "--gal/MWh-- technology specific-cooling tech based water withdrawal and consumption data"
+parameter water_with_cons_rate(i,ctt,w) "--gal/MWh-- technology specific-cooling tech based water withdrawal and consumption data"
+/
 $offlisting
 $ondelim
 $include inputs_case%ds%water_with_cons_rate.csv
 $offdelim
 $onlisting
+/
 ;
 $offempty
 
@@ -1092,26 +1112,26 @@ water_req_psh(r,rscbin) = round(water_req_psh(r,rscbin) / psh_fillyrs, 6) ;
 *based on numeraire techs and cooling technologies types to avoid repetitive
 *entry of data in the input data file and provide flexibility
 *in populating data if new combinations come along the way
-water_with_cons_rate(i,ctt,w,r)$i_water_cooling(i) =
-  sum{(ii,wst)$i_ii_ctt_wst(i,ii,ctt,wst), water_with_cons_rate(ii,ctt,w,r) } ;
+water_with_cons_rate(i,ctt,w)$i_water_cooling(i) =
+  sum{(ii,wst)$i_ii_ctt_wst(i,ii,ctt,wst), water_with_cons_rate(ii,ctt,w) } ;
 
 *CSP techs have same water withdrawal and consumption rates; populating all CSP data with the data of csp1_1
-water_with_cons_rate(i,ctt,w,r)$[i_water_cooling(i)$(csp1(i) or csp2(i) or csp3(i) or csp4(i))] =
-  sum{(ii,wst)$i_ii_ctt_wst(i,ii,ctt,wst), water_with_cons_rate("csp1_1",ctt,w,r) } ;
+water_with_cons_rate(i,ctt,w)$[i_water_cooling(i)$(csp1(i) or csp2(i) or csp3(i) or csp4(i))] =
+  sum{(ii,wst)$i_ii_ctt_wst(i,ii,ctt,wst), water_with_cons_rate("csp1_1",ctt,w) } ;
 
-water_with_cons_rate(ii,ctt,w,r)$[sum{(wst,i)$i_ii_ctt_wst(i,ii,ctt,wst), 1 }] = no ;
+water_with_cons_rate(ii,ctt,w)$[sum{(wst,i)$i_ii_ctt_wst(i,ii,ctt,wst), 1 }] = no ;
 
-parameter water_rate(i,w,r) "--gal/MWh-- water withdrawal/consumption w rate in region r by technology i" ;
+parameter water_rate(i,w) "--gal/MWh-- water withdrawal/consumption w rate by technology i" ;
 * adding geothermal categories for water accounting
 i_water(i)$geo(i) = yes ;
-water_with_cons_rate(i,ctt,w,r)$geo(i) = water_with_cons_rate("geothermal",ctt,w,r) ;
+water_with_cons_rate(i,ctt,w)$geo(i) = water_with_cons_rate("geothermal",ctt,w) ;
 
 * Till this point, i already has non-numeraire techs (e.g., gas-CC_o_fsa, gas-CC_r_fsa,
 *and gas-CC_r_fg) instead of numeraire technology (e.g., gas-CC)
 * The line below just removes ctt dimension, by summing over ctt.
-water_rate(i,w,r)$i_water(i) = sum{ctt, water_with_cons_rate(i,ctt,w,r) } ;
+water_rate(i,w)$i_water(i) = sum{ctt, water_with_cons_rate(i,ctt,w) } ;
 
-water_rate(i,w,r)$upgrade(i) = sum{ii$upgrade_to(i,ii), water_rate(ii,w,r) } ;
+water_rate(i,w)$upgrade(i) = sum{ii$upgrade_to(i,ii), water_rate(ii,w) } ;
 
 set dispatchtech(i)                 "technologies that are dispatchable",
     noret_upgrade_tech(i)           "upgrade techs that do not retire",
@@ -1868,7 +1888,7 @@ $endif.Canada
 *=============================
 
 * Written by writesupplycurves.py
-parameter rsc_dat(i,r,sc_cat,rscbin) "--units vary-- resource supply curve data for renewables with capacity in MW and costs in $/MW (MW-DC and $/MW-DC for UPV)"
+parameter rsc_dat(i,r,sc_cat,rscbin) "--units vary-- resource supply curve data for renewables with capacity in MW and costs in $/MW (MW-DC and $/MW-AC for UPV)"
 /
 $offlisting
 $ondelim
@@ -2228,13 +2248,6 @@ $offdelim
 $onlisting
 ;
 
-* initialize the h2_share before 2021 to be equal to the 2021 values
-h2_share(r,t)$[yeart(t)<=2021] = h2_share(r,"2021");
-
-* need to linearly interpolate all gap years as input data is only populated for 2050 and 2021
-h2_share(r,t)$[(yeart(t)>2021)$(yeart(t)<2050)] =
-  h2_share(r,"2021") + ((h2_share(r,"2050") - h2_share(r,"2021")) / (2050-2021)) * (yeart(t) - 2021) ;
-
 parameter inv_distpv(r,t) "--MW-- capacity of distpv that is build in year t (i.e., INV for distpv)" ;
 
 inv_distpv(r,t) = sum{(i,v)$distpv(i),
@@ -2491,10 +2504,16 @@ valcap(i,newv,r,t)
 *first for non-rsc techs
 valcap(i,newv,r,t)$[(not rsc_i(i))
                     $(sum{pcat$prescriptivelink(pcat,i), m_required_prescriptions(pcat,r,t) })
-                    $sum{tt$(yeart(tt)<=yeart(t)), ivt(i,newv,tt) }$(not ban(i))] = yes ;
+                    $sum{tt$[sum{pcat$prescriptivelink(pcat,i), m_required_prescriptions(pcat,r,tt) }
+                           $(yeart(tt)<=yeart(t))], ivt(i,newv,tt) }
+                    $(not ban(i))] = yes ;
+
 *then for rsc techs
-valcap(i,newv,r,t)$[rsc_i(i)$(sum{pcat$prescriptivelink(pcat,i), m_required_prescriptions(pcat,r,t) })
-                    $sum{tt$(yeart(tt)<=yeart(t)), ivt(i,newv,tt) }$(not ban(i))
+valcap(i,newv,r,t)$[rsc_i(i)
+                    $(sum{pcat$prescriptivelink(pcat,i), m_required_prescriptions(pcat,r,t) })
+                    $sum{tt$[sum{pcat$prescriptivelink(pcat,i), m_required_prescriptions(pcat,r,tt) }
+                           $(yeart(tt)<=yeart(t))], ivt(i,newv,tt) }
+                    $(not ban(i))
                     $sum{rscbin, m_rscfeas(r,i,rscbin) }] = yes ;
 
 * Techs where new investment are banned: Start by removing from valcap
@@ -2525,9 +2544,10 @@ valcap(i,newv,r,t)$[
 
 *remove vintages that cannot be built because they only occur before firstyear
 valcap(i,newv,r,t)$[
-*if there are no required prescriptions
-                   (not sum{pcat$prescriptivelink(pcat,i),
-                      m_required_prescriptions(pcat,r,t) } )
+*if there are no required prescriptions before the last year of that vintage
+                   (not sum{(pcat,tt)$[prescriptivelink(pcat,i)
+                                      $(yeart(tt)<=lastyear_v(i,newv))],
+                      m_required_prescriptions(pcat,r,tt) } )
 *if the vintage is not allowed before the firstyear
                    $(lastyear_v(i,newv)<firstyear(i))
 *if there is not a mandate for that technology in the region
@@ -3878,8 +3898,9 @@ winter_cap_ratio(i,newv,r)$[valcap_ivr(i,newv,r)
                            =  sum{(initv,rr), winter_cap_ratio(i,initv,rr) * hintage_data(i,initv,rr,'%startyear%','wintercap') }
                               / sum{(initv,rr), hintage_data(i,initv,rr,'%startyear%','wintercap') } ;
 
-* Assign H2-CT techs to have the same winter_cap_ratio as Gas CT techs
-winter_cap_ratio(i,newv,r)$h2_combustion(i) = sum{ii$gas_ct(ii), winter_cap_ratio(ii,newv,r) } ;
+* Assign H2-CT and H2-CC techs to have the same winter_cap_ratio as their corresponding gas techs
+winter_cap_ratio(i,newv,r)$h2_ct(i) = winter_cap_ratio('gas-ct',newv,r) ;
+winter_cap_ratio(i,newv,r)$h2_cc(i) = winter_cap_ratio('gas-cc',newv,r) ;
 
 * Assign additional nuclear techs to have the same winter_cap_ratio as 'nuclear'
 winter_cap_ratio(i,newv,r)$nuclear(i) = winter_cap_ratio('nuclear',newv,r) ;
@@ -4892,7 +4913,8 @@ startcost(i)$[(Sw_StartCost=0)] = 0 ;
 startcost(i)$[(Sw_StartCost=1)$(not nuclear(i))] = 0 ;
 startcost(i)$[(Sw_StartCost=2)$(not nuclear(i))$(not ccs(i))$(not coal(i))] = 0 ;
 startcost(i)$[(Sw_StartCost=3)$(not ccs(i))$(not coal(i))] = 0 ;
-startcost(i)$[(Sw_StartCost=4)$(nuclear(i))] = 0 ;
+startcost(i)$[(Sw_StartCost=4)$(not ccs(i))$(not coal(i))$(not gas_cc(i))$(not h2_cc(i))] = 0 ;
+startcost(i)$[(Sw_StartCost=5)$(nuclear(i))] = 0 ;
 
 parameter mingen_fixed(i) "--fraction-- minimum generation level across all hours"
 /
@@ -4955,7 +4977,7 @@ $offdelim
 $onlisting
 / ;
 
-parameter prm(r,t) "planning reserve margin by BA" ;
+parameter prm(r,t) "--fraction-- planning reserve margin by BA" ;
 prm(r,t) = sum{nercr$r_nercr(r,nercr), prm_nt(nercr,t) } ;
 
 $onempty
@@ -5962,8 +5984,6 @@ cost_upgrade(i,v,r,t)$[upgrade(i)$valcap(i,v,r,t)] = cost_upgrade(i,v,r,t) * 1.0
 cost_upgrade('Gas-CT_H2-CT',v,r,t)$[valcap('Gas-CT_H2-CT',v,r,t)] =
   cost_cap('gas-ct',t) * cost_upgrade_gasct2h2ct ;
 
-*H2-CC upgrades includes replacing the gas turbine capacity with a new H2-CT
-*and assumes that the gas-CC is 2/3 gas-CT and 1/3 steam turbine
 *(The set of filters on cost_upgrades yields "Gas-CC_H2-CC", but does so in a way to capture
 *water techs when the water switch is turned on)
 cost_upgrade(i,v,r,t)$[h2_combustion(i)$upgrade(i)$(not ccs(i))$valcap(i,v,r,t)

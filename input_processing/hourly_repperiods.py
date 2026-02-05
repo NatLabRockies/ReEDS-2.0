@@ -31,6 +31,7 @@ import pandas as pd
 import scipy
 import sklearn.cluster
 import sklearn.neighbors
+import traceback
 import hourly_writetimeseries
 import hourly_plots
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -845,19 +846,22 @@ def main(
         hourly_plots.plot_ldc(
             period_szn, profiles, rep_periods,
             forceperiods_write, sw, reeds_path, figpath)
-    except Exception as err:
-        print('plot_ldc failed with the following error:\n{}'.format(err))
+    except Exception:
+        print('plot_ldc failed:')
+        print(traceback.format_exc())
 
     if int(sw.debug):
         try:
             hourly_plots.plot_load_days(profiles, rep_periods, period_szn, sw, reeds_path, figpath)
-        except Exception as err:
-            print('plot_load_days failed with the following error:\n{}'.format(err))
+        except Exception:
+            print('plot_load_days failed:')
+            print(traceback.format_exc())
 
         try:
             hourly_plots.plot_8760(profiles, period_szn, sw, reeds_path, figpath)
-        except Exception as err:
-            print('plot_8760 failed with the following error:\n{}'.format(err))
+        except Exception:
+            print('plot_8760 failed:')
+            print(traceback.format_exc())
 
 
     #%%### Write the outputs
@@ -942,7 +946,7 @@ if __name__ == '__main__':
     # reeds_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # inputs_case = os.path.join(
     #     reeds_path,'runs',
-    #     'v20250821_revM1_Pennsylvania','inputs_case','')
+    #     'v20251209_scM0_USA_defaults','inputs_case','')
     # interactive = True
 
     #%% Set up logger

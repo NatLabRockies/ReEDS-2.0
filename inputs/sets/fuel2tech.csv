@@ -9,10 +9,17 @@ coal,coal-ccs-f1
 coal,coal-ccs-f2
 coal,coal-ccs-f3
 naturalgas,gas-cc
+naturalgas,gas-cc_h_1x1
+naturalgas,gas-cc_h_2x1
 naturalgas,gas-ct
+naturalgas,gas-ct_aero
 naturalgas,o-g-s
 naturalgas,gas-cc-ccs_mod
 naturalgas,gas-cc-ccs_max
+naturalgas,gas-cc_h_1x1-ccs_mod
+naturalgas,gas-cc_h_1x1-ccs_max
+naturalgas,gas-cc_h_2x1-ccs_mod
+naturalgas,gas-cc_h_2x1-ccs_max
 naturalgas,gas-cc-ccs-f1
 naturalgas,gas-cc-ccs-f2
 naturalgas,gas-cc-ccs-f3

@@ -77,6 +77,35 @@ def get_hierarchy(case=None, original=False, country='USA'):
     hierarchy = hierarchy.loc[hierarchy.country.str.lower() == country.lower()].copy()
     return hierarchy
 
+def get_county2zone(
+    case: str | None = None, as_map: bool = True
+) -> pd.DataFrame | pd.Series:
+    """
+    Read county2zone.csv from the inputs_case folder is {case} is provided
+    or from the default set of inputs otherwise.
+
+    Args:
+        case: Path to a ReEDS case.
+        as_map: If true, return county2zone as a pd.Series indexed by county.
+
+    Returns:
+        pd.DataFrame or pd.Series 
+    """
+    if case is None:
+        fpath = os.path.join(reeds.io.reeds_path, 'inputs', 'county2zone.csv')
+        r_col = 'ba'
+    else:
+        fpath = os.path.join(case, 'inputs_case', 'county2zone.csv')
+        r_col = 'r'
+
+    county2zone = pd.read_csv(
+        fpath,
+        dtype={'FIPS':str}
+    )
+    county2zone = county2zone.set_index('FIPS')[r_col] if as_map else county2zone
+
+    return county2zone
+
 def get_countymap(select_counties=None, exclude_water_areas=False):
     """Get geodataframe of US counties"""
     crs = 'ESRI:102008'
@@ -92,7 +121,7 @@ def get_countymap(select_counties=None, exclude_water_areas=False):
         dfcounty['geometry'] = (
             dfcounty.intersection(dfmap['country'].loc['USA','geometry'])
         )
-    
+
     return dfcounty
 
 def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
@@ -110,7 +139,9 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
             os.path.join(case, 'inputs_case'),
         )
     else:
-        agglevel_variables = {'lvl': 'ba'}
+        agglevel_variables = {'lvl': 'ba',
+                              'agglevel': 'ba',
+                              }
 
     # Mixed resolution procedure
     if agglevel_variables['lvl'] == 'mult':
@@ -138,11 +169,18 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
                 .set_index('r')
                 .aggreg
             )
-            aggreg2anchorreg = pd.read_csv(
-                os.path.join(case, 'inputs_case', 'aggreg2anchorreg.csv')
-            )
-            aggreg2anchorreg = aggreg2anchorreg[
-                aggreg2anchorreg['aggreg'].isin(agglevel_variables['ba_regions'])
+            ### Take the "anchor" zone as the zone with the largest area [km2]
+            dfba['km2'] = dfba.area / 1e6
+            ## Add column for new regions
+            dfba['aggreg'] = dfba.index.map(r2aggreg)
+            ## Take the original zone with largest area
+            aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
+            ## Save it for plotting
+            aggreg2anchorreg.to_csv(os.path.join(case,'inputs_case', 'aggreg2anchorreg.csv'))
+
+            aggreg2anchorreg = aggreg2anchorreg.reset_index()
+            aggreg2anchorreg = aggreg2anchorreg[aggreg2anchorreg
+                ['aggreg'].isin(agglevel_variables['ba_regions'])
             ]
             dfba = dfba.reset_index()
             dfba.rb = dfba.rb.map(r2aggreg)
@@ -221,6 +259,22 @@ def get_zonemap(case=None, exclude_water_areas=False, crs='ESRI:102008'):
             dfba['centroid_x'] = dfba.geometry.centroid.x
             dfba['centroid_y'] = dfba.geometry.centroid.y
 
+            if 'aggreg' in agglevel_variables['agglevel']:
+                r2aggreg = (
+                    pd.read_csv(os.path.join(case, 'inputs_case', 'hierarchy_original.csv'))
+                    .rename(columns={'ba': 'r'})
+                    .set_index('r')
+                    .aggreg
+                    )
+                ### Take the "anchor" zone as the zone with the largest area [km2]
+                dfba['km2'] = dfba.area / 1e6
+                ## Add column for new regions
+                dfba['aggreg'] = dfba.index.map(r2aggreg)
+                ## Take the original zone with largest area
+                aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
+                ## Save it for plotting
+                aggreg2anchorreg.to_csv(os.path.join(case,'inputs_case', 'aggreg2anchorreg.csv'))
+
         else:
             hierarchy = (
                 pd.read_csv(os.path.join(case, 'inputs_case', 'hierarchy.csv'))
@@ -289,6 +343,43 @@ def get_dfmap(case=None, levels=None, exclude_water_areas=False):
 
     return dfmap
 
+def get_disagg_data(case, disagg_variable='population'):
+    """
+    Get state/region-to-county disaggregation factors for the given variable.
+    """
+    return pd.read_csv(
+        os.path.join(case, 'inputs_case', f'disagg_{disagg_variable}.csv')
+    )
+
+
+def get_co2_storage_sites():
+    co2_storage_sites = gpd.read_file(
+        os.path.join(
+            reeds_path,
+            'inputs',
+            'shapefiles',
+            'ctus_cs_polygons_BVRE.gpkg'
+        )
+    )
+    return co2_storage_sites
+
+def get_h2_storage_sites(h2_storage_type="salt"):
+    """
+    Read a layer from the H2 storage sites shapefile corresponding to the
+    given H2 storage type. H2 storage type options are "salt" and "hardrock".
+    """
+    h2_storage_sites = gpd.read_file(
+        os.path.join(
+            reeds_path,
+            'inputs',
+            'shapefiles',
+            'h2_storage_sites.gpkg'
+        ),
+        layer=h2_storage_type
+    )
+
+    return h2_storage_sites
+
 
 ### Read files from a ReEDS case
 def read_output(
@@ -311,7 +402,7 @@ def read_output(
         valname (optional): If provided, rename 'Value' column to {valname}
         low_memory (optional): If True, reduce memory usage by changing datatypes
         r_filter (optional): List of regions to filter on
-        
+
     Returns:
         pd.DataFrame
     """
@@ -355,7 +446,7 @@ def read_output(
 
     if valname is not None:
         df = df.rename(columns={'Value': valname})
-    
+
     ## If desired, filter for specific regions
     if r_filter is not None:
         # Only have a r column no rr column
@@ -453,11 +544,19 @@ def standardize_case(case=None):
     return case
 
 
-def get_switches(case=None):
+def get_switches(case=None, **kwargs):
     """
     Get pd.Series of switch values from switches.csv, augur_switches.csv,
     and CPLEX opt file.
     Accepts either {case} or {case}/inputs_case as input.
+
+    If {case} is None, the default switch values listed in cases.csv are retrieved.
+
+    If additional keyword arguments are provided, they replace the values specified
+    in {case}. This behavior can be used to read all the switches for a case (or all
+    the default settings) but change a single switch to a different value (when
+    making plots for different input settings, for example). If a key is provided
+    that is not a valid switch name, it is ignored.
     """
     case = standardize_case(case)
     ### If no case is provided, return the defaults; otherwise return case-specific values
@@ -515,6 +614,10 @@ def get_switches(case=None):
     ### Get the number of hours per period to use in plots
     sw['hoursperperiod'] = {'day': 24, 'wek': 120, 'year': 24}[sw['GSw_HourlyType']]
     sw['periodsperyear'] = {'day': 365, 'wek': 73, 'year': 365}[sw['GSw_HourlyType']]
+
+    for key, value in kwargs.items():
+        if key in sw.keys():
+            sw[key] = value
 
     return sw
 
@@ -652,18 +755,12 @@ def read_file(filename, parse_timestamps=False, decode_strings=False):
         df = pd.read_hdf(filename)
 
     # parse timestamps if specified and if there is a datetime index
-    if parse_timestamps and ('datetime' in df.index.names):
-        if isinstance(df.index.get_level_values('datetime')[0], bytes):
-            unique_indices = df.index.get_level_values('datetime').unique()
-            index2datetime = dict(zip(
-                unique_indices,
-                pd.to_datetime(unique_indices.str.decode('utf-8'), format='ISO8601')
-            ))
-            df['datetime'] = df.index.get_level_values('datetime').map(index2datetime)
-            if isinstance(df.index, pd.MultiIndex):
-                df = df.droplevel('datetime').set_index('datetime', append=True)
-            else:
-                df = df.set_index('datetime')
+    if (
+        parse_timestamps
+        and ('datetime' in df.index.names)
+        and (isinstance(df.index.get_level_values('datetime')[0], bytes))
+    ):
+        df = decode_h5_timestamps(df)
 
     # All values being NaN indicates that the region filtering in copy_files.py removed all
     # data, leaving an empty dataframe.
@@ -680,7 +777,25 @@ def read_file(filename, parse_timestamps=False, decode_strings=False):
     return df
 
 
-def read_h5_groups(filepath):
+def decode_h5_timestamps(df):
+    """
+    Decode a dataframe's "datetime" index whose index values are stored as bytes.
+    """
+    unique_indices = df.index.get_level_values('datetime').unique()
+    index2datetime = dict(zip(
+        unique_indices,
+        pd.to_datetime(unique_indices.str.decode('utf-8'), format='ISO8601')
+    ))
+    df['datetime'] = df.index.get_level_values('datetime').map(index2datetime)
+    if isinstance(df.index, pd.MultiIndex):
+        df = df.droplevel('datetime').set_index('datetime', append=True)
+    else:
+        df = df.set_index('datetime')
+
+    return df
+
+
+def read_h5_groups(filepath, parse_timestamps=False):
     """
     Read a .h5 file with the following format,
     where r = numrows and c = numcols for each group (r and c can vary across groups):
@@ -717,7 +832,16 @@ def read_h5_groups(filepath):
             dfout = pd.concat(_dfout, axis=1)
             dfout.index = index
             dfout.columns = columns
+            # parse timestamps if specified and if there is a datetime index
+            if (
+                parse_timestamps
+                and ('datetime' in dfout.index.names)
+                and (isinstance(dfout.index.get_level_values('datetime')[0], bytes))
+            ):
+                dfout = decode_h5_timestamps(dfout)
+
             dictout[group] = dfout
+                
         if len(dictout) == 1:
             return dfout
         else:
@@ -788,7 +912,10 @@ def get_temperatures(case, tz_in='UTC', tz_out='Etc/GMT+6', subset_years=True):
     for year in weather_years:
         if leap_year[year]:
             temperatures.drop(temperatures.loc[f'{year}-12-31'].index, inplace=True)
-    assert len(temperatures) == len(weather_years) * 8760
+    if len(temperatures) != len(weather_years) * 8760:
+        raise ValueError(
+            f'len(temperatures) = {len(temperatures)} but should be {len(weather_years) * 8760}'
+        )
     ### Subset to states used in this run
     temperatures = temperatures[[c for c in temperatures if c in val_ba]].copy()
 
@@ -823,6 +950,65 @@ def get_outage_hourly(
         dfout.columns = dfout.columns.get_level_values(0)
     return dfout
 
+def get_load_hourly(case=None, **kwargs):
+    """
+    Get state-level hourly load profiles from the ReEDS directory or
+    model region-level hourly load profiles from {case} if {case} is
+    provided and {case}/inputs_case/load.h5 exists.
+    Accepts either {case} or {case}/inputs_case as input.
+
+    In general, if a switch name/value pair is provided as a keyword
+    argument, it replaces the switch value specified in {case}.
+    Therefore, the "GSw_LoadProfiles" switch value either specified as a
+    keyword argument or specified in {case} determines which load scenario
+    is retrieved, with the former taking precedence.    
+
+    If {case} is None and "GSw_LoadProfiles" is not provided,
+    the profiles corresponding to the default load
+    scenario specified in cases.csv are retrieved.
+    """
+    if case is None:
+        inputs_case = case
+        use_cache = False
+    else:
+        inputs_case = (
+            case
+            if 'inputs_case' in case
+            else os.path.join(case, 'inputs_case')
+        )
+        h5path = os.path.join(inputs_case, 'load.h5')
+        use_cache = os.path.exists(h5path)
+
+    if not use_cache:
+        sw = reeds.io.get_switches(inputs_case, **kwargs)
+        h5path = os.path.join(
+            reeds_path,
+            'inputs',
+            'load',
+            f'{sw.GSw_LoadProfiles}_load_hourly.h5'
+        )
+
+    try:
+        load_hourly = pd.concat(read_h5_groups(h5path, parse_timestamps=True))
+        load_hourly = load_hourly.set_index(
+            load_hourly.index.set_levels(
+                [int(i) for i in load_hourly.index.levels[0]],
+                level=0
+            )
+            .rename("year", level=0)
+        )
+    except ValueError:
+        load_hourly = read_file(h5path, parse_timestamps=True)
+
+    return load_hourly
+
+def get_historical_state_load_annual():
+    """
+    Get annual state loads for historical years.
+    """
+    return pd.read_csv(
+        os.path.join(reeds_path, 'inputs', 'load', 'EIA_loadbystate.csv')
+    )
 
 def get_years(case):
     return pd.read_csv(
@@ -943,7 +1129,8 @@ def get_pras_system(case, year=None, iteration='last', verbose=0):
 def get_available_capacity_weighted_cf(case, level='country'):
     """
     Get hourly wind and solar CF and take available-capacity-weighted-average across
-    specified region hierarchy level
+    specified region hierarchy level.
+    Convert PV from DC CF to AC CF.
     """
     hierarchy = reeds.io.get_hierarchy(case)
     if level in ['r', 'rb', 'ba']:
@@ -953,7 +1140,7 @@ def get_available_capacity_weighted_cf(case, level='country'):
     ## Get available capacity from supply curves
     sc = {
         i: pd.read_csv(
-            os.path.join(case, 'inputs_case', f'sc_{i}.csv')
+            os.path.join(case, 'inputs_case', f'supplycurve_{i}.csv')
         ).groupby(['region', 'class'], as_index=False).capacity.sum()
         for i in ['upv', 'wind-ons', 'wind-ofs']
     }
@@ -979,20 +1166,20 @@ def get_available_capacity_weighted_cf(case, level='country'):
         recapcf.groupby(['i','r'], axis=1).sum()
         / sc.groupby(['tech','aggreg']).capacity.sum().rename_axis(['i','r'])
     )
+    ## UPV is AC_out/DC_cap = CF_DC, so multiply by ILR to get CF_AC
+    scalars = reeds.io.get_scalars(case)
+    dfout['upv'] *= scalars.ilr_utility
+
     return dfout
 
 
 def get_sitemap(offshore=False, geo=True):
     """
     Get mapping from sc_point_gid to geographic points and counties.
-
-    NOTE 20250819 pbrown: The separate approach for land-based resources is TEMPORARY
-    until all the supply curves start using the new EPSG:5070 raster. At that point we'll
-    read from interconnection_land.h5 instead of from sitemap.h5.
     """
     fpath = os.path.join(
         reeds_path, 'inputs', 'supply_curve',
-        'interconnection_offshore.h5' if offshore else 'sitemap.h5'
+        'interconnection_offshore.h5' if offshore else 'interconnection_land.h5'
     )
     sitemap = read_h5_groups(fpath)[
         ['latitude', 'longitude', 'FIPS']
@@ -1013,8 +1200,13 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
 
     Returns: pd.DataFrame with sc_point_gid index
 
+    Notes:
+    - Does not adjust dollar years. Interconnection costs use the dollar year specified by the
+    'dollaryear' attribute in the interconnection cost file; capital adders use the tech-specific
+    dollar year from the supply curve data folder. If these don't match, supply_curve_cost_per_mw
+    will be ill-defined.
+
     Inputs for testing:
-    scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_csp-reference.csv')
     scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_upv-reference.csv')
     scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_wind-ofs-reference.csv')
     """
@@ -1033,16 +1225,6 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
         ('interconnection_offshore.h5' if offshore else 'interconnection_land.h5')
     )
     interconnection_cost = reeds.io.read_h5_groups(fpath_interconnection)
-    ## NOTE 20250819 pbrown: TEMPORARILY map from old reV sites to new reV sites
-    if not offshore:
-        old2new = pd.read_csv(
-            os.path.join(reeds_path, 'inputs', 'supply_curve', 'sc_point_gid_old2new.csv'),
-            index_col='sc_point_gid|old',
-        ).sc_point_gid
-        sitemap = get_sitemap(geo=False)
-        interconnection_cost = interconnection_cost.loc[old2new.values]
-        interconnection_cost.index = old2new.index.values
-        interconnection_cost['FIPS'] = interconnection_cost.index.map(sitemap.FIPS)
     if scfile is None:
         return interconnection_cost
 
@@ -1056,7 +1238,7 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
         else:
             dfin = dfin[['class', 'capacity', 'capital_adder_per_mw']].copy()
 
-    county2zone = reeds.inputs.get_county2zone(case if agg else None)
+    county2zone = reeds.io.get_county2zone(case if agg else None)
 
     ### Combine
     dfout = dfin.copy()
@@ -1082,10 +1264,13 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
             dfout['ba'] = dfout['region'].copy()
 
     ## Drop reinforcement cost for counties
-    agglevel_variables = reeds.spatial.get_agglevel_variables(
-        reeds_path, os.path.join(case, 'inputs_case')
-    )
-    counties = agglevel_variables['county_regions']
+    if case is not None:
+        agglevel_variables = reeds.spatial.get_agglevel_variables(
+            reeds_path, os.path.join(case, 'inputs_case')
+        )
+        counties = agglevel_variables['county_regions']
+    else:
+        counties = []
     if len(counties):
         zerocols = ['cost_reinforcement_usd_per_mw', 'dist_reinforcement_km']
         dfout.loc[dfout.region.isin(counties), zerocols] = 0
@@ -1135,7 +1320,7 @@ def assemble_exog_cap(exogpath, case=None):
     dfin = pd.read_csv(exogpath, index_col='sc_point_gid')
     offshore = True if 'wind-ofs' in os.path.basename(exogpath) else False
     sitemap = get_sitemap(offshore=offshore, geo=False)
-    county2zone = reeds.inputs.get_county2zone(case)
+    county2zone = reeds.io.get_county2zone(case)
     ## Add region column
     dfout = dfin.copy()
     dfout['region'] = dfin.index.map(sitemap.FIPS).map(county2zone)
@@ -1215,14 +1400,20 @@ def write_to_h5(
         ## Write data
         if len(dfwrite):
             for col in dfwrite:
-                dtype = (
-                    f"S{dfwrite[col].str.len().max()}"
-                    if dfwrite.dtypes[col] == 'O'
-                    else dfwrite.dtypes[col]
-                )
+                if col in ['datetime', 'timestamp']:
+                    dtype = 'S30'
+                    data = dfwrite[col].astype(str).str.encode('utf-8')
+                else:
+                    data = dfwrite[col]
+                    dtype = (
+                        f"S{data.str.len().max()}"
+                        if dfwrite.dtypes[col] == 'O'
+                        else dfwrite.dtypes[col]
+                    )
+
                 group.create_dataset(
                     col,
-                    data=dfwrite[col],
+                    data=data,
                     dtype=dtype,
                     compression=compression,
                     compression_opts=compression_opts,

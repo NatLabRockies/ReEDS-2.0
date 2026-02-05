@@ -75,6 +75,7 @@ def run_pras(
         f"--samples={sw['pras_samples']}",
         f"--overwrite={int(overwrite)}",
         f"--include_samples={int(include_samples)}",
+        f"--scheduled_outage={sw['pras_scheduled_outage']}",
         f"--pras_agg_ogs_lfillgas={int(sw['pras_agg_ogs_lfillgas'])}",
         f"--pras_existing_unit_size={int(sw['pras_existing_unit_size'])}",
         f"--pras_max_unitsize_prm={int(sw.get('pras_max_unitsize_prm',1))}",
@@ -158,6 +159,7 @@ def main(t, tnext, casedir, iteration=0):
             iteration=iteration,
             write_flow=(True if t == max(solveyears) else False),
             write_energy=True,
+            write_shortfall_samples=(True if int(sw.GSw_PRM_StressUpdate) > 1 else False),
         )
         if result.returncode:
             raise Exception(

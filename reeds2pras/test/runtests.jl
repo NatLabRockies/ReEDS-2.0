@@ -1,27 +1,38 @@
-using Revise
-
 using ReEDS2PRAS
-using PRAS
-using CSV
-using DataFrames
-using Dates
-using HDF5
-using Statistics
-using Test
-using TimeZones
-
 using BenchmarkTools
+using Aqua
+using DataFrames
+using PRAS
+using Test
 
-rootfile = @__FILE__
+const R2P = ReEDS2PRAS
+include("utils.jl")
 
-include("testutils.jl")
-
-if length(ARGS) == 0
-    required_tests = ["ReEDS2PRAS"]
-else
-    required_tests = ARGS
+@testset verbose = true "Aqua.jl" begin
+    Aqua.test_unbound_args(ReEDS2PRAS)
+    Aqua.test_undefined_exports(ReEDS2PRAS)
+    Aqua.test_ambiguities(ReEDS2PRAS)
+    Aqua.test_stale_deps(ReEDS2PRAS)
+    Aqua.test_deps_compat(ReEDS2PRAS)
 end
 
-for test_name in required_tests
-    include("test_$(test_name).jl")
+#=
+Don't add your tests to runtests.jl. Instead, create files named
+
+    test-title-for-my-test.jl
+
+The file will be automatically included inside a `@testset` with title "Title For My Test".
+=#
+@testset verbose = true "ReEDS2PRAS tests" begin
+    for (root, dirs, files) in walkdir(@__DIR__)
+        for file in files
+            if isnothing(match(r"^test.*\.jl$", file))
+                continue
+            end
+            title = titlecase(replace(splitext(file[6:end])[1], "-" => " "))
+            @testset verbose = true  "$title" begin
+                include(file)
+            end
+        end
+    end
 end

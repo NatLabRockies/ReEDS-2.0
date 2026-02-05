@@ -17,6 +17,7 @@
 #       -p standard,plexos
 
 import pandas as pd
+import geopandas as gpd
 import numpy as np
 import os
 import sys
@@ -419,14 +420,9 @@ def main(raw_args=None):
     # Read in regional mapping table as well as WKT line geometries:	
     region_mapping = get_region_mapping(reeds_path)	
     line_geometries = pd.read_csv(Path(reeds_path,'inputs','shapefiles','r_rr_lines_to_25_nearest_neighbors.csv')) #includes lines for 25 nearest neighbors--could include all but tabke would be 40k rows
-    cs_geometries = pd.read_csv(Path(reeds_path,'inputs','shapefiles','ctus_cs_polygons_BVRE.csv')) #storage formation polygons
-    cs_geometries = cs_geometries[['Formation','Formation Deposition','Formation Depth (ft)','Formation Thickness (ft)','Formation Basin','Formation Lithology','Formation CO2 Storage Capacity (MMT CO2)','Formation Centroid State','Formation Polygon Geometry']]
-    r_cs_spurline_geometries = pd.read_csv(Path(reeds_path,'inputs','shapefiles','ctus_r_cs_spurlines_200mi.csv')) #includes lines for 25 nearest neighbors--could include all but tabke would be 40k rows
-    r_cs_spurline_geometries['distance_m'] = r_cs_spurline_geometries['distance_m'] * 0.000621371 #m to mi
-    r_cs_spurline_geometries = r_cs_spurline_geometries.rename(columns={'WKT':'Spur Line Geometry',
-                                                                        'ba_str':'r',
-                                                                        'FmnID':'cs',
-                                                                        'distance_m':'Spur Line Length (mi)'})
+    cs_geometries = gpd.read_file(Path(reeds_path,'inputs','shapefiles','ctus_cs_polygons_BVRE.gpkg')) #storage formation polygons
+    cs_geometries['Formation Polygon Geometry'] = cs_geometries['geometry'].to_crs('EPSG:4326')
+    cs_geometries = cs_geometries[['cs','Formation Deposition','Formation Depth (ft)','Formation Thickness (ft)','Formation Basin','Formation Lithology','Formation CO2 Storage Capacity (MMT CO2)','Formation Centroid State','Formation Polygon Geometry']]
 
     # Read in table containing list of included csvs to get label values for each csv:
     csv_list = pd.read_csv(Path(reeds_path,'postprocessing','tableau','tables_to_aggregate.csv'))
@@ -671,8 +667,19 @@ def main(raw_args=None):
                     # Set the column definitions here rather than below, where all columns are assumed to be of type double.
                     this_col_def = [TableDefinition.Column(column_types[this_csv][0] + " Geometry", SqlType.geography(), NULLABLE)]
                 elif this_csv == 'ctus_r_cs_mapping':
-                    # Read in CO2 spur line geometry table:
-                    this_df = r_cs_spurline_geometries
+                    this_df_list = []
+                    for this_scenario in scenarios:
+                        # Read in CO2 spur line geometry table:
+                        r_cs_spurline_geometries = pd.read_csv(Path(runs_dir) / this_scenario / 'inputs_case' / 'ctus_r_cs_spurlines_200mi.csv') #includes lines for 25 nearest neighbors--could include all but tabke would be 40k rows
+                        r_cs_spurline_geometries['distance_m'] = r_cs_spurline_geometries['distance_m'] * 0.000621371 #m to mi
+                        r_cs_spurline_geometries = r_cs_spurline_geometries.rename(columns={'WKT':'Spur Line Geometry',
+                                                                                            'ba_str':'r',
+                                                                                            'FmnID':'cs',
+                                                                                            'distance_m':'Spur Line Length (mi)'})
+                        this_scen_df = r_cs_spurline_geometries
+                        this_scen_df.insert(0, 'scenario', this_scenario)
+                        this_df_list.append(this_scen_df)
+                    this_df = pd.concat(this_df_list)
                     this_col_list = [ x for x in this_df.columns if x not in pivot_info['id_columns'] ]
                     # Set the column definitions here rather than below, where all columns are assumed to be of type double.
                     this_col_def = [ TableDefinition.Column(col, SqlType.text(), NULLABLE) for col in this_col_list if col not in ['Spur Line Geometry']]
@@ -680,7 +687,6 @@ def main(raw_args=None):
                 elif this_csv == 'ctus_cs_mapping':
                     # Read in CO2 storage formation geometry table:
                     this_df = cs_geometries
-                    this_df = this_df.rename(columns={'Formation':'cs'})
                     this_col_list = [ x for x in this_df.columns if x not in pivot_info['id_columns'] ]
                     # Set the column definitions here rather than below, where all columns are assumed to be of type double.
                     this_col_def = [ TableDefinition.Column(col, SqlType.text(), NULLABLE) for col in this_col_list if col not in ['Formation Polygon Geometry']]

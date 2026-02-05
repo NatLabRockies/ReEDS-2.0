@@ -12,7 +12,6 @@
     "profile_file_format": "" ,
     "profile_id_col": "sc_point_gid",
     "profile_weight_col": "capacity",
-    "rev_jsons": ["config_aggregation.json", "config_batch.json", "config_collect.json", "config_gen.json","config_pipeline.json","config_supply-curve.json"],
     "single_profile": null,
     "upv_type": null,
     "geo_run_supply_curve_aggregation": true,

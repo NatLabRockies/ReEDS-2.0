@@ -5,10 +5,10 @@ input_processing/calc_financial_inputs.py,#6B6ECF
 input_processing/fuelcostprep.py,#9C9EDE
 input_processing/writecapdat.py,#637939
 input_processing/writesupplycurves.py,#8CA252
-input_processing/writedrshift.py,#B5CF6B
-input_processing/plantcostprep.py,#CEDB9C
-input_processing/climateprep.py,#8C6D31
-input_processing/ldc_prep.py,#BD9E39
+input_processing/plantcostprep.py,#B5CF6B
+input_processing/climateprep.py,#CEDB9C
+input_processing/hourly_load.py,#8C6D31
+input_processing/recf.py,#BD9E39
 input_processing/forecast.py,#E7BA52
 input_processing/writehintage.py,#E7CB94
 input_processing/transmission.py,#7B4173

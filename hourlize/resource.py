@@ -17,6 +17,7 @@ import pandas as pd
 import pytz
 import shutil
 import site
+import sys
 from collections import OrderedDict
 from types import SimpleNamespace
 from glob import glob
@@ -66,7 +67,7 @@ def aggregate_supply_curves_by_lowest_lcoe(rev_cases_path, rev_sc_file_path):
     
     df_sc_agg = pd.concat(sc_list)
     df_sc_lowest_lcoe = (
-        df_sc_agg.sort_values(["total_lcoe", "mean_lcoe"], ascending=True)
+        df_sc_agg.sort_values(["lcoe_all_in_usd_per_mwh", "lcoe_site_usd_per_mwh"], ascending=True)
         .groupby(["sc_point_gid"], as_index=False)
         .first()
         .reset_index(drop=True)
@@ -103,9 +104,25 @@ def match_to_counties(sc, profile_id_col, outpath, tech, offshore_meshed=False):
     assert sitemap.index.name == 'sc_point_gid', 'sitemap index must be sc_point_gid'
     dfout = sc.copy()
     dfout['FIPS'] = dfout['sc_point_gid'].map(sitemap.FIPS)
+    ## Check for missing counties
+    missing_counties = dfout['FIPS'].isnull()
+    ## Confirmed with Gabe 20250911: The interconnection_land table only has sites with
+    ## offshore_flag = False, and we should drop land-based sites from the supply curve
+    ## with offshore_flag = True (i.e., sites that are not in the interconnection cost
+    ## table, which produces the sitemap used here.) There should only be a small number
+    ## of edge sites in the land-based supply curves that are flagged as offshore, so
+    ## as long as it's less than 2% of the total number of sites, just drop them.
+    if missing_counties.sum() / len(dfout) > 0.02:
+        print(dfout.loc[missing_counties].set_index('sc_point_gid'))
+        if missing_counties.sum() <= 1000:
+            print('Missing sc_point_gids:')
+            print('\n'.join(dfout.loc[missing_counties, 'sc_point_gid'].astype(str).values))
+        raise IndexError(f'Missing FIPS for {missing_counties.sum()} sites')
+    else:
+        dfout = dfout.loc[~missing_counties].copy()
+    ## geohydro has some weird off-grid sc_point_gid sites,
+    ## which we drop because they'll cause issues with interconnection cost
     if tech == 'geohydro':
-        ## geohydro has some weird off-grid sc_point_gid sites,
-        ## which we drop because they'll cause issues with interconnection cost
         dfout = dfout.dropna(subset='FIPS')
     ## Get state
     state_fips_codes = pd.read_csv(
@@ -126,19 +143,25 @@ def match_to_counties(sc, profile_id_col, outpath, tech, offshore_meshed=False):
         ba2state = ba2st.map(st2state)
         dfout['STATE'] = dfout.STATE.map(lambda x: ba2state.get(x,x))
 
-    ## Check if any regional info is missing
-    missing_counties = dfout['FIPS'].isnull()
+    ## Check if any states are missing
     missing_states = dfout['STATE'].isnull()
-    if missing_counties.sum() or missing_states.sum():
-        print(dfout.loc[missing_counties | missing_states])
-        err = f"Missing FIPS for {missing_counties.sum()} sites and missing states for {missing_states.sum()} sites"
+    if missing_states.sum():
+        print(dfout.loc[missing_states])
+        err = f"Missing states for {missing_states.sum()} sites"
         raise ValueError(err)
     assert dfout.STATE.isin(fips2state.values).all(), 'Mismatched states'
 
     return dfout
 
 
-def add_land_fom(sc, tech, profile_id_col, hourlize_path, reeds_path, crf_year=2050):
+def add_land_fom(
+    sc : pd.DataFrame,
+    tech: str,
+    profile_id_col: str,
+    reeds_path: str,
+    crf_year: int =2050,
+    fmv_column: str ='fair_market_private_lands_value',
+) -> pd.DataFrame:
     """adds capital cost to supply curve that serves as a proxy for land lease costs
 
     Parameters
@@ -147,8 +170,6 @@ def add_land_fom(sc, tech, profile_id_col, hourlize_path, reeds_path, crf_year=2
         pandas dataframe of supply curve
     tech
         technology being processed
-    hourlize_path
-        path to hourlize directory
     reeds_path
         path to ReEDS directory
     crf_year, optional
@@ -201,23 +222,18 @@ def add_land_fom(sc, tech, profile_id_col, hourlize_path, reeds_path, crf_year=2
 
     ## fair market values
 
-    # read in updated fair market values from the reV team
-    fmv = pd.read_csv(os.path.join(hourlize_path, "inputs", "resource", "fair_market_value.csv"))
-
     # get median land cost
-    fmv_med = fmv.places_fmv_all_rev.median()
-
-    # drop any pre-existing land value columns (any original data was in log scale
-    # but not corrected so should be replaced)
-    sc = sc.drop(['places_fmv_all_rev'],axis=1,errors='ignore')
-
-    # merge in updated land costs
-    sc = sc.merge(fmv[[profile_id_col,'places_fmv_all_rev']], on=profile_id_col, how='left' )
+    fmv_med = sc[fmv_column].median()
 
     # calculate land cost adder ($/MW). this is computed by taking the difference in normalized land cost,
     # multiplying by the typical land cost FO&M related, and then using the CRF to convert to capital cost
     # PV land FOM cost is originally in units of $/kW-DC, so convert to $/kw-AC by multiplying by the ILR here.
-    sc['land_cap_adder_per_mw'] = (sc['places_fmv_all_rev'] - fmv_med)/fmv_med * (LEASE_FOM[tech] * 1e3 / crf ) * sc['ilr']
+    sc['land_cap_adder_per_mw'] = (
+        (sc[fmv_column] - fmv_med)
+        / fmv_med
+        * (LEASE_FOM[tech] * 1e3 / crf )
+        * sc['ilr']
+    )
 
     # check number of rows is the same
     assert sc.shape[0] == sc.shape[0], 'Updated data does not have the same number of rows as incoming data'
@@ -368,7 +384,7 @@ def get_supply_curve_and_preprocess(tech, original_sc_file, reeds_path, hourlize
     )
 
     # add land cost using fair market value information from reV
-    df = add_land_fom(df, tech, profile_id_col, hourlize_path, reeds_path)
+    df = add_land_fom(df, tech, profile_id_col, reeds_path)
 
     # handle any missing columns
     df = adjust_rev_cols(tech, df, hourlize_path)
@@ -559,8 +575,10 @@ def add_cost(df_sc, tech):
         # first term computes the combined eos and regional multiplier by subtracting the
         # 'base' costs (without the multipliers) from the 'full' site costs (with the
         # multipliers); second term adds in the land capital cost adder to the eos/regional adders.
+        costlabel = 'occ' if 'cost_site_occ_usd_per_ac_mw' in df_sc else 'cc'
         df_sc['capital_adder_per_mw'] = (
-            (df_sc['cost_site_occ_usd_per_ac_mw'] - df_sc['cost_base_occ_usd_per_ac_mw'])
+            df_sc[f'cost_site_{costlabel}_usd_per_ac_mw']
+            - df_sc[f'cost_base_{costlabel}_usd_per_ac_mw']
             + df_sc['land_cap_adder_per_mw']
         )
     elif tech == 'wind-ofs':

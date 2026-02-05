@@ -17,9 +17,16 @@ CoalOldUns,0
 CofireNew,0
 CofireOld,0
 Gas-CC,0
+Gas-CC_H_1x1,0
+Gas-CC_H_2x1,0
 Gas-CC-CCS_mod,0
 Gas-CC-CCS_max,0
+Gas-CC_H_1x1-CCS_mod,0
+Gas-CC_H_1x1-CCS_max,0
+Gas-CC_H_2x1-CCS_mod,0
+Gas-CC_H_2x1-CCS_max,0
 Gas-CT,0
+Gas-CT_aero,0
 H2-CT,0
 H2-CC,0
 geothermal,0
