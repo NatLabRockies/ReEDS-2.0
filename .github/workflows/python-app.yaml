@@ -74,26 +74,26 @@ jobs:
           fetch-depth: 1
           lfs: false
 
-      - name: Build LFS manifest
-        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+      # - name: Build LFS manifest
+      #   run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-      - name: Restore LFS cache
-        id: lfs-restore
-        uses: actions/cache/restore@v4
-        with: 
-          path: .git/lfs
-          key: lfs-${{ runner.os }}-${{ hashFiles('.lfs-assets-id') }}-v1
-          restore-keys: lfs-${{ runner.os }}-
+      # - name: Restore LFS cache
+      #   id: lfs-restore
+      #   uses: actions/cache/restore@v4
+      #   with: 
+      #     path: .git/lfs
+      #     key: lfs-${{ runner.os }}-${{ hashFiles('.lfs-assets-id') }}-v1
+      #     restore-keys: lfs-${{ runner.os }}-
 
-      - name: Pull missing LFS blobs
-        run: git lfs pull
+      # - name: Pull missing LFS blobs
+      #   run: git lfs pull
 
-      - name: Save the updated LFS cache
-        if: steps.lfs-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: .git/lfs
-          key: ${{ steps.lfs-restore.outputs.cache-primary-key }}
+      # - name: Save the updated LFS cache
+      #   if: steps.lfs-restore.outputs.cache-hit != 'true'
+      #   uses: actions/cache/save@v4
+      #   with:
+      #     path: .git/lfs
+      #     key: ${{ steps.lfs-restore.outputs.cache-primary-key }}
 
       - uses: mamba-org/setup-micromamba@v1
         id: mamba
