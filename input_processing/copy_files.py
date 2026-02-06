@@ -1497,10 +1497,27 @@ def write_miscellaneous_files(
                 ][0:len(sw['GSw_PVB_Types'].split('_'))]}
     ).to_csv(os.path.join(inputs_case, 'pvb_bir.csv'), index=False)
 
+    nuclear_types = [t for t in sw['GSw_NuclearStor_Types'].split('_') if t]
+    n_nuclear_types = len(nuclear_types)
+
+    def _expand_to_len(values, n, label):
+        values = [v for v in values if v != '']
+        if len(values) == 1 and n > 1:
+            values = values * n
+        if len(values) < n:
+            raise ValueError(
+                f"{label} must have 1 value or {n} values (to match GSw_NuclearStor_Types={sw['GSw_NuclearStor_Types']})"
+            )
+        return values[:n]
+
+    nuclear_bcrs = _expand_to_len(sw['GSw_NuclearStor_BCR'].split('_'), n_nuclear_types, 'GSw_NuclearStor_BCR')
+    nuclear_storage_techs = _expand_to_len(sw['GSw_NuclearStor_StorageTechs'].split('_'), n_nuclear_types, 'GSw_NuclearStor_StorageTechs')
+
     pd.DataFrame(
-        {'*nuclear-stor_type': [f'nuclear-stor{i}' for i in sw['GSw_NuclearStor_Types'].split('_')],
-        'storagetechs': [c.replace('-', '_') for c in sw['GSw_NuclearStor_BCR'].split('_')
-                ][0:len(sw['GSw_NuclearStor_Types'].split('_'))]}
+        {
+            '*nuclear-stor_type': [f'nuclear-stor{i}' for i in nuclear_types],
+            'bcr': [float(c) for c in nuclear_bcrs],
+        }
     ).to_csv(os.path.join(inputs_case, 'nuclear_stor_bcr.csv'), index=False)
 
     pd.DataFrame(
@@ -1510,9 +1527,10 @@ def write_miscellaneous_files(
     ).to_csv(os.path.join(inputs_case, 'nuclear_stor_gridcharging.csv'), index=False)
     
     pd.DataFrame(
-        {'*nuclear-stor_type': [f'nuclear-stor{i}' for i in sw['GSw_NuclearStor_Types'].split('_')],
-        'storagetechs': [c.replace('-', '_') for c in sw['GSw_NuclearStor_StorageTechs'].split('_')
-                ][0:len(sw['GSw_NuclearStor_Types'].split('_'))]}
+        {
+            '*nuclear-stor_type': [f'nuclear-stor{i}' for i in nuclear_types],
+            'storage_type': [c.replace('-', '_') for c in nuclear_storage_techs],
+        }
     ).to_csv(os.path.join(inputs_case, 'nuclear_stor_storagetechs.csv'), index=False)
 
     # Constant value if input is float, otherwise named profile

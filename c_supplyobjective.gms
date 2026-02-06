@@ -236,7 +236,9 @@ eq_Objfn_op(t)$tmodel(t)..
               + sum{(i,v,r,h)$[valgen(i,v,r,t)$heat_rate(i,v,r,t)
                              $(not gas(i))$(not bio(i))$(not cofire(i))
                              $((not h2_combustion(i)) or h2_combustion(i)$[(Sw_H2=0) or h_stress(h)])],
-                   hours(h) * heat_rate(i,v,r,t) * fuel_price(i,r,t) * GEN(i,v,r,h,t) }
+                                              hours(h) * heat_rate(i,v,r,t) * fuel_price(i,r,t)
+                                              * ( GEN(i,v,r,h,t)$(not nuclear_stor(i))
+                                                   + GEN_PLANT(i,v,r,h,t)$nuclear_stor(i) ) }
 
 * --- startup/ramping costs
               + sum{(i,r,h,hh)$[Sw_StartCost$startcost(i)$numhours_nexth(h,hh)$valgen_irt(i,r,t)],

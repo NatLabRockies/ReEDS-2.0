@@ -81,14 +81,24 @@ def calc_financial_inputs(inputs_case):
     annual_degrade = reeds.financials.append_pvb_parameters(
         dfin=annual_degrade, 
         tech_to_copy='battery_li')
-    
-    for nukestoretype, storage_tech in enumerate(scen_settings.sw['GSw_NuclearStor_StorageTechs'].split('_')):
+
+    nuclear_types = [int(x) for x in scen_settings.sw['GSw_NuclearStor_Types'].split('_') if x]
+    storage_techs = [x for x in scen_settings.sw['GSw_NuclearStor_StorageTechs'].split('_') if x]
+    if len(storage_techs) == 1 and len(nuclear_types) > 1:
+        storage_techs = storage_techs * len(nuclear_types)
+    if len(storage_techs) != len(nuclear_types):
+        raise ValueError(
+            "GSw_NuclearStor_StorageTechs must have 1 value or the same number of values as "
+            f"GSw_NuclearStor_Types (types={scen_settings.sw['GSw_NuclearStor_Types']}, storageTechs={scen_settings.sw['GSw_NuclearStor_StorageTechs']})"
+        )
+
+    for nuclear_type, storage_tech in zip(nuclear_types, storage_techs):
         storage_tech = storage_tech.replace('-', '_')
         annual_degrade = reeds.financials.append_nuclear_stor_parameters(
-            dfin=annual_degrade, 
+            dfin=annual_degrade,
             tech_to_copy=storage_tech,
-            nuclear_storage_types=[nukestoretype]
-            )
+            nuclear_storage_types=[nuclear_type],
+        )
 
     years, modeled_years, year_map = reeds.financials.ingest_years(
         inputs_case, sw['sys_eval_years'], sw['endyear'])
