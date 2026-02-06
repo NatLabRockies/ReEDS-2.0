@@ -3917,6 +3917,16 @@ $offdelim
 $onlisting
 / ;
 
+
+parameter heater_char(i,allt,plantcat) "--units vary-- input plant characteristics"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%heaterchar.csv
+$offdelim
+$onlisting
+/ ;
+
 parameter
   winter_cap_ratio(i,v,r) "--scalar-- ratio of winter capacity to summer capacity"
   winter_cap_frac_delta(i,v,r) "--scalar-- fractional change in winter compared to summer capacity"
@@ -4391,6 +4401,15 @@ $onlisting
 
 bcr(i)$nuclear_stor(i) = bcr_nuclear_stor_config(i) ;
 
+parameter gridcharge_nuclear_stor_config(i) "--unitless-- ratio of grid charging capacity to nuclear capacity for each hybrid nuclear+storage configuration"
+/
+$offlisting
+$ondelim
+$include inputs_case%ds%nuclear_stor_gridcharge.csv
+$offdelim
+$onlisting
+/ ;
+
 *=========================================
 * --- Capital costs ---
 *=========================================
@@ -4622,7 +4641,8 @@ cost_fom_nuclear_stor_p(i,v,r,t)$nuclear_stor(i) = plant_char("Nuclear-Stor1",v,
 parameter cost_fom_nuclear_stor_s(i,v,r,t) "--2004$/MW-- fixed OM for storage portion of hybrid nuclear+storage" ;
 cost_fom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom')};
 
-cost_fom(i,v,r,t)$nuclear_stor(i) = cost_fom_nuclear_stor_p(i,v,r,t) + cost_fom_nuclear_stor_s(i,v,r,t) ;
+cost_fom(i,v,r,t)$nuclear_stor(i) = (cost_fom_nuclear_stor_p(i,v,r,t) + bcr(i) * cost_fom_nuclear_stor_s(i,v,r,t)
+                                      + (gridcharge_nuclear_stor_config(i) * heater_char(i,v,t,'fom'))$heater_char(i,v,t,'fom') ) / (1 - gridcharge_nuclear_stor_config(i) * heater_char(i,v,t,'rte')) ;
 
 cost_fom_energy(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom_energy')};
 
@@ -5949,13 +5969,14 @@ resourcescaler(i)$csp(i) = CSP_SM(i) / csp_sm_baseline ;
 
 * --- Hybrid Nuclear+Storage ---
 
-table nuclearstorcapmult(allt,i) "Nuclear+Storage capital cost multipliers over time"
-$offlisting
-$ondelim
-$include inputs_case%ds%nuclearstorcapcostmult.csv
-$offdelim
-$onlisting
-;
+* table nuclearstorcapmult(allt,i) "Nuclear+Storage capital cost multipliers over time"
+* $offlisting
+* $ondelim
+* $include inputs_case%ds%nuclearstorcapcostmult.csv
+* $offdelim
+* $onlisting
+* ;
+
 
 * the capital cost for nuclear_stor includes both the nuclear and storage portions
 * total cost = cost(nuclear) * cap(nuclear) + cost(stor) * cap(stor)
@@ -5963,7 +5984,8 @@ $onlisting
 *            = [cost(nuclear) + cost(stor) * bcr ] * cap(nuclear)
 cost_cap(i,t)$nuclear_stor(i) = (cost_cap_nuclear_stor_p(i,t) - turbine_generator_cost - electrical_cost 
                                  + bcr(i) * (cost_cap_nuclear_stor_s(i,t)-tes_ms_power_cycle)
-                                 +(1 + bcr(i)) * (turbine_generator_cost + electrical_cost));
+                                 + (1 + bcr(i)) * (turbine_generator_cost + electrical_cost)
+                                 + (gridcharge_nuclear_stor_config(i) * heater_char(i,t,"capcost"))$heater_char(i,t,"capcost"));
 
 * --- Storage Duration ---
 

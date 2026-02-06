@@ -4607,6 +4607,355 @@ def plot_storage_hybrid_dispatch_yearbymonth(
     return f, ax, dfplot
 
 
+def plot_interday_yearbymonth(
+    case,
+    t=2050,
+    periodtype='rep',
+    techs=None,
+    region=None,
+    net=False,
+    highlight_rep_periods=1,
+    f=None,
+    ax=None,
+    figsize=(12, 6),
+    legend=False,
+):
+    """Plot inter-day storage level in a year-by-month layout.
+
+    Inter-day storage technologies (STORAGE_INTERDAY) do not have an hourly `stor_level`
+    output analogous to short-duration storage. Instead, their stored energy level is
+    reported in `outputs/stor_interday_level.csv` (MWh) and their net change is reported
+    in `outputs/stor_interday_dispatch.csv` (MW). This function reconstructs an hourly
+    time series using the representative-period mapping files in `inputs_case/<periodtype>`
+    and then plots it in the same 12-panel format used by other `*yearbymonth` plotters.
+
+    Parameters
+    ----------
+    case : str
+        Path to a ReEDS case directory.
+    t : int
+        Modeled year to plot.
+    periodtype : str
+        Typically 'rep'. Uses mapping files from `inputs_case/<periodtype>`.
+    techs : None | list[str] | str
+        Technology subset. Matching is case-insensitive and uses a cleaned tech name
+        (e.g. 'Nuclear-Stor1' -> 'nuclear-stor').
+    region : None | str
+        Region filter, formatted like other plotting functions:
+        '{level}/{.-delimited regions}' where level is a hierarchy column or 'r'.
+        If the interday output is already at the requested level (e.g. r == 'WY'), the
+        function will filter directly on those region labels.
+    net : bool
+        Whether to overlay a net (sum) line.
+    highlight_rep_periods : bool
+        Whether to shade representative periods using `period_szn.csv` (if available).
+
+    Returns
+    -------
+    (fig, ax, dfplot)
+        fig : matplotlib.figure.Figure
+        ax : array-like of axes (length 12)
+        dfplot : pandas.DataFrame
+            Cumulative-sum dataframe used for plotting (index is datetime).
+    """
+
+    inputs_path = os.path.join(case, 'inputs_case', periodtype)
+    sw = reeds.io.get_switches(case)
+    hierarchy = reeds.io.get_hierarchy(case)
+
+    tech_style = pd.read_csv(
+        os.path.join(reeds_path, 'postprocessing', 'bokehpivot', 'in', 'reeds2', 'tech_style.csv'),
+        index_col='order',
+    ).squeeze(1)
+
+    # --- Load outputs ---
+    level_path = os.path.join(case, 'outputs', 'stor_interday_level.csv')
+    dispatch_path = os.path.join(case, 'outputs', 'stor_interday_dispatch.csv')
+    if (not os.path.exists(level_path)) or (not os.path.exists(dispatch_path)):
+        print('Missing interday storage outputs:', level_path, dispatch_path)
+        return None, None, None
+
+    stor_interday_level = pd.read_csv(level_path)
+    stor_interday_dispatch = pd.read_csv(dispatch_path)
+
+    # Mapping files for reconstructing an hourly series
+    h_actualszn = pd.read_csv(os.path.join(inputs_path, 'h_actualszn.csv'))
+    numpartitions = pd.read_csv(os.path.join(inputs_path, 'numpartitions.csv'))
+    timestamps = pd.read_csv(os.path.join(inputs_path, 'timestamps.csv'))
+
+    # Normalize column names
+    # level file
+    stor_interday_level = stor_interday_level.rename(columns={
+        'actual_period': 'allszn',
+        '*actual_period': 'allszn',
+        'Value': 'interday_level',
+        'value': 'interday_level',
+        '*r': 'r',
+        'ba': 'r',
+        '*ba': 'r',
+    })
+    # dispatch file
+    stor_interday_dispatch = stor_interday_dispatch.rename(columns={
+        '*h': 'allh',
+        'h': 'allh',
+        'Value': 'net_day_change_mw',
+        'value': 'net_day_change_mw',
+        '*r': 'r',
+        'ba': 'r',
+        '*ba': 'r',
+    })
+    # mapping files
+    h_actualszn = h_actualszn.rename(columns={
+        'actual_period': 'allszn',
+        '*actual_period': 'allszn',
+        '*h': 'allh',
+        'h': 'allh',
+    })
+    numpartitions = numpartitions.rename(columns={
+        'actual_period': 'allszn',
+        '*actual_period': 'allszn',
+        'partition_count': 'Value',
+    })
+
+    required_cols = {
+        'level': {'i', 'r', 't', 'allszn', 'interday_level'},
+        'dispatch': {'i', 'r', 't', 'allh', 'net_day_change_mw'},
+        'h_actualszn': {'allszn', 'allh'},
+        'timestamps': {'h_of_year', 'timestamp'},
+    }
+    if not required_cols['level'].issubset(stor_interday_level.columns):
+        raise KeyError(f"stor_interday_level.csv missing columns: {required_cols['level'] - set(stor_interday_level.columns)}")
+    if not required_cols['dispatch'].issubset(stor_interday_dispatch.columns):
+        raise KeyError(f"stor_interday_dispatch.csv missing columns: {required_cols['dispatch'] - set(stor_interday_dispatch.columns)}")
+    if not required_cols['h_actualszn'].issubset(h_actualszn.columns):
+        raise KeyError(f"h_actualszn.csv missing columns: {required_cols['h_actualszn'] - set(h_actualszn.columns)}")
+    if not required_cols['timestamps'].issubset(timestamps.columns):
+        raise KeyError(f"timestamps.csv missing columns: {required_cols['timestamps'] - set(timestamps.columns)}")
+
+    # Filter year
+    stor_interday_level = stor_interday_level.loc[stor_interday_level.t.astype(int) == int(t)].copy()
+    stor_interday_dispatch = stor_interday_dispatch.loc[stor_interday_dispatch.t.astype(int) == int(t)].copy()
+    if stor_interday_level.empty or stor_interday_dispatch.empty:
+        print(f'No interday storage data to plot for t={t}')
+        return None, None, None
+
+    # Clean tech labels (e.g. Nuclear-Stor1 -> nuclear-stor)
+    def _clean_tech(x: str) -> str:
+        x = str(x).strip()
+        x = x.strip('_01234567890*')
+        return x.lower()
+
+    stor_interday_level['i_clean'] = stor_interday_level['i'].map(_clean_tech)
+    stor_interday_dispatch['i_clean'] = stor_interday_dispatch['i'].map(_clean_tech)
+
+    # Tech subset
+    if techs is not None:
+        if isinstance(techs, (list, tuple, set, np.ndarray, pd.Series)):
+            keep_tech = {_clean_tech(x) for x in techs}
+        else:
+            keep_tech = {_clean_tech(techs)}
+        stor_interday_level = stor_interday_level.loc[stor_interday_level.i_clean.isin(keep_tech)].copy()
+        stor_interday_dispatch = stor_interday_dispatch.loc[stor_interday_dispatch.i_clean.isin(keep_tech)].copy()
+        if stor_interday_level.empty or stor_interday_dispatch.empty:
+            print(f'No matching interday techs to plot for t={t}: {techs}')
+            return None, None, None
+
+    # Region filtering (support hierarchy-style input, but also tolerate outputs already at that level)
+    keep_r = None
+    if region is not None:
+        region_str = str(region).strip()
+        if '/' not in region_str:
+            region_str = f'r/{region_str}'
+        level = region_str.split('/')[0]
+        regions = [r for r in region_str.split('/')[1].split('.') if r]
+
+        # Default keep_r based on hierarchy mapping
+        if level == 'r':
+            keep_r = regions
+        else:
+            if level not in hierarchy.columns.tolist():
+                raise ValueError(
+                    f"region must be formatted as level/region1.region2, where level is 'r' or one of {hierarchy.columns.tolist()}. "
+                    f"Got: {region}"
+                )
+            keep_r = hierarchy.loc[hierarchy[level].isin(regions)].index.astype(str).tolist()
+
+        # If the output r values are already at the requested level (e.g. 'WY'), filter directly.
+        r_unique = set(stor_interday_level.r.astype(str).unique())
+        if any(r in r_unique for r in regions):
+            keep_r = regions
+
+        stor_interday_level = stor_interday_level.loc[stor_interday_level.r.astype(str).isin(keep_r)].copy()
+        stor_interday_dispatch = stor_interday_dispatch.loc[stor_interday_dispatch.r.astype(str).isin(keep_r)].copy()
+        if stor_interday_level.empty or stor_interday_dispatch.empty:
+            print(f'No interday data after region filter: {region}')
+            return None, None, None
+
+    # Aggregate over v (and any other extra columns) before reconstruction
+    level_agg = (
+        stor_interday_level
+        .groupby(['i_clean', 'r', 'allszn'], as_index=False)['interday_level']
+        .sum()
+    )
+    dispatch_agg = (
+        stor_interday_dispatch
+        .groupby(['i_clean', 'r', 'allh'], as_index=False)['net_day_change_mw']
+        .sum()
+    )
+
+    # Convert dispatch from MW to MWh per chunk
+    GSw_HourlyChunkLength = int(sw.get('GSw_HourlyChunkLengthRep', 1))
+    dispatch_agg['net_day_change'] = dispatch_agg['net_day_change_mw'] * GSw_HourlyChunkLength
+
+    actualszn = h_actualszn[['allszn']].drop_duplicates().sort_values('allszn').reset_index(drop=True)
+
+    # Reconstruct hourly series for each (tech, region)
+    frames = []
+    for (i_clean, r_val) in level_agg[['i_clean', 'r']].drop_duplicates().itertuples(index=False):
+        filtered_level = level_agg.query('r == @r_val & i_clean == @i_clean').reset_index(drop=True)
+        filtered_dispatch = dispatch_agg.query('r == @r_val & i_clean == @i_clean').reset_index(drop=True)
+
+        data = (
+            actualszn
+            .merge(filtered_level, on='allszn', how='left')
+            .merge(numpartitions, on='allszn', how='left')
+            .merge(h_actualszn, on='allszn', how='left')
+            .merge(filtered_dispatch[['allh', 'net_day_change']], on='allh', how='left')
+        )
+
+        # Timestamp key for mapping to hour-of-year
+        data['timestamp'] = data['allszn'].astype(str) + 'h' + data['allh'].astype(str).str.extract(r'h(\d{3})')[0]
+        data = data.merge(timestamps[['h_of_year', 'timestamp']], on='timestamp', how='left')
+
+        data['interday_level'] = data['interday_level'].fillna(method='ffill').fillna(0.0)
+        data['net_day_change'] = data['net_day_change'].fillna(0.0)
+        data = data.sort_values(['allszn', 'h_of_year']).reset_index(drop=True)
+        if data.empty:
+            continue
+
+        data['storage_level'] = data['interday_level'].iloc[0] + data['net_day_change'].cumsum()
+        data['i_clean'] = i_clean
+        data['r'] = r_val
+        frames.append(data[['h_of_year', 'storage_level', 'i_clean', 'r']])
+
+    if not frames:
+        print(f'No interday storage level series could be reconstructed for t={t}')
+        return None, None, None
+
+    all_data = pd.concat(frames, ignore_index=True)
+    all_data = all_data.dropna(subset=['h_of_year'])
+    if all_data.empty:
+        print(f'No valid timestamps for reconstructed interday series (t={t})')
+        return None, None, None
+
+    start_date = f"{int(t)}-01-01"
+    all_data['datetime'] = pd.to_datetime(start_date) + pd.to_timedelta(all_data['h_of_year'].astype(int), unit='h')
+
+    # Aggregate across selected regions if multiple were requested
+    dfwide = (
+        all_data.groupby(['datetime', 'i_clean'], as_index=False)['storage_level']
+        .sum()
+        .pivot(index='datetime', columns='i_clean', values='storage_level')
+        .sort_index()
+        .fillna(0.0)
+    )
+
+    # Convert to GWh for visual scale consistency with other plots
+    dfwide = dfwide / 1e3
+
+    # Column ordering: tech_style first (if matched), then remaining
+    col_order = [c for c in tech_style.index if c in dfwide.columns]
+    col_order += [c for c in dfwide.columns if c not in col_order]
+    dfwide = dfwide[col_order]
+
+    # Stack-like cumulative for plots.plotyearbymonth
+    dfplot = dfwide.cumsum(axis=1)
+    dfplot = dfplot[[c for c in col_order[::-1] if c in dfplot.columns]]
+
+    colors = plots.rainbowmapper(dfwide.columns.tolist())
+    for c in dfwide.columns:
+        if c in tech_style.index:
+            colors[c] = tech_style[c]
+    color_list = [colors.get(c, 'k') for c in dfplot.columns]
+
+    # Plot
+    plt.close()
+    f, ax = plots.plotyearbymonth(
+        dfplot,
+        net=net,
+        colors=color_list,
+        lwforline=0,
+        f=f,
+        ax=ax,
+        figsize=figsize,
+    )
+
+    # Representative period shading (best effort)
+    if highlight_rep_periods:
+        try:
+            period_szn = pd.read_csv(os.path.join(inputs_path, 'period_szn.csv'))
+            period_szn['timestamp'] = (
+                (period_szn.actual_period.astype(str) + 'h001')
+                .map(reeds.timeseries.h2timestamp)
+            )
+            period_szn['rep'] = (period_szn.rep_period == period_szn.actual_period)
+            repnum = dict(zip(
+                sorted(period_szn.rep_period.unique()),
+                range(1, len(period_szn.rep_period.unique()) + 1),
+            ))
+            period_szn['repnum'] = period_szn.rep_period.map(repnum)
+
+            width = pd.Timedelta('5D') if str(sw.get('GSw_HourlyType', 'day')).lower() == 'wek' else pd.Timedelta('1D')
+            ylim = ax[0].get_ylim()
+            for _, row in period_szn.iterrows():
+                plottime = pd.Timestamp(2001, 1, row.timestamp.day)
+                box_kw = dict(
+                    xy=(plottime, ylim[0]),
+                    width=width, height=(ylim[1] - ylim[0]),
+                    clip_on=False,
+                )
+                if row.rep:
+                    rect = mpl.patches.Rectangle(
+                        edgecolor='k', facecolor='none', ls=':', lw=0.75, zorder=2e6, **box_kw
+                    )
+                else:
+                    rect = mpl.patches.Rectangle(
+                        edgecolor='none', facecolor='w', alpha=0.4, lw=0, zorder=1e6, **box_kw
+                    )
+                ax[row.timestamp.month - 1].add_patch(rect)
+                ax[row.timestamp.month - 1].annotate(
+                    row.repnum,
+                    (plottime + pd.Timedelta('30m'), ylim[1] * 0.95),
+                    va='top', size=5, zorder=1e7,
+                    color=('k' if row.rep else 'C7'),
+                )
+        except Exception as e:
+            print(f'Representative period annotation failed: {e}')
+
+    # Legend
+    if legend:
+        anchor_ax = ax[0]
+        legend_cols = [c for c in dfwide.columns if dfwide[c].abs().sum() > 0]
+        handles = [
+            mpl.patches.Patch(facecolor=colors.get(c, 'k'), edgecolor='none', label=c)
+            for c in legend_cols[::-1]
+        ]
+        if net:
+            handles.append(mpl.lines.Line2D([], [], color='k', lw=1, label='Net Level'))
+        if handles:
+            ncol = 2 if len(legend_cols) > 12 else 1
+            anchor_ax.legend(
+                handles=handles,
+                loc='upper left', bbox_to_anchor=(1.02, 1.0),
+                frameon=False, ncol=ncol,
+                handletextpad=0.3, handlelength=0.7, columnspacing=0.5,
+            )
+
+    return f, ax, dfplot
+
+    return f, ax, dfplot
+
+
 def plot_storage_hybrid_dispatch_weightwidth(
     case,
     t=2050,
@@ -4765,6 +5114,38 @@ def plot_interday_soc(
         index_col='order').squeeze(1)
     sw = pd.read_csv(
         os.path.join(case,'inputs_case','switches.csv'), header=None, index_col=0).squeeze(1)
+
+    # Allow hierarchy-style region strings (e.g. "st/WY" or "transreg/CAISO") by
+    # mapping them to the underlying balancing areas using inputs_case/hierarchy.csv.
+    ba_list = None
+    if ba is not None:
+        if isinstance(ba, (list, tuple, set, np.ndarray, pd.Series)):
+            ba_list = [str(x) for x in ba]
+        else:
+            ba_str = str(ba).strip()
+            if '/' in ba_str:
+                level, regions_str = ba_str.split('/', 1)
+                regions = [r for r in regions_str.split('.') if r]
+                hierarchy_path = os.path.join(case, 'inputs_case', 'hierarchy.csv')
+                if not os.path.exists(hierarchy_path):
+                    hierarchy_path = os.path.join(case, 'inputs_case', 'hierarchy_original.csv')
+                hierarchy = pd.read_csv(hierarchy_path)
+                if 'ba' in hierarchy.columns and 'r' not in hierarchy.columns:
+                    hierarchy = hierarchy.rename(columns={'ba': 'r'})
+                if level not in hierarchy.columns:
+                    raise ValueError(
+                        f"plot_interday_soc: hierarchy level '{level}' not found in {hierarchy_path}. "
+                        f"Available columns: {list(hierarchy.columns)}"
+                    )
+                ba_list = (
+                    hierarchy.loc[hierarchy[level].isin(regions), 'r']
+                    .dropna()
+                    .astype(str)
+                    .unique()
+                    .tolist()
+                )
+            else:
+                ba_list = [ba_str]
    
     # Read all necessary CSV files
     stor_interday_level = pd.read_csv(
@@ -4836,11 +5217,17 @@ def plot_interday_soc(
     all_data = pd.concat(data_dict.values(), ignore_index=True)
  
     # Apply filters if specified
-    if ba is not None:
-        all_data = all_data[all_data['r'] == ba]
+    if ba_list is not None:
+        all_data = all_data[all_data['r'].astype(str).isin(ba_list)]
    
     if tech is not None:
         all_data = all_data[all_data['i'] == tech]
+
+    if all_data.empty:
+        raise ValueError(
+            "plot_interday_soc: no interday storage data after filtering. "
+            "Check that outputs/stor_interday_level.csv exists and that 'ba' selection matches the model regions."
+        )
  
     # Aggregate all region storage levels
     all_data = all_data.groupby(['h_of_year', 'i', 'v', 't', 'allszn', 'allh']).agg({
@@ -4850,7 +5237,13 @@ def plot_interday_soc(
     }).reset_index()
  
     # Assign year to plot
-    t = int(all_data['t'].max())
+    t_max = all_data['t'].dropna().max()
+    if pd.isna(t_max):
+        raise ValueError(
+            "plot_interday_soc: could not determine year (t is all NaN). "
+            "Check outputs/stor_interday_level.csv and outputs/stor_interday_dispatch.csv."
+        )
+    t = int(t_max)
     all_data = all_data[all_data['t'] == t]
    
     if debug:

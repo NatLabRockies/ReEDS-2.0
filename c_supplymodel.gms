@@ -2659,7 +2659,8 @@ eq_REC_Generation(RPSCat,i,st,t)$[stfeas(st)$(not tfirst(t))$tmodel(t)
           RPSTechMult(RPSCat,i,st) * hours(h)
           * (GEN(i,v,r,h,t) 
           - CREDIT_H2PTC(i,v,r,h,t)$[valgen_h2ptc(i,v,r,t)$Sw_H2_PTC] 
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$Sw_HybridPlant )
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_pvb_g(i,t))$[pvb(i)$Sw_PVB] 
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor])
          }
 
      =g=

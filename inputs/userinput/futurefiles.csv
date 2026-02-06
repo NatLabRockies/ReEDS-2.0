@@ -329,6 +329,8 @@ plantchar_h2ct.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to 
 plantchar_hydro.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create hydrocapcostmult.csv so no need to forecast,
 plantchar_nuclear_smr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
 plantchar_nuclear.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
+plantchar_nuclear_stor.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
+heaterchars.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
 plantchar_ofswind.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
 plantchar_onswind.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
 plantchar_other.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new; used to create plantcharout.csv so no need to forecast,
