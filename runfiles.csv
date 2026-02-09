@@ -280,6 +280,7 @@ nuclear_ba_ban_list.csv,,GSw_NukeStateBan,~0,ignore,ignore,,,,,,,,,,,
 nuclear_energy_communities.csv,inputs/financials/nuclear_energy_communities.csv,,,ignore,ignore,,,,,0,,,,,,region aggregation and filtering is handled in copy_files
 nuclear_subsidies.csv,inputs/state_policies/nuclear_subsidies.csv,,,ignore,ignore,*st,year,,0,0,,,,,,
 nuclear_stor_bcr.csv,,,,ignore,ignore,,,,,0,,,,,,
+nuclear_stor_gridcharging.csv,,,,ignore,ignore,,,,,0,,,,,,
 nuclear_stor_storagetechs.csv,,,,ignore,ignore,,,,,0,,,,,,
 nuclear_stor_config.csv,inputs/sets/nuclear_stor_config.csv,,,ignore,ignore,,,,,,,,,nuclear_stor_config,,
 numhours.csv,,,,ignore,ignore,,,,,0,,,,,,

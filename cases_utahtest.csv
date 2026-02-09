@@ -12,7 +12,7 @@ GSw_Nuclear,1,1,1,1,1,1,1,1
 GSw_NuclearStor,0,0,0,0,0,0,0,0
 GSw_NuclearStor_Types,1_2,1_2,1_2,1_2,1_2,1_2,1_2,1_2
 GSw_NuclearStor_StorageTechs,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms,tes-ms_tes-ms
-GSw_NuclearStor_Grid,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75
+GSw_NuclearStor_GridCharging,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75,0.5_0.75
 GSw_NuclearStor_BCR,0.45_0.75,0.45_0.75,0.45_0.75,0.45_0.75,0.45_0.75,0.45_0.75,0.45_0.75,0.45_0.75
 GSw_NuclearDemo,1,1,1,1,0,0,0,0
 plantchar_nuclear_stor,nuclear_ATB_2024_natrium,nuclear_ATB_2024_natrium,nuclear_ATB_2024_natrium,nuclear_ATB_2024_natrium,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap,nuclear_ATB_2024_dirtcheap

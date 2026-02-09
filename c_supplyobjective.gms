@@ -369,7 +369,7 @@ eq_Objfn_op(t)$tmodel(t)..
               - sum{(i,v,r,h)$[valgen(i,v,r,t)$ptc_value_scaled(i,v,t)],
                     hours(h) * ptc_value_scaled(i,v,t) * tc_phaseout_mult(i,v,t) * 
                     (GEN(i,v,r,h,t) - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_pvb_g(i,t))$[pvb(i)$Sw_PVB]
-                     - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor$Sw_NuclearStor_GridCharging])
+                     - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor])
                    }
 
 * --- PTC value for hydrogen production ---

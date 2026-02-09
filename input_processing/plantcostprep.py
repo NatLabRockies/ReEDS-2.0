@@ -421,7 +421,7 @@ pvb = pd.concat(pvb, axis=1)
 #%%##################################
 #    -- Nuclear+Storage Cost Model --    #
 #####################################
-heatercosts = pd.read_csv(os.path.join(inputs_case,'heaterchar.csv'))
+heatercosts = pd.read_csv(os.path.join(inputs_case, 'heaterchars.csv'))
 heatercosts = deflate_func(heatercosts, sw.heaterscen)
 heatercosts_out = (
     heatercosts

@@ -4405,10 +4405,13 @@ parameter gridcharge_nuclear_stor_config(i) "--unitless-- ratio of grid charging
 /
 $offlisting
 $ondelim
-$include inputs_case%ds%nuclear_stor_gridcharge.csv
+$include inputs_case%ds%nuclear_stor_gridcharging.csv
 $offdelim
 $onlisting
 / ;
+
+parameter gridcharge_ratio(i) "--unitless-- ratio of grid charging capacity to nuclear capacity for each hybrid nuclear+storage configuration" ;
+gridcharge_ratio(i)$nuclear_stor(i) = gridcharge_nuclear_stor_config(i) ;
 
 *=========================================
 * --- Capital costs ---
@@ -4641,8 +4644,7 @@ cost_fom_nuclear_stor_p(i,v,r,t)$nuclear_stor(i) = plant_char("Nuclear-Stor1",v,
 parameter cost_fom_nuclear_stor_s(i,v,r,t) "--2004$/MW-- fixed OM for storage portion of hybrid nuclear+storage" ;
 cost_fom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom')};
 
-cost_fom(i,v,r,t)$nuclear_stor(i) = (cost_fom_nuclear_stor_p(i,v,r,t) + bcr(i) * cost_fom_nuclear_stor_s(i,v,r,t)
-                                      + (gridcharge_nuclear_stor_config(i) * heater_char(i,v,t,'fom'))$heater_char(i,v,t,'fom') ) / (1 - gridcharge_nuclear_stor_config(i) * heater_char(i,v,t,'rte')) ;
+cost_fom(i,v,r,t)$nuclear_stor(i) = (cost_fom_nuclear_stor_p(i,v,r,t) + bcr(i) * cost_fom_nuclear_stor_s(i,v,r,t)) ;
 
 cost_fom_energy(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), plant_char(ii,v,t, 'fom_energy')};
 
@@ -6006,7 +6008,7 @@ cost_cap(i,t)$[nuclear_stor(i)$thermal_storage(i)] = (cost_cap_nuclear_stor_p(i,
                                  - turbine_generator_cost_nuc_stor(i,t)
                                  - electrical_cost_nuc_stor(i,t)
                                  + (1 + bcr(i)) * cost_cap_nuclear_stor_s(i,t)
-                                 + (gridcharge_nuclear_stor_config(i) * heater_char(i,t,"capcost"))$heater_char(i,t,"capcost"));
+                                 + (gridcharge_ratio(i) * heater_char(i,t,"capcost"))$heater_char(i,t,"capcost"));
 cost_cap(i,t)$[nuclear_stor(i)$(not thermal_storage(i))] = cost_cap_nuclear_stor_p(i,t)
                                  + bcr(i) * cost_cap_nuclear_stor_s(i,t) ;
 

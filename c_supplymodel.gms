@@ -324,6 +324,7 @@ eq_interconnection_queues(tg,r,t)         "--MW-- capacity deployment limit base
  eq_hybrid_storage_capacity_limit(i,v,r,allh,t)  "--MW-- storage charging/discharging cannot exceed storage capacity"
  eq_hybrid_plant_storage_limit(i,v,r,allh,t)     "--MW-- storage charging from the plant cannot exceed plant generation"
  eq_pvb_itc_charge_reqt(i,v,r,t)                 "--MWh-- total energy charged from local PV >= ITC qualification fraction * total energy charged"
+ eq_cap_storage_in_grid(i,v,r,allh,t)            "--MW-- storage charging from the grid cannot exceed the capacity of the storage system to charge from the grid"
 
 * Canadian imports balance
  eq_Canadian_Imports(r,allszn,t)          "--MWh-- Balance of Canadian imports by season"
@@ -2734,7 +2735,8 @@ eq_REC_Requirement(RPSCat,st,t)$[RecPerc(RPSCat,st,t)$(not tfirst(t))
 *subtract out its grid charging (see eq_REC_Generation above).
       + ( sum{(i,v)$[valgen(i,v,r,t)$(not storage_standalone(i))], GEN(i,v,r,h,t)
           - (distloss * GEN(i,v,r,h,t))$(distpv(i))
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff(i,t))$Sw_HybridPlant }
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_pvb_g(i,t))$[pvb(i)$Sw_PVB]
+          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor]}
           - can_exports_h(r,h,t)$[(Sw_Canada=1)$sameas(RPSCat,"CES")]
         )$(RecStyle(st,RPSCat)=2)
     )}
@@ -3460,6 +3462,14 @@ eq_plant_capacity_limit(i,v,r,h,t)$[storage_hybrid(i)$(not csp(i))$tmodel(t)$val
 
 *[plus] battery operating reserves
     + sum{ortype$[Sw_OpRes$opres_h(h)$opres_model(ortype)], OPRES(ortype,i,v,r,h,t) }
+;
+
+eq_cap_storage_in_grid(i,v,r,h,t)$[nuclear_stor(i)$storage_hybrid(i)$(not csp(i))$tmodel(t)$valgen(i,v,r,t)$valcap(i,v,r,t)$Sw_HybridPlant]..
+    CAP(i,v,r,t) * gridcharge_ratio(i)
+
+    =g=
+
+    STORAGE_IN_GRID(i,v,r,h,t)
 ;
 
 eq_hybrid_storage_capacity_limit(i,v,r,h,t)$[storage_hybrid(i)$(not csp(i))$tmodel(t)$valgen(i,v,r,t)$valcap(i,v,r,t)$Sw_HybridPlant]..
