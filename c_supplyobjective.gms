@@ -40,7 +40,9 @@ eq_ObjFn_inv(t)$tmodel(t)..
                       }
 
                   + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))],
-                       cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t) 
+                                                        (   cost_cap_fin_mult(i,r,t)$(not nuclear_stor(i))
+                                                             + cost_cap_fin_mult_nuclear_stor_s(i,r,t)$[nuclear_stor(i)$cost_cap_fin_mult_nuclear_stor_s(i,r,t)]
+                                                        ) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t)
                       }
 
 * --- penalty for exceeding interconnection queue limit  ---
