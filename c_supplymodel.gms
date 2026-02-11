@@ -2660,8 +2660,8 @@ eq_REC_Generation(RPSCat,i,st,t)$[stfeas(st)$(not tfirst(t))$tmodel(t)
           RPSTechMult(RPSCat,i,st) * hours(h)
           * (GEN(i,v,r,h,t) 
           - CREDIT_H2PTC(i,v,r,h,t)$[valgen_h2ptc(i,v,r,t)$Sw_H2_PTC] 
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_pvb_g(i,t))$[pvb(i)$Sw_PVB] 
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor])
+          - STORAGE_IN_GRID(i,v,r,h,t)$[pvb(i)$Sw_PVB] 
+          - STORAGE_IN_GRID(i,v,r,h,t)$[nuclear_stor(i)$Sw_NuclearStor])
          }
 
      =g=
@@ -2735,8 +2735,8 @@ eq_REC_Requirement(RPSCat,st,t)$[RecPerc(RPSCat,st,t)$(not tfirst(t))
 *subtract out its grid charging (see eq_REC_Generation above).
       + ( sum{(i,v)$[valgen(i,v,r,t)$(not storage_standalone(i))], GEN(i,v,r,h,t)
           - (distloss * GEN(i,v,r,h,t))$(distpv(i))
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_pvb_g(i,t))$[pvb(i)$Sw_PVB]
-          - (STORAGE_IN_GRID(i,v,r,h,t) * storage_eff_nuclear_stor_g(i,t))$[nuclear_stor(i)$Sw_NuclearStor]}
+          - STORAGE_IN_GRID(i,v,r,h,t)$[pvb(i)$Sw_PVB]
+          - STORAGE_IN_GRID(i,v,r,h,t)$[nuclear_stor(i)$Sw_NuclearStor]}
           - can_exports_h(r,h,t)$[(Sw_Canada=1)$sameas(RPSCat,"CES")]
         )$(RecStyle(st,RPSCat)=2)
     )}

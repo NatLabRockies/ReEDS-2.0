@@ -6008,7 +6008,7 @@ cost_cap(i,t)$[nuclear_stor(i)$thermal_storage(i)] = (cost_cap_nuclear_stor_p(i,
                                  - turbine_generator_cost_nuc_stor(i,t)
                                  - electrical_cost_nuc_stor(i,t)
                                  + (1 + bcr(i)) * cost_cap_nuclear_stor_s(i,t)
-                                 + (gridcharge_ratio(i) * heater_char(i,t,"capcost"))$heater_char(i,t,"capcost"));
+                                 + gridcharge_ratio(i) * sum{ii$[nuclear_stor_stortech(i,ii)$heater_char(ii,t,"capcost")], heater_char(ii,t,"capcost") });
 cost_cap(i,t)$[nuclear_stor(i)$(not thermal_storage(i))] = cost_cap_nuclear_stor_p(i,t)
                                  + bcr(i) * cost_cap_nuclear_stor_s(i,t) ;
 

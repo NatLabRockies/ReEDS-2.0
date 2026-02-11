@@ -189,4 +189,44 @@ cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_s
 cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_noITC(ii,r,t)} ;
 cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_no_credits(ii,r,t)} ;
 
+* Assign cost_cap_fin_mult for nuclear_stor as a weighted average of nuclear and storage portions.
+* For thermal-storage nuclear_stor, include the grid-charging heater capex adder in the storage-side weight.
+parameter nuc_stor_cost_nuc(i,t)  "--$/MW-- nuclear-side cost weight for nuclear_stor"
+          nuc_stor_cost_stor(i,t) "--$/MW-- storage-side cost weight for nuclear_stor";
+
+* Default (non-thermal-storage): total capex = nuclear + bcr * storage
+nuc_stor_cost_nuc(i,t)$nuclear_stor(i) = cost_cap_nuclear_stor_p(i,t);
+nuc_stor_cost_stor(i,t)$nuclear_stor(i) = bcr(i) * cost_cap_nuclear_stor_s(i,t);
+
+* Thermal-storage: align with cost_cap(i,t) composition
+nuc_stor_cost_nuc(i,t)$[nuclear_stor(i)$thermal_storage(i)] = cost_cap_nuclear_stor_p(i,t)
+    - turbine_generator_cost_nuc_stor(i,t)
+    - electrical_cost_nuc_stor(i,t);
+
+nuc_stor_cost_stor(i,t)$[nuclear_stor(i)$thermal_storage(i)] = (1 + bcr(i)) * cost_cap_nuclear_stor_s(i,t)
+    + gridcharge_ratio(i) * sum{ii$[nuclear_stor_stortech(i,ii)$heater_char(ii,t,"capcost")], heater_char(ii,t,"capcost") };
+
+cost_cap_fin_mult(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    ( (cost_cap_fin_mult_nuclear_stor_p(i,r,t) - 1) * nuc_stor_cost_nuc(i,t)
+    + (cost_cap_fin_mult_nuclear_stor_s(i,r,t) - 1) * nuc_stor_cost_stor(i,t) )
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) + 1 ;
+
+cost_cap_fin_mult_noITC(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    ( (cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t) - 1) * nuc_stor_cost_nuc(i,t)
+    + (cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t) - 1) * nuc_stor_cost_stor(i,t) )
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) + 1 ;
+
+cost_cap_fin_mult_no_credits(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    ( (cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t) - 1) * nuc_stor_cost_nuc(i,t)
+    + (cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t) - 1) * nuc_stor_cost_stor(i,t) )
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) + 1 ;
+
+* Round these entries because the global rounding happens earlier in this file.
+cost_cap_fin_mult(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = round(cost_cap_fin_mult(i,r,t),3);
+cost_cap_fin_mult_noITC(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = round(cost_cap_fin_mult_noITC(i,r,t),3);
+cost_cap_fin_mult_no_credits(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = round(cost_cap_fin_mult_no_credits(i,r,t),3);
+
+* Keep reporting/system-cost multipliers in sync with the recomputed (rounded) nuclear_stor values.
+cost_cap_fin_mult_out(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = cost_cap_fin_mult(i,r,t) ;
+
 * --- End calculations of cost_cap_fin_mult family of parameters --- *

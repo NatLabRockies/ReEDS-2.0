@@ -423,58 +423,19 @@ pvb = pd.concat(pvb, axis=1)
 #####################################
 heatercosts = pd.read_csv(os.path.join(inputs_case, 'heaterchars.csv'))
 heatercosts = deflate_func(heatercosts, sw.heaterscen)
+
+# ReEDS expects generator/storage capex and FOM in $/MW (consistent with plantcharout.csv).
+# Heater cost inputs are provided in $/kW, so convert to $/MW.
+for col in ['capcost', 'fom']:
+    if col in heatercosts.columns:
+        heatercosts[col] = pd.to_numeric(heatercosts[col], errors='coerce') * 1000
+
 heatercosts_out = (
     heatercosts
     .melt(id_vars=['i','t'],value_vars=['capcost','fom','vom'])
     ### Rename the columns so GAMS reads them as a comment
     .rename(columns={'i':'*i'})
 )
-
-# Get nuclear+storage designs
-# nuclear_bcrs = pd.read_csv(
-#     os.path.join(inputs_case, 'nuclear_stor_bcr.csv'),
-#     header=0, names=['nuclear_type','bcr'], index_col='nuclear_type').squeeze(1)
-# nuclear_storagetech = pd.read_csv(
-#     os.path.join(inputs_case, 'nuclear_stor_storagetechs.csv'),
-#     header=0, names=['nuclear_type','storage_type'], index_col='nuclear_type').squeeze(1)
-# nuclear_gridcharging = pd.read_csv(
-#     os.path.join(inputs_case, 'nuclear_stor_gridcharging.csv'),
-#     header=0, names=['nuclear_type','grid_charging'], index_col='nuclear_type').squeeze(1)
-# # Get cost-sharing assumptions
-# mstesvalues = pd.read_csv(os.path.join(inputs_case,'mstes_values.csv'))
-# heatpump_cost_USDperWac = (
-#     mstesvalues.loc['heatpump','value']
-#     * mstesvalues.loc['heatrate','value']
-#     * deflator[mstesvalues.loc['heatpump','dollaryear']]
-#     # Input units are in $/Wac, so convert to $/MWac to match units used in ReEDS
-#     * 1000
-# )
-
-# nuclear_default = nuclear_stor.set_index('t').capcost
-
-# # Calculate nuclear storage cost fraction for each design
-# nuclearstorage = {}
-# for i in sw['GSw_NuclearStor_Types'].split('_'):
-#     stor_tech = nuclear_storagetech.loc['nuclear-stor{}'.format(i)]
-#     nuclear_bcr = nuclear_bcrs.loc['nuclear-stor{}'.format(i)]
-#     nuclear_gridcharge = nuclear_gridcharging.loc['nuclear-stor{}'.format(i)]
-#     print(f"Calculating nuclear-stor{i} with storage tech {stor_tech}, BCR {nuclear_bcr}, and grid charging ratio {nuclear_gridcharge}")
-#     if stor_tech.startswith('battery'):
-#         storage_USDperWac = battery.loc[battery.i==stor_tech].set_index('t').capcost
-#         energyconversion_cost_USDperWac = 0  # battery is DC-coupled
-#     elif stor_tech.startswith('tes'):
-#         storage_USDperWac = tes.loc[tes.i==stor_tech].set_index('t').capcost
-#         energyconversion_cost_USDperWac = heatpump_cost_USDperWac
-#     elif stor_tech.startswith('caes'):
-#         storage_USDperWac = caes.loc[caes.i==stor_tech].set_index('t').capcost
-#         energyconversion_cost_USDperWac = 0  # CAES is coupled using the same equipment as it is to the grid
-#     print('storage_USDperWac', storage_USDperWac)
-#     print('energyconversion_cost_USDperWac', energyconversion_cost_USDperWac)
-#     print('nuclear_default', nuclear_default)
-#     nuclear_storage_cost = nuclear_default + nuclear_bcr * (storage_USDperWac - energyconversion_cost_USDperWac) + nuclear_gridcharge * energyconversion_cost_USDperWac
-#     print('nuclear_storage_cost', nuclear_storage_cost)
-#     nuclearstorage['nuclear-stor{}'.format(i)] = nuclear_storage_cost / nuclear_default
-# nuclearstorage = pd.concat(nuclearstorage, axis=1)
 
 
 ## Create Electric DAC scenario output
