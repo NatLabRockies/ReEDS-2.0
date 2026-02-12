@@ -1802,6 +1802,127 @@ def generate_maps_gpkg(inputs_case):
         dfmap[level].to_file(mapsfile, layer=level)
 
 
+def propagate_nuclearstor_tech_rows(sw, inputs_case):
+    """Duplicate generator-tech rows for Nuclear-Stor technologies.
+
+    For each configured Nuclear-Stor type, identify its paired generator tech
+    (via GSw_NuclearStor_GenTechs) and then scan CSVs in inputs_case. For any
+    CSV whose first column is named 'i' or '*i' and that contains rows for the
+    paired generator tech, append identical rows for the corresponding
+    Nuclear-Stor{type} technology.
+    """
+
+    def _expand_to_len(values, n, label):
+        values = [v for v in values if v != '']
+        if len(values) == 1 and n > 1:
+            values = values * n
+        if len(values) < n:
+            raise ValueError(
+                f"{label} must have 1 value or {n} values (to match GSw_NuclearStor_Types={sw['GSw_NuclearStor_Types']})"
+            )
+        return values[:n]
+
+    def _nuclearstor_gen_tech_to_i_name(gen_tech):
+        gen_tech = str(gen_tech).strip()
+        if gen_tech in ['nuclear', 'Nuclear']:
+            return 'Nuclear'
+        if gen_tech in ['nuclear-smr', 'nuclear_smr', 'Nuclear-SMR', 'Nuclear_SMR']:
+            return 'Nuclear-SMR'
+        raise ValueError(
+            "Unsupported GSw_NuclearStor_GenTechs entry: "
+            f"{gen_tech!r}. Expected 'nuclear' or 'nuclear-smr'."
+        )
+
+    # Respect the nuclear-stor master on/off switch
+    if 'GSw_NuclearStor' in sw and int(sw['GSw_NuclearStor']) == 0:
+        return
+
+    nuclear_types = [t for t in str(sw.get('GSw_NuclearStor_Types', '1')).split('_') if t]
+    if len(nuclear_types) == 0:
+        return
+
+    if 'GSw_NuclearStor_GenTechs' in sw:
+        gen_techs_raw = str(sw['GSw_NuclearStor_GenTechs']).split('_')
+    else:
+        gen_techs_raw = ['nuclear-smr']
+
+    nuclear_gen_techs = _expand_to_len(gen_techs_raw, len(nuclear_types), 'GSw_NuclearStor_GenTechs')
+    tech_map = [(_nuclearstor_gen_tech_to_i_name(gt), f'Nuclear-Stor{nt}') for nt, gt in zip(nuclear_types, nuclear_gen_techs)]
+
+    def _first_noncomment_line(path):
+        with open(path, 'r', encoding='utf-8-sig') as f:
+            for line in f:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                if stripped.startswith('#'):
+                    continue
+                return stripped
+        return None
+
+    def _read_csv_loose(path):
+        """Read CSVs in inputs_case leniently.
+
+        Many ReEDS inputs contain leading comment lines; treat those as comments
+        and coerce all columns to strings to keep exact values during cloning.
+        """
+        return pd.read_csv(
+            path,
+            comment='#',
+            dtype=str,
+            keep_default_na=False,
+            encoding='utf-8-sig',
+        )
+
+    n_files_modified = 0
+    for root, _dirs, files in os.walk(inputs_case):
+        for fname in files:
+            if not fname.lower().endswith('.csv'):
+                continue
+            # Avoid touching outputs that are generated later in the pipeline
+            # and already explicitly handle nuclear-stor (e.g., plantcharout.csv).
+            if fname.lower() in {'plantcharout.csv'}:
+                continue
+
+            fpath = os.path.join(root, fname)
+            header_line = _first_noncomment_line(fpath)
+            if not header_line:
+                continue
+
+            first_col = header_line.split(',', 1)[0].strip()
+            # if first_col not in {'i', '*i'}:
+            #     continue
+
+            try:
+                df = _read_csv_loose(fpath)
+            except Exception:
+                # If a file doesn't parse cleanly as CSV, skip it.
+                continue
+
+            if first_col not in df.columns:
+                continue
+
+            i_series = df[first_col].astype(str).str.strip()
+
+            changed = False
+            for base_i, stor_i in tech_map:
+                if str(stor_i).strip() in set(i_series):
+                    continue
+                base_rows = df.loc[i_series == str(base_i).strip()].copy()
+                if base_rows.empty:
+                    continue
+                base_rows[first_col] = stor_i
+                df = pd.concat([df, base_rows], ignore_index=True)
+                changed = True
+
+            if changed:
+                df.to_csv(fpath, index=False)
+                n_files_modified += 1
+
+    if n_files_modified:
+        print(f"propagate_nuclearstor_tech_rows: modified {n_files_modified} file(s)")
+
+
 #%% ===========================================================================
 ### --- PROCEDURE ---
 ### ===========================================================================
@@ -1881,6 +2002,10 @@ def main(reeds_path, inputs_case, NARIS=False):
         inputs_case,
         reeds_path
     )
+
+    # After all inputs are present, propagate generator-tech rows onto
+    # Nuclear-Stor technologies based on GSw_NuclearStor_GenTechs.
+    propagate_nuclearstor_tech_rows(sw, inputs_case)
 
 
 #%% Procedure

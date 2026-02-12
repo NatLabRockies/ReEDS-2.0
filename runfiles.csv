@@ -336,7 +336,6 @@ plantchar_h2combustion.csv,inputs/plant_characteristics/{plantchar_h2combustion}
 plantchar_hydro.csv,inputs/plant_characteristics/{plantchar_hydro}.csv,,,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv
 plantchar_nuclear_smr.csv,inputs/plant_characteristics/{plantchar_nuclear_smr}.csv,,,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv
 plantchar_nuclear.csv,inputs/plant_characteristics/{plantchar_nuclear}.csv,,,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv
-plantchar_nuclear_stor.csv,inputs/plant_characteristics/{plantchar_nuclear_stor}.csv,,,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv
 heaterchars.csv,inputs/plant_characteristics/{heaterscen}.csv,,,ignore,ignore,,,,,0,,,,,,used to define heaterchar.csv
 plantchar_ofswind.csv,inputs/plant_characteristics/{plantchar_ofswind}.csv,GSw_OfsWind,~0,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv
 plantchar_onswind.csv,inputs/plant_characteristics/{plantchar_onswind}.csv,,,ignore,ignore,,,,,0,,,,,,used to define plantcharout.csv

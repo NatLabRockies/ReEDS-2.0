@@ -5995,11 +5995,6 @@ parameter
 turbine_generator_cost_nuc_stor(i,t)$nuclear_stor(i) = cost_cap_nuclear_stor_p(i,t) * 0.0392 ;
 electrical_cost_nuc_stor(i,t)$nuclear_stor(i)        = cost_cap_nuclear_stor_p(i,t) * 0.0632 ;
 
-* If/when an SMR-based nuclear+storage tech subset is introduced, apply these fractions instead:
-*   turbine: 0.0386
-*   electrical: 0.0946
-* (This requires a way to distinguish SMR-based nuclear+storage configurations in set logic. Not implemented yet.)
-
 * Compose nuclear+storage capex:
 * - Start from nuclear portion capex
 * - Remove turbine + electrical once (they'll be added back using the capital costs of the storage plant)
