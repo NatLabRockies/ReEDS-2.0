@@ -1888,8 +1888,9 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
             header_line = _first_noncomment_line(fpath)
             if not header_line:
                 continue
-
-            first_col = header_line.split(',', 1)[0].strip()
+            
+            
+            # first_col = header_line.split(',', 1)[0].strip()
             # if first_col not in {'i', '*i'}:
             #     continue
 
@@ -1899,10 +1900,10 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
                 # If a file doesn't parse cleanly as CSV, skip it.
                 continue
 
-            if first_col not in df.columns:
-                continue
+            # if first_col not in df.columns:
+            #     continue
 
-            i_series = df[first_col].astype(str).str.strip()
+            i_series = df.iloc[:, 0].astype(str).str.strip()
 
             changed = False
             for base_i, stor_i in tech_map:
@@ -1911,7 +1912,7 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
                 base_rows = df.loc[i_series == str(base_i).strip()].copy()
                 if base_rows.empty:
                     continue
-                base_rows[first_col] = stor_i
+                base_rows.iloc[:, 0] = stor_i
                 df = pd.concat([df, base_rows], ignore_index=True)
                 changed = True
 
