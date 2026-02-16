@@ -19,7 +19,7 @@ GSw_BECCS,Turn on/off BECCS technology,1,,0,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,
 GSw_CCS,Turn on/off all CCS,1,,0,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,0,,,,,0,,,,,,,,,,,,,,,,,,,,
 GSw_Clean_Air_Act,"Turn on/off the provisions under the Clean Air Act, Section 111",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,0,0
 GSw_DAC,"Turn on or off the representation of direct air capture [0 = off, 1 = on with projection specified by dacscen]",0,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,
-GSw_LoadProfiles,"Switch to choose EFS profiles - e.g. historic, EPREFERENCE, EPMEDIUM, EPHIGH",EER_IRAlow,,,EER_Baseline_AEO2022,EER_100by2050,,,,,,,,,,,,,,,EER_100by2050,,,,,,,,EER_Baseline_AEO2022,EER_100by2050,,,,,,,,,,,,,,,EER_100by2050,,,,EER_100by2050,,,,,,EER_Baseline_AEO2022,EER_100by2050,,,,,,,,,,,,,,EER_100by2050,,,,
+GSw_LoadProfiles,"Switch to choose EFS profiles - e.g. historic, EFS_REFERENCE, EFS_MEDIUM, EFS_HIGH",EER2023_IRAlow,,,EER2023_Baseline_AEO2022,EER2023_100by2050,,,,,,,,,,,,,,,EER2023_100by2050,,,,,,,,EER2023_Baseline_AEO2022,EER2023_100by2050,,,,,,,,,,,,,,,EER2023_100by2050,,,,EER2023_100by2050,,,,,,EER2023_Baseline_AEO2022,EER2023_100by2050,,,,,,,,,,,,,,EER2023_100by2050,,,,
 GSw_Geothermal,"Geothermal can be turned off [0], left to the default representation [1], or have an extended representation [2]",2,,1,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,1,,,,,1,,,,,,,,,,,,,,,,,,,,
 GSw_gopt,Select opt file to be used,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 GSw_GrowthPenalties,Turn on/off relative growth penalties,1,,,,,,,,,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,0,,,,,,,,,,,,,,,,,,,,,,,,

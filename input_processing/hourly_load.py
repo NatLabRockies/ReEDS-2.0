@@ -31,6 +31,7 @@ import datetime
 import numpy as np
 import os
 import pandas as pd
+from pathlib import Path
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
@@ -729,7 +730,10 @@ def main(reeds_path, inputs_case):
     historical_state_load_annual = reeds.io.get_historical_state_load_annual()
 
     match sw.GSw_LoadProfiles:
-        case _ if 'EER_' in sw.GSw_LoadProfiles:
+        case _ if (
+            sw.GSw_LoadProfiles.startswith('EER')
+            or Path(sw.GSw_LoadProfiles).is_file()
+        ):
             endyear = int(sw.endyear)
             state_load_hourly = interpolate_missing_model_years(
                 state_load_hourly,

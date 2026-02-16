@@ -3,6 +3,7 @@
 ### ===========================================================================
 
 import os
+import git
 import queue
 import threading
 import time
@@ -14,6 +15,7 @@ import subprocess
 import re
 from datetime import datetime
 import argparse
+from pathlib import Path
 import reeds
 from input_processing import mcs_sampler as mcs
 
@@ -207,7 +209,7 @@ def check_compatibility(sw):
                 "GSw_HourlyClusterAlgorithm must be set to 'hierarchical', 'optimized', "
                 "'kmeans', or 'kmedoids', or must "
                 "contain the substring 'user' and match a scenario in "
-                "inputs/variability/period_szn_user.csv"
+                "inputs/temporal/period_szn_user.csv"
             )
 
     if ((sw['GSw_PRM_StressModel'].lower() not in ['pras'])
@@ -215,7 +217,7 @@ def check_compatibility(sw):
         raise ValueError(
             "GSw_PRM_StressModel must be set to 'pras' or must "
             "contain the substring 'user' and match a scenario at "
-            "inputs/variability/stressperiods_{GSw_PRM_StressModel}.csv"
+            "inputs/temporal/stressperiods_{GSw_PRM_StressModel}.csv"
         )
 
     if (int(sw['GSw_H2_PTC']) == 1) and (int(sw['GSw_H2']) != 2):
@@ -341,6 +343,16 @@ def check_compatibility(sw):
         if not (1 <= int(pvbtype) <= 3):
             raise ValueError("Fix GSw_PVB_Types")
 
+    try:
+        prm = float(sw['GSw_PRM_scenario'])
+        if prm >= 1:
+            raise Exception(
+                f"GSw_PRM_scenario={sw['GSw_PRM_scenario']} but should be formatted as a "
+                "fraction, not a percent"
+            )
+    except ValueError:
+        pass
+
     scalars = reeds.io.get_scalars()
     ilr_upv = scalars['ilr_utility'] * 100
 
@@ -376,6 +388,12 @@ def check_compatibility(sw):
                 f"GSw_HourlyWeatherYears={sw['GSw_HourlyWeatherYears']} and "
                 f"resource_adequacy_years={sw['resource_adequacy_years']}"
             )
+
+    solveyears = reeds.inputs.parse_yearset(sw['yearset'])
+    if int(sw['endyear']) not in solveyears:
+        err = f"`endyear` = {sw['endyear']} but must be in `yearset`: {sw['yearset']}"
+        raise ValueError(err)
+
     # Add a row for each county
     county2zone = pd.read_csv(
         os.path.join(reeds_path, 'inputs', 'county2zone.csv'), dtype={'FIPS':str},
@@ -410,9 +428,16 @@ def check_compatibility(sw):
         if ('demand_' + sw['demandscen'] +'.csv') not in os.listdir(os.path.join(reeds_path, 'inputs','load')) :
             raise ValueError("The demand file specified by the demandscen switch is not in the inputs/load folder")
 
+    if (
+        re.match(r'(\/|[a-zA-Z]:[\\\/]).+$', sw['GSw_LoadProfiles'])
+        and not Path(sw['GSw_LoadProfiles']).is_file()
+    ):
+        err = f"GSw_LoadProfiles={sw['GSw_LoadProfiles']} but the specified file does not exist"
+        raise FileNotFoundError(err)
+
     ### Dependent model availability
     if (
-        ((not int(sw['GSw_PRM_CapCredit'])) or (int(sw['pras']) == 2))
+        ((int(sw['pras']) == 2) or int(sw['GSw_PRM_StressIterateMax']))
         and (not os.path.isfile(os.path.join(reeds_path, 'Manifest.toml')))
     ):
         err = (
@@ -572,10 +597,7 @@ def setup_sequential(
         OPATH.writelines(f"python tc_phaseout.py {cur_year} {casedir}\n\n")
 
         ### Write the GAMS LP and Augur calls
-        if (
-            int(caseSwitches['GSw_PRM_StressIterateMax'])
-            and (not int(caseSwitches['GSw_PRM_CapCredit']))
-        ):
+        if int(caseSwitches['GSw_PRM_StressIterateMax']):
             OPATH.writelines(
                 f"python d_solve_iterate.py {casedir} {cur_year}\n"
             )
@@ -761,6 +783,10 @@ def setupEnvironment(
 
     #%% Automatic inputs
     reeds_path = os.path.dirname(__file__)
+
+    #%% First-time setup
+    for dirname in ['profiles_cf', 'profiles_demand', 'remote']:
+        os.makedirs(os.path.join(reeds_path, 'inputs', dirname), exist_ok=True)
 
     #%% User inputs
     print(" ")
@@ -1282,25 +1308,22 @@ def write_batch_script(
 
     #%% Set up the meta.csv file to track repo information and runtime
     logger = os.path.join(reeds_path, 'reeds', 'log.py')
-    loglines = ['computer,repo,branch,commit,description\n']
+    loglines = ['repo,branch,commit,tag,description\n']
     ### Get some git metadata
     try:
-        import git
-        import socket
         repo = git.Repo()
         try:
             branch = repo.active_branch.name
+            tag = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)[-1].name
             description = repo.git.describe()
         except TypeError:
             branch = 'DETACHED_HEAD'
+            tag = ''
             description = ''
-        loglines.append(
-            '{},{},{},{},{}\n'.format(
-                socket.gethostname(),
-                repo.git_dir, branch, repo.head.object.hexsha, description))
+        text = f'{repo.git_dir},{branch},{repo.head.object.hexsha},{tag},{description}\n'
+        loglines.append(text)
     except Exception:
-        ### In case the user hasn't installed GitPython (conda install GitPython)
-        ### or isn't in a git repo or anything else goes wrong
+        ## In case the user isn't in a git repo or anything else goes wrong
         loglines.append('None,None,None,None,None\n')
 
     with open(os.path.join(casedir,'meta.csv'),'a') as METAFILE:
@@ -1364,10 +1387,7 @@ def write_batch_script(
     pd.Series(caseSwitches).to_csv(
         os.path.join(inputs_case,'switches.csv'), header=False)
 
-    solveyears = pd.read_csv(
-        os.path.join(reeds_path, 'inputs','modeledyears.csv'),
-        usecols=[caseSwitches['yearset_suffix']],
-    ).squeeze(1).dropna().astype(int).tolist()
+    solveyears = reeds.inputs.parse_yearset(caseSwitches['yearset'])
 
     # If start year is not in solveyears, start year is added into solveyears set
     startyear = int(caseSwitches['startyear'])
@@ -1510,14 +1530,14 @@ def write_batch_script(
         big_comment('Output processing', OPATH)
         if not LINUXORMAC:
             OPATH.writelines("setlocal enabledelayedexpansion\n")
-        ### If not using stress periods, run for iteration 0
-        if int(caseSwitches['GSw_PRM_CapCredit']):
+        ### If not iterating, run for iteration 0
+        if not int(caseSwitches['GSw_PRM_StressIterateMax']):
             OPATH.writelines(
                 f"r={os.path.join('g00files', f'{batch_case}_{max(solveyears)}i0')}\n"
                 if LINUXORMAC else
                 f'set "r={os.path.join("g00files", f"{batch_case}_{max(solveyears)}i0")}"\n'
             )
-        ### If using stress periods, run for the last iteration (lexicographically sorted)
+        ### Otherwise, run for the last iteration (lexicographically sorted)
         else:
             OPATH.writelines(
                 f"for r in g00files/{batch_case}_*.g00; do true; done\n"
@@ -1697,7 +1717,7 @@ def submit_slurm_parallel_jobs(
                 SPATH.write(line + '\n')
 
             if debugnode:
-                SPATH.write("#SBATCH --time=01:00:00\n")
+                SPATH.write("#SBATCH --time=04:00:00\n")
                 SPATH.write("#SBATCH --partition=debug\n")
 
             SPATH.write(f"#SBATCH --ntasks-per-node={cases_per_node}\n")

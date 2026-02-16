@@ -1,0 +1,209 @@
+# This workflow will install and set up conda and gams, run ReEDS, and run tests
+name: CI
+
+on:
+  push:
+    branches:
+      - km/testing
+  # pull_request:
+  #   branches:
+  #     - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
+defaults:
+  run:
+    shell: bash -le {0}
+env:
+  CACHE_NUMBER: 1
+  REEDS_ENV_NAME: reeds2
+
+jobs:
+  julia-setup:
+    name: "Julia environment"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: julia-actions/setup-julia@v2
+      env:
+        NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/nrel_ca_chain.crt
+
+    - run: julia --project=. instantiate.jl
+    # NOTE: At some point we might be able to add this to avoid double instantiation of the environment.
+    # - uses: julia-actions/cache@v2
+    #   with:
+    #     include-matrix: false
+
+  python-setup:
+    name: "Python environment"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          post-cleanup: 'all'
+          cache-environment-key: ${{runner.os}}-conda-${{env.CACHE_NUMBER}}-${{hashFiles('environment.yml')}}
+
+  define-scenarios:
+    runs-on: ubuntu-latest
+    outputs:
+      scenarios: ${{ steps.scenarios.outputs.scenarios }}
+    steps:
+      - name: Define Scenarios
+        id: scenarios
+        run: |
+          echo 'scenarios=["Pacific"]' >> "$GITHUB_OUTPUT"
+
+  run-ReEDS:
+    runs-on: ubuntu-latest
+    needs:
+      - define-scenarios
+      - julia-setup
+      - python-setup
+    continue-on-error: true
+    strategy:
+      max-parallel: 4
+      matrix:
+        scenario: ${{ fromJSON(needs.define-scenarios.outputs.scenarios) }}
+    env:
+      batch: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Build LFS manifest
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        id: lfs-restore
+        uses: actions/cache/restore@v4
+        with: 
+          path: .git/lfs
+          key: lfs-${{ runner.os }}-${{ hashFiles('.lfs-assets-id') }}-v1
+          restore-keys: lfs-${{ runner.os }}-
+
+      - name: Pull missing LFS blobs
+        run: git lfs pull
+
+      - name: Save the updated LFS cache
+        if: steps.lfs-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .git/lfs
+          key: ${{ steps.lfs-restore.outputs.cache-primary-key }}
+
+      - name: Create directories for zenodo files
+        run: mkdir -p inputs/remote inputs/profiles_cf inputs/profiles_demand
+        
+      - name: Identify Zenodo files for cache key
+        id: zenodo-files
+        run: |
+          echo "files-hash=$(md5sum inputs/remote_files.csv | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+        
+      - name: Cache Zenodo downloaded files
+        id: cache-zenodo
+        uses: actions/cache@v4
+        with:
+          path: |
+            inputs/remote/
+            inputs/profiles_cf/
+            inputs/profiles_demand/
+          key: zenodo-files-${{ steps.zenodo-files.outputs.files-hash }}-v1
+          restore-keys: |
+            zenodo-files-${{ steps.zenodo-files.outputs.files-hash }}-
+            zenodo-files-
+
+      - uses: mamba-org/setup-micromamba@v1
+        id: mamba
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          post-cleanup: 'all'
+          cache-environment-key: ${{runner.os}}-conda-${{env.CACHE_NUMBER}}-${{hashFiles('environment.yml')}}
+
+      - name: Download Zenodo files if not cached
+        if: steps.cache-zenodo.outputs.cache-hit != 'true'
+        run: |
+          python -c "
+          import reeds.remote
+          # Only download files needed for test scenarios
+          required_files = [
+              'cf_upv_reference_ba.h5',           
+              'cf_wind-ons_reference_ba.h5',        
+              'cf_wind-ofs_radial_reference_ba.h5', 
+              'cf_upv_reference_county.h5',         
+              'cf_wind-ons_reference_county.h5',    
+              'cf_wind-ofs_radial_reference_county.h5', 
+              'cf_upv_limited_ba.h5',              
+              'cf_wind-ons_limited_ba.h5',         
+              'cf_wind-ofs_radial_open_ba.h5',     
+              'demand_EER2025_IRAlow.h5',          
+              'demand_EER2025_100by2050.h5',       
+              'demand_historic.h5',                
+              'cf_distpv_county.h5'                
+          ]
+          reeds.remote.download_remote_files(only=required_files)
+          "
+
+      - name: Removing julia from python
+        run: micromamba remove -y julia
+
+      - uses: julia-actions/setup-julia@v2
+        id: setup-julia
+        env:
+          NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/nrel_ca_chain.crt
+
+      # NOTE: At some point we might be able to add this to avoid double instantiation of the environment.
+      # - uses: julia-actions/cache@v1
+      #   with:
+      #     include-matrix: false
+      - run: julia --project=. instantiate.jl
+
+      - name: Prepend Julia install to PATH.
+        run: echo "${{ steps.setup-julia.outputs.julia-bindir }}" >> $GITHUB_PATH
+
+      - name: Setup environment variables
+        run: |
+          echo "GAMSDIR=$(python -c 'from gamspy_base import directory;print(directory)')" >> "$GITHUB_ENV"
+          echo "$(python -c 'from gamspy_base import directory;print(directory)')" >> "$GITHUB_PATH"
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GAMSDIR" >> "$GITHUB_ENV"
+
+      - name: Setting county run adjustment
+        if: matrix.scenario == 'p6_County_CC'
+        run: echo "GITHUB_COUNTY_TEST=True" >> $GITHUB_ENV
+
+      - name: Setup licence
+        env: 
+            GAMSLICE_CONTENT: ${{ secrets.GAMSLICE }}
+            MAMBA_ENV_PATH: ${{ steps.mamba.outputs.environment-path }}
+        run: |
+            echo "GAMSLICE_CONTENT" >> "${MAMBA_ENV_PATH}/lib/python3.11/site-packages/gamspy_base/gamslice.txt"
+
+      - name: Run ReEDS model ${{ matrix.scenario }}
+        run: |
+          python runbatch.py -b ${{ env.batch }} -c test -s ${{ matrix.scenario }}
+          echo "RUN_FOLDER=$GITHUB_WORKSPACE/runs/${{ env.batch }}_${{ matrix.scenario }}" >> "$GITHUB_ENV"
+
+      - name: Print GAMS log
+        if:  runner.debug == '1'
+        run: |
+          cat $RUN_FOLDER/gamslog.txt
+
+      - name: Check ReEDS ouputs
+        if: ${{ hashFiles(format('{0}/outputs/cap_ivrt.csv', env.RUN_FOLDER)) == '' }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('ReEDS run failed. Check log to diagnose.')
+
+      - name: Run output validation tests
+        run: python -m pytest tests/test_outputs.py --casepath "$GITHUB_WORKSPACE/runs/${{ env.batch }}_${{ matrix.scenario }}"

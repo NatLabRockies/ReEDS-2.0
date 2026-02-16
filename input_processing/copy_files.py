@@ -8,10 +8,8 @@ import numpy as np
 import pandas as pd
 import argparse
 import shutil
-import subprocess
 import yaml
 import json
-import re
 import h5py
 # Local Imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -21,46 +19,25 @@ import reeds
 #%% ===========================================================================
 ### --- General Read Functions---
 ### ===========================================================================
-def is_active_switch(switch_value, active_switch_value):
-    # In 'active_switch_value', '~' represents a "NOT" criterion
-    # and '|' represents an "OR" set of criteria.
-    # '~' applies first in order of operations: '~A|B' means (not A) or B.
-    # Entries can use regex after processing '~' and '|' (but don't use '|' as
-    # part of regex; '|' is processed before the regex check)
-    tests = [
-        (not re.match(switch_value, rule.lstrip('~'))) if rule.startswith('~')
-        else re.match(switch_value, rule)
-        for rule in active_switch_value.split('|')
-    ]
-    return any(tests)
-
 def is_required_file(runfiles_row, sw):
-    if runfiles_row['depends_on_switch'] == 'ignore':
-        return False
-    elif not runfiles_row['depends_on_switch']:
-        return True
-    else:
-        # In 'linked_switch', '|' represents an "OR" set of switches (file
-        # is required if any switches are active) and ',' represents an
-        # "AND" set (file is required if all switches are active)
-        linked_switch = runfiles_row['depends_on_switch']
-        active_switch_value = runfiles_row['depends_on_switch_value']
-        if '|' in linked_switch:
-            linked_switches = linked_switch.split('|')
-            file_required = any([
-                is_active_switch(sw[switch], active_switch_value)
-                for switch in linked_switches
-            ])
-        elif ',' in linked_switch:
-            linked_switches = linked_switch.split(',')
-            file_required = all([
-                is_active_switch(sw[switch], active_switch_value)
-                for switch in linked_switches
-            ])
-        else:
-            file_required = is_active_switch(sw[linked_switch], active_switch_value)
+    """
+    Determine whether or not the file corresponding to the provided row of
+    runfiles.csv is required using the row's "required_if" value.
 
-        return file_required
+    Note that the code snippets assume that a variable 'sw' has been
+    initialized and holds the result of reeds.io.get_switches(), which is why
+    this function takes 'sw' as an argument despite 'sw' not being used
+    explicitly.
+    """
+    required_if_value = runfiles_row['required_if']
+    is_required = eval(required_if_value)
+    if is_required not in [True, False, 1, 0]:
+        raise ValueError(
+            "The 'required_if' value must evaluate to a true/false statement."
+            f"Update the entry for {runfiles_row['filename']} in "
+            "runfiles.csv."
+        )
+    return is_required
 
 
 def read_runfiles(reeds_path, inputs_case, sw, agglevel_variables):
@@ -329,8 +306,8 @@ def get_regions_and_agglevel(
 
     # Overwrite the regions with the ba, state, or aggreg values as specififed
     for level in ['ba','aggreg']:
-        hier_sub['r'][hier_sub['resolution'] == level] = (
-            hier_sub[level][hier_sub['resolution'] == level])
+        hier_sub.loc[hier_sub['resolution'] == level, 'r'] = (
+            hier_sub.loc[hier_sub['resolution'] == level, level])
 
     # Write out mappings of r and ba to all counties
     r_county = hier_sub[['r','county']].dropna(subset='county')
@@ -592,6 +569,7 @@ def subset_to_valid_regions(
     if (
         filename.startswith('supplycurve')
         or filename.startswith('exog_cap')
+        or filename.startswith('prescribed_builds')
     ):
         sc_point_gid_index = True
 
@@ -638,6 +616,11 @@ def subset_to_valid_regions(
             ).reset_index()
         elif filename.startswith('exog_cap'):
             df = reeds.io.assemble_exog_cap(
+                full_path,
+                case=os.path.dirname(os.path.normpath(inputs_case)),
+            )
+        elif filename.startswith('prescribed_builds'):
+            df = reeds.io.assemble_prescribed_builds(
                 full_path,
                 case=os.path.dirname(os.path.normpath(inputs_case)),
             )
@@ -813,7 +796,7 @@ def subset_to_valid_regions(
 def write_empty_file(filepath):
     filetype = os.path.splitext(filepath)[1].strip('.')
     if filetype == 'h5':
-        with h5py.File(filepath, 'w') as f:
+        with h5py.File(filepath, 'w'):
             pass
     else:
         open(filepath, 'a').close()
@@ -1095,185 +1078,6 @@ def write_non_region_files(non_region_files, sw, inputs_case, regions_and_agglev
             src_file = row['full_filepath']
             write_non_region_file(filename, filepath, src_file, dir_dst, sw, regions_and_agglevel, source_deflator_map)
 
-
-def write_county_vre_hourly_profiles(inputs_case, reeds_path):
-    """
-    Copy county-level RE hourly profiles to the ReEDS folder
-    """
-    # Read the supply curve meta data
-    revData = pd.read_csv(os.path.join(inputs_case,'rev_paths.csv'))
-
-    # EGS and GeoHydro supply curves come from hourlize but don't have profiles,
-    # so drop those from consideration as well
-    revData = revData[revData['tech'] != 'egs']
-    revData = revData[revData['tech'] != 'geohydro']
-
-    # Create a dataframe to hold the new file version information
-    rev_data_cols = ['tech','access_case']
-    file_version_new = pd.DataFrame(columns = rev_data_cols + ['file version'])
-    for rdc in rev_data_cols:
-        file_version_new[rdc] = revData[rdc]
-
-    # Check to see if there is a file version file for existing county-level
-    # profiles, if not, then we'll need to copy over the files. If they are
-    # present, then we need to check to see if they are the right version.
-    try:
-        file_version = pd.read_csv(
-            os.path.join(reeds_path,'inputs','variability','multi_year','file_version.csv')
-        )
-        missing_cols = set(['tech','access_case','file version']) - set(file_version.columns)
-        if len(missing_cols) > 0:
-            print(
-                f"Current file_version.csv is missing {missing_cols}; "
-                "will delete and re-copy county-level profiles."
-            )
-            existing_fv = 0
-        else:
-            existing_fv = 1
-    except FileNotFoundError:
-        print(
-            f"{os.path.join(reeds_path,'inputs','variability','multi_year','file_version.csv')} "
-            "not found; copying county-level profiles from remote"
-        )
-        existing_fv = 0
-
-    if existing_fv:
-        profile_data = pd.merge(revData,file_version,on=['tech','access_case'], how='left')
-        # NaN means this profile is missing from the current file version
-        profile_data['file version'] = profile_data['file version'].fillna("missing")
-        # Check to see if the file version in the repo is already present
-        profile_data['present'] = profile_data['sc_path'].apply(
-            lambda x: x.split('/')[-1]) == profile_data['file version']
-        # Check that entries in the file version have an existing file
-        profile_data['present'] = profile_data.apply(
-            lambda row: row.present and os.path.exists(
-            os.path.join(
-                reeds_path,'inputs','variability','multi_year',
-                f'{row.tech}-{row.access_case}_county.h5')),
-            axis=1)
-
-        # Populate the new file version file with the existing file version
-        # information to start
-        file_version_new = file_version
-    else:
-        profile_data = revData
-        profile_data['present'] = False
-
-    # If the profile data doesn't exist for the correct version of the supply
-    # curve, then copy it over and put the supply curve version in
-    # file_version.csv
-    present_in_fv = 0
-    file_version_updates = 0
-    missing_file_versions = []
-    for i,row in profile_data.iterrows():
-        # If the profile is already present, do nothing
-        if row['present'] is True:
-            present_in_fv += 1
-            continue
-        # Otherwise copy the profile over
-        else:
-            # Check if ReEDS is being run by a non-NLR user. Non-NLR users must
-            # download county-level data manually from OpenEI to the ReEDS
-            # multi-year input folder. NLR users will auto-magically have the
-            # county-level data downloaded from the remote location that coincides
-            # with where they are running ReEDS from.
-            try:
-                remote_data = subprocess.check_output('git remote -v', stderr=subprocess.STDOUT, shell=True)
-                remote_url = (remote_data.splitlines()[0].split()[1].decode('utf-8'))
-            except Exception:
-                # Set remote_url to 'no remote' if ReEDS was downloaded via zip file
-                remote_url = 'no remote'
-            access_case = row['access_case']
-            # If NLR user, then attempt to copy data from the remote location defined in
-            # rev_paths.csv.
-
-            # github runner test settings
-            # tries to get environment variable from github, if it's not found it defaults to False
-            github_test = os.getenv("GITHUB_COUNTY_TEST", False)
-
-            if 'github.nrel.gov' in remote_url:
-                sc_path = row['sc_path']
-                techlabel = f"{row.tech}{'_radial' if row.tech == 'wind-ofs' else ''}"
-                print(f'Copying county-level hourly profiles for {techlabel} {row["access_case"]}')
-
-                if github_test:
-                    # this is a county-level test run, get the data from the tests/data folder
-                    shutil.copy(
-                        os.path.join(reeds_path,'tests','data','county',f'{row["tech"]}.h5'),
-                        os.path.join(
-                            reeds_path,'inputs','variability','multi_year',
-                            f'{techlabel}-{access_case}_county.h5')
-                    )
-                else:
-                    fpath = os.path.join(
-                        sc_path,
-                        f'{techlabel}_{access_case}_county',
-                        'results',
-                        f"{row['tech']}.h5",
-                    )
-                    try:
-                        shutil.copy(
-                            fpath,
-                            os.path.join(
-                                reeds_path, 'inputs', 'variability', 'multi_year',
-                                f'{techlabel}-{access_case}_county.h5')
-                        )
-                    except FileNotFoundError:
-                        err = (
-                            f"Cannot copy {fpath}.\n"
-                            f"Check that you are connected to external drive ({sc_path})."
-                        )
-                        raise FileNotFoundError(err)
-
-                # Update the file version information
-                condition = (
-                    (file_version_new['tech'] == row['tech'])
-                    & (file_version_new['access_case'] == row['access_case'])
-                )
-
-                if condition.any():
-                    file_version_new.loc[condition, 'file version'] = sc_path.split("/")[-1]
-                else:
-                    newrow = pd.DataFrame(
-                        data={
-                            'tech': [row['tech']],
-                            'access_case': [row['access_case']],
-                            'file version': [sc_path.split("/")[-1]]
-                        }
-                    )
-                    file_version_new = pd.concat([file_version_new, newrow])
-                file_version_updates += 1
-
-            # If non-NLR user, then save the name of the missing file, and write it out
-            # in the error message below
-            else:
-                missing_file_versions.append(f'{row["tech"]}-{access_case}_county.h5')
-    # If any county-level file is missing from the inputs folder but a file_version.csv exists,
-    # then print out an error message to delete the file_version.csv and restart the run
-    if (existing_fv) and (present_in_fv < 1):
-        error = ("It appears that there is a file_version.csv present in\n"
-            "/inputs/variability/multi-year/ despite a county-level file(s) missing\n"
-            "from the folder. Delete file_version.csv from the folder and restart the run\n"
-            "to have ReEDS redownload the missing county-level file(s)."
-        )
-        raise ValueError(error)
-    # If any missing files for non-NLR users, then print out an error message with those
-    # file names and where to download them
-    if len(missing_file_versions) > 0:
-        error = ("To run ReEDS at county-level spatial resolution, please download the following\n"
-            "county-level data files from OpenEI to /inputs/variability/multi-year/\n\n"
-            "Files:\n"
-            +"\n".join(missing_file_versions)+"\n\n"
-            +"OpenEI files link:\n"
-            "[https://data.openei.org/submissions/5986]"
-        )
-        raise ValueError(error)
-    # Write out the new file version file if there are any updates
-    if file_version_updates > 0:
-        file_version_new.to_csv(
-            os.path.join(
-                reeds_path,'inputs','variability','multi_year','file_version.csv'), index = False)
-
     
 def calculate_county_fractions(df, county2zone):
     """
@@ -1467,6 +1271,7 @@ def write_region_indexed_file(
                 | 'h2_ba_share.csv'
                 | 'regional_cap_cost_diff.csv'
                 | 'cendivweights.csv'
+                | 'cap_existing_psh.csv'
             ):
                 # The upscale_from_county_to_ba function correctly handles the different spatial resolution options
                 # This sections just needs to check if the run is at pure county resolution
@@ -1551,8 +1356,6 @@ def write_miscellaneous_files(
     (runfiles.csv - from function read_runfiles).
     """
     # ---- Miscellaneous files not in non_region_files or region_files ----
-    val_nercr = regions_and_agglevel['valid_regions']['nercr']
-
     pd.DataFrame(
         {'*pvb_type': [f'pvb{i}' for i in sw['GSw_PVB_Types'].split('_')],
         'ilr': [np.around(float(c) / 100, 2) for c in sw['GSw_PVB_ILR'].split('_')
@@ -1655,10 +1458,7 @@ def write_miscellaneous_files(
         os.path.join(inputs_case,'co2_tax.csv')
     )
 
-    solveyears = pd.read_csv(
-        os.path.join(reeds_path,'inputs','modeledyears.csv'),
-        usecols=[sw['yearset_suffix']],
-    ).squeeze(1).dropna().astype(int).tolist()
+    solveyears = reeds.inputs.parse_yearset(sw['yearset'])
     if int(sw['startyear']) not in solveyears:
         solveyears.append(int(sw['startyear']))
         solveyears = sorted(solveyears)
@@ -1708,21 +1508,40 @@ def write_miscellaneous_files(
         os.path.join(inputs_case,'upgrade_costs_ccs_gas.csv')
     )
 
+    ccseason_dates = pd.read_csv(
+        os.path.join(reeds_path, 'inputs', 'reserves', 'ccseason_dates.csv'),
+        index_col=['month', 'day'],
+    )[sw['GSw_PRM_CapCreditSeasons']].rename('ccseason')
+    ccseason_dates.to_csv(os.path.join(inputs_case, 'ccseason_dates.csv'))
+    ccseason_dates.drop_duplicates().to_csv(
+        os.path.join(inputs_case, 'ccseason.csv'),
+        index=False, header=False,
+    )
+
     prm_profiles = pd.read_csv(
         os.path.join(reeds_path,'inputs','reserves','prm_annual.csv'),
-        index_col=['*nercr','t']
-    )
+    ).rename(columns={'*nercr':'nercr'}).set_index(['nercr','t'])
     if sw['GSw_PRM_scenario'] in prm_profiles:
         prm = prm_profiles[sw['GSw_PRM_scenario']]
     else:
         prm = pd.Series(index=prm_profiles.index, data=float(sw['GSw_PRM_scenario']))
 
-    # Filter values to those that only include valide nercr regions while processing
-    (prm[prm.index.get_level_values('*nercr').isin(val_nercr)]
-        .unstack('*nercr').reindex(solveyears)
-        .fillna(method='bfill').rename_axis('t').stack('*nercr')
-        .reorder_levels(['*nercr','t']).round(4)
-    ).to_csv(os.path.join(inputs_case,'prm_annual.csv'))
+    ## Broadcast PRM from nercr to r and backfill missing years
+    hierarchy = reeds.io.get_hierarchy(reeds.io.standardize_case(inputs_case))
+    prm_initial = (
+        prm
+        .unstack('nercr')
+        .reindex(solveyears)
+        .bfill().ffill()
+        [hierarchy['nercr']]
+    )
+    prm_initial.columns = hierarchy.index.rename('*r')
+    prm_initial = prm_initial.stack('*r').reorder_levels(['*r','t']).round(4).rename('fraction')
+    prm_initial.to_csv(os.path.join(inputs_case, 'prm_initial.csv'))
+    for t in solveyears:
+        stresspath = os.path.join(inputs_case, f'stress{t}i0')
+        os.makedirs(stresspath, exist_ok=True)
+        prm_initial.xs(t, 0, 't').to_csv(os.path.join(stresspath, 'prm.csv'))
 
     # Add capacity deployment limits based on interconnection queue data
     cap_queue = pd.read_csv(
@@ -1830,11 +1649,11 @@ def main(reeds_path, inputs_case, NARIS=False):
     ### --- Copying files ---
     ### ===========================================================================
 
-    # Copy county-level vre hourly profiles to the ReEDS folder if necessary
-    if (agglevel_variables['lvl'] == 'county') or ('county' in agglevel_variables['agglevel']):
-        write_county_vre_hourly_profiles(inputs_case, reeds_path)
-
     sw = reeds.io.get_switches(inputs_case)
+
+    # Copy remote files to the ReEDS folder if necessary
+    reeds.remote.download_required_remote_files(sw)
+
     runfiles, non_region_files, region_files = read_runfiles(
         reeds_path,
         inputs_case,

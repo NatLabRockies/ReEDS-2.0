@@ -42,7 +42,7 @@ if rep:
     period_szn['opres'] = period_szn.season.map(opres_periods).fillna('')
 
     period_szn.to_csv(
-        os.path.join(reeds_path, 'inputs', 'variability', f'period_szn_user_{name}.csv'),
+        os.path.join(reeds_path, 'inputs', 'temporal', f'period_szn_user_{name}.csv'),
         index=False,
     )
 
@@ -53,6 +53,6 @@ if stress:
     ).rename(columns={'allt':'t','allszn':'szn'})[['t','szn']].sort_values(['t','szn'])
 
     szn_stress_t.to_csv(
-        os.path.join(reeds_path, 'inputs', 'variability', f'stressperiods_user_{name}.csv'),
+        os.path.join(reeds_path, 'inputs', 'temporal', f'stressperiods_user_{name}.csv'),
         index=False,
     )

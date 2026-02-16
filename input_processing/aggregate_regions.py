@@ -135,23 +135,19 @@ def aggreg_methods(
         ### Special case: If calculating capacity credit by r, replace ccreg with r
         if sw['capcredit_hierarchy_level'] == 'r':
             df1 = df1.assign(ccreg=df1.r).drop_duplicates()
-    elif aggfunc in ['recf', 'csp', 'distpv']:
+    elif aggfunc in ['recf', 'csp']:
         ## Get correct rscweight_nobin tech value
         rsctech = os.path.splitext(row.name)[0].split('_')[1]
         rscweight_nobin_tech = rscweight_nobin.loc[rscweight_nobin['i'].str.contains(rsctech)]
-        if aggfunc == 'distpv':
-            df1['i'] = 'distpv'
-            df1['r'] = df1['wide']
-        else:
-            ### Region is embedded in the 'resources' column as {tech}|{region}
-            col2r = dict(zip(columns, [c.split('|')[-1] for c in columns]))
-            col2i = dict(zip(columns, [c.split('|')[0] for c in columns]))
-            df1 = df1.rename(columns={'value':'cf'})
-            df1['r'] = df1[region_col].map(col2r)
-            df1['i'] = df1[region_col].map(col2i)
-            ## rscweight_nobin data from writesupplycurves.py has tech values of {rsctech}|{class}
-            ## so replicate this in order to merge for capacities
-            df1['i'] = f'{rsctech}_' + df1['i']
+        ### Region is embedded in the 'resources' column as {tech}|{region}
+        col2r = dict(zip(columns, [c.split('|')[-1] for c in columns]))
+        col2i = dict(zip(columns, [c.split('|')[0] for c in columns]))
+        df1 = df1.rename(columns={'value':'cf'})
+        df1['r'] = df1[region_col].map(col2r)
+        df1['i'] = df1[region_col].map(col2i)
+        ## rscweight_nobin data from writesupplycurves.py has tech values of {rsctech}|{class}
+        ## so replicate this in order to merge for capacities
+        df1['i'] = f'{rsctech}_' + df1['i']
 
         ## Get capacities
         df1 = df1.merge(rscweight_nobin_tech, on=['r','i'], how='left')
@@ -1031,19 +1027,8 @@ if 'aggreg' in agglevel:
         [['i','r','rscbin','value']].rename(columns={'value':'MW'})
     ).copy()
 
-    ### Get distpv capacity to use in capacity-weighted averages
-    distpvcap = pd.read_csv(
-        os.path.join(inputs_case, 'distpvcap.csv'), index_col=0
-    )
-    ## Keep a single year
-    distpvcap = distpvcap[
-        sw.GSw_HourlyClusterYear if sw.GSw_HourlyClusterYear in distpvcap
-        else str(int(sw.GSw_HourlyClusterYear) + 1)
-    ].rename_axis('r').rename('MW').copy()
-    ## Add it to rscweight_nobin
+    ## Add PVB values to rscweight_nobin in case we need them
     rscweight_nobin = rscweight.groupby(['i','r'], as_index=False).sum(numeric_only=True)
-    rscweight_nobin = pd.concat([rscweight_nobin, distpvcap.reset_index().assign(i='distpv')], axis=0)
-    ## Add PVB values in case we need them
     pvbtechs = [f'pvb{i}' for i in sw.GSw_PVB_Types.split('_')]
     tocopy = rscweight_nobin.loc[rscweight_nobin.i.str.startswith('upv')].copy()
     rscweight_nobin = pd.concat(

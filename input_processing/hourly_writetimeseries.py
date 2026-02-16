@@ -466,7 +466,6 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
             'evmc_storage_energy': ['*i','r','h','t'],
             'flex_frac_all': ['*flex_type','r','h','t'],
             'peak_h': ['*r','h','t','MW'],
-            'prm_stress': ['*r','t','prm'],
         }
         for f, columns in write.items():
             pd.DataFrame(columns=columns).to_csv(
@@ -1491,7 +1490,6 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
             False,
         ],
         "peak_h": [pd.DataFrame(columns=["*r", "h", "t", "MW"]), True, False],
-        "prm_stress": [pd.DataFrame(columns=['*r','t','prm']), True, False],
     }
 
     # %% Write output csv files

@@ -2,7 +2,6 @@
 * -- Timeslices and seasons --
 *=============================================
 Sets
-* Most of these are copied from inputs/variability, overwritten by hourly_writetimeseries.py
 h_rep(allh) "representative timeslices"
 /
 $offlisting
@@ -772,19 +771,15 @@ $onlisting
 load_exog(r,allh,t) = 0 ;
 load_exog(r,h,t) = load_allyear(r,h,t) / (1.0 - distloss) ;
 
-* update PRM as needed to address unserved energy in PRAS
-$onempty
-parameter prm_stress(r,t) "--fraction-- planning reserve margin by BA, updated by stress_periods.py"
+parameter prm_year(r) "--fraction-- planning reserve margin for the current solve year"
 / 
 $offlisting
 $ondelim
-$include inputs_case%ds%stress%stress_year%%ds%prm_stress.csv
+$include inputs_case%ds%stress%stress_year%%ds%prm.csv
 $offdelim
 $onlisting
 / ;
-$offempty
-
-prm(r,t)$[prm_stress(r,t)] = prm_stress(r,t) ;
+prm(r,t)$tmodel(t) = prm_year(r) ;
 
 * Stress-period load is scaled up by PRM
 load_exog(r,h,t)$h_stress(h) = load_exog(r,h,t) * (1 + prm(r,t)) ;

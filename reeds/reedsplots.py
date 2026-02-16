@@ -6825,3 +6825,65 @@ def map_output_byyear(
                 **kwargs,
             )
     return f, ax, dictplot
+
+
+def map_prm(case, tmin=2023, cmap=cmocean.cm.rain, scale=3, fontsize=7, vmax=None):
+    dfmap = reeds.io.get_dfmap(case)
+    sw = reeds.io.get_switches(case)
+    ### Get final iterations
+    year2iteration = (
+        pd.DataFrame([
+            os.path.basename(i).strip('neue_.csv').split('i')
+            for i in sorted(glob(os.path.join(case, 'outputs', 'neue_*.csv')))
+        ], columns=['year','iteration']).astype(int)
+        .drop_duplicates(subset='year', keep='last')
+        .set_index('year').iteration
+        .loc[tmin:]
+    )
+    ### Get PRMs
+    prm_final = (
+        pd.read_csv(os.path.join(case, 'outputs', 'prm.csv'))
+        .rename(columns={'*r':'r'})
+        .set_index(['r','t']).squeeze(1)
+        * 100
+    )
+    if vmax in [None, 0, 'max', 'data', 'auto', 'scale']:
+        vmax = prm_final.max()
+
+    ### Plot it
+    nrows, ncols, coords = plots.get_coordinates(year2iteration.index, aspect=1.8)
+    level = sw.GSw_PRM_StressThreshold.split('_')[0]
+    plt.close()
+    f,ax = plt.subplots(
+        nrows, ncols, figsize=(ncols*scale, nrows*scale*0.8), sharex=True, sharey=True,
+        gridspec_kw={'hspace':0, 'wspace':0},
+    )
+    for year in coords:
+        _ax = ax[coords[year]]
+        dfmap[level].plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.25, zorder=1e7)
+        dfplot = dfmap['r'].copy()
+        dfplot['prm'] = prm_final.xs(year, 0, 't')
+        dfplot.plot(ax=_ax, column='prm', cmap=cmap, vmin=0, vmax=vmax)
+        _ax.set_title(year, fontsize='x-large', y=0.9, weight='bold')
+        _ax.axis('off')
+        if fontsize:
+            dflabel = dfmap[level].copy()
+            dflabel['prm'] = dfplot.groupby(level).prm.max()
+            for r, row in dflabel.sort_values('prm').iterrows():
+                _ax.annotate(
+                    f"{row.prm:.0f}",
+                    [row.centroid_x, row.centroid_y],
+                    ha='center', va='center', c='k',
+                    fontsize=fontsize,
+                    path_effects=[pe.withStroke(linewidth=1.5, foreground='w', alpha=0.7)],
+                )
+        if year == max(year2iteration.index):
+            plots.addcolorbarhist(
+                f, _ax, dfplot['prm'].values, vmin=0, vmax=vmax, cmap=cmap,
+                title='PRM [%]',
+                cbarheight=0.8, cbarhoffset=0.1, cbarwidth=0.05,
+                histcolor='w', histratio=0.01,
+            )
+    plots.trim_subplots(ax, nrows, ncols, len(coords))
+
+    return f, ax, prm_final

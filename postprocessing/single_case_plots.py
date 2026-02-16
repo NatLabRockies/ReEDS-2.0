@@ -798,6 +798,22 @@ if not int(sw.GSw_PRM_CapCredit):
             print(traceback.format_exc())
 
 
+#%% PRM if iterating
+if int(sw.GSw_PRM_StressIterateMax) and int(sw.GSw_PRM_UpdateMethod):
+    try:
+        f, ax, prm_final = reedsplots.map_prm(case)
+        savename = 'map_prm.png'
+        if write:
+            plt.savefig(os.path.join(savepath, savename))
+        if interactive:
+            plt.show()
+        plt.close()
+        print(savename)
+    except Exception:
+        print('map_prm failed:')
+        print(traceback.format_exc())
+
+
 #%% Capacity markers
 try:
     ### Just capacity

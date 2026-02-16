@@ -591,6 +591,7 @@ $include inputs_case%ds%yearafter.csv
 $onlisting
 / ;
 
+* --- Upgrade link definitions ---
 Set upgrade_to(i,ii)         "mapping set that allows for i to be upgraded to ii"
     upgrade_from(i,ii)       "mapping set that allows for i to be upgraded from ii"
     upgrade_link(i,ii,iii)   "indicates that tech i is upgradeable from ii with a delta base of iii"
@@ -621,6 +622,7 @@ $onlisting
 unitspec_upgrades(i)$[sum{ii$ctt_i_ii(i,ii), unitspec_upgrades(ii) }$Sw_WaterMain] =
   sum{ii$ctt_i_ii(i,ii), unitspec_upgrades(ii) } ;
 
+* Ban upgrades if upgrades are turned off
 ban(i)$[upgrade(i)$(not Sw_Upgrades)] = yes ;
 bannew(i)$[upgrade(i)$(not Sw_Upgrades)] = yes ;
 
@@ -846,10 +848,6 @@ if(Sw_Storage = 0,
 ) ;
 * 1: Keep all storage
 
-* option to ban upgrades
-ban(i)$[upgrade(i)$(not Sw_Upgrades)] = yes ;
-bannew(i)$[upgrade(i)$(not Sw_Upgrades)] = yes ;
-
 if(Sw_WaterMain = 1,
 *By default, ban new builds with bannew_ctt cooling techs for all i,
 bannew(i)$[sum{ctt$bannew_ctt(ctt), i_ctt(i,ctt) }] = YES ;
@@ -935,6 +933,12 @@ $offdelim
 $onlisting
 ;
 $offempty
+
+* --- Remove banned technologies from upgrade links ---
+upgrade_link(i,ii,iii)$[ban(i) or ban(ii) or ban(iii)] = no ;
+upgrade(i)$[not sum{(ii,iii), upgrade_link(i,ii,iii) }] = no ;
+upgrade_to(i,ii)$[not sum{iii, upgrade_link(i,iii,ii) }] = no ;
+upgrade_from(i,ii)$[not sum{iii, upgrade_link(i,ii,iii) }] = no ;
 
 * --- define technology subsets ---
 battery(i)$(not ban(i))             = yes$i_subsets(i,'battery') ;
@@ -2606,10 +2610,9 @@ valcap(i,v,r,t)$[upgrade(i)$(yeart(t)<Sw_UpgradeYear)] = no ;
 *this is more of a failsafe for potential capacity leakage
 valcap(i,v,r,t)$[upgrade(i)$(not Sw_Upgrades)] = no ;
 
-*remove capacity from valcap that is required to retire (and cannot be upgraded)
-* -then- remove m_capacity_exog from consideration
-valcap(i,v,r,t)$[forced_retire(i,r,t)
-                $(not sum{ii$(not forced_retire(ii,r,t)), upgrade_from(ii,i) })] = no ;
+*remove capacity from valcap that is required to retire
+* -then- remove capacity from consideration in m_capacity_exog
+valcap(i,v,r,t)$[forced_retire(i,r,t)] = no ;
 
 * for any technologies that are forced to retire and cannot upgrade, remove m_capacity_exog
 m_capacity_exog(i,v,r,t)$[forced_retire(i,r,t)
@@ -2646,9 +2649,6 @@ $endif.hydEDban
 
 * Drop vintages in non-modeled future years
 valcap(i,v,r,t)$[(not sum{tt$[tmodel_new(tt)], ivt(i,v,tt) })$newv(v)] = no ;
-
-* remove considerations for upgrades if the upgrade-from tech is invalid
-valcap(i,v,r,t)$[upgrade(i)$(not sum{ii$upgrade_from(i,ii),valcap(ii,v,r,t) })] = no ;
 
 * Remove non-offshore resources from offshore zones
 valcap(i,v,r,t)$[offshore(r)$(not ofswind(i))] = no ;
@@ -4967,18 +4967,14 @@ $offempty
 * --- Planning Reserve Margin ---
 *================================
 
-* Written by input_processing\transmission.py
-parameter prm_nt(nercr,allt) "--fraction-- planning reserve margin for NERC regions"
+parameter prm(r,t) "--fraction-- planning reserve margin by model year"
 /
 $offlisting
 $ondelim
-$include inputs_case%ds%prm_annual.csv
+$include inputs_case%ds%prm_initial.csv
 $offdelim
 $onlisting
 / ;
-
-parameter prm(r,t) "--fraction-- planning reserve margin by BA" ;
-prm(r,t) = sum{nercr$r_nercr(r,nercr), prm_nt(nercr,t) } ;
 
 $onempty
 parameter firm_import_limit(nercr,allt) "--fraction-- limit on net firm imports into NERC regions"
@@ -5768,18 +5764,19 @@ minstorfrac(i,v,r)$[i_water_cooling(i)$valcap_ivr(i,v,r)$psh(i)$Sw_WaterMain]
 
 parameter storinmaxfrac(i,v,r)  "--fraction-- max storage input capacity as a fraction of output capacity" ;
 
+$ifthen.storcap %GSw_HydroStorInMaxFrac% == "data"
 $onempty
 parameter storinmaxfrac_data(i,v,r) "--fraction-- data for max storage input capacity as a fraction of capacity if data is available"
 /
 $offlisting
 $ondelim
+$ifthen.readstorinmaxfrac %GSw_Storage% == 1
 $include inputs_case%ds%storinmaxfrac.csv
+$endif.readstorinmaxfrac
 $offdelim
 $onlisting
 / ;
 $offempty
-
-$ifthen.storcap %GSw_HydroStorInMaxFrac% == "data"
 * Use data file for available PSH data
 storinmaxfrac(i,v,r)$[valcap_ivr(i,v,r)$psh(i)] = storinmaxfrac_data(i,v,r) ;
 $else.storcap
@@ -5872,7 +5869,9 @@ parameter storage_duration_pshdata(i,v,r) "--hours-- storage duration data for P
 /
 $offlisting
 $ondelim
+$ifthene.readpshstorageduration ((%GSw_Storage%=1)and(%GSw_HydroPSHDurData%=1))
 $include inputs_case%ds%storage_duration_pshdata.csv
+$endif.readpshstorageduration
 $offdelim
 $onlisting
 / ;
@@ -6752,6 +6751,8 @@ Parameter
     can_imports_szn_frac(allszn)           "--fraction-- [Sw_Canada=1] fraction of annual imports that occur in each season"
     can_exports_h(r,allh,t)                "--MW-- [Sw_Canada=1] timeslice exports to Canada by year"
     can_exports_h_frac(allh)               "--fraction-- [Sw_Canada=1] fraction of annual exports by timeslice"
+* Resource adequacy
+    prm_year(r)                            "--fraction-- planning reserve margin for the current solve year"
 * Capacity credit
     sdbin_size(ccreg,ccseason,sdbin,t)     "--MW-- available power capacity by storage duration bin - used to bin the peaking power capacity contribution of storage by duration"
     cc_old(i,r,ccseason,t)                 "--MW-- capacity credit for existing capacity - used in sequential solve similar to heritage reeds"

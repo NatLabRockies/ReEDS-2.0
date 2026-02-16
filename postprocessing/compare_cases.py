@@ -1769,7 +1769,7 @@ if len(capcreditcases) == len(cases):
 
         plt.close()
         f,ax = plt.subplots(
-            2, cccols, figsize=(11, SLIDE_HEIGHT), sharex='col',
+            len(ccseasons), cccols, figsize=(11, SLIDE_HEIGHT), sharex='col',
             sharey=('col' if (sharey is True) else False),
         )
         ### Firm capacity stack
@@ -1804,7 +1804,7 @@ if len(capcreditcases) == len(cases):
                     dictin_cap_firm[case]
                     .loc[dictin_cap_firm[case].i.isin(techs)]
                     .groupby(['ccseason','t']).MW.sum().unstack('ccseason') / 1e3
-                )
+                ).reindex(ccseasons, axis=1).fillna(0)
                 cap_total = (
                     dictin_cap[case]
                     .loc[dictin_cap[case].tech.isin(techs)]
@@ -1812,7 +1812,7 @@ if len(capcreditcases) == len(cases):
                 )
                 capcredit = cap_firm.divide(cap_total, axis=0).dropna()
                 # for ccseason in lss:
-                for row, ccseason in enumerate(['hot','cold']):
+                for row, ccseason in enumerate(ccseasons):
                         ax[row,col].plot(
                             capcredit.index, capcredit[ccseason].values,
                             color=colors[case], label=case,
@@ -1836,7 +1836,7 @@ if len(capcreditcases) == len(cases):
         for _col, tech in enumerate(capcredittechs):
             col = _col + len(ccseasons)
             ax[0,col].set_ylabel(f'Capacity credit, {tech} [fraction]', y=-0.075)
-            for row, ccseason in enumerate(['hot','cold']):
+            for row, ccseason in enumerate(ccseasons):
                 ax[row,col].set_ylim(0,1)
                 ax[row,col].annotate(
                     ccseason.title(), (0.5, 1.0), xycoords='axes fraction',

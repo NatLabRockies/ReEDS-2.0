@@ -45,7 +45,7 @@ h2_storage_area_threshold,0.01,"--fraction-- fraction of a model region's land a
 h2_storage_duration,240,"--hours-- hours of H2 storage capacity associated with a given invesment in H2 storage capacity. Based on relationship in SERA of 10 days storage for a given tons/hour storage inflow (provided by Paige Jadun)."
 h2_tranloss,0.005,"--fraction-- H2 transmission losses for regional pipeline trade; based on DOE targets at https://www.energy.gov/eere/fuelcells/doe-technical-targets-hydrogen-delivery"
 hurdle_rate_floor,0.01,"--2004$/MWh-- lower bound for transmission hurdle rates (used to prevent degeneracy between transmission losses and curtailment)"
-ilr_dist,1.1,"--MW_dc/MW_ac-- inverter-loading ratio for distpv"
+ilr_dist,1.21,"--MW_dc/MW_ac-- inverter-loading ratio for distpv"
 ilr_utility,1.34,"--MW_dc/MW_ac-- inverter-loading ratio for UPV and DUPV"
 industrialGasMult,1.21,"--fraction-- accounts for differences in the gas price for electricity generators and industrial customers. Accounts for the cost differences between electricity and industrial gas prices in the AEO 2022 Reference Scenario data"
 interconnection_start,2025,"year that interconnection queue data starts"

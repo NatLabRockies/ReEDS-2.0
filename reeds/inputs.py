@@ -1,5 +1,6 @@
 ### Imports
 import os
+import re
 import sys
 import pandas as pd
 import sklearn.cluster
@@ -60,6 +61,56 @@ def parse_regions(case_or_string, case=None):
             ]['r'].unique()
         )
     return rs
+
+
+def parse_yearset(yearset:str) -> list:
+    """
+    Parses a ReEDS-formatted yearset and returns a list of integer years.
+
+    Args:
+        yearset (str): _-delimited list of individual years OR bash-formatted year ranges
+
+    Returns:
+        list of integer years (sorted)
+    
+    Examples:
+        '2010' -> [2010]
+        '2010_2015_2020' -> [2010, 2015, 2020]
+        '2010..2020..5' -> [2010, 2015, 2020]
+        '2010_2015_2020..2050..3' -> [
+            2010, 2015,
+            2020, 2023, 2026, 2029, 2032, 2035, 2038, 2041, 2044, 2047, 2050
+        ]
+        '2010..2035..5_2040..2100..10' -> [
+            2010, 2015, 2020, 2025, 2030, 2035,
+            2040, 2050, 2060, 2070, 2080, 2090, 2100
+        ]
+    """
+    pattern = r'^2\d{3}(\.\.2\d{3}(\.\.\d+)?)?(_2\d{3}(\.\.2\d{3}(\.\.\d+)?)?)*$'
+    helper = (
+        "For formatting notes and examples, run the following commands:\n"
+        "$ python\n"
+        ">>> import reeds\n"
+        ">>> help(reeds.inputs.parse_yearset)"
+    )
+    if not re.match(pattern, yearset):
+        err = f"Invalid yearset ({yearset}); must match {pattern}. {helper}"
+        raise ValueError(err)
+    yearstrings = yearset.split('_')
+    years = []
+    for y in yearstrings:
+        subyears = [int(i) for i in y.split('..')]
+        if len(subyears) == 1:
+            years.append(subyears[0])
+        elif len(subyears) == 2:
+            years.extend(range(subyears[0], subyears[1]+1))
+        elif len(subyears) == 3:
+            years.extend(range(subyears[0], subyears[1]+1, subyears[2]))
+        else:
+            err = f"Invalid subyears ({subyears}) in yearset {yearset}. {helper}"
+            raise ValueError(err)
+    out = sorted(set(years))
+    return out
 
 
 def get_bin(

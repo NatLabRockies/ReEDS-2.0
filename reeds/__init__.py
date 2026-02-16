@@ -6,7 +6,9 @@ from . import log as log
 from . import output_calc as output_calc
 from . import plots as plots
 from . import prasplots as prasplots
+from . import ra as ra
 from . import reedsplots as reedsplots
+from . import remote as remote
 from . import report_utils as report_utils
 from . import spatial as spatial
 from . import techs as techs

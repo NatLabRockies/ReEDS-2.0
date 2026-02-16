@@ -77,6 +77,21 @@ def get_hierarchy(case=None, original=False, country='USA'):
     hierarchy = hierarchy.loc[hierarchy.country.str.lower() == country.lower()].copy()
     return hierarchy
 
+
+def get_rmap(case, hierarchy_level='country'):
+    """
+    """
+    ### Make the region aggregator
+    hierarchy = reeds.io.get_hierarchy(case)
+
+    if hierarchy_level == 'r':
+        rmap = pd.Series(hierarchy.index, index=hierarchy.index)
+    else:
+        rmap = hierarchy[hierarchy_level]
+
+    return rmap
+
+
 def get_county2zone(
     case: str | None = None, as_map: bool = True
 ) -> pd.DataFrame | pd.Series:
@@ -105,6 +120,7 @@ def get_county2zone(
     county2zone = county2zone.set_index('FIPS')[r_col] if as_map else county2zone
 
     return county2zone
+
 
 def get_countymap(select_counties=None, exclude_water_areas=False):
     """Get geodataframe of US counties"""
@@ -873,13 +889,13 @@ def read_pras_results(filepath):
 def get_temperatures(case, tz_in='UTC', tz_out='Etc/GMT+6', subset_years=True):
     ### Derived inputs
     inputs_case = case if 'inputs_case' in case else os.path.join(case, 'inputs_case')
-    h5path = os.path.join(inputs_case, 'temperature_celsius-ba.h5')
+    h5path = os.path.join(inputs_case, 'temperature_celsius-st.h5')
     sw = reeds.io.get_switches(inputs_case)
     ## Add one more year on either end of weather years to allow for timezone conversion
     weather_years = sw.resource_adequacy_years_list
-    read_years = [min(weather_years) - 1] + weather_years + [max(weather_years) + 1]
-    val_ba = (
-        pd.read_csv(os.path.join(inputs_case, 'val_ba.csv'), header=None)
+    read_years = range(min(weather_years)-1, max(weather_years)+2)
+    val_st = (
+        pd.read_csv(os.path.join(inputs_case, 'val_st.csv'), header=None)
         .squeeze(1).values
     )
     ### Load temperatures
@@ -904,9 +920,9 @@ def get_temperatures(case, tz_in='UTC', tz_out='Etc/GMT+6', subset_years=True):
         .reset_index('year', drop=True)
         .tz_localize(tz_in)
         .tz_convert(tz_out)
-        ## Subset to weather years used in ReEDS
-        .loc[str(min(weather_years)):str(max(weather_years))]
     )
+    ## Subset to weather years used in ReEDS
+    temperatures = temperatures.loc[temperatures.index.year.isin(weather_years)].copy()
     ### On leap years, drop Dec 31
     leap_year = temperatures.iloc[:,:1].groupby(temperatures.index.year).count().squeeze(1) == 8784
     for year in weather_years:
@@ -917,9 +933,60 @@ def get_temperatures(case, tz_in='UTC', tz_out='Etc/GMT+6', subset_years=True):
             f'len(temperatures) = {len(temperatures)} but should be {len(weather_years) * 8760}'
         )
     ### Subset to states used in this run
-    temperatures = temperatures[[c for c in temperatures if c in val_ba]].copy()
+    temperatures = temperatures[[c for c in temperatures if c in val_st]].copy()
 
     return temperatures
+
+
+def get_cf_hourly(case=None, tech=None, lvl='ba', **kwargs):
+    """
+    Get hourly capacity factor profiles from the ReEDS directory or {case}.
+    If "tech" is provided, the profiles for that tech and for the provided
+    "lvl" are read from the ReEDS directory and returned.
+    Otherwise, if {case} is provided and {case}/inputs_case/recf.h5 exists,
+    model region-level profiles containing all techs are read from {case}
+    and returned.
+
+    Accepts either {case} or {case}/inputs_case as input.
+
+    In general, if a switch name/value pair is provided as a keyword
+    argument, it replaces the switch value specified in {case}. If {case}
+    is None and a keyword argument is not provided for a switch, the default
+    switch values specified in cases.csv are used.
+    """
+    if (case is None) or (tech is not None):
+        inputs_case = case
+        use_cache = False
+    else:
+        inputs_case = (
+            case
+            if 'inputs_case' in case
+            else os.path.join(case, 'inputs_case')
+        )
+        h5path = os.path.join(inputs_case, 'recf.h5')
+        use_cache = os.path.exists(h5path)
+
+    if not use_cache:
+        sw = reeds.io.get_switches(inputs_case, **kwargs)
+        match tech:
+            case 'distpv':
+                fname = 'cf_distpv_county'
+            case 'upv':
+                fname = f'cf_upv_{sw.GSw_SitingUPV}_{lvl}'
+            case 'wind-ons':
+                fname = f'cf_wind-ons_{sw.GSw_SitingWindOns}_{lvl}'
+            case 'wind-ofs':
+                fname = (
+                    f'cf_wind-ofs_{sw.GSw_OffshoreFiles}_{sw.GSw_SitingWindOfs}_{lvl}'
+                )
+            case _:
+                raise NotImplementedError(
+                    f"The provided tech '{tech}' does not have CF profiles."
+                )
+        h5path = os.path.join(reeds_path, 'inputs', 'profiles_cf', f'{fname}.h5')
+
+    cf_hourly = read_file(h5path, parse_timestamps=True)
+    return cf_hourly
 
 
 def get_outage_hourly(
@@ -949,6 +1016,7 @@ def get_outage_hourly(
     if len(column_levels) == 1:
         dfout.columns = dfout.columns.get_level_values(0)
     return dfout
+
 
 def get_load_hourly(case=None, **kwargs):
     """
@@ -981,12 +1049,11 @@ def get_load_hourly(case=None, **kwargs):
 
     if not use_cache:
         sw = reeds.io.get_switches(inputs_case, **kwargs)
-        h5path = os.path.join(
-            reeds_path,
-            'inputs',
-            'load',
-            f'{sw.GSw_LoadProfiles}_load_hourly.h5'
-        )
+        if Path(sw.GSw_LoadProfiles).is_file():
+            h5path = sw.GSw_LoadProfiles
+        else:
+            fname = f'demand_{sw.GSw_LoadProfiles}'
+            h5path = Path(reeds_path, 'inputs', 'profiles_demand', f'{fname}.h5')
 
     try:
         load_hourly = pd.concat(read_h5_groups(h5path, parse_timestamps=True))
@@ -1009,6 +1076,50 @@ def get_historical_state_load_annual():
     return pd.read_csv(
         os.path.join(reeds_path, 'inputs', 'load', 'EIA_loadbystate.csv')
     )
+
+def get_distpv_capacities(case=None, **kwargs):
+    """
+    Get county-level distpv capacities from the ReEDS directory or
+    model region-level distpv capacities from {case} if {case} is
+    provided and {case}/inputs_case/distpvcap.csv exists.
+    Accepts either {case} or {case}/inputs_case as input.
+
+    In general, if a switch name/value pair is provided as a keyword
+    argument, it replaces the switch value specified in {case}.
+    Therefore, the "distpvscen" switch value either specified as a
+    keyword argument or specified in {case} determines which distpv scenario
+    is retrieved, with the former taking precedence.
+
+    If {case} is None and "distpvscen" is not provided,
+    the capacities corresponding to the default distpv
+    scenario specified in cases.csv are retrieved.
+    """
+    if case is None:
+        inputs_case = case
+        use_cache = False
+    else:
+        inputs_case = (
+            case
+            if 'inputs_case' in case
+            else os.path.join(case, 'inputs_case')
+        )
+        fpath = os.path.join(inputs_case, 'distpvcap.csv')
+        use_cache = os.path.exists(fpath)
+
+    if not use_cache:
+        sw = reeds.io.get_switches(inputs_case, **kwargs)
+        fpath = os.path.join(
+            reeds_path,
+            'inputs',
+            'dgen_model_inputs',
+            sw.distpvscen,
+            f"distpvcap_{sw.distpvscen}.csv"
+        )
+
+    distpv_cap = pd.read_csv(fpath, index_col=0)
+
+    return distpv_cap
+
 
 def get_years(case):
     return pd.read_csv(
@@ -1191,7 +1302,14 @@ def get_sitemap(offshore=False, geo=True):
     return sitemap
 
 
-def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip_if_complete=False):
+def assemble_supplycurve(
+    scfile=None,
+    case=None,
+    drop_extra=True,
+    agg=True,
+    skip_if_complete=False,
+    **kwargs,
+):
     """
     Join on sc_point_gid column:
     - Generator supply curve (indicated by scfile input)
@@ -1211,7 +1329,7 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
     scfile = os.path.join(reeds_path, 'inputs', 'supply_curve', 'supplycurve_wind-ofs-reference.csv')
     """
     ### Parse inputs
-    sw = get_switches(case)
+    sw = get_switches(case, **kwargs)
     if scfile is None:
         offshore = False
     else:
@@ -1305,6 +1423,22 @@ def assemble_supplycurve(scfile=None, case=None, drop_extra=True, agg=True, skip
     return dfout
 
 
+def map_sc_points_to_regions(dfin, case=None, offshore=False, **kwargs):
+    ## Get inputs
+    sitemap = get_sitemap(offshore=offshore, geo=False)
+    sw = get_switches(case, **kwargs)
+    ## Add region column
+    dfout = dfin.copy()
+    if offshore and int(sw['GSw_OffshoreZones']):
+        dfout['region'] = dfin.index.map(sitemap.ba)
+    else:
+        county2zone = reeds.io.get_county2zone(case)
+        dfout['region'] = dfin.index.map(sitemap.FIPS).map(county2zone)
+    ## Drop nulls because they represent capacity outside the model area
+    dfout = dfout.dropna(subset='region')
+    return dfout
+
+
 def assemble_exog_cap(exogpath, case=None):
     """
     Join on sc_point_gid column:
@@ -1316,17 +1450,41 @@ def assemble_exog_cap(exogpath, case=None):
     Inputs for testing:
     exogpath = os.path.join(reeds_path, 'inputs', 'capacity_exogenous', 'exog_cap_upv_reference.csv')
     """
-    ## Get inputs
     dfin = pd.read_csv(exogpath, index_col='sc_point_gid')
     offshore = True if 'wind-ofs' in os.path.basename(exogpath) else False
-    sitemap = get_sitemap(offshore=offshore, geo=False)
-    county2zone = reeds.io.get_county2zone(case)
-    ## Add region column
-    dfout = dfin.copy()
-    dfout['region'] = dfin.index.map(sitemap.FIPS).map(county2zone)
-    ## Drop nulls because they represent capacity outside the model area (since not in county2zone)
-    dfout = dfout.dropna(subset='region')
-    return dfout.reset_index()[['*tech','region','year','sc_point_gid','capacity']]
+    dfout = map_sc_points_to_regions(dfin, case, offshore)
+    dfout = (
+        dfout.reset_index()
+        [['*tech','region','year','sc_point_gid','capacity']]
+    )
+    return dfout
+
+
+def assemble_prescribed_builds(filepath, case=None, **kwargs):
+    """
+    Join on sc_point_gid column and aggregate to model regions:
+    - Prescribed builds (indicated by filepath input)
+    - Model zone
+
+    Returns: pd.DataFrame with [region, year] index and capacity data
+
+    Inputs for testing:
+    filepath = os.path.join(
+        reeds_path,
+        'inputs',
+        'capacity_exogenous',
+        'prescribed_builds_wind-ons_reference.csv'
+    )
+    """
+    dfin = pd.read_csv(filepath, index_col='sc_point_gid')
+    offshore = True if 'wind-ofs' in os.path.basename(filepath) else False
+    dfout = map_sc_points_to_regions(dfin, case, offshore, **kwargs)
+    dfout = (
+        dfout.groupby(['region', 'year'], as_index=False)
+        ['capacity']
+        .sum()
+    )
+    return dfout
 
 
 #   ##      ## ########  #### ######## ########
