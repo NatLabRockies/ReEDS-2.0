@@ -223,7 +223,7 @@ jobs:
             ${{ env.RUN_FOLDER }}/outputs/**/*.h5
             
   run-R2X:
-    runs-on: reeds-runners
+    runs-on: ubuntu-latest
     needs:
       - define-scenarios
       - run-ReEDS
