@@ -59,7 +59,7 @@ jobs:
       - name: Define Scenarios
         id: scenarios
         run: |
-          echo 'scenarios=["Pacific"]' >> "$GITHUB_OUTPUT"
+          echo 'scenarios=["p6_County_CC", "Pacific", "Everything"]' >> "$GITHUB_OUTPUT"
 
   run-ReEDS:
     runs-on: ubuntu-latest
@@ -208,3 +208,46 @@ jobs:
 
       - name: Run output validation tests
         run: python -m pytest tests/test_outputs.py --casepath "$GITHUB_WORKSPACE/runs/${{ env.batch }}_${{ matrix.scenario }}"
+
+      - name: Save ReEDS run
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.scenario }}
+          compression-level: 9 # 0 no compression, 9 max compression
+          retention-days: 1 # in days
+          path: |
+            ${{ env.RUN_FOLDER }}/inputs_case/**/*.csv
+            ${{ env.RUN_FOLDER }}/meta.csv
+            ${{ env.RUN_FOLDER }}/inputs_case/**/*.h5
+            ${{ env.RUN_FOLDER }}/outputs/**/*.csv
+            ${{ env.RUN_FOLDER }}/outputs/**/*.h5
+            
+  run-R2X:
+    runs-on: reeds-runners
+    needs:
+      - define-scenarios
+      - run-ReEDS
+    continue-on-error: true
+    strategy:
+      matrix:
+        include:
+          - scenario: "Pacific"
+            solve-year: 2026
+          - scenario: "Everything"
+            solve-year: 2060
+          - scenario: "p6_County_CC"
+            solve-year: 2026
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve ReEDS runs for ${{ matrix.scenario }}
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.scenario }}
+          path: ${{ format('{0}-{1}', matrix.scenario, matrix.solve-year) }}
+      - name: R2X compatibility
+        uses: ./.github/actions/r2x-check
+        id: r2x-check
+        with:
+          reeds-run-path: ${{ format('{0}-{1}', matrix.scenario, matrix.solve-year) }}
+          solve-year: ${{ matrix.solve-year }}
