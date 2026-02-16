@@ -14,6 +14,7 @@ inout/gdxfiles/*.gdx
 # temporary GAMS files
 *.~gm
 225*/
+*.gsp
 
 # pyc files
 *.pyc
@@ -51,11 +52,17 @@ postprocessing/retail_rate_module/inputs/EIA861/*
 inputs/variability/multi_year/*county*.h5
 inputs/variability/multi_year/file_version.csv
 
+# Large files from remote sources
+inputs/profiles_demand
+inputs/profiles_cf
+inputs/remote
+
 # IDE stuff
 *.vscode
 
 # GAMS project files
 *.gpr
+gamslice.txt
 
 # IDE files
 *.vscode
