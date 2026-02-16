@@ -210,7 +210,7 @@ jobs:
         run: python -m pytest tests/test_outputs.py --casepath "$GITHUB_WORKSPACE/runs/${{ env.batch }}_${{ matrix.scenario }}"
 
       - name: Save ReEDS run
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.scenario }}
           compression-level: 9 # 0 no compression, 9 max compression
