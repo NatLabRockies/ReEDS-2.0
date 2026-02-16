@@ -186,7 +186,7 @@ jobs:
             GAMSLICE_CONTENT: ${{ secrets.GAMSLICE }}
             MAMBA_ENV_PATH: ${{ steps.mamba.outputs.environment-path }}
         run: |
-            echo "GAMSLICE_CONTENT" >> "${MAMBA_ENV_PATH}/lib/python3.11/site-packages/gamspy_base/gamslice.txt"
+            echo "$GAMSLICE_CONTENT" >> "${MAMBA_ENV_PATH}/lib/python3.11/site-packages/gamspy_base/gamslice.txt"
 
       - name: Run ReEDS model ${{ matrix.scenario }}
         run: |
