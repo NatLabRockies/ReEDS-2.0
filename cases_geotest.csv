@@ -1,0 +1,10 @@
+,Description,Default Value,lowdemand_moderate,highdemand_moderate,lowdemand_advanced,highdemand_advanced
+ignore,"0=run this case, 1=ignore this case",0,,,,
+timetype,Sequential or Intertemporal,seq,,,,
+GSw_NewValCapShrink,switch to shrink valcap and related conditioning sets post-solve,1,,,,
+GSw_PRM_StressIterateMax,Max number of times to iterate on a given solve year to achieve GSw_PRM_StressThreshold when using stress periods (0 means don't iterate; 1 means 1 extra ReEDS run; etc),3,,,,
+GSw_RegionResolution,,aggreg,,,,
+GSw_HierarchyFile,,agg54,,,,
+GSw_EFS1_AllYearLoad,Switch to choose electricity profiles,EER_IRAlow,,EER_100by2050,,EER_100by2050
+plantchar_geo,Geothermal cost setting (inputs\plant_characteristics\{plantchar_geo}.csv).The options for plantchar_geo start with 'geo_' and the switch should be set to the entire file name (ex: geo_ATB_2023_conservative),geo_ATB_2024_moderate,,,geo_ATB_2024_advanced,geo_ATB_2024_advanced
+GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor,0,,,,
