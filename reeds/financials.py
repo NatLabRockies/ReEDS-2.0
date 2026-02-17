@@ -80,7 +80,15 @@ def build_dfs(years, techs, vintage_definition, year_map):
 
     itv_map = pd.DataFrame()
     for tech in techs['i']:
-        max_c = np.max(vintage_definition_long[vintage_definition_long['i'] == tech]['v'])
+        v_series = vintage_definition_long.loc[vintage_definition_long['i'] == tech, 'v']
+        v_series = pd.to_numeric(v_series, errors='coerce').dropna()
+        if v_series.empty:
+            raise ValueError(
+                "Missing vintage definition in ivt.csv for technology "
+                f"{tech!r}. This tech appears in techs.csv, but no corresponding "
+                "row was found (or all entries were blank) in ivt.csv."
+            )
+        max_c = int(v_series.max())
         tech_itv_df = pd.DataFrame(
             list(itertools.product(years, np.arange(1, max_c + 1, 1))), columns=['t', 'v']
         )
@@ -235,6 +243,7 @@ def import_data(
             dups = df_dups[df_dups.duplicated(subset=[col], keep=False)]
             if len(dups) > 0:
                 print('Duplicate values for column', col, ':', dups[col].unique())
+        
     # Expand tech groups, if there is an 'i' column and the argument is True
     if 'i' in df.columns and expand_tech_groups is True:
         for tech_group in scen_settings.tech_groups.keys():
@@ -250,6 +259,11 @@ def import_data(
                     df_list = df_list + [df_expanded_single]
 
                 df = pd.concat([df] + df_list, ignore_index=True)
+
+        # Tech groups can overlap; if the same input row is expanded onto the same tech more
+        # than once (e.g. via multiple groups), we'll get fully-identical duplicate rows.
+        # Dropping exact duplicates here is safe and avoids downstream hard-exits on index checks.
+        df = df.drop_duplicates().reset_index(drop=True)
 
     # Check if a currency_file_root file exists - it should exist if there are
     # any columns with currency data. If currency data exists, adjust the dollar

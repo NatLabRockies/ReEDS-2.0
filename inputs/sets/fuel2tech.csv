@@ -18,10 +18,6 @@ naturalgas,gas-cc-ccs-f2
 naturalgas,gas-cc-ccs-f3
 uranium,nuclear
 uranium,nuclear-smr
-uranium,nuclear-stor1
-uranium,nuclear-stor2
-uranium,nuclear-stor3
-uranium,nuclear-stor4
 biomass,biopower
 biomass,beccs_mod
 biomass,beccs_max

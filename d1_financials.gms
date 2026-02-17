@@ -175,14 +175,9 @@ cost_cap_fin_mult(i,r,t)$[gas(i)$valcap_irt(i,r,t)] =
 
 
 * Assign the nuclear portion of nuclear_stor the value of nuclear
-cost_cap_fin_mult_nuclear_stor_p(i,r,t)$nuclear_stor(i) =
-    cost_cap_fin_mult('nuclear',r,t) ;
-
-cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t)$nuclear_stor(i) =
-    cost_cap_fin_mult_noITC('nuclear',r,t) ;
-
-cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t)$nuclear_stor(i) =
-    cost_cap_fin_mult_no_credits('nuclear',r,t) ;
+cost_cap_fin_mult_nuclear_stor_p(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_gentech(i,ii), cost_cap_fin_mult(ii,r,t)};
+cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_gentech(i,ii), cost_cap_fin_mult_noITC(ii,r,t) } ;
+cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_gentech(i,ii), cost_cap_fin_mult_no_credits(ii,r,t) } ;
 
 * Assign the storage portion of nuclear_stor the storage tech multiplier
 cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult(ii,r,t)};

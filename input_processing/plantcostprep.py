@@ -231,66 +231,11 @@ caes = deflate_func(caes,caesscen)
 caes['i'] = 'caes'
 
 #%%############################
-#    -- Nuclear Storage --    #
-###############################
-
-def _expand_to_len(values, n, label):
-    values = [v for v in values if v != '']
-    if len(values) == 1 and n > 1:
-        values = values * n
-    if len(values) < n:
-        raise ValueError(
-            f"{label} must have 1 value or {n} values (to match GSw_NuclearStor_Types={sw['GSw_NuclearStor_Types']})"
-        )
-    return values[:n]
-
-
-def _nuclearstor_gen_tech_to_plantchar_key(gen_tech):
-    """Map GSw_NuclearStor_GenTechs entries to plantchar file keys and i-names."""
-    gen_tech = str(gen_tech).strip()
-    if gen_tech in ['nuclear', 'Nuclear']:
-        return 'nuclear', 'Nuclear'
-    if gen_tech in ['nuclear-smr','Nuclear-SMR']:
-        return 'nuclear_smr', 'Nuclear-SMR'
-    raise ValueError(
-        "Unsupported GSw_NuclearStor_GenTechs entry: "
-        f"{gen_tech!r}. Expected 'nuclear' or 'nuclear-smr'."
-    )
-
-
-nuclear_types = [t for t in str(sw.get('GSw_NuclearStor_Types', '1')).split('_') if t]
-if len(nuclear_types) == 0:
-    nuclear_types = ['1']
-
-nuclear_gen_techs = _expand_to_len(
-    str(sw.get('GSw_NuclearStor_GenTechs', 'nuclear')).split('_'),
-    len(nuclear_types),
-    'GSw_NuclearStor_GenTechs',
-)
-
-nuclear_stor_dfs = []
-for stor_type, gen_tech in zip(nuclear_types, nuclear_gen_techs):
-    plantchar_key, gen_i_name = _nuclearstor_gen_tech_to_plantchar_key(gen_tech)
-    df = pd.read_csv(os.path.join(inputs_case, f'plantchar_{plantchar_key}.csv'))
-    df = deflate_func(df, sw[f'plantchar_{plantchar_key}'])
-    if 'i' in df.columns:
-        df = df.loc[df['i'] == gen_i_name].copy()
-    if df.empty:
-        raise ValueError(
-            f"No rows found in plantchar_{plantchar_key}.csv for i={gen_i_name!r}. "
-            f"(GSw_NuclearStor_GenTechs entry was {gen_tech!r})"
-        )
-    df['i'] = f'Nuclear-Stor{stor_type}'
-    nuclear_stor_dfs.append(df)
-
-nuclear_stor = pd.concat(nuclear_stor_dfs, ignore_index=True)
-
-#%%############################
 #    -- Concat all data --    #
 ###############################
 
 alldata = pd.concat([conv,upv_stack,wind_stack,geo_stack,csp_stack,battery,tes,
-                     evmc_storage,evmc_shape,caes,nuclear_stor,beccs,ccsflex,h2combustion],sort=False)
+                     evmc_storage,evmc_shape,caes,beccs,ccsflex,h2combustion],sort=False)
 
 if sw.upgradescen != 'default':
     alldata = pd.concat([alldata,upgrade])

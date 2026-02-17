@@ -282,6 +282,7 @@ nuclear_subsidies.csv,inputs/state_policies/nuclear_subsidies.csv,,,ignore,ignor
 nuclear_stor_bcr.csv,,,,ignore,ignore,,,,,0,,,,,,
 nuclear_stor_gridcharging.csv,,,,ignore,ignore,,,,,0,,,,,,
 nuclear_stor_storagetechs.csv,,,,ignore,ignore,,,,,0,,,,,,
+nuclear_stor_gentechs.csv,,,,ignore,ignore,,,,,0,,,,,,
 nuclear_stor_config.csv,inputs/sets/nuclear_stor_config.csv,,,ignore,ignore,,,,,,,,,nuclear_stor_config,,
 numhours.csv,,,,ignore,ignore,,,,,0,,,,,,
 numhours_nexth.csv,,,,ignore,ignore,,,,,0,,1,,,,
