@@ -231,21 +231,11 @@ caes = deflate_func(caes,caesscen)
 caes['i'] = 'caes'
 
 #%%############################
-#    -- Nuclear Storage --    #
-###############################
-
-nuclear_stor = pd.read_csv(os.path.join(inputs_case,'plantchar_nuclear_stor.csv'))
-nuclear_stor = deflate_func(nuclear_stor, sw.plantchar_nuclear_stor)
-# temporary until nuclear-stor is modified to be hybrid-storage where any generation tech can pair with storage
-# and this will be replaced with a loop iterating through all hybrid-storage types.
-nuclear_stor['i'] = 'Nuclear-Stor1'
-
-#%%############################
 #    -- Concat all data --    #
 ###############################
 
 alldata = pd.concat([conv,upv_stack,wind_stack,geo_stack,csp_stack,battery,tes,
-                     evmc_storage,evmc_shape,caes,nuclear_stor,beccs,ccsflex,h2combustion],sort=False)
+                     evmc_storage,evmc_shape,caes,beccs,ccsflex,h2combustion],sort=False)
 
 if sw.upgradescen != 'default':
     alldata = pd.concat([alldata,upgrade])

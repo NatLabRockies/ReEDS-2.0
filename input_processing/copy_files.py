@@ -1513,6 +1513,7 @@ def write_miscellaneous_files(
     nuclear_bcrs = _expand_to_len(sw['GSw_NuclearStor_BCR'].split('_'), n_nuclear_types, 'GSw_NuclearStor_BCR')
     nuclear_storage_techs = _expand_to_len(sw['GSw_NuclearStor_StorageTechs'].split('_'), n_nuclear_types, 'GSw_NuclearStor_StorageTechs')
     nuclear_gridcharge = _expand_to_len(sw['GSw_NuclearStor_GridCharging'].split('_'), n_nuclear_types, 'GSw_NuclearStor_GridCharging')
+    nuclear_gen_techs = _expand_to_len(sw['GSw_NuclearStor_GenTechs'].split('_'), n_nuclear_types, 'GSw_NuclearStor_GenTechs')
 
     pd.DataFrame(
         {
@@ -1534,6 +1535,13 @@ def write_miscellaneous_files(
             'storage_type': [c.replace('-', '_') for c in nuclear_storage_techs],
         }
     ).to_csv(os.path.join(inputs_case, 'nuclear_stor_storagetechs.csv'), index=False)
+
+    pd.DataFrame(
+        {
+            '*nuclear-stor_type': [f'nuclear-stor{i}' for i in nuclear_types],
+            'gen_tech': nuclear_gen_techs,
+        }
+    ).to_csv(os.path.join(inputs_case, 'nuclear_stor_gentechs.csv'), index=False)
 
     # Constant value if input is float, otherwise named profile
     # Methane leakage rate:
@@ -1802,6 +1810,417 @@ def generate_maps_gpkg(inputs_case):
         dfmap[level].to_file(mapsfile, layer=level)
 
 
+def propagate_nuclearstor_tech_rows(sw, inputs_case):
+    """Duplicate generator-tech rows for Nuclear-Stor technologies.
+
+    For each configured Nuclear-Stor type, identify its paired generator tech
+    (via GSw_NuclearStor_GenTechs) and then scan CSVs in inputs_case. For any
+    CSV that contains rows with the paired generator tech in *any* column,
+    append identical rows for the corresponding Nuclear-Stor{type} technology
+    and replace the technology value in the matching column.
+
+    To avoid interfering with files that already explicitly encode nuclear-stor
+    behavior, this function skips any file whose name or contents include
+    'nuclear-stor' (case-insensitive).
+    """
+
+    def _expand_to_len(values, n, label):
+        values = [v for v in values if v != '']
+        if len(values) == 1 and n > 1:
+            values = values * n
+        if len(values) < n:
+            raise ValueError(
+                f"{label} must have 1 value or {n} values (to match GSw_NuclearStor_Types={sw['GSw_NuclearStor_Types']})"
+            )
+        return values[:n]
+
+    def _nuclearstor_gen_tech_to_i_name(gen_tech):
+        gen_tech = str(gen_tech).strip()
+        if gen_tech in ['nuclear', 'Nuclear']:
+            return 'Nuclear'
+        if gen_tech in ['nuclear-smr', 'nuclear_smr', 'Nuclear-SMR', 'Nuclear_SMR']:
+            return 'Nuclear-SMR'
+        raise ValueError(
+            "Unsupported GSw_NuclearStor_GenTechs entry: "
+            f"{gen_tech!r}. Expected 'nuclear' or 'nuclear-smr'."
+        )
+
+    # Respect the nuclear-stor master on/off switch
+    if 'GSw_NuclearStor' in sw and int(sw['GSw_NuclearStor']) == 0:
+        return
+
+    # Optional user-controlled exclusions.
+    #
+    # Add entries to these lists to prevent Nuclear-Stor propagation from
+    # touching certain files or subdirectories under inputs_case.
+    #
+    # - Use forward slashes and paths relative to inputs_case for directories.
+    #   Example: ['inputs_case_subdir', 'nested/dir']
+    # - Use lowercase filenames for exact filename matches.
+    #   Example: ['regional_cap_cost_diff.csv', 'ivt.csv']
+    NUCLEARSTOR_PROPAGATION_SKIP_DIRS: list[str] = ["capacity_exogenous", "demonstration_files"]
+    NUCLEARSTOR_PROPAGATION_SKIP_FILES: list[str] = [
+        "emission_constraints/emitrates.csv",
+        "financials/cap_penalty.csv",
+        "national_generation/gbin_min.csv",
+        "sets/tg.csv", "tech-subset-table.csv"
+    ]
+
+    # Also skip any financials/ files that start with incentives_ or ref_cap_cost_diff_
+    _financials_dir = os.path.join(inputs_case, "financials")
+    if os.path.isdir(_financials_dir):
+        for _fname in os.listdir(_financials_dir):
+            _fname_l = _fname.lower()
+            if _fname_l.endswith(".csv") and (
+                _fname_l.startswith("incentives_")
+                or _fname_l.startswith("ref_cap_cost_diff_")
+            ):
+                # NUCLEARSTOR_PROPAGATION_SKIP_FILES is treated as lowercase filename matches below
+                NUCLEARSTOR_PROPAGATION_SKIP_FILES.append(_fname_l)
+    
+
+    nuclear_types = [t for t in str(sw.get('GSw_NuclearStor_Types', '1')).split('_') if t]
+    if len(nuclear_types) == 0:
+        return
+
+    if 'GSw_NuclearStor_GenTechs' in sw:
+        gen_techs_raw = str(sw['GSw_NuclearStor_GenTechs']).split('_')
+    else:
+        gen_techs_raw = ['nuclear-smr']
+
+    nuclear_gen_techs = _expand_to_len(gen_techs_raw, len(nuclear_types), 'GSw_NuclearStor_GenTechs')
+    tech_map = [(_nuclearstor_gen_tech_to_i_name(gt), f'Nuclear-Stor{nt}') for nt, gt in zip(nuclear_types, nuclear_gen_techs)]
+
+    def _first_noncomment_line(path):
+        with open(path, 'r', encoding='utf-8-sig') as f:
+            for line in f:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                if stripped.startswith('#'):
+                    continue
+                return stripped
+        return None
+
+    def _read_csv_loose(path):
+        """Read CSVs in inputs_case leniently.
+
+        Many ReEDS inputs contain leading comment lines; treat those as comments
+        and coerce all columns to strings to keep exact values during cloning.
+        """
+        return pd.read_csv(
+            path,
+            comment='#',
+            dtype=str,
+            keep_default_na=False,
+            encoding='utf-8-sig',
+        )
+
+    def _canon_label(value):
+        return str(value).strip().lower().replace('_', '-').replace(' ', '')
+
+    def _load_tech_canon_set(inputs_case):
+        """Load the model technology set (i) as canonical labels."""
+        techset_path = os.path.join(inputs_case, 'sets', 'i.csv')
+        if not os.path.exists(techset_path):
+            return set()
+        techs = (
+            pd.read_csv(techset_path, header=None, comment='*', dtype=str, encoding='utf-8-sig')
+            .squeeze(1)
+            .dropna()
+            .astype(str)
+            .map(lambda x: x.strip())
+        )
+        techs = techs[techs != '']
+        return set(techs.map(_canon_label).tolist())
+
+    tech_canon_set = _load_tech_canon_set(inputs_case)
+
+    def _looks_like_tech_column(series, min_nonempty=5, min_match_frac=0.6):
+        """Heuristic: treat a column as a tech-id column if most entries match techs in sets/i.csv.
+
+        This is intentionally conservative to avoid accidentally treating
+        numeric parameter columns as technology-id columns.
+        """
+
+        s = series.astype(str).str.strip()
+        s = s[s != '']
+
+        if len(s) < min_nonempty:
+            return False
+
+        if not tech_canon_set:
+            # If we can't load the tech set, only allow explicit i/*i columns.
+            return False
+
+        canon = (
+            s.str.lower()
+            .str.replace('_', '-', regex=False)
+            .str.replace(' ', '', regex=False)
+        )
+        match_frac = float(canon.isin(tech_canon_set).mean())
+        return match_frac >= min_match_frac
+
+    def _normalize_headers(df, header_line):
+        """Attempt to preserve any blank header fields on write.
+
+        Pandas reads a blank header as 'Unnamed: x'; if the source header has
+        an empty field, replace the corresponding column name with '' so
+        to_csv reproduces the leading comma.
+        """
+        try:
+            raw_cols = [c.strip() for c in header_line.split(',')]
+        except Exception:
+            return df
+
+        if len(raw_cols) != len(df.columns):
+            return df
+
+        new_cols = list(df.columns)
+        for idx, (raw, col) in enumerate(zip(raw_cols, df.columns)):
+            if raw == '' and str(col).startswith('Unnamed:'):
+                new_cols[idx] = ''
+        if new_cols != list(df.columns):
+            df = df.copy()
+            df.columns = new_cols
+        return df
+
+    def _file_contains_nuclearstor(path):
+        needles = ('nuclear-stor', 'nuclear_stor')
+        try:
+            with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
+                for chunk in iter(lambda: f.read(65536), ''):
+                    if not chunk:
+                        break
+                    lower = chunk.lower()
+                    if any(n in lower for n in needles):
+                        return True
+        except Exception:
+            # If we can't safely read the file, don't risk modifying it.
+            return True
+        return False
+
+    n_files_modified = 0
+    skip_dirs = [d.strip().replace('\\', '/').strip('/') for d in NUCLEARSTOR_PROPAGATION_SKIP_DIRS if str(d).strip()]
+    skip_files = {str(f).strip().lower() for f in NUCLEARSTOR_PROPAGATION_SKIP_FILES if str(f).strip()}
+    for root, _dirs, files in os.walk(inputs_case):
+        for fname in files:
+            if not fname.lower().endswith('.csv'):
+                continue
+            # Never modify plant characteristics inputs here.
+            # plantcostprep.py reads plantchar_*.csv and is responsible for
+            # creating Nuclear-Stor* rows in plantcharout.csv. If we propagate
+            # into plantchar_*.csv, plantcharout will end up with duplicates.
+            if fname.lower().startswith('plantchar_'):
+                continue
+            # Avoid touching outputs that are generated later in the pipeline
+            # and already explicitly handle nuclear-stor (e.g., plantcharout.csv).
+            if fname.lower() in {'plantcharout.csv'}:
+                continue
+
+            # Skip any files that already mention nuclear-stor.
+            # These often have bespoke hard-coded rows and should not be altered.
+            fname_lower = fname.lower()
+            if ('nuclear-stor' in fname_lower) or ('nuclear_stor' in fname_lower):
+                continue
+
+            fpath = os.path.join(root, fname)
+
+            # User-controlled skip logic (relative to inputs_case)
+            rel = os.path.relpath(fpath, inputs_case).replace('\\', '/').lstrip('./')
+            if fname.lower() in skip_files:
+                continue
+            if any(rel == d or rel.startswith(d + '/') for d in skip_dirs):
+                continue
+
+            if _file_contains_nuclearstor(fpath):
+                continue
+
+            header_line = _first_noncomment_line(fpath)
+            if not header_line:
+                continue
+
+            try:
+                df = _read_csv_loose(fpath)
+            except Exception:
+                # If a file doesn't parse cleanly as CSV, skip it.
+                continue
+
+            df = _normalize_headers(df, header_line)
+
+            # Identify columns that appear to contain technology identifiers.
+            tech_id_cols = [
+                col for col in df.columns
+                if (str(col).strip().lower() in {'i', '*i'})
+                or _looks_like_tech_column(df[col])
+            ]
+
+            changed = False
+            for base_i, stor_i in tech_map:
+                base_canon = _canon_label(base_i)
+                stor_canon = _canon_label(stor_i)
+
+                # 1) Wide-format: tech names appear as column headers.
+                col_canons = {_canon_label(c): c for c in df.columns}
+                if (base_canon in col_canons) and (stor_canon not in col_canons):
+                    base_col = col_canons[base_canon]
+                    # Preserve header style (lower/upper) based on base column.
+                    stor_col = stor_i.lower() if str(base_col) == str(base_col).lower() else stor_i
+                    df[stor_col] = df[base_col]
+                    changed = True
+
+                # 2) Long/mixed-format: tech names appear in cell values.
+                for col in tech_id_cols:
+                    series_canon = (
+                        df[col]
+                        .astype(str)
+                        .str.strip()
+                        .str.lower()
+                        .str.replace('_', '-', regex=False)
+                        .str.replace(' ', '', regex=False)
+                    )
+
+                    if stor_canon in set(series_canon):
+                        continue
+                    mask = series_canon == base_canon
+                    if not mask.any():
+                        continue
+
+                    base_rows = df.loc[mask].copy()
+                    # Preserve cell style (lower/upper) based on the matched value.
+                    example = str(df.loc[mask, col].iloc[0])
+                    stor_value = stor_i.lower() if example == example.lower() else stor_i
+                    base_rows[col] = stor_value
+                    df = pd.concat([df, base_rows], ignore_index=True)
+                    changed = True
+
+            if changed:
+                df.to_csv(fpath, index=False)
+                n_files_modified += 1
+
+    if n_files_modified:
+        print(f"propagate_nuclearstor_tech_rows: modified {n_files_modified} file(s)")
+
+
+def standardize_tech_casing(inputs_case):
+    """Standardize tech labels to the preferred capitalization in sets/i.csv.
+
+    ReEDS/GAMS treats set elements case-insensitively; mixed casing like
+    'nuclear-stor1' vs 'Nuclear-Stor1' can trigger "Element is redefined".
+    This rewrites any *cell* that exactly matches a technology name to the
+    preferred spelling from inputs_case/sets/i.csv.
+    """
+
+    def canon(x):
+        return str(x).strip().lower().replace('_', '-').replace(' ', '')
+
+    techset_path = os.path.join(inputs_case, 'sets', 'i.csv')
+    if not os.path.exists(techset_path):
+        return
+
+    techs = (
+        pd.read_csv(techset_path, header=None, comment='*', dtype=str, encoding='utf-8-sig')
+        .squeeze(1)
+        .dropna()
+        .astype(str)
+        .map(lambda x: x.strip())
+    )
+    techs = techs[techs != '']
+    preferred = {canon(t): t for t in techs.tolist()}
+    if not preferred:
+        return
+
+    def first_noncomment_line(path):
+        with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
+            for line in f:
+                s = line.strip()
+                if not s or s.startswith('#'):
+                    continue
+                return s
+        return None
+
+    def preserve_blank_header(df, header_line):
+        if not header_line:
+            return df
+        raw_cols = [c.strip() for c in header_line.split(',')]
+        if len(raw_cols) != len(df.columns):
+            return df
+        cols = list(df.columns)
+        for idx, (raw, col) in enumerate(zip(raw_cols, df.columns)):
+            if raw == '' and str(col).startswith('Unnamed:'):
+                cols[idx] = ''
+        if cols != list(df.columns):
+            df = df.copy()
+            df.columns = cols
+        return df
+
+    def standardize_series(series):
+        s = series.astype(str)
+        c = s.map(canon)
+        mask = c.isin(preferred)
+        if not mask.any():
+            return series, False
+        out = s.copy()
+        out.loc[mask] = c.loc[mask].map(preferred)
+        return out, True
+
+    n_files_modified = 0
+    for root, _dirs, files in os.walk(inputs_case):
+        for fname in files:
+            if not fname.lower().endswith('.csv'):
+                continue
+
+            fpath = os.path.join(root, fname)
+            header_line = first_noncomment_line(fpath)
+            if not header_line:
+                continue
+
+            # Headerless 1-col set-style file (one element per line, no commas)
+            headerless = (',' not in header_line) and (canon(header_line) in preferred)
+
+            try:
+                df = pd.read_csv(
+                    fpath,
+                    comment='#',
+                    dtype=str,
+                    keep_default_na=False,
+                    encoding='utf-8-sig',
+                    header=None if headerless else 'infer',
+                )
+            except Exception:
+                continue
+
+            if not headerless:
+                df = preserve_blank_header(df, header_line)
+
+            changed = False
+            # Cell values: convert any exact tech tokens to preferred spelling.
+            for col in df.columns:
+                df[col], col_changed = standardize_series(df[col])
+                changed = changed or col_changed
+
+            # Wide-format headers: only normalize if the file is *mostly* tech columns.
+            if not headerless:
+                nonblank_cols = [c for c in df.columns if str(c).strip() != '']
+                col_canons = [canon(c) for c in nonblank_cols]
+                match_ratio = (pd.Series(col_canons).isin(set(preferred)).mean() if nonblank_cols else 0.0)
+                if (len(nonblank_cols) >= 8) and (match_ratio >= 0.5):
+                    new_cols = []
+                    for c in df.columns:
+                        cc = canon(c)
+                        new_cols.append(preferred.get(cc, c))
+                    if new_cols != list(df.columns):
+                        df.columns = new_cols
+                        changed = True
+
+            if changed:
+                df.to_csv(fpath, index=False, header=(not headerless))
+                n_files_modified += 1
+
+    if n_files_modified:
+        print(f"standardize_tech_casing: modified {n_files_modified} file(s)")
+
+
 #%% ===========================================================================
 ### --- PROCEDURE ---
 ### ===========================================================================
@@ -1881,6 +2300,14 @@ def main(reeds_path, inputs_case, NARIS=False):
         inputs_case,
         reeds_path
     )
+
+    # After all inputs are present, propagate generator-tech rows onto
+    # Nuclear-Stor technologies based on GSw_NuclearStor_GenTechs.
+    propagate_nuclearstor_tech_rows(sw, inputs_case)
+
+    # Normalize Nuclear-Stor casing across inputs_case to avoid mixed-spelling
+    # duplicates in downstream generated CSVs and GAMS compilation.
+    # standardize_tech_casing(inputs_case)
 
 
 #%% Procedure

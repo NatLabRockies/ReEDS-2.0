@@ -3,7 +3,7 @@ ignore,"0=run this case, 1=ignore this case",0,,,,,,,,,,,,,,,,
 timetype,Sequential or Intertemporal,seq,,,,,,,,,,,,,,,,
 plantchar_tes,,tes_ATB_2024_moderate,,,,,,,,,,,,,,,,
 plantchar_nuclear,,nuclear_ATB_2024_moderate,,,,,,,,,,,,,,,,
-plantchar_nuclear_stor,,nuclear_ATB_2024_moderate,,,,,,,,,,,,,,,,
+plantchar_nuclear_stor,,nuclear_SMR_ATB_2024_moderate,,,,,,,,,,,,,,,,
 GSw_Nuclear,,1,,,,,,,,,,,,,,,,
 GSw_NuclearStor,,1,,0,,0,,0,,0,,0,,0,,0,,0
 GSw_NuclearStor_Types,,1_2_3_4,,,,,,,,,,,,,,,,

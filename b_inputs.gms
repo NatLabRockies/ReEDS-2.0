@@ -1096,6 +1096,14 @@ $offdelim
 $onlisting
 / ;
 
+set nuclear_stor_gentech(i,ii) "storage tech used by each nuclear+storage config"
+/ 
+$offlisting
+$ondelim
+$include inputs_case%ds%nuclear_stor_gentechs.csv
+$offdelim
+$onlisting
+/ ;
 
 * If storage tech used by nuclear+storage config is in i_subsets(i, 'TES'), then add it to tes and thermal_storage sets
 set nuclear_stor_with_tes(i) "hybrid nuclear+storage technologies whose storage tech is TES" ;
@@ -4442,7 +4450,7 @@ cost_cap_pvb_b(i,t)$pvb(i) = cost_cap("battery_li",t) + %GSw_PVB_Dur% * cost_cap
 
 * Assign hybrid nuclear+storage plant to have the same value as nuclear
 parameter cost_cap_nuclear_stor_p(i,t) "--2004$/MW-- overnight capital costs for nuclear portion of hybrid nuclear+storage" ;
-cost_cap_nuclear_stor_p(i,t)$nuclear_stor(i) = plant_char0('Nuclear-Stor1',t,'capcost') ;
+cost_cap_nuclear_stor_p(i,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_gentech(i,ii), plant_char0(ii,t,'capcost') } ;
 
 * Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
 parameter cost_cap_nuclear_stor_s(i,t) "--2004$/MW-- overnight capital costs for storage portion of hybrid nuclear+storage" ;
@@ -4568,7 +4576,7 @@ cost_vom_hybrid_storage(i,v,r,t)$[storage_hybrid(i)$(not csp(i))] = cost_vom("ba
 
 * Assign hybrid nuclear+storage plant to have the same value as nuclear
 * parameter cost_vom_nuclear_stor_p(i,v,r,t) "--2004$/MWh-- variable OM for the nuclear portion of hybrid nuclear+storage" ;
-cost_vom(i,v,r,t)$nuclear_stor(i) = plant_char('Nuclear-Stor1',v,t,'vom');
+cost_vom(i,v,r,t)$nuclear_stor(i) = sum{ii$nuclear_stor_gentech(i,ii), plant_char(ii,v,t,'vom')} ;
 
 * Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
 parameter cost_vom_nuclear_stor_s(i,v,r,t) "--2004$/MWh-- variable OM for storage portion of hybrid nuclear+storage" ;
@@ -4638,7 +4646,7 @@ cost_fom(i,v,r,t)$[valcap(i,v,r,t)$pvb(i)] = cost_fom_pvb_p(i,v,r,t) + bcr(i) * 
 
 * Assign hybrid nuclear+storage plant to have the same value as nuclear
 parameter cost_fom_nuclear_stor_p(i,v,r,t) "--2004$/MW-- fixed OM for nuclear portion of hybrid nuclear+storage" ;
-cost_fom_nuclear_stor_p(i,v,r,t)$nuclear_stor(i) = plant_char("Nuclear-Stor1",v,t,'fom') ;
+cost_fom_nuclear_stor_p(i,v,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_gentech(i,ii), plant_char(ii,v,t, 'fom')};
 
 * Assign hybrid nuclear+storage storage to have the same value as the storage technology in stortech_nuclear_stor_config
 parameter cost_fom_nuclear_stor_s(i,v,r,t) "--2004$/MW-- fixed OM for storage portion of hybrid nuclear+storage" ;
@@ -5994,11 +6002,6 @@ parameter
 * Default: regular nuclear reactor fractions
 turbine_generator_cost_nuc_stor(i,t)$nuclear_stor(i) = cost_cap_nuclear_stor_p(i,t) * 0.0392 ;
 electrical_cost_nuc_stor(i,t)$nuclear_stor(i)        = cost_cap_nuclear_stor_p(i,t) * 0.0632 ;
-
-* If/when an SMR-based nuclear+storage tech subset is introduced, apply these fractions instead:
-*   turbine: 0.0386
-*   electrical: 0.0946
-* (This requires a way to distinguish SMR-based nuclear+storage configurations in set logic. Not implemented yet.)
 
 * Compose nuclear+storage capex:
 * - Start from nuclear portion capex
