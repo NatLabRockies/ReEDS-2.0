@@ -1,10 +1,16 @@
-,Description,Default Value,lowdemand_moderate,highdemand_moderate,lowdemand_advanced,highdemand_advanced
-ignore,"0=run this case, 1=ignore this case",0,,,,
-timetype,Sequential or Intertemporal,seq,,,,
-GSw_NewValCapShrink,switch to shrink valcap and related conditioning sets post-solve,1,,,,
-GSw_PRM_StressIterateMax,Max number of times to iterate on a given solve year to achieve GSw_PRM_StressThreshold when using stress periods (0 means don't iterate; 1 means 1 extra ReEDS run; etc),3,,,,
-GSw_RegionResolution,,aggreg,,,,
-GSw_HierarchyFile,,agg54,,,,
-GSw_EFS1_AllYearLoad,Switch to choose electricity profiles,EER_IRAlow,,EER_100by2050,,EER_100by2050
-plantchar_geo,Geothermal cost setting (inputs\plant_characteristics\{plantchar_geo}.csv).The options for plantchar_geo start with 'geo_' and the switch should be set to the entire file name (ex: geo_ATB_2023_conservative),geo_ATB_2024_moderate,,,geo_ATB_2024_advanced,geo_ATB_2024_advanced
-GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor,0,,,,
+,Description,Default Value,90RENuc_by2050,90RENucCCS_by2050,10CO2_by2050
+ignore,"0=run this case, 1=ignore this case",0,,,
+timetype,Sequential or Intertemporal,seq,,,
+GSw_NewValCapShrink,switch to shrink valcap and related conditioning sets post-solve,1,,,
+GSw_PRM_StressIterateMax,Max number of times to iterate on a given solve year to achieve GSw_PRM_StressThreshold when using stress periods (0 means don't iterate; 1 means 1 extra ReEDS run; etc),3,,,
+GSw_RegionResolution,,aggreg,,,
+GSw_HierarchyFile,,agg54,,,
+GSw_EFS1_AllYearLoad,Switch to choose electricity profiles,EER_IRAlow,,,
+plantchar_geo,Geothermal cost setting (inputs\plant_characteristics\{plantchar_geo}.csv).The options for plantchar_geo start with 'geo_' and the switch should be set to the entire file name (ex: geo_ATB_2023_conservative),geo_ATB_2024_moderate,,,
+GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor,0,,,
+GSw_GenMandate,Turn on/off national Gen Requirement. 2 turns on and applies constraint at busbar.,0,1,1,
+GSw_GenMandateList,Select technology list for national generation standard (see inputs/national_generation/nat_gen_tech_frac.csv),RE,Nuclear,NuclearCCS,
+GSw_GenMandateScen,Select trajectory for national generation standard (see inputs/national_generation/gen_mandate_trajectory.csv),90_2050,,,
+GSw_Geothermal,"Geothermal can be turned off [0], left to the default representation [1], or have an extended representation [2]",2,,,
+GSw_AnnualCap,CO2/CO2e emission cap. Turn off cap (0) or turn on CO2 only cap (1) or turn on CO2e cap (2) or include H2 leakage in CO2e cap (3),0,,,1
+GSw_AnnualCapScen,Scenario for CO2 cap pathway (see inputs\emission_constraints\co2_cap.csv),90_by_2050,,,

@@ -473,6 +473,10 @@ set
   nuclear_stor2(i)     "nuclear technologies with storage type 2",
   nuclear_stor3(i)     "nuclear technologies with storage type 3",
   nuclear_stor4(i)     "nuclear technologies with storage type 4",
+  nuclear_stor5(i)     "nuclear technologies with storage type 5",
+  nuclear_stor6(i)     "nuclear technologies with storage type 6",
+  nuclear_stor7(i)     "nuclear technologies with storage type 7",
+  nuclear_stor8(i)     "nuclear technologies with storage type 8",
   ofswind(i)           "offshore wind technologies",
   ogs(i)               "oil-gas-steam technologies",
   onswind(i)           "onshore wind technologies",
@@ -833,18 +837,48 @@ $ifthen.pvb12 %GSw_PVB_Types% == '1'
 $endif.pvb12
 
 * Ban NuclearStor_Types that aren't included in the model
-$ifthen.nuclear_stor1234 %GSw_NuclearStor_Types% == '1_2_3'
-    ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
+$ifthen.nuclear_stor1234567 %GSw_NuclearStor_Types% == '1_2_3_4_5_6_7'
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor1234567
+$ifthen.nuclear_stor123456 %GSw_NuclearStor_Types% == '1_2_3_4_5_6'
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor123456
+$ifthen.nuclear_stor12345 %GSw_NuclearStor_Types% == '1_2_3_4_5'
+    ban(i)$i_subsets(i,'Nuclear-Stor6') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor12345
+$ifthen.nuclear_stor1234 %GSw_NuclearStor_Types% == '1_2_3_4'
+    ban(i)$i_subsets(i,'Nuclear-Stor5') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor6') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
 $endif.nuclear_stor1234
-$ifthen.nuclear_stor123 %GSw_NuclearStor_Types% == '1_2'
+$ifthen.nuclear_stor123 %GSw_NuclearStor_Types% == '1_2_3'
+    ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor5') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor6') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor123
+$ifthen.nuclear_stor12 %GSw_NuclearStor_Types% == '1_2'
     ban(i)$i_subsets(i,'Nuclear-Stor3') = yes ;
     ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
-$endif.nuclear_stor123
-$ifthen.nuclear_stor12 %GSw_NuclearStor_Types% == '1'
+    ban(i)$i_subsets(i,'Nuclear-Stor5') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor6') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor12
+$ifthen.nuclear_stor1 %GSw_NuclearStor_Types% == '1'
     ban(i)$i_subsets(i,'Nuclear-Stor2') = yes ;
     ban(i)$i_subsets(i,'Nuclear-Stor3') = yes ;
     ban(i)$i_subsets(i,'Nuclear-Stor4') = yes ;
-$endif.nuclear_stor12
+    ban(i)$i_subsets(i,'Nuclear-Stor5') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor6') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor7') = yes ;
+    ban(i)$i_subsets(i,'Nuclear-Stor8') = yes ;
+$endif.nuclear_stor1
 
 *** Restrict valcap for storage techs based on Sw_Storage switch
 * 0: Ban all storage
@@ -876,6 +910,10 @@ bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor1'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor2'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor3'), i_ctt(i,'d') }] = YES ;
 bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor4'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor5'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor6'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor7'), i_ctt(i,'d') }] = YES ;
+bannew(i)$[sum{ctt_i_ii(i,'Nuclear-Stor8'), i_ctt(i,'d') }] = YES ;
 
 *ban and bannew all non-numeraire techs that are derived from ban numeraire techs
 ban(i)$sum{ii$ban(ii), ctt_i_ii(i,ii) } = YES ;
@@ -1012,6 +1050,10 @@ nuclear_stor1(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor1') ;
 nuclear_stor2(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor2') ;
 nuclear_stor3(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor3') ;
 nuclear_stor4(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor4') ;
+nuclear_stor5(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor5') ;
+nuclear_stor6(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor6') ;
+nuclear_stor7(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor7') ;
+nuclear_stor8(i)$(not ban(i))       = yes$i_subsets(i,'Nuclear-Stor8') ;
 ofswind(i)$(not ban(i))             = yes$i_subsets(i,'ofswind') ;
 ogs(i)$(not ban(i))                 = yes$i_subsets(i,'ogs') ;
 onswind(i)$(not ban(i))             = yes$i_subsets(i,'onswind') ;

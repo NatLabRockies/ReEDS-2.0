@@ -1,0 +1,6 @@
+casepath,casename,color
+# python postprocessing/compare_cases.py \Users\egallup\ReEDS-2.0\postprocessing\geotest.csv
+C:\Users\egallup\ReEDS-2.0\runs\geotest_highdemand_advanced,HIGH DEMAND ADVANCED GEO,
+C:\Users\egallup\ReEDS-2.0\runs\geotest_highdemand_moderate,HIGH DEMAND MODERATE GEO,
+C:\Users\egallup\ReEDS-2.0\runs\geotest_lowdemand_advanced,LOW DEMAND ADVANCED GEO,
+C:\Users\egallup\ReEDS-2.0\runs\geotest_lowdemand_moderate,LOW DEMAND MODERATE GEO,
