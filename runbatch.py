@@ -354,7 +354,7 @@ def check_compatibility(sw):
     #         raise ValueError("Fix GSw_NuclearStor_BCR")
 
     for nuclearstor_type in sw['GSw_NuclearStor_Types'].split('_'):
-        if not (1 <= int(nuclearstor_type) <= 4):
+        if not (1 <= int(nuclearstor_type) <= 8):
             raise ValueError("Fix GSw_NuclearStor_Types")
 
     scalars = reeds.io.get_scalars()

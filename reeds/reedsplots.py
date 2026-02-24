@@ -2832,7 +2832,7 @@ def map_capacity_techs(
         **{f'wind-ons_{i}': 'Land-based wind' for i in range(20)},
         **{f'wind-ofs_{i}': 'Offshore wind' for i in range(20)},
         **dict(zip(['nuclear'], ['Nuclear'] * 20)),
-        **dict(zip(['nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4'], ['Nuclear-Stor'] * 20)),
+        **dict(zip(['nuclear-stor1', 'nuclear-stor2', 'nuclear-stor3', 'nuclear-stor4', 'nuclear-stor5', 'nuclear-stor6', 'nuclear-stor7', 'nuclear-stor8'], ['Nuclear-Stor'] * 20)),
         **dict(zip(['nuclear-smr'], ['Nuclear-SMR'] * 20)),
         **dict(
             zip(
