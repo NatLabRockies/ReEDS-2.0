@@ -18,6 +18,78 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
 
 
+_INTERPOLATE_MANDATES_SPEC_RE = re.compile(
+    r"^(?:\d{4}-\d*\.?\d+)(?:_\d{4}-\d*\.?\d+)+$"
+)
+
+
+def _parse_interpolate_mandates_spec(spec: str) -> list[tuple[int, float]]:
+    """Parse year-fraction pairs: <year>-<fraction>_<year>-<fraction>[_...]."""
+    spec = str(spec).strip()
+    if not _INTERPOLATE_MANDATES_SPEC_RE.match(spec):
+        raise ValueError(
+            "GSw_interpolate_mandates must be '0' (disabled) or match "
+            "<year>-<fraction>_<year>-<fraction>[_<year>-<fraction>...]. "
+            f"Got: {spec!r}"
+        )
+
+    points: list[tuple[int, float]] = []
+    for part in spec.split('_'):
+        year_str, frac_str = part.split('-', 1)
+        year = int(year_str)
+        frac = float(frac_str)
+        if (frac < 0) or (frac > 1):
+            raise ValueError(
+                "GSw_interpolate_mandates fractions must be in [0, 1]. "
+                f"Got: year={year} fraction={frac} in {spec!r}"
+            )
+        points.append((year, frac))
+
+    years_only = [y for y, _ in points]
+    if years_only != sorted(years_only):
+        raise ValueError(
+            "GSw_interpolate_mandates years must be strictly increasing. "
+            f"Got: {years_only} in {spec!r}"
+        )
+    if len(set(years_only)) != len(years_only):
+        raise ValueError(
+            "GSw_interpolate_mandates cannot repeat the same year. "
+            f"Got: {years_only} in {spec!r}"
+        )
+
+    return points
+
+
+def _build_piecewise_linear_mandate_trajectory(
+    years: list[int],
+    points: list[tuple[int, float]],
+) -> pd.Series:
+    """0 before first point; piecewise-linear between points; hold last value after."""
+    years_arr = np.asarray(years, dtype=int)
+    values = np.zeros_like(years_arr, dtype=float)
+
+    (first_year, _first_frac) = points[0]
+    (last_year, last_frac) = points[-1]
+
+    # After last point, hold at last fraction
+    values[years_arr > last_year] = last_frac
+
+    # Interpolate each segment (inclusive endpoints)
+    for (y0, f0), (y1, f1) in zip(points[:-1], points[1:]):
+        if y1 <= y0:
+            raise ValueError(
+                "GSw_interpolate_mandates years must be strictly increasing. "
+                f"Got segment {y0}->{y1}"
+            )
+        mask = (years_arr >= y0) & (years_arr <= y1)
+        values[mask] = f0 + (f1 - f0) * ((years_arr[mask] - y0) / (y1 - y0))
+
+    # Set the exact value at the first year (years before remain 0 by default)
+    values[years_arr == first_year] = points[0][1]
+
+    return pd.Series(values, index=years_arr)
+
+
 #%% ===========================================================================
 ### --- General Read Functions---
 ### ===========================================================================
@@ -1644,12 +1716,31 @@ def write_miscellaneous_files(
     pd.DataFrame(columns=solveyears).to_csv(
         os.path.join(inputs_case,'modeledyears.csv'), index=False)
 
-    pd.read_csv(
-        os.path.join(reeds_path,'inputs','national_generation','gen_mandate_trajectory.csv'),
-        index_col='GSw_GenMandateScen'
-    ).loc[sw['GSw_GenMandateScen']].rename_axis('*t').round(5).to_csv(
-        os.path.join(inputs_case,'gen_mandate_trajectory.csv')
-    )
+    interpolate_spec = str(sw.get('GSw_interpolate_mandates', '0')).strip()
+    if interpolate_spec.lower() not in ['0', 'false', 'none', '']:
+        points = _parse_interpolate_mandates_spec(interpolate_spec)
+        years = list(range(int(sw['startyear']), int(sw['endyear']) + 1))
+        trajectory = _build_piecewise_linear_mandate_trajectory(years=years, points=points)
+        trajectory.name = f"interp_{interpolate_spec}"
+        trajectory.rename_axis('*t').round(5).to_csv(
+            os.path.join(inputs_case, 'gen_mandate_trajectory.csv')
+        )
+    else:
+        (
+            pd.read_csv(
+                os.path.join(
+                    reeds_path,
+                    'inputs',
+                    'national_generation',
+                    'gen_mandate_trajectory.csv',
+                ),
+                index_col='GSw_GenMandateScen',
+            )
+            .loc[sw['GSw_GenMandateScen']]
+            .rename_axis('*t')
+            .round(5)
+            .to_csv(os.path.join(inputs_case, 'gen_mandate_trajectory.csv'))
+        )
 
     pd.read_csv(
         os.path.join(reeds_path,'inputs','national_generation','gen_mandate_tech_list.csv'),

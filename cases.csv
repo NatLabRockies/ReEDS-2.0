@@ -145,6 +145,7 @@ GSw_GasSector,Select sector scope of gas curves,electric_sector; energy_sector,e
 GSw_GenMandate,Turn on/off national Gen Requirement. 2 turns on and applies constraint at busbar.,0; 1; 2,0,
 GSw_GenMandateList,Select technology list for national generation standard (see inputs/national_generation/nat_gen_tech_frac.csv),N/A,RE,
 GSw_GenMandateScen,Select trajectory for national generation standard (see inputs/national_generation/gen_mandate_trajectory.csv),N/A,100_2035,
+GSw_interpolate_mandates,"Optional: build a custom national generation mandate trajectory via piecewise-linear interpolation instead of selecting a predefined GSw_GenMandateScen. Format: <year>-<fraction>_<year>-<fraction>[_<year>-<fraction>...], with fractions in [0,1] and years strictly increasing. Values before the first year are 0; values after the last year hold at the last fraction. Set to 0 to disable.",0; \d{4}-\d*\.?\d+(?:_\d{4}-\d*\.?\d+)+,0,
 GSw_Geothermal,"Geothermal can be turned off [0], left to the default representation [1], or have an extended representation [2]",0; 1; 2,1,
 GSw_gopt,Select opt file to be used,N/A,1,
 GSw_GrowthAbsCon,Turn on/off absolute growth constraint,0; 1,0,

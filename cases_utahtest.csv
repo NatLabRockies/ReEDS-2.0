@@ -49,3 +49,5 @@ GSw_Storage,1,1,1,1,1,1,1,1
 GSw_Upgrades,0,0,0,0,0,0,0,0
 ivt_suffix,small,small,small,small,small,small,small,small
 numhintage,1,1,1,1,1,1,1,1
+GSw_GenMandateList,RENuclearCCS,RENuclearCCS,RENuclearCCS,RENuclearCCS,RENuclearCCS,RENuclearCCS,RENuclearCCS,RENuclearCCS
+GSw_interpolate_mandates,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21,2030-0.1_2045-0.2_2050-0.21
