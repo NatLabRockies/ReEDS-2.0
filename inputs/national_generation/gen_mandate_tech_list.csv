@@ -1,4 +1,4 @@
-*i,RE,RENuclear,RENuclearCCS,Nuclear,Nuclear_SMR,RE_NoCombust,Wind,Solar,Gas
+*i,RE,RENuclear,RENuclearCCS,Nuke,Nuke_SMR,RE_NoCombust,Wind,Solar,Gas
 can-imports,1,1,1,0,0,1,0,0,0
 coal-CCS_mod,0,0,1,0,0,0,0,0,0
 coal-CCS_max,0,0,1,0,0,0,0,0,0

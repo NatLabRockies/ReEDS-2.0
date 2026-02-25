@@ -1954,6 +1954,7 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
         "emission_constraints/emitrates.csv",
         "financials/cap_penalty.csv",
         "national_generation/gbin_min.csv",
+        "unitdata.csv",
         "sets/tg.csv", "tech-subset-table.csv"
     ]
 
@@ -2193,124 +2194,6 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
         print(f"propagate_nuclearstor_tech_rows: modified {n_files_modified} file(s)")
 
 
-def standardize_tech_casing(inputs_case):
-    """Standardize tech labels to the preferred capitalization in sets/i.csv.
-
-    ReEDS/GAMS treats set elements case-insensitively; mixed casing like
-    'nuclear-stor1' vs 'Nuclear-Stor1' can trigger "Element is redefined".
-    This rewrites any *cell* that exactly matches a technology name to the
-    preferred spelling from inputs_case/sets/i.csv.
-    """
-
-    def canon(x):
-        return str(x).strip().lower().replace('_', '-').replace(' ', '')
-
-    techset_path = os.path.join(inputs_case, 'sets', 'i.csv')
-    if not os.path.exists(techset_path):
-        return
-
-    techs = (
-        pd.read_csv(techset_path, header=None, comment='*', dtype=str, encoding='utf-8-sig')
-        .squeeze(1)
-        .dropna()
-        .astype(str)
-        .map(lambda x: x.strip())
-    )
-    techs = techs[techs != '']
-    preferred = {canon(t): t for t in techs.tolist()}
-    if not preferred:
-        return
-
-    def first_noncomment_line(path):
-        with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
-            for line in f:
-                s = line.strip()
-                if not s or s.startswith('#'):
-                    continue
-                return s
-        return None
-
-    def preserve_blank_header(df, header_line):
-        if not header_line:
-            return df
-        raw_cols = [c.strip() for c in header_line.split(',')]
-        if len(raw_cols) != len(df.columns):
-            return df
-        cols = list(df.columns)
-        for idx, (raw, col) in enumerate(zip(raw_cols, df.columns)):
-            if raw == '' and str(col).startswith('Unnamed:'):
-                cols[idx] = ''
-        if cols != list(df.columns):
-            df = df.copy()
-            df.columns = cols
-        return df
-
-    def standardize_series(series):
-        s = series.astype(str)
-        c = s.map(canon)
-        mask = c.isin(preferred)
-        if not mask.any():
-            return series, False
-        out = s.copy()
-        out.loc[mask] = c.loc[mask].map(preferred)
-        return out, True
-
-    n_files_modified = 0
-    for root, _dirs, files in os.walk(inputs_case):
-        for fname in files:
-            if not fname.lower().endswith('.csv'):
-                continue
-
-            fpath = os.path.join(root, fname)
-            header_line = first_noncomment_line(fpath)
-            if not header_line:
-                continue
-
-            # Headerless 1-col set-style file (one element per line, no commas)
-            headerless = (',' not in header_line) and (canon(header_line) in preferred)
-
-            try:
-                df = pd.read_csv(
-                    fpath,
-                    comment='#',
-                    dtype=str,
-                    keep_default_na=False,
-                    encoding='utf-8-sig',
-                    header=None if headerless else 'infer',
-                )
-            except Exception:
-                continue
-
-            if not headerless:
-                df = preserve_blank_header(df, header_line)
-
-            changed = False
-            # Cell values: convert any exact tech tokens to preferred spelling.
-            for col in df.columns:
-                df[col], col_changed = standardize_series(df[col])
-                changed = changed or col_changed
-
-            # Wide-format headers: only normalize if the file is *mostly* tech columns.
-            if not headerless:
-                nonblank_cols = [c for c in df.columns if str(c).strip() != '']
-                col_canons = [canon(c) for c in nonblank_cols]
-                match_ratio = (pd.Series(col_canons).isin(set(preferred)).mean() if nonblank_cols else 0.0)
-                if (len(nonblank_cols) >= 8) and (match_ratio >= 0.5):
-                    new_cols = []
-                    for c in df.columns:
-                        cc = canon(c)
-                        new_cols.append(preferred.get(cc, c))
-                    if new_cols != list(df.columns):
-                        df.columns = new_cols
-                        changed = True
-
-            if changed:
-                df.to_csv(fpath, index=False, header=(not headerless))
-                n_files_modified += 1
-
-    if n_files_modified:
-        print(f"standardize_tech_casing: modified {n_files_modified} file(s)")
-
 
 #%% ===========================================================================
 ### --- PROCEDURE ---
@@ -2396,9 +2279,6 @@ def main(reeds_path, inputs_case, NARIS=False):
     # Nuclear-Stor technologies based on GSw_NuclearStor_GenTechs.
     propagate_nuclearstor_tech_rows(sw, inputs_case)
 
-    # Normalize Nuclear-Stor casing across inputs_case to avoid mixed-spelling
-    # duplicates in downstream generated CSVs and GAMS compilation.
-    # standardize_tech_casing(inputs_case)
 
 
 #%% Procedure
