@@ -1915,11 +1915,83 @@ expenditure_flow_int(r,t)$tmodel_new(t) =
   sum{(i,v,h)$[canada(i)$valgen(i,v,r,t)], GEN.l(i,v,r,h,t) * hours(h) * reqt_price('load','na',r,h,t) }  - sum{h, hours(h) * reqt_price('load','na',r,h,t) * can_exports_h(r,h,t) } ;
 
 *=========================
+* Objective Coefficients
+*=========================
+* Per-MWh coefficient on GEN(i,v,r,allh,t) implied by the operational objective (c_supplyobjective.gms).
+* Intended comparator to reqt_price('load',...) in hours where GEN is marginal.
+gen_objcoef(i,v,r,allh,t)$[
+        tmodel_new(t)$valgen(i,v,r,t)$h_t(allh,t)$hours(allh)
+] =
+        + cost_vom(i,v,r,t)$[cost_vom(i,v,r,t)$(not storage_hybrid(i))]
+
+        + (heat_rate(i,v,r,t) * fuel_price(i,r,t))$[
+                heat_rate(i,v,r,t)
+                $(not gas(i))$(not bio(i))$(not cofire(i))
+                $((not h2_combustion(i)) or (h2_combustion(i)$((Sw_H2=0) or h_stress(allh))))
+                $(not nuclear_stor(i))
+            ]
+
+        + ((1-bio_cofire_perc) * heat_rate(i,v,r,t) * fuel_price("coal-new",r,t))$[
+                cofire(i)$heat_rate(i,v,r,t)
+            ]
+
+        + (heat_rate(i,v,r,t) * fuel_price(i,r,t))$[
+                gas(i)$heat_rate(i,v,r,t)$(Sw_GasCurve = 2)
+            ]
+
+        + (capture_rate("CO2",i,v,r,t) * Sw_CO2_Storage)$[(not Sw_CO2_Detail)]
+
+        - ((crf(t) / crf_co2_incentive(t)) * co2_captured_incentive(i,v,r,t) * capture_rate("CO2",i,v,r,t))$[
+                co2_captured_incentive(i,v,r,t)
+            ]
+
+        - (ptc_value_scaled(i,v,t) * tc_phaseout_mult(i,v,t))$[
+                ptc_value_scaled(i,v,t)
+            ]
+;
+
+* Per-MWh coefficient on FLOW(r,rr,allh,t,trtype) implied by the operational objective (c_supplyobjective.gms).
+* FLOW only enters the objective through hurdle costs (cost_hurdle), so the coefficient is constant across hours/trtype.
+flow_objcoef(r,rr,allh,t,trtype)$[
+    tmodel_new(t)$routes(r,rr,trtype,t)$h_t(allh,t)$hours(allh)
+] =
+    cost_hurdle(r,rr,t)
+;
+
+* Shadow price of transmission capacity (congestion component) on each link and timeslice.
+* eq_transmission_limit is written as CAP =g= FLOW, so its marginal is typically non-positive; multiply by -1.
+tran_limit_price(r,rr,allh,t,trtype)$[
+    tmodel_new(t)$routes(r,rr,trtype,t)$h_t(allh,t)$hours(allh)
+] =
+    - (1 / cost_scale) * (1 / pvf_onm(t)) * eq_transmission_limit.m(r,rr,allh,t,trtype) / hours(allh)
+;
+
+*=========================
 * Reduced Cost
 *=========================
 reduced_cost(i,v,r,t,"nobin","CAP")$valinv_init(i,v,r,t) = CAP.m(i,v,r,t)/(1000*cost_scale*pvf_capital(t)) ;
 reduced_cost(i,v,r,t,"nobin","INV")$valinv_init(i,v,r,t) = INV.m(i,v,r,t)/(1000*cost_scale*pvf_capital(t)) ;
 reduced_cost(i,v,r,t,rscbin,"INV_RSC")$[rsc_i(i)$valinv_init(i,v,r,t)$m_rscfeas(r,i,rscbin)] = INV_RSC.m(i,v,r,rscbin,t)/(1000*cost_scale*pvf_capital(t)) ;
+
+* Reduced costs for dispatch variables that appear in the regional supply-demand balance.
+* These can be used with eq_supply_demand_balance.m (exported via reqt_price('load'))
+* to identify marginal suppliers (zero reduced cost, not bound) in a given (r,allh,t).
+* We report $/MWh for time slices with defined hours(allh) (typically representative hours).
+balance_rc(i,v,r,allh,t,"GEN")$[
+    tmodel_new(t)$valgen(i,v,r,t)$h_t(allh,t)$hours(allh)
+] = (1 / cost_scale) * (1 / pvf_onm(t)) * GEN.m(i,v,r,allh,t) / hours(allh) ;
+
+balance_rc(i,v,r,allh,t,"STORAGE_IN")$[
+    tmodel_new(t)$valcap(i,v,r,t)$(storage_standalone(i) or hyd_add_pump(i))$h_t(allh,t)$hours(allh)
+] = (1 / cost_scale) * (1 / pvf_onm(t)) * STORAGE_IN.m(i,v,r,allh,t) / hours(allh) ;
+
+balance_rc(i,v,r,allh,t,"STORAGE_IN_GRID")$[
+    tmodel_new(t)$valcap(i,v,r,t)$storage_hybrid(i)$h_t(allh,t)$hours(allh)
+] = (1 / cost_scale) * (1 / pvf_onm(t)) * STORAGE_IN_GRID.m(i,v,r,allh,t) / hours(allh) ;
+
+flow_rc(r,rr,allh,t,trtype)$[
+    tmodel_new(t)$routes(r,rr,trtype,t)$h_t(allh,t)$hours(allh)
+] = (1 / cost_scale) * (1 / pvf_onm(t)) * FLOW.m(r,rr,allh,t,trtype) / hours(allh) ;
 
 *=========================
 * Flexible load
