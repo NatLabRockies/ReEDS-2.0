@@ -985,6 +985,11 @@ revenue('rps',i,r,t)$valgen_irt(i,r,t) =
   sum{(v,h,RPSCat)$[valgen(i,v,r,t)$sum{st$r_st(r,st), RecTech(RPSCat,i,st,t) }],
       GEN.l(i,v,r,h,t) * sum{st$r_st(r,st), RPSTechMult(RPSCat,i,st) } * hours(h) * reqt_price('state_rps',RPSCat,r,'ann',t) } ;
 
+revenue('nat_gen',i,r,t)$[valgen_irt(i,r,t)$nat_gen_tech_frac(i)] =
+  sum{(v,h)$[valgen(i,v,r,t)$h_rep(h)],
+      GEN.l(i,v,r,h,t) * nat_gen_tech_frac(i) * hours(h)
+      * reqt_price('nat_gen','na',r,'ann',t) } ;
+
 revenue_nat(rev_cat,i,t)$tmodel_new(t) = sum{r, revenue(rev_cat,i,r,t) } ;
 
 revenue_en(rev_cat,i,r,t)
@@ -1115,6 +1120,76 @@ valnew('val_rps','benchmark',r,t)$tmodel_new(t) =
 *Annual-average price of the system
 valnew('val_rps','benchmark','sys',t)$tmodel_new(t) =
     sum{(r,RPSCat), reqt_price('state_rps',RPSCat,r,'ann',t) * reqt_quant('state_rps',RPSCat,r,'ann',t)} ;
+
+valnew('val_nat_gen',i,r,t)$[valnew('MW',i,r,t)$nat_gen_tech_frac(i)] =
+  sum{(v,h)$[valinv(i,v,r,t)$h_rep(h)],
+      GEN.l(i,v,r,h,t) * nat_gen_tech_frac(i) * hours(h)
+      * reqt_price('nat_gen','na',r,'ann',t)
+  } * valnew('inv_cap_ratio',i,r,t) ;
+valnew('val_nat_gen_sys',i,r,t)$[valnew('MW',i,r,t)$nat_gen_tech_frac(i)] =
+  sum{(v,h)$[valinv(i,v,r,t)$h_rep(h)],
+      GEN.l(i,v,r,h,t) * nat_gen_tech_frac(i) * hours(h)
+      * reqt_price_sys('nat_gen','na','ann',t)
+  } * valnew('inv_cap_ratio',i,r,t) ;
+valnew('val_nat_gen','benchmark',r,t)$tmodel_new(t) =
+    reqt_price('nat_gen','na',r,'ann',t) * reqt_quant('nat_gen','na',r,'ann',t) ;
+valnew('val_nat_gen','benchmark','sys',t)$tmodel_new(t) =
+    sum{r, reqt_price('nat_gen','na',r,'ann',t) * reqt_quant('nat_gen','na',r,'ann',t)} ;
+
+*========================================
+* Cost of new builds
+*========================================
+
+* Annualized capital cost (power capacity) attributed to new builds
+costnew('cost_cap',i,r,t)$valnew('MW',i,r,t) =
+  sum{v$valinv(i,v,r,t),
+      INV.l(i,v,r,t) * cost_cap_fin_mult(i,r,t) * cost_cap(i,t) } ;
+
+* Annualized capital cost (energy/storage capacity) attributed to new builds
+costnew('cost_cap_energy',i,r,t)$[valnew('MW',i,r,t)$sum{v$valinv(i,v,r,t), INV_ENERGY.l(i,v,r,t)}] =
+  sum{v$valinv(i,v,r,t),
+      INV_ENERGY.l(i,v,r,t) * cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) } ;
+
+* Fixed O&M cost (power capacity) attributed to new builds
+costnew('cost_fom',i,r,t)$valnew('MW',i,r,t) =
+  sum{v$valinv(i,v,r,t),
+      cost_fom(i,v,r,t) * INV.l(i,v,r,t) } ;
+
+* Fixed O&M cost (energy/storage capacity) attributed to new builds
+costnew('cost_fom_energy',i,r,t)$[valnew('MW',i,r,t)$sum{v$valinv(i,v,r,t), INV_ENERGY.l(i,v,r,t)}] =
+  sum{v$valinv(i,v,r,t),
+      cost_fom_energy(i,v,r,t) * INV_ENERGY.l(i,v,r,t) } ;
+
+* VOM cost attributed to new builds (plant-side for nuclear_stor, GEN for others)
+costnew('cost_vom',i,r,t)$valnew('MW',i,r,t) =
+  sum{(v,h)$[valinv(i,v,r,t)$h_rep(h)],
+      cost_vom(i,v,r,t) * hours(h)
+      * ( GEN.l(i,v,r,h,t)$(not nuclear_stor(i))
+        + GEN_PLANT.l(i,v,r,h,t)$nuclear_stor(i) )
+  } * valnew('inv_cap_ratio',i,r,t) ;
+
+* VOM cost for storage side of nuclear_stor
+costnew('cost_vom_stor',i,r,t)$[valnew('MW',i,r,t)$nuclear_stor(i)] =
+  sum{(v,h)$[valinv(i,v,r,t)$h_rep(h)],
+      cost_vom_nuclear_stor_s(i,v,r,t) * hours(h) * GEN_STORAGE.l(i,v,r,h,t)
+  } * valnew('inv_cap_ratio',i,r,t) ;
+
+* Fuel cost attributed to new builds (uses GEN_PLANT for nuclear_stor, GEN for others)
+costnew('cost_fuel',i,r,t)$[valnew('MW',i,r,t)$sum{v$valinv(i,v,r,t), heat_rate(i,v,r,t)}] =
+  sum{(v,h)$[valinv(i,v,r,t)$heat_rate(i,v,r,t)$h_rep(h)],
+      heat_rate(i,v,r,t) * fuel_price(i,r,t) * hours(h)
+      * ( GEN.l(i,v,r,h,t)$(not nuclear_stor(i))
+        + GEN_PLANT.l(i,v,r,h,t)$nuclear_stor(i) )
+  } * valnew('inv_cap_ratio',i,r,t) ;
+
+* PTC credit attributed to new builds (reported as positive = cost reduction)
+costnew('cost_ptc',i,r,t)$[valnew('MW',i,r,t)$sum{v$valinv(i,v,r,t), ptc_value_scaled(i,v,t)}] =
+  sum{(v,h)$[valinv(i,v,r,t)$ptc_value_scaled(i,v,t)$h_rep(h)],
+      ptc_value_scaled(i,v,t) * tc_phaseout_mult(i,v,t) * hours(h) * GEN.l(i,v,r,h,t)
+  } * valnew('inv_cap_ratio',i,r,t) ;
+
+* MW of new investment (same as valnew for easy per-MW normalization)
+costnew('MW',i,r,t) = valnew('MW',i,r,t) ;
 
 *=========================
 * EMISSIONS
