@@ -103,7 +103,7 @@ sys_costs_op(sys_costs) /
   op_vom_costs
 /,
 
-rev_cat "categories for renvenue streams" /load, res_marg, oper_res, rps, charge /,
+rev_cat "categories for renvenue streams" /load, res_marg, oper_res, rps, charge, nat_gen /,
 
 lcoe_cat "categories for LCOE calculation" /capcost, upgradecost, rsccost, fomcost, vomcost, gen /
 
