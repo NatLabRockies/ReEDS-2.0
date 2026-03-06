@@ -89,6 +89,8 @@ planned_outage(i),fraction,average scheduled outage rate (h-weighted) by technol
 "gen_h_nat(i,allh,t)",MW,national generation by timeslice with charge and production load as negative generation,,,
 "gen_h_stress(i,r,allh,t)",MW,generation by stress timeslice with charge and production load as negative generation,,,
 "gen_h_stress_nat(i,allh,t)",MW,national generation by stress timeslice with charge and production load as negative generation,,,
+"gen_plant_h_stress(i,r,allh,t)",MW,generation by stress timeslice from plantside of hybrid plant,,,
+"gen_storage_h_stress(i,r,allh,t)",MW,generation by stress timeslice from storage side of hybrid plant,,,
 "gen_ann(i,r,t)",MWh,annual generation with charge and production load as negative generation,,,
 "gen_ann_nat(i,t)",MWh,"annual generation with charge and production load as negative generation, nationwide",,,
 "gen_uncurtailed(i,r,t)",MWh,annual generation where VRE uses uncurtailed gen and storage uses GEN,,,

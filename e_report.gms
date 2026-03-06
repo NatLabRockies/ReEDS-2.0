@@ -658,6 +658,10 @@ gen_h_stress(i,r,allh,t)$[tmodel_new(t)$valgen_irt(i,r,t)$h_stress_t(allh,t)] =
 ;
 gen_h_stress_nat(i,allh,t)$[tmodel_new(t)$h_stress_t(allh,t)] = sum{r, gen_h_stress(i,r,allh,t) } ;
 
+* plant and storage components during stress periods
+gen_plant_h_stress(i,r,allh,t)$[tmodel_new(t)$valgen_irt(i,r,t)$storage_hybrid(i)$h_stress_t(allh,t)] = sum{v$valgen(i,v,r,t), GEN_PLANT.l(i,v,r,allh,t)} ;
+gen_storage_h_stress(i,r,allh,t)$[tmodel_new(t)$valgen_irt(i,r,t)$storage_hybrid(i)$h_stress_t(allh,t)] = sum{v$valgen(i,v,r,t), GEN_STORAGE.l(i,v,r,allh,t)} ;
+
 gen_ann(i,r,t)$tmodel_new(t) = sum{h, gen_h(i,r,h,t) * hours(h) } ;
 gen_ann_nat(i,t)$tmodel_new(t) = sum{r, gen_ann(i,r,t) } ;
 
