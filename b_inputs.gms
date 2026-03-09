@@ -4817,6 +4817,9 @@ heat_rate(i,newv,r,t)$[upgrade(i)$Sw_Upgrades$valcap(i,newv,r,t)] =
 heat_rate(i,v,r,t)$[heat_rate_adj(i,'pre2010')$initv(v)] = heat_rate_adj(i,'pre2010') * heat_rate(i,v,r,t) ;
 heat_rate(i,v,r,t)$[heat_rate_adj(i,'post2010')$newv(v)] = heat_rate_adj(i,'post2010') * heat_rate(i,v,r,t) ;
 
+* Assign nuclear-stor heat rate from the associated generating technology
+heat_rate(i,v,r,t)$[nuclear_stor(i)$valcap(i,v,r,t)] = sum{ii$nuclear_stor_gentech(i,ii), heat_rate(ii,v,r,t) } ;
+
 *=========================================
 * --- Fuel Prices ---
 *=========================================

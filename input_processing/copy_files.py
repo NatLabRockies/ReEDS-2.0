@@ -1951,7 +1951,7 @@ def propagate_nuclearstor_tech_rows(sw, inputs_case):
     #   Example: ['regional_cap_cost_diff.csv', 'ivt.csv']
     NUCLEARSTOR_PROPAGATION_SKIP_DIRS: list[str] = ["capacity_exogenous", "demonstration_files"]
     NUCLEARSTOR_PROPAGATION_SKIP_FILES: list[str] = [
-        "emission_constraints/emitrates.csv",
+        "emission_constraints/emitrate.csv",
         "financials/cap_penalty.csv",
         "national_generation/gbin_min.csv",
         "unitdata.csv",
