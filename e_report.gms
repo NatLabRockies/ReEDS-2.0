@@ -1192,6 +1192,24 @@ costnew('cost_ptc',i,r,t)$[valnew('MW',i,r,t)$sum{v$valinv(i,v,r,t), ptc_value_s
       ptc_value_scaled(i,v,t) * tc_phaseout_mult(i,v,t) * hours(h) * GEN.l(i,v,r,h,t)
   } * valnew('inv_cap_ratio',i,r,t) ;
 
+* POI (intra-zone network reinforcement) capital cost attributed to new builds
+* Allocated proportionally to each non-spur tech's share of new investment (AC MW)
+costnew('cost_poi_cap',i,r,t)$[valnew('MW',i,r,t)
+    $Sw_TransIntraCost$(not spur_techs(i))$INV_POI.l(r,t)
+    $sum{(ii,vv)$[valinv(ii,vv,r,t)$(not spur_techs(ii))], INV.l(ii,vv,r,t) / ilr(ii)}] =
+  trans_cost_cap_fin_mult(t) * Sw_TransIntraCost * 1000 * INV_POI.l(r,t)
+  * ( sum{v$valinv(i,v,r,t), INV.l(i,v,r,t)} / ilr(i) )
+  / sum{(ii,vv)$[valinv(ii,vv,r,t)$(not spur_techs(ii))], INV.l(ii,vv,r,t) / ilr(ii)} ;
+
+* POI (intra-zone network reinforcement) FOM cost attributed to new builds
+* Annual FOM on the new POI capacity built this year, same allocation as capital
+costnew('cost_poi_fom',i,r,t)$[valnew('MW',i,r,t)
+    $Sw_TransIntraCost$(not spur_techs(i))$INV_POI.l(r,t)
+    $sum{(ii,vv)$[valinv(ii,vv,r,t)$(not spur_techs(ii))], INV.l(ii,vv,r,t) / ilr(ii)}] =
+  Sw_TransIntraCost * 1000 * trans_fom_frac * INV_POI.l(r,t)
+  * ( sum{v$valinv(i,v,r,t), INV.l(i,v,r,t)} / ilr(i) )
+  / sum{(ii,vv)$[valinv(ii,vv,r,t)$(not spur_techs(ii))], INV.l(ii,vv,r,t) / ilr(ii)} ;
+
 * MW of new investment (same as valnew for easy per-MW normalization)
 costnew('MW',i,r,t) = valnew('MW',i,r,t) ;
 
