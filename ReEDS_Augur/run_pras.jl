@@ -198,6 +198,12 @@ function run_pras(pras_system_path::String, args::Dict)
     results_tuple = PRAS.assess(sys, method, values(resultspec)...)
     results = Dict{String,Any}(zip(keys(resultspec), results_tuple))
 
+    ## Force GC to clean up PRAS's threaded allocations before HDF5 writes.
+    ## Without this, Julia's finalizer threads can corrupt glibc's malloc
+    ## linked lists when freeing HDF5 C objects concurrently ("corrupted
+    ## double-linked list" / SIGABRT).
+    GC.gc()
+
     #%% Print some results for the entire modeled region to show it worked
     @info "$(PRAS.LOLE(results["short"])) event-h"
     @info "$(PRAS.EUE(results["short"])) MWh"
@@ -471,5 +477,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     #%% Run it
     main(args)
 
+    ## Force GC before process exit to finalize HDF5 handles cleanly
+    GC.gc()
     #%%
 end
