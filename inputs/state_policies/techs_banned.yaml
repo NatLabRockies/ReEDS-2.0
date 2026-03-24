@@ -23,6 +23,14 @@ Gas-CC:
   st:
   - OR
   - VT
+Gas-CC_H_1x1:
+  st:
+  - OR
+  - VT
+Gas-CC_H_2x1:
+  st:
+  - OR
+  - VT
 Gas-CC-CCS_max:
   st:
   - NY
@@ -33,7 +41,31 @@ Gas-CC-CCS_mod:
   - NY
   - OR
   - VT
+Gas-CC_H_1x1-CCS_max:
+  st:
+  - NY
+  - OR
+  - VT
+Gas-CC_H_1x1-CCS_mod:
+  st:
+  - NY
+  - OR
+  - VT
+Gas-CC_H_2x1-CCS_max:
+  st:
+  - NY
+  - OR
+  - VT
+Gas-CC_H_2x1-CCS_mod:
+  st:
+  - NY
+  - OR
+  - VT
 Gas-CT:
+  st:
+  - OR
+  - VT
+Gas-CT_aero:
   st:
   - OR
   - VT

@@ -62,43 +62,6 @@ def parse_regions(case_or_string, case=None):
     return rs
 
 
-def get_county2zone(case=None):
-    """Read county2zone.csv, adjust 'ba' column for region aggregation, and return it"""
-    county2zone = pd.read_csv(
-        os.path.join(reeds.io.reeds_path, 'inputs', 'county2zone.csv'),
-        dtype={'FIPS':str},
-        index_col='FIPS',
-    ).ba
-    if case is None:
-        return county2zone
-    else:
-        ## Account for region aggregation if using
-        agglevel_variables = reeds.spatial.get_agglevel_variables(
-            reeds.io.reeds_path,
-            os.path.join(case, 'inputs_case'),
-        )
-        if 'aggreg' in agglevel_variables['agglevel']:
-            r2aggreg = reeds.io.get_hierarchy(case, original=True).aggreg
-            county2zone = county2zone.map(r2aggreg)
-
-        ## Keep county resolution if using it in this ReEDS run
-        if 'county' in agglevel_variables['agglevel']:
-            ## For mixed resolution runs county2zone will include county-county and county-BA mapping
-            if agglevel_variables['lvl'] == 'mult':
-                ## BA, Aggreg resolution map
-                county2zone_ba = county2zone[county2zone.isin(agglevel_variables['ba_regions'])]
-                ## County resolution map
-                county2zone_county = county2zone[county2zone.isin(agglevel_variables['county_regions2ba'])]
-                county2zone_county.loc[:] = 'p'+county2zone_county.index.astype(str).values
-                ## Combine to create mixed resolution map
-                county2zone = pd.concat([county2zone_ba,county2zone_county])
-
-            ## Pure county resolution runs
-            else:
-                county2zone.loc[:] = 'p'+county2zone.index.astype(str).values
-        return county2zone
-
-
 def get_bin(
     df_in,
     bin_num,

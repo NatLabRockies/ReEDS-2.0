@@ -2,31 +2,36 @@ abstract type Storage end
 
 # Getter Functions
 
-get_name(stor::STOR) where {STOR <: Storage} = stor.name
+get_name(stor::Storage) = stor.name
 
-get_type(stor::STOR) where {STOR <: Storage} = stor.type
+get_type(stor::Storage) = stor.type
 
-get_legacy(stor::STOR) where {STOR <: Storage} = stor.legacy
+get_legacy(stor::Storage) = stor.legacy
 
-get_charge_efficiency(stor::STOR) where {STOR <: Storage} =
-    fill(stor.charge_eff, 1, stor.timesteps)
+get_energy_capacity(stor::Storage) = permutedims(round.(Int, stor.energy_cap .* (1 .-stor.SOR)))
 
-get_discharge_efficiency(stor::STOR) where {STOR <: Storage} =
-    fill(stor.discharge_eff, 1, stor.timesteps)
+get_charge_efficiency(stor::Storage) = fill(stor.charge_eff, 1, stor.timesteps)
 
-get_carryover_efficiency(stor::STOR) where {STOR <: Storage} =
-    fill(stor.carryover_eff, 1, stor.timesteps)
+get_discharge_efficiency(stor::Storage) = fill(stor.discharge_eff, 1, stor.timesteps)
+
+get_carryover_efficiency(stor::Storage) = fill(stor.carryover_eff, 1, stor.timesteps)
 
 # Helper Functions
-get_outage_rate(stor::STOR) where {STOR <: Storage} = outage_to_rate(stor.FOR, stor.MTTR)
+get_outage_rate(stor::Storage) = outage_to_rate(stor.FOR, stor.MTTR)
 
-get_λ(stor::STOR) where {STOR <: Storage} =
-    fill(getfield(get_outage_rate(stor), :λ), 1, stor.timesteps)
+function get_λ(stor::Storage)
+    λ = getfield(get_outage_rate(stor), :λ)
+    if (isa(λ, Float64))
+        out = fill(λ, 1, stor.timesteps)
+    else
+        out = reshape(λ, 1, :)
+    end
+    return out
+end
 
-get_μ(stor::STOR) where {STOR <: Storage} =
-    fill(getfield(get_outage_rate(stor), :μ), 1, stor.timesteps)
+get_μ(stor::Storage) = fill(getfield(get_outage_rate(stor), :μ), 1, stor.timesteps)
 
-get_category(stor::STOR) where {STOR <: Storage} = "$(stor.legacy)|$(stor.type)"
+get_category(stor::Storage) = "$(stor.legacy)|$(stor.type)"
 
 """
     This function searches an array stors of type Vector{<:Storage} for

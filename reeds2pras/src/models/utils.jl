@@ -171,6 +171,10 @@ end
 get_sorted_lines(lines::Vector{Line}, regions::Vector{Region}) =
     get_sorted_lines(lines, get_name.(regions))
 
+function check_if_line_exists(reg_from::String, reg_to::String, lines::Vector{Line})
+    isnothing(findfirst(x -> (x.region_from == reg_from && x.region_to == reg_to),lines)) ? false : true
+end
+
 """
     This code takes in a vector of Lines and a vector of Regions as input
     parameters. It filters the Lines to find VSC (voltage source converter)
@@ -225,36 +229,40 @@ function process_vsc_lines(lines::Vector{Line}, regions::Vector{Region})
                 MTTR = vsc_line.MTTR,
             ),
         )
-        push!(
-            non_vsc_dc_lines,
-            Line(
-                name = "$(vsc_line.name)_Converter_From",
-                timesteps = vsc_line.timesteps,
-                category = vsc_line.category,
-                region_from = dc_region_from,
-                region_to = vsc_line.region_from,
-                forward_cap = vsc_line.converter_capacity[vsc_line.region_from],
-                backward_cap = vsc_line.converter_capacity[vsc_line.region_from],
-                legacy = vsc_line.legacy,
-                FOR = vsc_line.FOR,
-                MTTR = vsc_line.MTTR,
-            ),
-        )
-        push!(
-            non_vsc_dc_lines,
-            Line(
-                name = "$(vsc_line.name)_Converter_To",
-                timesteps = vsc_line.timesteps,
-                category = vsc_line.category,
-                region_from = dc_region_to,
-                region_to = vsc_line.region_to,
-                forward_cap = vsc_line.converter_capacity[vsc_line.region_to],
-                backward_cap = vsc_line.converter_capacity[vsc_line.region_to],
-                legacy = vsc_line.legacy,
-                FOR = vsc_line.FOR,
-                MTTR = vsc_line.MTTR,
-            ),
-        )
+        if !(check_if_line_exists(dc_region_from, vsc_line.region_from, non_vsc_dc_lines))
+            push!(
+                non_vsc_dc_lines,
+                Line(
+                    name = "$(dc_region_from)_VSC",
+                    timesteps = vsc_line.timesteps,
+                    category = vsc_line.category,
+                    region_from = dc_region_from,
+                    region_to = vsc_line.region_from,
+                    forward_cap = vsc_line.converter_capacity[vsc_line.region_from],
+                    backward_cap = vsc_line.converter_capacity[vsc_line.region_from],
+                    legacy = vsc_line.legacy,
+                    FOR = vsc_line.FOR,
+                    MTTR = vsc_line.MTTR,
+                ),
+            )
+        end
+        if !(check_if_line_exists(dc_region_to, vsc_line.region_to, non_vsc_dc_lines))
+            push!(
+                non_vsc_dc_lines,
+                Line(
+                    name = "$(dc_region_to)_VSC",
+                    timesteps = vsc_line.timesteps,
+                    category = vsc_line.category,
+                    region_from = dc_region_to,
+                    region_to = vsc_line.region_to,
+                    forward_cap = vsc_line.converter_capacity[vsc_line.region_to],
+                    backward_cap = vsc_line.converter_capacity[vsc_line.region_to],
+                    legacy = vsc_line.legacy,
+                    FOR = vsc_line.FOR,
+                    MTTR = vsc_line.MTTR,
+                ),
+            )
+        end
     end
     return non_vsc_dc_lines, regions
 end

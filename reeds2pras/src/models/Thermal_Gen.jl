@@ -17,8 +17,10 @@
         Fuel type of the generator (default "OT").
     legacy : String
         Existing or New generator (default "New").
-    FOR : Float64
+    FOR : Vector{Float32}
         Forced Outage Rate (default 0.0).
+    SOR : Vector{Float32}
+        Scheduled Outage Rate (default 0.0).
     MTTR : Int64
         Mean Time To Repair/Replace (default 24).
 
@@ -34,6 +36,7 @@ struct Thermal_Gen <: Generator
     fuel::String
     legacy::String
     FOR::Vector{Float32}
+    SOR::Vector{Float32}
     MTTR::Int64
 
     # Inner Constructors & Checks
@@ -44,7 +47,8 @@ struct Thermal_Gen <: Generator
         capacity = 10.0,
         fuel = "OT",
         legacy = "New",
-        FOR = vec(Float32.(fill(0.0, 8760, 1))),
+        FOR = zeros(Float32, timesteps), 
+        SOR = zeros(Float32, timesteps),
         MTTR = 24,
     )
         capacity >= 0.0 || error("$(name) capacity value passed is < 0")
@@ -52,15 +56,24 @@ struct Thermal_Gen <: Generator
         legacy in ["Existing", "New"] ||
             error("$(name) has legacy $(legacy) which is not in [Existing, New]")
 
+        length(FOR) == timesteps ||
+            error("The length of the $(name) FOR time series data is $(length(FOR))
+                but it should be should be equal to PRAS timesteps ($(timesteps))")
+
+        if !isnothing(SOR)
+            length(SOR) == timesteps ||
+                error("The length of the $(name) SOR time series data is $(length(SOR))
+                but it should be should be equal to PRAS timesteps ($(timesteps))")
+        end
+
         MTTR > 0 || error("$(name) MTTR value is <= 0")
 
-        return new(name, timesteps, region_name, capacity, fuel, legacy, FOR, MTTR)
+        return new(name, timesteps, region_name, capacity, fuel, legacy, FOR, SOR, MTTR)
     end
 end
 
 # Getter Functions
-
-get_capacity(gen::Thermal_Gen) = fill(round(Int, gen.capacity), 1, gen.timesteps)
+get_capacity(gen::Thermal_Gen) = round.(Int, gen.capacity * (1 .-gen.SOR)')
 
 get_fuel(gen::Thermal_Gen) = gen.fuel
 

@@ -187,6 +187,8 @@ def plot_ldc(
         )
         for region in regions:
             for prop in properties:
+                if region not in dfout[prop]:
+                    continue
                 df = dfout[prop][region].sort_values(ascending=False)
                 ax[coords[prop,region]].plot(
                     range(len(dfout)), df.values,
@@ -223,7 +225,7 @@ def plot_ldc(
         plt.close()
 
 
-def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
+def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep', crs='EPSG:5070'):
     """
     """
     ### Settings
@@ -257,6 +259,10 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
 
     hierarchy = reeds.io.get_hierarchy(os.path.abspath(os.path.join(inputs_case,'..')))
     dfmap = reeds.io.get_dfmap(os.path.abspath(os.path.join(inputs_case,'..')))
+    for key, df in dfmap.items():
+        dfmap[key] = df.to_crs(crs)
+        dfmap[key]['centroid_x'] = dfmap[key].centroid.x
+        dfmap[key]['centroid_y'] = dfmap[key].centroid.y
 
     ### Get the CF data over all years, take the mean over weather years
     recf = reeds.io.read_file(os.path.join(inputs_case, 'recf.h5'), parse_timestamps=True)
@@ -279,7 +285,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
 
         dfsc['latitude'] = dfsc.sc_point_gid.map(sitemap.latitude)
         dfsc['longitude'] = dfsc.sc_point_gid.map(sitemap.longitude)
-        dfsc = plots.df2gdf(dfsc)
+        dfsc = plots.df2gdf(dfsc, crs=crs)
         dfsc['resource'] = dfsc.i + '|' + dfsc.r
         dfsc['cf_actual'] = dfsc.resource.map(recf)
 
@@ -337,7 +343,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
             ## Colorbar
             plots.addcolorbarhist(
                 f=f, ax0=ax[coords[col]], data=cfmap[col]*100, nbins=51,
-                cmap=cmaps[col],
+                cmap=cmaps[col], histratio=1.5,
                 vmin=vm[tech][col][0]*100, vmax=vm[tech][col][1]*100,
                 cbarleft=0.95, cbarbottom=0.1, ticklabel_fontsize=7,
             )
@@ -361,7 +367,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
             ## Colorbar
             plots.addcolorbarhist(
                 f=f, ax0=ax[coords[level]], data=dfdiffs[level].cf_diff*100, nbins=51,
-                cmap=cmaps['cf_diff'],
+                cmap=cmaps['cf_diff'], histratio=1.5,
                 vmin=vm[tech]['cf_diff'][0]*100, vmax=vm[tech]['cf_diff'][1]*100,
                 cbarleft=0.95, cbarbottom=0.1, ticklabel_fontsize=7,
             )
@@ -471,7 +477,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
             ## Colorbar
             plots.addcolorbarhist(
                 f=f, ax0=ax[coords[col]], data=dfplot[col], nbins=51,
-                cmap=cmaps[col],
+                cmap=cmaps[col], histratio=1.5,
                 vmin=0., vmax=dfplot[col].max(),
                 cbarleft=0.95, cbarbottom=0.1, ticklabel_fontsize=7,
             )
@@ -495,7 +501,7 @@ def plot_maps(sw, inputs_case, reeds_path, figpath, periodtype='rep'):
             ## Colorbar
             plots.addcolorbarhist(
                 f=f, ax0=ax[coords[level]], data=dfdiffs[level][val], nbins=51,
-                cmap=cmaps[val],
+                cmap=cmaps[val], histratio=1.5,
                 vmin=-vlimload[val], vmax=vlimload[val],
                 cbarleft=0.95, cbarbottom=0.1, ticklabel_fontsize=7,
             )

@@ -11,7 +11,7 @@ import os
 
 project = 'ReEDS'
 copyright = '2024, NREL'
-author = 'NREL'
+author = 'NLR'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

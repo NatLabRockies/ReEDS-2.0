@@ -364,7 +364,11 @@ def write_outages(df, h5path):
                 dtype=f'S{namelengths[name]}')
         f.create_dataset(
             'columns',
-            data=df.columns.map(lambda x: '|'.join(x)).rename('|'.join(names)),
+            data=(
+                df.columns.map(lambda x: '|'.join(x)).rename('|'.join(names))
+                if isinstance(df.columns, pd.MultiIndex)
+                else df.columns
+            ),
             dtype=f'S{sum(namelengths.values()) + 1}')
         f.create_dataset(
             'data', data=df, dtype=np.float32,

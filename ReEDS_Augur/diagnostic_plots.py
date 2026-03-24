@@ -10,8 +10,6 @@ from glob import glob
 import traceback
 import gdxpds
 import cmocean
-pd.options.display.max_rows = 20
-pd.options.display.max_columns = 200
 ### Local imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
@@ -1061,7 +1059,7 @@ def plot_pras_load(sw, dfs):
     """PRAS load over all weather years"""
     dfpras = dfs['pras_system']['load'].sum(axis=1).rename('PRAS')
     years = dfpras.index.year.unique()
-    linecolors = plots.rainbowmapper(years)
+    linecolors = plots.rainbowmapper(years, categorical=True)
     savename = f"demand_USA-PRAS-{sw['t']}.png"
     plt.close()
     f,ax = plots.plotyearbymonth(
@@ -1294,10 +1292,34 @@ def plot_netloadhours_histogram(sw, dfs):
     plt.close()
 
 
-#%%### Main function
-def main(sw, augur_plots=1):
+def plot_stressors(sw, dfs):
     """
-    augur_plots [0-3]: Indicate how many plots to make (higher number = more plots)
+    Map demand/CF/FOR (organized differently to allow use outside of Augur)
+    """
+    for iteration in range(sw['iteration']):
+        plot_generator = reeds.reedsplots.map_stressors(
+            case=sw['casedir'], t=sw['t'], iteration=iteration,
+            seed=(True if t == int(sw['endyear']) else False),
+        )
+        while True:
+            try:
+                f, ax, df, plotlabel = next(plot_generator)
+                savename = (
+                    f"stress{t}i{iteration}-"
+                    + plotlabel.split(':')[0].replace('-','')
+                )
+                if savefig:
+                    plt.savefig(os.path.join(sw['savepath'], f'{savename}.png'))
+                if interactive:
+                    plt.show()
+            except StopIteration:
+                break
+
+
+#%%### Main function
+def main(sw, debug=False):
+    """
+    debug: Make more plots for debugging if set to True
     """
     #%% Get the inputs
     dfs = get_inputs(sw)
@@ -1331,19 +1353,14 @@ def main(sw, augur_plots=1):
             print('plot_augur_pras_capacity() failed:', traceback.format_exc())
 
         try:
-            plot_pras_ICAP(sw, dfs)
-        except Exception:
-            print('plot_pras_ICAP() failed:', traceback.format_exc())
-
-        try:
-            plot_pras_augur_load(sw, dfs)
-        except Exception:
-            print('plot_pras_augur_load() failed:', traceback.format_exc())
-
-        try:
             plot_pras_load(sw, dfs)
         except Exception:
             print('plot_pras_load() failed:', traceback.format_exc())
+
+        try:
+            plot_stressors(sw, dfs)
+        except Exception:
+            print('plot_stressors() failed:', traceback.format_exc())
 
     try:
         plot_dropped_load_timeseries_full(sw, dfs)
@@ -1377,7 +1394,17 @@ def main(sw, augur_plots=1):
     except Exception:
         print('plot_netloadhours_histogram() failed:', traceback.format_exc())
 
-    if augur_plots >= 2:
+    if debug:
+        try:
+            plot_pras_augur_load(sw, dfs)
+        except Exception:
+            print('plot_pras_augur_load() failed:', traceback.format_exc())
+
+        try:
+            plot_pras_ICAP(sw, dfs)
+        except Exception:
+            print('plot_pras_ICAP() failed:', traceback.format_exc())
+
         try:
             plot_netload_profile(sw, dfs)
         except Exception:
@@ -1400,20 +1427,22 @@ if __name__ == '__main__':
     parser.add_argument('--t', type=int, default=2050, help='solve year to plot')
     parser.add_argument('--iteration', '-i', type=int, default=-1,
                         help='iteration to plot (default of -1 means latest iteration)')
+    parser.add_argument('--debug', '-d', action='store_true', help='Make more plots')
 
     args = parser.parse_args()
     reeds_path = args.reeds_path
     casedir = args.casedir
     t = args.t
     iteration = args.iteration
+    debug = args.debug
 
     # #%%### Inputs for debugging
-    # reeds_path = os.path.expanduser('~/github3/ReEDS-2.0/')
-    # casedir = os.path.join(reeds_path, 'runs', 'v20250320_prasplotsM0_WestConnectSouth')
+    # reeds_path = reeds.io.reeds_path
+    # casedir = os.path.join(reeds_path, 'runs', 'v20251111_15M0_Pacific')
     # t = 2026
     # interactive = True
     # iteration = 0
-    # augur_plots = 3
+    # debug = True
 
     #%%### INPUTS
     ### Switches
@@ -1437,7 +1466,7 @@ if __name__ == '__main__':
     ### Make the plots
     print('plotting intermediate Augur results...')
     try:
-        main(sw)
+        main(sw, debug)
     except Exception as _err:
         print('diagnostic_plots.py failed with the following exception:')
         print(traceback.format_exc())

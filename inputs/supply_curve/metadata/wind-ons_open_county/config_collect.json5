@@ -1,7 +1,7 @@
 {
     "execution_control": {
         "option": "kestrel",
-        "allocation": "wetosa",
+        "allocation": "rev",
         "walltime": 12,
         "qos": "high",
         "memory": null,

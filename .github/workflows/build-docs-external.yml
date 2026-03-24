@@ -40,7 +40,7 @@ jobs:
 
       - name: Set variables for public github repo
         run: |
-          echo "BASE_URL=https://github.com/NREL/ReEDS-2.0" >> $GITHUB_ENV
+          echo "BASE_URL=https://github.com/NatLabRockies/ReEDS-2.0" >> $GITHUB_ENV
           cd ${GITHUB_WORKSPACE}/docs/source/documentation_tools/
           sh generate_sources_md_file.sh
           cd ${GITHUB_WORKSPACE}

@@ -199,37 +199,36 @@ def plot_storage_soc(
     set_szn['year'] = set_szn.datetime.map(lambda x: x.year)
 
     ### Plot it
-    years = range(dfenergy.index.year.min(), dfenergy.index.year.max()+1)
+    years = sw.resource_adequacy_years_list
     colors = plots.rainbowmapper(dfsoc_frac.columns)
+    numrows = len(years)
     plt.close()
     f,ax = plt.subplots(
-        len(years), 1, sharey=True, figsize=(13.33,8),
+        numrows, 1, sharey=True, figsize=(13.33,8),
         gridspec_kw={'hspace':1.0},
     )
     for row, y in enumerate(years):
         df = dfsoc_frac.loc[str(y)]
         for region, color in colors.items():
             (df-1)[region].plot.area(
-                ax=ax[row], stacked=False, legend=False, lw=0.1, color=color, alpha=0.8)
-            # ax[row].fill_between(
-            #     df.index, df[region].values, 1, lw=0.1, color=color, label=region, alpha=0.8,
-            # )
+                ax=ax[row], stacked=False, legend=False, lw=0.1, color=color, alpha=0.8,
+            )
         for tstart in set_szn.loc[set_szn.year==y, 'datetime'].values:
             ax[row].axvspan(tstart, tstart + pd.Timedelta('1D'), lw=0, color='k', alpha=0.15)
         ax[row].set_ylim(-1,0)
-        # ax[row].set_ylim(0,1)
+        ax[row].set_ylabel(y, rotation=0, ha='right', va='center', weight='normal')
+        if row < numrows - 1:
+            ax[row].set_xticklabels([])
     ax[0].set_yticks([])
-    # ax[-1].xaxis.set_minor_locator(mpl.dates.DayLocator())
+    ## Strip the year
+    ax[-1].set_xticks(ax[-1].get_xticks())
+    ax[-1].set_xticklabels([i._text.split('\n')[0] for i in ax[-1].get_xticklabels()])
     ax[0].legend(
         loc='upper left', bbox_to_anchor=(1,1),
         frameon=False, columnspacing=0.5, handlelength=0.7, handletextpad=0.3,
         title=f'Storage\nstate of charge\nby {level},\n{year}i{_iteration}\n[fraction]',
         title_fontsize=12,
     )
-    # ax[0].annotate(
-    #     f'{os.path.basename(case)}\nsystem year: {year}i{_iteration}',
-    #     (1,1.2), xycoords='axes fraction', ha='right', annotation_clip=False,
-    # )
     plots.despine(ax, left=False)
     return f, ax, dfsoc_frac
 
@@ -241,7 +240,7 @@ def plot_pras_eue_timeseries_full(
     samples=None,
     level='transgrp',
     ymax=None,
-    figsize=(6, 5),
+    figsize=None,
 ):
     """
     Dropped load timeseries
@@ -273,7 +272,9 @@ def plot_pras_eue_timeseries_full(
         / 1e3
     )
 
-    wys = range(2007,2014)
+    wys = sw.resource_adequacy_years_list
+    if figsize is None:
+        figsize = (6, 0.7*len(wys))
     colors = plots.rainbowmapper(dfpras_agg.columns)
 
     ### Plot it

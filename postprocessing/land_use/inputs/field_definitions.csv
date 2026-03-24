@@ -10,7 +10,7 @@ lbnl_convex_hull_existing_farms_2018,LBNL Wind Turbine Database Hulls - 2018,cel
 lbnl_upv_1km_buffer,LBNL UPV 1km Buffer ,cells
 lepchi_habitat,Lesser Prairie Chicken Habitat,cells
 lepchi_range,Lesser Prairie Chicken Range,cells
-nrel_region,NREL Region,
+nrel_region,NLR Region,
 reeds_regions,ReEDS Regions,
 resolution_128_sc_point_gid,Grid IDs,
 saggro_habitat,Sage Grouse Habitat,cells

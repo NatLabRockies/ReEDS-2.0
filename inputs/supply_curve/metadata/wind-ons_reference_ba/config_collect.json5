@@ -2,14 +2,13 @@
     "execution_control": {
         "option": "kestrel",
         "allocation": "wetosa",
-        "walltime": 4,
-        "qos": "normal",
+        "walltime": 12,
+        "qos": "high",
         "memory": null,
         "queue": null,
         "feature": null,
         "conda_env": null,
-        "module": null,
-        "sh_script": null
+        "module": null
     },
     "log_directory": "./logs",
     "log_level": "INFO",

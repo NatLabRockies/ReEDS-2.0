@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-load_switch = 'EPMEDIUM' #A value of GSw_EFS1_AllYearLoad in cases.csv.
+load_switch = 'EPMEDIUM' #A value of GSw_LoadProfiles in cases.csv.
 flex_switch = 'EPMEDIUM_Enhancedflex' #A value of GSw_EFS2_FlexCase in cases.csv.
 new_suffix = 'Stretch2046' #Make sure this name aligns with the groups defined below.
 beg_year = 2020

@@ -387,7 +387,60 @@ function get_storage_energy_capacity_data(data::ReEDSdatapaths)
     return DataFrames.DataFrame(CSV.File(filepath))
 end
 
-# Structs and functions to handle hydro limits data available
+"""
+    Returns a DataFrame containing the hourly planned outage data,
+    read from reeds2pras/test/reeds_cases/Pacific/inputs_case
+
+    Parameters
+    ----------
+    data : ReEDSdatapaths
+        An object containing paths to ReEDS data.
+
+    Returns
+    -------
+    DataFrame
+        DataFrame the hourly scheduled outages
+
+    Raises
+    ------
+    Error
+        If the filepath for the specified year does not exist.
+"""
+function get_hourly_scheduled_outage_data(data::ReEDSdatapaths)
+    filepath = joinpath(
+        data.ReEDSfilepath,
+        "inputs_case",
+        "outage_scheduled_hourly.h5",
+    )
+
+    return DataFrames.DataFrame(
+        HDF5.h5read(filepath, "data")',
+        HDF5.h5read(filepath, "columns"),
+    )
+end
+
+"""
+    Get the hourly forced outage data from the augur files.
+
+    Parameters
+    ----------
+    data : ReEDSdatapaths
+        Struct containing relevant datapaths and year from which to extract
+        the data.
+
+    Returns
+    -------
+    DataFrames.DataFrame
+        Dataframe containing the hourly forced outage data.
+"""
+function get_hourly_forced_outage_data(data::ReEDSdatapaths)
+    filepath = joinpath(data.ReEDSfilepath, "inputs_case", "outage_forced_hourly.h5")
+    forcedoutage_hourly = DataFrames.DataFrame(
+        HDF5.h5read(filepath, "data")',
+        HDF5.h5read(filepath, "columns"),
+    )
+    return forcedoutage_hourly
+end
 
 # Struct to define monthhour values
 mutable struct monthhour

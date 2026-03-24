@@ -1,25 +1,25 @@
 {
-    "execution_control": {
-        "allocation": "wetosa",
-        "option": "kestrel",
-        "walltime": 12,
-        "nodes": 300,
-        "memory": 245,
-        "qos": "normal"
+    execution_control: {
+        allocation: "rev",
+        option: "kestrel",
+        walltime: 20,
+        nodes: 300,
+        memory: 245,
+        qos: "normal"
     },
-    "log_level": "INFO",
-    "log_directory": "./logs",
-    "res_fpath": [
+    log_level: "INFO",
+    log_directory: "./logs",
+    res_fpath: [
         "/datasets/WIND/conus/v1.0.0/wtk_conus_*.h5",
         "/datasets/WIND/HRRR/bchrrr_conus_*.h5",
     ],
-    "tm_dset": "techmap_wtk_1_0_0",
-    "ga_kwargs": {
-        "convergence_iters": 100,
-        "max_generation": 1000,
-        "max_time": 15000
+    tm_dset: "techmap_wtk_1_0_0_fy25",
+    ga_kwargs: {
+        convergence_iters: 100,
+        max_generation: 1000,
+        max_time: 15000,
     },
-    "output_request": [
+    output_request: [
         "annual_energy",
         "annual_gross_energy",
         "capital_cost",
@@ -36,419 +36,426 @@
         "wake_loss_internal_kW",
         "annual_wake_loss_internal_percent",
         "annual_wake_loss_internal_kWh",
-        "annual_wake_loss_total_percent"
+        "annual_wake_loss_total_percent",
     ],
-    "resolution": 128,
-    "pre_extract_inclusions": false,
-    "project_points": "./project_points_ti_nn.csv",
-    "sam_files": {
-        "onshore": "./sam_6000kw_170rd.json5"
+    resolution: 128,
+    pre_extract_inclusions: false,
+    project_points: "/kfs2/projects/rev/data/exclusions/north_america/conus/build/data/tables/project_points_ti_nn.csv",
+    sam_files: {
+        onshore: "./sam_6000kw_170rd.json5",
     },
-    "excl_fpath": [
-      "/projects/rev/data/layers/north_america/conus_legacy/rasters/official_weto_seto/hdf/official_weto_seto_v1.h5",
-      "/projects/rev/data/layers/north_america/conus_legacy/rasters/official_weto_seto/hdf/techmaps.h5",
-      "/projects/rev/data/layers/north_america/conus_legacy/rasters/official_weto_seto/hdf/Wind_Setbacks_Limited_v2023ss.h5"
+    excl_fpath: [
+        "/kfs2/projects/rev/data/exclusions/north_america/conus/standard_exclusions_and_characterizations_fy25.h5",
     ],
-    "excl_dict": {
-      "conus_landmass_2023-06": {
-        "exclude_values": 0
-      },
-      "airport_heliport_setbacks": {
-        "exclude_values": 1
-      },
-      "conus_hsip_airports": {
-        "exclude_values": 1
-      },
-      "srr_lrr_los": {
-        "exclude_values": 1
-      },
-      "icbm_2mile": {
-        "exclude_values": 1
-      },
-      "nexrad_green_los": {
-        "exclude_values": 1
-      },
-      "raimora": {
-        "exclude_values": 1
-      },
-      "p1_colonies_30": {
-        "exclude_values": 1,
-        "extent": {
-          "exclude_values": 1,
-          "layer": "blm_lands-2024-04"
-        }
-      },
-      "p2_colonies_11": {
-        "exclude_values": 1,
-        "extent": {
-          "exclude_values": 1,
-          "layer": "blm_lands-2024-04"
-        }
-      },
-      "p3_colonies_11": {
-        "exclude_values": 1,
-        "extent": {
-          "exclude_values": 1,
-          "layer": "blm_lands-2024-04"
-        }
-      },
-      "water_wetlands_nlcd_2019": {
-        "exclude_values": 1
-      },
-      "lesser_prairie_chicken_eor": {
-        "exclude_values": 1
-      },
-      "wetlands_usa_nwi": {
-        "exclude_values": 0
-      },
-      "fema_100_year_floodplains": {
-        "exclude_values": 1
-      },
-      "SEI_core_growth_fedlands": {
-        "exclude_values": 1
-      },
-      "hfld_oil_gas_wells": {
-        "exclude_values": 1
-      },
-      "conus_rail_percent": {
-        "use_as_weights": 1
-      },
-      "conus_roads_percent": {
-        "use_as_weights": 1
-      },
-      "conus_building_percent": {
-        "use_as_weights": 1
-      },
-      "conus_xmission_percent": {
-        "use_as_weights": 1
-      },
-      "conus_ng_pipeline_percent": {
-        "use_as_weights": 1
-      },
-      "census_urbanized_areas_500k": {
-        "exclude_values": 1
-      },
-      "aft_protectedaglands": {
-        "exclude_values": 1
-      },
-      "acec_9222022": {
-        "exclude_values": 1
-      },
-      "usfs_roadless_areas": {
-        "exclude_values": 1
-      },
-      "nced_06232022_gap_1_2": {
-        "exclude_values": 1
-      },
-      "padus_09012022_gap_1_2": {
-        "exclude_values": 1
-      },
-      "ord_moratoriumbanned": {
-        "exclude_values": 1,
-        "extent": {
-          "exclude_values": 1,
-          "layer": "target_federal_lands_bool-2024-04"
-        }
-      },
-      "ord_heightlimits": {
-        "exclude_range": [
-          0,
-          200.0
-        ],
-        "extent": {
-          "exclude_values": 1,
-          "layer": "target_federal_lands_bool-2024-04"
-        }
-      },
-      "setbacks_pipeline_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "setbacks_rail_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "setbacks_road_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "setbacks_structure_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "setbacks_transmission_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "setbacks_water_115hh_170rd": {
-        "exclude_values": 1
-      },
-      "srtm_slope": {
-        "include_range": [
-          0,
-          13
-        ]
-      },
-      "atlas_landform_elev_exclusion_albers": {
-        "exclude_values": 1
-      },
-      "usfws_lands_no_wetland_or_grassland_wpas_2024-04": {
-        "exclude_values": 1
-      },
-      "ribits_2024-04": {
-        "exclude_values": 1
-      },
-      "te_critical_habitat_usgs_subset_2024-06_fedlands": {
-        "exclude_values": 1
-      },
-      "wwmp_composite_exclusions_blm": {
-        "exclude_values": 1
-      },
-      "wwmp_composite_hlsc_blm": {
-        "exclude_values": 1
-      },
-      "wwmp_composite_mlsc_blm": {
-        "exclude_values": 1
-      },
-      "blm_grsg_alt3_phma_exclusion_areas": {
-        "exclude_values": 1
-      },
-      "drecp_wind_exclusions_blm_only": {
-        "exclude_values": 1
-      },
-      "368_designated_corridors": {
-        "exclude_values": 1
-      },
-      "blm_rmp_wind_exclusion_areas": {
-        "exclude_values": 1
-      },
-      "blm_resource_based_exclusions_wind": {
-        "exclude_values": 1
-      },
-      "blm_no_surface_occupancy": {
-        "exclude_values": 1
-      },
-      "karst_depressions": {
-        "exclude_values": 1
-      },
-      "mature_forests_firesheds_subset_fs_and_blm_only": {
-        "exclude_values": 1
-      },
-      "usfs_gap_status_3_and_4": {
-        "exclude_values": 1
-      },
-      "usfs_active_grazing_allotments": {
-        "exclude_values": 1
-      },
-      "usfs_ros_modeled_exclusions": {
-        "exclude_values": 1
-      },
-      "wild_scenic_river_10mile_fs_only": {
-        "exclude_values": 1
-      },
-      "scenic_trail_10mile_fs_only": {
-        "exclude_values": 1
-      },
-      "doe_cu2ce_wind_exclusion_areas": {
-        "exclude_values": 1
-      },
-      "cz_apz": {
-        "exclude_values": 1
-      },
-      "repi_opty": {
-        "exclude_values": 1
-      },
-      "uswtdb_v6_150ft_buffer": {
-        "force_include_values": 1
-      },
-      "uspvdb_v1_6m_buffer": {
-        "exclude_values": 1
-      },
-      "dod_lands-2024-04": {
-        "exclude_values": 1
-      }
+    excl_dict: {
+        terrain_conus_landmass: {
+            exclude_values: 0,
+        },
+        infrastructure_airport_heliport_setbacks: {
+            exclude_values: 1,
+        },
+        infrastructure_airport_footprints: {
+            exclude_values: 1,
+        },
+        srr_lrr_los: {
+            exclude_values: 1,
+        },
+        defense_icbm_2_mile_setback: {
+            exclude_values: 1,
+        },
+        defense_nexrad_line_of_sight: {
+            exclude_values: 1,
+        },
+        raimora: {
+            exclude_values: 1,
+        },
+        environment_bat_hibernacula_priority1_colonies_30km: {
+            exclude_values: 1,
+            extent: {
+                exclude_values: 1,
+                layer: "blm_lands",
+            },
+        },
+        environment_bat_hibernacula_priority2_colonies_11km: {
+            exclude_values: 1,
+            extent: {
+                exclude_values: 1,
+                layer: "blm_lands",
+            },
+        },
+        environment_bat_hibernacula_priority3_colonies_11km: {
+            exclude_values: 1,
+            extent: {
+                exclude_values: 1,
+                layer: "blm_lands",
+            },
+        },
+        environment_water_wetlands_nlcd_2024: {
+            exclude_values: 1,
+        },
+        environment_lesser_prairie_chicken_core_habitat: {
+            exclude_values: 1,
+        },
+        environment_wetlands_nwi: {
+            exclude_values: 0,
+        },
+        environment_fema_100_year_floodplains: {
+            exclude_values: 1,
+        },
+        environment_sagebrush_core_and_growth_habitat_federal_lands: {
+            exclude_values: 1,
+        },
+        infrastructure_oil_gas_wells_footprint: {
+            exclude_values: 1,
+        },
+        infrastructure_railroads_percent_inclusion: {
+            use_as_weights: 1,
+        },
+        infrastructure_roads_percent_inclusion: {
+            use_as_weights: 1,
+        },
+        infrastructure_building_percent_inclusion: {
+            use_as_weights: 1,
+        },
+        infrastructure_transmission_percent_inclusion: {
+            use_as_weights: 1,
+        },
+        infrastructure_oil_gas_pipeline_percent_inclusion: {
+            use_as_weights: 1,
+        },
+        infrastructure_urbanized_areas: {
+            exclude_values: 1,
+        },
+        environment_aft_protected_agricultural_lands: {
+            exclude_values: 1,
+        },
+        environment_areas_critical_environmental_concern: {
+            exclude_values: 1,
+        },
+        environment_roadless_areas: {
+            exclude_values: 1,
+        },
+        environment_gap_status_1_2_nced: {
+            exclude_values: 1,
+        },
+        environment_gap_status_1_2_padus: {
+            exclude_values: 1,
+        },
+        regulation_wind_ordinances_moratoriums: {
+            exclude_values: 1,
+            extent: {
+                exclude_values: 1,
+                layer: "federal_lands_by_boolean",
+            },
+        },
+        regulation_height_limit_ordinances: {
+            exclude_range: [
+                0,
+                200.0,
+            ],
+            extent: {
+                exclude_values: 1,
+                layer: "federal_lands_by_boolean",
+            },
+        },
+        regulation_wind_pipeline_limited_400m_setback: {
+            exclude_values: 1,
+        },
+        regulation_wind_rail_limited_400m_setback: {
+            exclude_values: 1,
+        },
+        regulation_wind_road_limited_400m_setback: {
+            exclude_values: 1,
+        },
+        regulation_wind_structure_limited_1000m_setback: {
+            exclude_values: 1,
+        },
+        regulation_wind_transmission_limited_400m_setback: {
+            exclude_values: 1,
+        },
+        regulation_wind_water_limited_220m_setback: {
+            exclude_values: 1,
+        },
+        terrain_wind_slope_threshold_25pct_srtm: {
+            include_range: [
+                0,
+                13,
+            ],
+        },
+        terrain_elevation_and_mountainous_landforms: {
+            exclude_values: 1,
+        },
+        "mixed_usfws_lands_no_wetland_or_grassland_wpas_2024-04": {
+            exclude_values: 1,
+        },
+        environment_ribits_mitigation_banks: {
+            exclude_values: 1,
+        },
+        environment_threatened_endangered_species_habitat_fedlands: {
+            exclude_values: 1,
+        },
+        wwmp_composite_exclusions_blm: {
+            exclude_values: 1,
+        },
+        wwmp_composite_hlsc_blm: {
+            exclude_values: 1,
+        },
+        wwmp_composite_mlsc_blm: {
+            exclude_values: 1,
+        },
+        environment_blm_rmpa_deis_greater_sage_grouse_phma_exclusions_areas_alt3: {
+            exclude_values: 1,
+        },
+        environment_desert_renewable_energy_conservation_plan_wind_exclusions_blm_land: {
+            exclude_values: 1,
+        },
+        regulation_368_designated_transmission_corridors: {
+            exclude_values: 1,
+        },
+        mixed_blm_rmp_wind_exclusion_areas: {
+            exclude_values: 1,
+        },
+        mixed_blm_wind_exclusions_from_solar_dpeis_resource_based_exclusions: {
+            exclude_values: 1,
+        },
+        environment_blm_no_surface_occupancy: {
+            exclude_values: 1,
+        },
+        environment_karst_depressions: {
+            exclude_values: 1,
+        },
+        environment_mature_old_growth_forests_firesheds_subset_fs_and_blm_land: {
+            exclude_values: 1,
+        },
+        environment_gap_status_3_4_usfs: {
+            exclude_values: 1,
+        },
+        environment_usfs_active_grazing_allotments: {
+            exclude_values: 1,
+        },
+        environment_usfs_modeled_recreational_opportunity_spectrum_exclusions: {
+            exclude_values: 1,
+        },
+        environment_wild_scenic_river_10mile_fs_only: {
+            exclude_values: 1,
+        },
+        environment_scenic_trail_10mile_fs_only: {
+            exclude_values: 1,
+        },
+        mixed_doe_clean_up_to_clean_energy_wind_exclusion_areas: {
+            exclude_values: 1,
+        },
+        defense_dod_clear_zones_and_accident_potential_zones: {
+            exclude_values: 1,
+        },
+        defense_dod_readiness_and_environmental_protection_integration_opportunity_areas: {
+            exclude_values: 1,
+        },
+        infrastructure_existing_wind_turbine_150foot_setback: {
+            force_include_values: 1,
+        },
+        infrastructure_existing_solar_pv_facilities_6meter_setback: {
+            exclude_values: 1,
+        },
+        defense_department_of_defense_lands: {
+            exclude_values: 1,
+        },
+        // regulation_wind_road_limited_2000m_setback: {
+        //     exclude_values: 1,
+        // },
+        // regulation_wind_rail_limited_2000m_setback: {
+        //     exclude_values: 1,
+        // },
+        regulation_sound_exclusion_50dba_90m: {
+            exclude_values: 0,
+        },
     },
-    "data_layers": {
-      "usfws_eagle_permitting": {
-        "dset": "usfws_eagle_permitting",
-        "method": "category"
-      },
-      "blm_active_oil_and_gas_leases_2024-04": {
-        "dset": "blm_active_oil_and_gas_leases_2024-04",
-        "method": "sum"
-      },
-      "previously_disturbed_lands": {
-        "dset": "previously_disturbed_lands",
-        "method": "sum"
-      },
-      "target_federal_lands-2024-04": {
-        "dset": "target_federal_lands-2024-04",
-        "method": "category"
-      },
-      "target_federal_lands_bool-2024-04": {
-        "dset": "target_federal_lands_bool-2024-04",
-        "method": "sum"
-      },
-      "blm_lands-2024-04": {
-        "dset": "blm_lands-2024-04",
-        "method": "sum"
-      },
-      "usfs_lands-2024-04": {
-        "dset": "usfs_lands-2024-04",
-        "method": "sum"
-      },
-      "usfws_lands_2024-04": {
-        "dset": "usfws_lands_2024-04",
-        "method": "sum"
-      },
-      "usfws_lands_fee_only_2024-04": {
-        "dset": "usfws_lands_fee_only_2024-04",
-        "method": "sum"
-      },
-      "doe_cu2ce_sites-2024-04": {
-        "dset": "doe_cu2ce_sites-2024-04",
-        "method": "sum"
-      },
-      "dod_lands-2024-04": {
-        "dset": "dod_lands-2024-04",
-        "method": "sum"
-      },
-      "ridgelines_fs_only": {
-        "dset": "ridgelines_fs_only",
-        "method": "sum"
-      },
-      "doi_criteria_ridgelines_detailed": {
-        "dset": "doi_criteria_ridgelines_detailed",
-        "method": "sum"
-      },
-      "nlcd_2019_90x90": {
-        "dset": "nlcd_2019_90x90",
-        "method": "category"
-      },
-      "indiana_bat_range": {
-        "dset": "indiana_bat_range",
-        "method": "sum"
-      },
-      "florida_bonneted_range": {
-        "dset": "florida_bonneted_range",
-        "method": "sum"
-      },
-      "northern_long_eared_bat": {
-        "dset": "northern_long_eared_bat",
-        "method": "sum"
-      },
-      "gray_bat_range": {
-        "dset": "gray_bat_range",
-        "method": "sum"
-      },
-      "mexican_long_nose_range": {
-        "dset": "mexican_long_nose_range",
-        "method": "sum"
-      },
-      "virginia_big_eared_range": {
-        "dset": "virginia_big_eared_range",
-        "method": "sum"
-      },
-      "ozark_big_eared_bat": {
-        "dset": "ozark_big_eared_bat",
-        "method": "sum"
-      },
-      "tri_colored_range": {
-        "dset": "tri_colored_range",
-        "method": "sum"
-      },
-      "SEI_2017_2020_30_Current_warped": {
-        "dset": "SEI_2017_2020_30_Current_warped",
-        "method": "category"
-      },
-      "nced_06232022_gap_3_4": {
-        "dset": "nced_06232022_gap_3_4",
-        "method": "sum"
-      },
-      "padus_09012022_gap_3_4": {
-        "dset": "padus_09012022_gap_3_4",
-        "method": "sum"
-      },
-      "military_training_routes": {
-        "dset": "military_training_routes",
-        "method": "category"
-      },
-      "special_use_airspace": {
-        "dset": "special_use_airspace",
-        "method": "category"
-      },
-      "nlcd_2016_treecanopy_2019_08_31_rev90m": {
-        "dset": "nlcd_2016_treecanopy_2019_08_31_rev90m",
-        "method": "sum"
-      },
-      "2016_30m_cdls_rev90m": {
-        "dset": "2016_30m_cdls_rev90m",
-        "method": "category"
-      },
-      "landscan_usa_2020_conus_night": {
-        "dset": "landscan_usa_2020_conus_night",
-        "method": "sum"
-      },
-      "cdc_svi_2018_us_tract": {
-        "dset": "cdc_svi_2018_us_tract",
-        "method": "mean"
-      },
-      "resilient_and_connected_network": {
-        "dset": "resilient_and_connected_network",
-        "method": "category"
-      },
-      "aft_pvr_2016_rev": {
-        "dset": "aft_pvr_2016_rev",
-        "method": "mean"
-      },
-      "aft_state_best_ag_2016_rev": {
-        "dset": "aft_state_best_ag_2016_rev",
-        "method": "sum"
-      },
-      "nationally_significant_ag_land_2016_conus_rev": {
-        "dset": "nationally_significant_ag_land_2016_conus_rev",
-        "method": "sum"
-      },
-      "TNC_KeyWildlifeAreas_Wind_GT_20210907_rev": {
-        "dset": "TNC_KeyWildlifeAreas_Wind_GT_20210907_rev",
-        "method": "category"
-      },
-      "places_fmv_all_rev": {
-        "dset": "places_fmv_all_rev",
-        "method": "mean"
-      },
-      "energy_communities_coal_closure_2023v2": {
-        "dset": "energy_communities_coal_closure_2023v2",
-        "method": "sum"
-      },
-      "energy_communities_msa_2023v2": {
-        "dset": "energy_communities_msa_2023v2",
-        "method": "sum"
-      },
-      "energy_communities_2023v2": {
-        "dset": "energy_communities_2023v2",
-        "method": "sum"
-      },
-      "wild_scenic_river_10mile_fs_only": {
-        "dset": "wild_scenic_river_10mile_fs_only",
-        "method": "sum"
-      },
-      "wild_scenic_river_20mile_fs_only": {
-        "dset": "wild_scenic_river_20mile_fs_only",
-        "method": "sum"
-      },
-      "scenic_trail_10mile_fs_only": {
-        "dset": "scenic_trail_10mile_fs_only",
-        "method": "sum"
-      },
-      "scenic_trail_20mile_fs_only": {
-        "dset": "scenic_trail_20mile_fs_only",
-        "method": "sum"
-      },
-      "SEI_core_growth_fedlands": {
-        "dset": "SEI_core_growth_fedlands",
-        "method": "sum"
-      }
+    data_layers: {
+        regulation_usfws_eagle_permitting: {
+            dset: "regulation_usfws_eagle_permitting",
+            method: "category",
+        },
+        active_oil_gas_leases_blm: {
+            dset: "active_oil_gas_leases_blm",
+            method: "sum",
+        },
+        usgs_previously_disturbed_landscapes: {
+            dset: "usgs_previously_disturbed_landscapes",
+            method: "sum",
+        },
+        federal_land_by_categories: {
+            dset: "federal_land_by_categories",
+            method: "category",
+        },
+        federal_lands_by_boolean: {
+            dset: "federal_lands_by_boolean",
+            method: "sum",
+        },
+        blm_lands: {
+            dset: "blm_lands",
+            method: "sum",
+        },
+        usfs_land: {
+            dset: "usfs_land",
+            method: "sum",
+        },
+        usfws_lands: {
+            dset: "usfws_lands",
+            method: "sum",
+        },
+        usfws_lands_with_fee_category: {
+            dset: "usfws_lands_with_fee_category",
+            method: "sum",
+        },
+        mixed_doe_cu2ce_sites: {
+            dset: "mixed_doe_cu2ce_sites",
+            method: "sum",
+        },
+        defense_department_of_defense_lands: {
+            dset: "defense_department_of_defense_lands",
+            method: "sum",
+        },
+        environment_ridgelines_fs_only: {
+            dset: "environment_ridgelines_fs_only",
+            method: "sum",
+        },
+        environment_doi_criteria_ridgelines: {
+            dset: "environment_doi_criteria_ridgelines",
+            method: "sum",
+        },
+        national_landcover_dataset: {
+            dset: "national_landcover_dataset",
+            method: "category",
+        },
+        environment_indiana_bat_range: {
+            dset: "environment_indiana_bat_range",
+            method: "sum",
+        },
+        environment_florida_bonneted_range: {
+            dset: "environment_florida_bonneted_range",
+            method: "sum",
+        },
+        environment_northern_long_eared_bat: {
+            dset: "environment_northern_long_eared_bat",
+            method: "sum",
+        },
+        environment_gray_bat_range: {
+            dset: "environment_gray_bat_range",
+            method: "sum",
+        },
+        environment_mexican_long_nose_range: {
+            dset: "environment_mexican_long_nose_range",
+            method: "sum",
+        },
+        environment_virginia_big_eared_range: {
+            dset: "environment_virginia_big_eared_range",
+            method: "sum",
+        },
+        environment_ozark_big_eared_bat: {
+            dset: "environment_ozark_big_eared_bat",
+            method: "sum",
+        },
+        environment_tri_colored_range: {
+            dset: "environment_tri_colored_range",
+            method: "sum",
+        },
+        sagebrush_ecological_integrity: {
+            dset: "sagebrush_ecological_integrity",
+            method: "category",
+        },
+        nced_national_conservation_easement_gap_status_3_4: {
+            dset: "nced_national_conservation_easement_gap_status_3_4",
+            method: "sum",
+        },
+        padus_protected_areas_gap_status_3_4: {
+            dset: "padus_protected_areas_gap_status_3_4",
+            method: "sum",
+        },
+        defense_military_training_routes: {
+            dset: "defense_military_training_routes",
+            method: "category",
+        },
+        defense_special_use_airspace: {
+            dset: "defense_special_use_airspace",
+            method: "category",
+        },
+        environment_nlcd_2016_treecanopy_2019_08_31_rev90m: {
+            dset: "environment_nlcd_2016_treecanopy_2019_08_31_rev90m",
+            method: "sum",
+        },
+        croplands_data_layer_2016: {
+            dset: "croplands_data_layer_2016",
+            method: "category",
+        },
+        population_landscan_conus_night_2020: {
+            dset: "population_landscan_conus_night_2020",
+            method: "sum",
+        },
+        cdc_social_vulnerability_index_2018: {
+            dset: "cdc_social_vulnerability_index_2018",
+            method: "mean",
+        },
+        resilient_and_connected_landscapes: {
+            dset: "resilient_and_connected_landscapes",
+            method: "category",
+        },
+        aft_productivity_versatility_resiliancy: {
+            dset: "aft_productivity_versatility_resiliancy",
+            method: "mean",
+        },
+        states_best_agri_lands_aft: {
+            dset: "states_best_agri_lands_aft",
+            method: "sum",
+        },
+        environment_aft_nationally_significant_agricultural_lands: {
+            dset: "environment_aft_nationally_significant_agricultural_lands",
+            method: "sum",
+        },
+        tnc_key_wildlife_areas_wind: {
+            dset: "tnc_key_wildlife_areas_wind",
+            method: "category",
+        },
+        fair_market_private_lands_value: {
+            dset: "fair_market_private_lands_value",
+            method: "mean",
+        },
+        energy_communities_coal_closure: {
+            dset: "energy_communities_coal_closure",
+            method: "sum",
+        },
+        energy_communities_metro_statistical_areas: {
+            dset: "energy_communities_metro_statistical_areas",
+            method: "sum",
+        },
+        energy_communities: {
+            dset: "energy_communities",
+            method: "sum",
+        },
+        environment_wild_scenic_river_10mile_fs_only: {
+            dset: "environment_wild_scenic_river_10mile_fs_only",
+            method: "sum",
+        },
+        environment_wild_scenic_river_20mile_fs_only: {
+            dset: "environment_wild_scenic_river_20mile_fs_only",
+            method: "sum",
+        },
+        environment_scenic_trail_10mile_fs_only: {
+            dset: "environment_scenic_trail_10mile_fs_only",
+            method: "sum",
+        },
+        environment_scenic_trail_20mile_fs_only: {
+            dset: "environment_scenic_trail_20mile_fs_only",
+            method: "sum",
+        },
+        environment_sagebrush_core_and_growth_habitat_federal_lands: {
+            dset: "environment_sagebrush_core_and_growth_habitat_federal_lands",
+            method: "sum",
+        },
     },
-    "capital_cost_function": "[2374.05, 2374.05, 1792.16, 1429.93, 1349.26, 1313.16, 1281.45, 1256.35, 1237.88, 1226.03, 1220.79, 1218.79, 1216.62, 1214.28, 1211.78, 1209.12, 1206.29, 1203.30, 1200.14, 1196.92, 1193.74, 1190.59, 1187.48, 1184.41, 1181.37, 1178.37, 1175.41, 1172.49, 1169.60, 1166.79, 1164.08, 1161.49, 1159.00, 1156.62, 1154.36, 1152.20, 1150.15, 1148.21, 1146.39, 1144.67, 1143.06, 1141.56, 1140.17, 1138.89, 1137.72, 1136.65, 1135.70, 1134.86, 1134.13, 1133.50, 1132.99, 1132.57, 1132.17, 1131.77, 1131.38, 1130.99, 1130.60, 1130.22, 1129.84, 1129.47, 1129.10, 1128.73, 1128.37, 1128.01, 1127.65, 1127.30, 1126.95, 1126.60, 1126.26, 1125.93, 1125.59, 1125.26, 1124.94, 1124.61, 1124.29, 1123.98, 1123.67, 1123.36, 1123.06, 1122.76, 1122.46, 1122.17, 1121.88, 1121.59, 1121.31, 1121.03, 1120.76, 1120.49, 1120.22, 1119.96, 1119.70, 1119.44, 1119.19, 1118.94, 1118.70, 1118.46, 1118.22, 1117.99, 1117.76, 1117.53, 1117.31, 1117.09, 1116.87, 1116.66, 1116.46, 1116.25, 1116.05, 1115.86, 1115.66, 1115.48, 1115.29, 1115.11, 1114.93, 1114.76, 1114.59, 1114.42, 1114.26, 1114.10, 1113.94, 1113.79, 1113.65, 1113.50, 1113.36, 1113.22, 1113.09, 1112.96, 1112.84, 1112.72, 1112.60, 1112.48, 1112.37, 1112.27, 1112.16, 1112.06, 1111.97, 1111.88, 1111.79, 1111.70, 1111.62, 1111.54, 1111.47, 1111.40, 1111.34, 1111.27, 1111.22, 1111.16, 1111.11, 1111.06, 1111.02, 1110.98, 1110.94, 1110.91, 1110.88, 1110.86, 1110.84, 1110.82, 1110.80, 1110.79, 1110.79, 1110.79, 1110.79, 1110.79, 1110.80, 1110.81, 1110.83, 1110.85, 1110.87, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90][max(0, min(300, n_turbines))] * system_capacity",
-    "objective_function": "1e10 if aep <= 0 else ((capital_cost + balance_of_system_cost) * fixed_charge_rate + fixed_operating_cost) / (aep / 1000 + 1E-6) + variable_operating_cost",
-    "variable_operating_cost_function": "0",
-    "balance_of_system_cost_function": "218 * nn_conn_dist_m",
-    "fixed_operating_cost_function": "28.0 * system_capacity",
-    "pre_load_data": true
+    capital_cost_function: "[2374.05, 2374.05, 1792.16, 1429.93, 1349.26, 1313.16, 1281.45, 1256.35, 1237.88, 1226.03, 1220.79, 1218.79, 1216.62, 1214.28, 1211.78, 1209.12, 1206.29, 1203.30, 1200.14, 1196.92, 1193.74, 1190.59, 1187.48, 1184.41, 1181.37, 1178.37, 1175.41, 1172.49, 1169.60, 1166.79, 1164.08, 1161.49, 1159.00, 1156.62, 1154.36, 1152.20, 1150.15, 1148.21, 1146.39, 1144.67, 1143.06, 1141.56, 1140.17, 1138.89, 1137.72, 1136.65, 1135.70, 1134.86, 1134.13, 1133.50, 1132.99, 1132.57, 1132.17, 1131.77, 1131.38, 1130.99, 1130.60, 1130.22, 1129.84, 1129.47, 1129.10, 1128.73, 1128.37, 1128.01, 1127.65, 1127.30, 1126.95, 1126.60, 1126.26, 1125.93, 1125.59, 1125.26, 1124.94, 1124.61, 1124.29, 1123.98, 1123.67, 1123.36, 1123.06, 1122.76, 1122.46, 1122.17, 1121.88, 1121.59, 1121.31, 1121.03, 1120.76, 1120.49, 1120.22, 1119.96, 1119.70, 1119.44, 1119.19, 1118.94, 1118.70, 1118.46, 1118.22, 1117.99, 1117.76, 1117.53, 1117.31, 1117.09, 1116.87, 1116.66, 1116.46, 1116.25, 1116.05, 1115.86, 1115.66, 1115.48, 1115.29, 1115.11, 1114.93, 1114.76, 1114.59, 1114.42, 1114.26, 1114.10, 1113.94, 1113.79, 1113.65, 1113.50, 1113.36, 1113.22, 1113.09, 1112.96, 1112.84, 1112.72, 1112.60, 1112.48, 1112.37, 1112.27, 1112.16, 1112.06, 1111.97, 1111.88, 1111.79, 1111.70, 1111.62, 1111.54, 1111.47, 1111.40, 1111.34, 1111.27, 1111.22, 1111.16, 1111.11, 1111.06, 1111.02, 1110.98, 1110.94, 1110.91, 1110.88, 1110.86, 1110.84, 1110.82, 1110.80, 1110.79, 1110.79, 1110.79, 1110.79, 1110.79, 1110.80, 1110.81, 1110.83, 1110.85, 1110.87, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90, 1110.90][max(0, min(300, n_turbines))] * system_capacity",
+    objective_function: "1e10 if aep <= 0 else ((capital_cost + balance_of_system_cost) * fixed_charge_rate + fixed_operating_cost) / (aep / 1000 + 1E-6) + variable_operating_cost",
+    variable_operating_cost_function: "0",
+    balance_of_system_cost_function: "218 * nn_conn_dist_m",
+    fixed_operating_cost_function: "28.0 * system_capacity",
+    pre_load_data: false,
 }

@@ -1,0 +1,54 @@
+{
+  "Transportation": {
+    "subsectors": {
+      "transportation": [
+        "buses",
+        "heavy duty trucks",
+        "light duty autos",
+        "light duty trucks",
+        "medium duty trucks"
+      ]
+    },
+    "model_years": [2025, 2030, 2035],
+    "filepaths": [
+      "/projects/drprojects/evmc/data/full_run_2024-10-14/scenario=mid_baseline/segment=ldv/year={model_year}/summaries/ev-ws-immediatecharging-hourly-weighted-sum-kWh-{model_year}.csv",
+      "/projects/drprojects/evmc/data/full_run_2024-10-14/scenario=mid_baseline/segment=mhdv/year={model_year}/summaries/ev-ws-immediatecharging-hourly-weighted-sum-kWh-{model_year}.csv"
+    ],
+    "unit_conversion_factor": 1e-6,
+    "timezone": "local",
+    "regional_scope": "legacy_ba"
+  },
+  "Buildings": {
+    "subsectors": {
+      "commercial": [
+        "commercial air conditioning",
+        "commercial space heating",
+        "commercial ventilation"
+      ],
+      "residential": [
+        "residential air conditioning",
+        "residential furnace fans",
+        "residential secondary heating",
+        "residential space heating"
+      ]
+    },
+    "model_years": [2021, 2025, 2030, 2035, 2040, 2045, 2050],
+    "filepaths": [
+      "/projects/eerload/mmowers/eer_splice/agg_res_eulp_hvac_elec_GWh_upgrade0.csv",
+      "/projects/eerload/mmowers/eer_splice/agg_com_eulp_hvac_elec_GWh_upgrade0.csv"
+    ],
+    "unit_conversion_factor": 1e3,
+    "timezone": "Etc/GMT+6",
+    "regional_scope": "legacy_ba"
+  },
+  "Data Centers": {
+    "subsectors": {
+      "commercial": ["data center cooling", "data center it"]
+    },
+    "model_years": [2021, 2025, 2030, 2035, 2040, 2045, 2050],
+    "filepaths": ["/kfs2/projects/eerload/challoran/eer_splice/dummy_agg_op_datacenters_by_state.csv"],
+    "unit_conversion_factor": 1,
+    "timezone": "Etc/GMT+6",
+    "regional_scope": "state"
+  }
+}

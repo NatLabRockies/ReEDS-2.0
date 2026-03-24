@@ -14,12 +14,19 @@ CoalOldUns  ,0.5
 CofireNew ,0.4
 CofireOld ,0.4
 Gas-CC,0.5
+Gas-CC_H_1x1,0.5
+Gas-CC_H_2x1,0.5
 Gas-CC-CCS_mod,0.5
 Gas-CC-CCS_max,0.5
+Gas-CC_H_1x1-CCS_mod,0.5
+Gas-CC_H_1x1-CCS_max,0.5
+Gas-CC_H_2x1-CCS_mod,0.5
+Gas-CC_H_2x1-CCS_max,0.5
 Gas-CC-CCS-F1,0.5
 Gas-CC-CCS-F2,0.5
 Gas-CC-CCS-F3,0.5
 Gas-CT,0.42
+Gas-CT_aero,0.42
 geothermal  ,0.9
 hydro ,0.5
 lfill-gas ,0.4

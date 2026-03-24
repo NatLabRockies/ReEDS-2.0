@@ -165,20 +165,9 @@ def get_rev_paths(revswitches, caseSwitches):
     return revswitches
 
 def check_compatibility(sw):
-    ### Hourly resolution
-    if (
-        (int(sw['startyear']) < 2010)
-        or int(sw['GSw_ClimateHydro'])
-        or int(sw['GSw_ClimateDemand'])
-        or int(sw['GSw_ClimateWater'])
-        or int(sw['GSw_EFS_Flex'])
-        or (int(sw['GSw_Canada']) == 2)
-    ):
-        raise NotImplementedError(
-            'At least one of GSw_Canada, GSw_ClimateHydro, GSw_ClimateDemand, GSw_ClimateWater, '
-            'endyear, startyear, or GSw_EFS_Flex '
-            'are using a currently-unsupported setting.')
-    
+    if int(sw['startyear']) < 2010:
+        raise ValueError(f"startyear = {sw['startyear']} but must be ≥ 2010")
+
     if (sw['GSw_HourlyType'] in ['year']) and int(sw['GSw_InterDayLinkage']):
         raise ValueError(
             "GSw_HourlyType cannot be 'year' when GSw_InterDayLinkage is enabled. "
@@ -234,7 +223,7 @@ def check_compatibility(sw):
             'When running with the H2 PTC enabled, GSw_H2 should be set to 2.\n'
             f"GSw_H2_PTC={sw['GSw_H2_PTC']}, GSw_H2={sw['GSw_H2']}"
         )
-    
+
     if int(sw['GSw_H2_SMR']) == 0 and sw['GSw_H2_Demand_Case'] in ['BAU', 'Aggressive', 'Decarb_with_BAU']:
         raise ValueError(
             f"GSw_H2_SMR is set to 0, but GSw_H2_Demand_Case is set to '{sw['GSw_H2_Demand_Case']}', which requires SMR set to 1.\n"
@@ -247,9 +236,19 @@ def check_compatibility(sw):
             f"GSw_Region={sw['GSw_Region']}, GSw_GasCurve={sw['GSw_GasCurve']}"
         )
 
-    if (sw['GSw_RegionResolution'] in ['county','mixed']) and int(sw['GSw_OffshoreZones']):
-        err = 'GSw_OffshoreZones=1 is not implemented for county/mixed resolution'
-        raise NotImplementedError(err)
+    if sw['GSw_RegionResolution'] in ['county','mixed']:
+        err_switch_configs = []
+        if int(sw['GSw_OffshoreZones']):
+            err_switch_configs.append('GSw_OffshoreZones=1')
+        if sw['GSw_LoadAllocationMethod'] == 'state_lpf':
+            err_switch_configs.append('GSw_LoadAllocationMethod=state_lpf')
+
+        if len(err_switch_configs) > 0:
+            raise NotImplementedError(
+                'The following switch configurations are not implemented for '
+                'county/mixed resolution:\n{}\n'
+                .format('\n'.join(err_switch_configs))
+            )
 
     ### Aggregation
     if (sw['GSw_RegionResolution'] != 'aggreg') and (int(sw['GSw_NumCSPclasses']) != 12):
@@ -284,7 +283,13 @@ def check_compatibility(sw):
                 "stress metric in GSw_PRM_StressThreshold must be 'EUE' or 'NEUE' "
                 f"but '{stress_metric}' was provided"
             )
-
+        if (sw['GSw_PRM_StressModel'].lower() != 'pras') and (stress_metric.upper() != 'EUE'):
+            err = (
+                f"The combination of GSw_PRM_StressModel={sw['GSw_PRM_StressModel']} and "
+                f"stress_metric={stress_metric} is not supported."
+            )
+            raise NotImplementedError(err)
+        
     if sw['GSw_PRM_StressStorageCutoff'].lower() not in ['off','0','false']:
         metric, value = sw['GSw_PRM_StressStorageCutoff'].split('_')
         if metric.lower()[:3] not in ['eue', 'cap', 'abs']:
@@ -339,15 +344,13 @@ def check_compatibility(sw):
     scalars = reeds.io.get_scalars()
     ilr_upv = scalars['ilr_utility'] * 100
 
-    if (int(sw['GSw_PVB'])) and (sw['GSw_SitingUPV'] != 'reference'):
-        if (all(ilr != ilr_upv for ilr in sw['GSw_PVB_ILR'].split('_'))):
-            raise ValueError(f'PVB with ILR!={scalars["ilr_utility"]} only works with GSw_SitingUPV == "reference".'
-                             '\nSet GSw_SitingUPV to "reference".')
-
-    if (int(sw['GSw_PVB'])) and (sw['GSw_RegionResolution'] == 'county'):
-        if (all(ilr != ilr_upv for ilr in sw['GSw_PVB_ILR'].split('_'))):
-            raise ValueError(f'PVB with ILR!={scalars["ilr_utility"]} does not work at county resolution.'
-                             f'\nRemove any ILR!={scalars["ilr_utility"]} from GSw_PVB_ILR.')
+    if (
+        int(sw['GSw_PVB'])
+        and not all([np.isclose(float(ilr), ilr_upv) for ilr in sw['GSw_PVB_ILR'].split('_')])
+    ):
+        raise ValueError(
+            f"GSw_PVB_ILR = {sw['GSw_PVB_ILR']} but all entries must be {int(ilr_upv)}"
+        )
     
     # for bcr in sw['GSw_NuclearStor_BCR'].split('_'):
     #     if not (float(bcr) >= 0):
@@ -419,7 +422,7 @@ def check_compatibility(sw):
             raise ValueError("No column in modeled_regions.csv matching GSw_Region")
 
     ### Compatible switch combinations
-    if sw['GSw_EFS1_AllYearLoad'] == 'historic':
+    if sw['GSw_LoadProfiles'] == 'historic':
         if ('demand_' + sw['demandscen'] +'.csv') not in os.listdir(os.path.join(reeds_path, 'inputs','load')) :
             raise ValueError("The demand file specified by the demandscen switch is not in the inputs/load folder")
 
@@ -431,7 +434,7 @@ def check_compatibility(sw):
         err = (
             "Manifest.toml does not exist. "
             "Please set up julia by following the instructions at "
-            "https://pages.github.nrel.gov/ReEDS/ReEDS-2.0/internal/additional_setup.html#reeds2pras-julia-and-stress-periods-setup"
+            "https://natlabrockies.github.io/ReEDS-2.0/setup.html#reeds2pras-julia-and-stress-periods-setup"
         )
         raise Exception(err)
 
@@ -440,7 +443,7 @@ def check_compatibility(sw):
         raise ValueError(
             "'reeds_to_rev' must be enable for land_use analysis to run."
         )
-    
+
     disallowed_characters = ['~', '|', '*']
     invalid_switches = [
         key for key, val in sw.items()
@@ -599,7 +602,7 @@ def setup_sequential(
                 caseSwitches, hpc,
                 solveyears, casedir, batch_case, toLogGamsString, OPATH, logger,
             )
-        
+
         if int(caseSwitches['GSw_CheckInputs']):
             ### Run input parameter error checks after the first solve year (since financial
             ### multipliers aren't created until the first solve year is run)
@@ -816,10 +819,10 @@ def setupEnvironment(
     hpc = True if (int(os.environ.get('REEDS_USE_SLURM',0))) else False
     hpc = False if forcelocal else hpc
 
-    ### If on NREL HPC but NOT submitting slurm job, ask for confirmation
+    ### If on NLR HPC but NOT submitting slurm job, ask for confirmation
     if ('NREL_CLUSTER' in os.environ) and (not hpc):
         print(
-            "It looks like you're running on the NREL HPC but the REEDS_USE_SLURM environment "
+            "It looks like you're running on the NLR HPC but the REEDS_USE_SLURM environment "
             "variable is not set to 1, meaning the model will run locally rather than being "
             "submitted as a slurm job. Are you sure you want to run locally?"
         )
@@ -896,7 +899,7 @@ def setupEnvironment(
         if single:
             if case not in single.split(','):
                 continue
-        else: 
+        else:
             if int(df_cases.loc['ignore', case]) == 1:
                 continue
 
@@ -937,7 +940,7 @@ def setupEnvironment(
                     np.ravel([i.split(',') for i in choices[i].split(';')]).tolist()
                 ]
                 matches = [re.match(choice, str(val)) for choice in i_choices]
-                if not any(matches):
+                if not any(matches): 
                     error = (
                         f'Invalid entry for "{i}" for case "{case}".\n'
                         f'Entered "{val}" but must match one of the following:\n> '
@@ -959,7 +962,7 @@ def setupEnvironment(
     # If doing a Monte Carlo run modify df_cases by adding new columns for each scenario run
     # Also validate the distribution file
     warned_about_cluster_alg = False
-    if 'MCS_runs' in df_cases.index:        
+    if 'MCS_runs' in df_cases.index:
         for c in df_cases.columns:
             if (
                 c not in ['Description','Default Value','Choices']
@@ -986,7 +989,7 @@ def setupEnvironment(
                         quit()
                     warned_about_cluster_alg = True
                     print()
-  
+
                 # Validate the distribution file
                 sw = df_cases[c].fillna(df_cases['Default Value'])
                 mcs_dist_path = os.path.join(
@@ -1025,7 +1028,7 @@ def setupEnvironment(
         if single:
             if case not in single.split(','):
                 continue
-        else: 
+        else:
             if int(df_cases.loc['ignore', case]) == 1:
                 continue
         # Add switch settings to list of options passed to GAMS
@@ -1044,8 +1047,8 @@ def setupEnvironment(
         quit()
 
     # If no --single/-s, drop the ignored cases, otherwise leave them
-    if not single: 
-        casenames = [case for case in casenames 
+    if not single:
+        casenames = [case for case in casenames
                      if int(df_cases.loc['ignore',case]) != 1]
         df_cases.drop(
             df_cases.loc['ignore'].loc[df_cases.loc['ignore']=='1'].index,
@@ -1381,7 +1384,7 @@ def write_batch_script(
         os.path.join(reeds_path, 'inputs','modeledyears.csv'),
         usecols=[caseSwitches['yearset_suffix']],
     ).squeeze(1).dropna().astype(int).tolist()
-    
+
     # If start year is not in solveyears, start year is added into solveyears set
     startyear = int(caseSwitches['startyear'])
     endyear = int(caseSwitches['endyear'])
@@ -1452,6 +1455,7 @@ def write_batch_script(
             'copy_files',
             'mcs_sampler',
             'aggregate_regions',
+            'h2_storage',
             'calc_financial_inputs',
             'fuelcostprep',
             'writecapdat',
@@ -1459,7 +1463,8 @@ def write_batch_script(
             'writedrshift',
             'plantcostprep',
             'climateprep',
-            'ldc_prep',
+            'hourly_load',
+            'recf',
             'forecast',
             'WriteHintage',
             'transmission',
@@ -1673,7 +1678,7 @@ def submit_slurm_parallel_jobs(
     """
     Write and submit Slurm parallel run scripts for each group of cases in the batch.
     """
-    num_cases = len(casenames) 
+    num_cases = len(casenames)
     num_nodes = int(np.ceil(num_cases / cases_per_node))
 
     batch_folder = os.path.join(
@@ -1753,9 +1758,9 @@ def write_case_submission_script(
     """
     Writes a SLURM submission script in the specified case directory.
 
-    This script (named based on the batch_case) includes SLURM resource 
-    allocation directives and is responsible for launching the actual 
-    ReEDS execution script (e.g., run logic). 
+    This script (named based on the batch_case) includes SLURM resource
+    allocation directives and is responsible for launching the actual
+    ReEDS execution script (e.g., run logic).
     """
     # Create a copy of the SLURM template
     slurm_script_path = os.path.join(casedir, batch_case + ".sh")
@@ -1820,7 +1825,7 @@ def launch_single_case_run(
     options, caseSwitches, niter, reeds_path, ccworkers, startiter,
     BatchName, case, cases_filename, hpc=False, debugnode=False
 ):
-    
+
     ### For testing/debugging
     # caseSwitches = caseSwitches[0]
     # options = caseList[0]
@@ -1872,7 +1877,7 @@ def launch_single_case_run(
     elif hpc:
         write_case_submission_script(
             casedir, batch_case, debugnode=debugnode,
-        )   
+        )
 
         batchcom = "sbatch " + os.path.join(casedir, batch_case + ".sh")
         subprocess.Popen(batchcom.split())
@@ -1912,20 +1917,28 @@ def main(
     """
     print(" ")
     print(" ")
-    print("--------------------------------------------------------------------------------------------------")
+    print("---------------------------------------------------------------------------------------------------------------------")
     print(" ")
-    print("         MMM.  808   MMM;   BMW       rMM   @MMMMMMMM2     XM@MMMMMMMMMS   MM0         ")
-    print("        iMMM@S,MMM;X@MMMZ   MMMM.     aMM   MMMW@MMMMMMM   BMMMW@M@M@MMX   MMM         ")
-    print("         r2MMZ     SMMa;i   MMMMM;    SMM   MMB      7MMS  ZMM.            MMM         ")
-    print("           Z         Z      MMZ7MM2   XMM   MMW       MM8  ZMM.            MMM         ")
-    print("        .MMr         .MM7   MM8 rMMB  XMM   MM@     ,MMM   ZMMMMMMMMMM     MMM         ")
-    print("        .MMr         ,MMr   MMB  :MMM :MM   MMW  MMMMMB    ZMMMWMMMMM@     MMM         ")
-    print("           Z         Z      MMW    MMMaMM   MM@   MMMi     ZMM.            MMM         ")
-    print("         XaMM8     aMMZXi   MMW     MMMMM   MM@    0MMr    ZMM.            MMW         ")
-    print("        iMMMW7,MMM;;BMMMZ   MMM      8MMM   MMM     aMMB   0MMMWMMM@MMMZ   MMM@MMMMMMM ")
-    print("         BZ0   SSS   0Z0.   ZBX       :0B   8BS      :BM7  ;8Z8WWWWWW@M2   BZZ0WWWWWWM ")
+    print("    +++++++++++++++                                                                                                  ")
+    print(" +++++++++++++++++++++++                                                                                             ")
+    print("=+++++++++++++++++++++++++                                                                                           ")
+    print("+++++++++++++++++++++++++++         ############                      ###########   #############         #########  ")
+    print("++++++++++++++ +++++++++++++        ##############                    ##            ###         ####    ###          ")
+    print("++++++++++++  ++++++++++++++        ####      ####                    ##            ###           ###   ##           ")
+    print("+++++++++++   ++++++++++++++        ####      #####    #########      ##            ###            ###  ##           ")
+    print("+++++++++           ++++++++        ####     #####   #############    ##            ###             ##  ####         ")
+    print("++++++++          ++++++++++        #############    ####     #####   ###########   ###             ##    ######     ")
+    print("+++++++++++++   +++++++++++         ############    ###############   ##            ###             ##         ####  ")
+    print("++++++++++++   +++++++++++          ####    #####   ###############   ##            ###            ###           ### ")
+    print("+++++++++++  +++++++++++            ####     #####  ####              ##            ###           ###            ### ")
+    print("++++++++++   +++++++++++++          ####      ####   ####             ##            ###          ###             ### ")
+    print("+++++++++     +++++++++++++         ####      #####  #############    ##            ###       #####    ###      ###  ")
+    print("++++++++       +++++++++++++        ####       #####   ###########    ############  ###########         #########    ")
+    print("++++++++         +++++++++++                                                                                         ")
+    print(" +++++            ++++++++++                                                                                         ")
+    print("   ++                ++++                                                                                            ")
     print(" ")
-    print("--------------------------------------------------------------------------------------------------")
+    print("---------------------------------------------------------------------------------------------------------------------")
     print(" ")
     print(" ")
 
@@ -1939,10 +1952,10 @@ def main(
     )
 
     if (envVar['hpc']) and (envVar['cases_per_hpc_node'] > 1):
-        # Write each .sh script for each case individually 
+        # Write each .sh script for each case individually
         generate_parallel_cases_batch_scripts(envVar)
 
-        # Write the slurm scripts for parallel runs and 
+        # Write the slurm scripts for parallel runs and
         # submit them to the HPC
         submit_slurm_parallel_jobs(
             reeds_path=envVar['reeds_path'],

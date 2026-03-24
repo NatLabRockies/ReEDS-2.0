@@ -149,17 +149,21 @@ def plot_profile(
             dfprofile = recf['upv'].squeeze(1)
 
     dfprofile = dfprofile.loc[str(min(weatheryears)):str(max(weatheryears))].copy()
+    ## Use a continuous set of datetimes to avoid interpolating over missing years
+    full_timeseries = pd.date_range(dfprofile.index[0], dfprofile.index[-1], freq='H')
+    dfprofile = dfprofile.reindex(full_timeseries)
 
-    dayindex = pd.concat([
-        pd.Series(index=pd.date_range(f'{y}-01-01', f'{y}-12-31', freq='D')[:365])
-        for y in weatheryears
-    ]).index
+    dayindex = pd.date_range(
+        f'{min(weatheryears)}-01-01', f'{max(weatheryears)}-12-31', freq='D',
+    )
     dfday = {
         agg: dfprofile.groupby(
             [dfprofile.index.year, dfprofile.index.month, dfprofile.index.day]
-        ).agg(agg).set_axis(dayindex)
+        ).agg(agg)
         for agg in ['min', 'max', 'mean']
     }
+    ## Drop Dec 31 when plotting a single year to match recf data
+    dfday = {k: v.set_axis(dayindex[:len(v)]) for k,v in dfday.items()}
 
     ## Plot it
     if (f is None) and (ax is None):
@@ -178,11 +182,164 @@ def plot_profile(
     if yscale_zero:
         ax.set_ylim(0)
     if len(weatheryears) > 1:
-        ax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
         ax.set_xlim(str(weatheryears[0]), str(weatheryears[-1]+1))
+    if 1 < len(weatheryears) <= 7:
+        ax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+    elif len(weatheryears) > 7:
+        ax.xaxis.set_minor_locator(mpl.dates.YearLocator())
     reeds.plots.despine(ax)
 
     return f, ax, dfday
+
+
+def plot_modelyears_weatheryears(case, startyear=2020, year_buffer=1):
+    """
+    Plot annual demand by model year for each weather year.
+    """
+    ## Parse inputs
+    sw = reeds.io.get_switches(case)
+    modelyears = [y for y in reeds.io.get_years(case) if y >= startyear]
+    year_spacing = int(pd.Series(modelyears).diff().min())
+    weatheryears = sw.resource_adequacy_years_list
+    colors = {'demand':'k', 'upv':'C1', 'wind-ons':'C0'}
+    ylabels = {'demand':'Electricity demand [GW]', 'upv':'PV', 'wind-ons':'Wind'}
+
+    ## Data
+    dfdemand_profile = reeds.io.read_file(
+        os.path.join(case, 'inputs_case', 'load.h5'),
+        parse_timestamps=True,
+    ## Sum over country and convert to GW
+    ).sum(axis=1) / 1e3
+
+    recf = (
+        reeds.io.get_available_capacity_weighted_cf(case, level='country')
+        .xs('USA', 1, 'r')
+        [['upv', 'wind-ons']]
+    ) * 100
+
+    ## Get the min, mean, and max by model year and weather year
+    dfdemand = pd.concat({
+        agg: (
+            dfdemand_profile
+            .groupby(['year', dfdemand_profile.index.get_level_values('datetime').year])
+            .agg(agg)
+            .rename_axis(['modelyear', 'weatheryear'])
+        )
+        for agg in ['min', 'mean', 'max']
+    }, axis=1).loc[modelyears]
+    ## For VRE, get the min/mean/max of the daily average CF
+    dfvre = pd.concat({
+        agg: (
+            recf
+            .groupby([recf.index.year, recf.index.month, recf.index.day]).mean()
+            .rename_axis(['y','m','d'])
+            .groupby('y').agg(agg)
+            .rename_axis('weatheryear')
+        )
+        for agg in ['min', 'mean', 'max']
+    }, axis=1, names=('agg','i'))
+
+    ## Get weather year spacing for plots
+    allweather = np.arange(min(weatheryears), max(weatheryears)+1, 1)
+    weatherspan = max(weatheryears) - min(weatheryears)
+    weathermid = (max(weatheryears) + min(weatheryears)) / 2
+    xspan = (year_spacing - year_buffer) / weatherspan
+
+    ### Plot it
+    plt.close()
+    f,ax = plt.subplots(
+        1, 2, figsize=(7, 3.75),
+        gridspec_kw={'width_ratios': [len(modelyears)+1, 2], 'wspace':0.3},
+    )
+    ## Demand
+    _ax = ax[0]
+    for modelyear in modelyears:
+        df = dfdemand.loc[modelyear].copy()
+        ## Use the next line if you want to include the gap (harder to interpret)
+        # df = df.reindex(allweather)
+        ## Plot the weather years centered around the model year
+        x = {y: modelyear + (y - weathermid) * xspan for y in allweather}
+        df.index = df.index.map(x)
+        ## Plot it
+        _ax.plot(
+            df.index, df['mean'], lw=0, color=colors['demand'],
+            marker='o', markersize=3, markeredgewidth=0,
+        )
+        _ax.fill_between(
+            df.index, df['max'], df['min'],
+            lw=0, alpha=0.25, color=colors['demand'],
+        )
+        for agg in ['min', 'max']:
+            _ax.plot(
+                df.index, df[agg], lw=0, color=colors['demand'],
+                marker='o', markersize=1.5, markeredgewidth=0,
+            )
+        ## Label the min/mean/max and weather years
+        if modelyear == modelyears[-1]:
+            for i in [0, -1]:
+                _ax.annotate(
+                    weatheryears[i],
+                    (df.index[i], df['min'].mean()),
+                    xytext=(0, -20), textcoords='offset points',
+                    ha='center', va='top', annotation_clip=False,
+                    arrowprops={'arrowstyle':'-|>', 'color':colors['demand'], 'shrinkB':-3},
+                )
+            _ax.annotate(
+                'weather year',
+                (modelyear, df['min'].mean()),
+                xytext=(0, -30), textcoords='offset points',
+                ha='center', va='top', annotation_clip=False,
+            )
+        if modelyear == modelyears[-1]:
+            for agg in df:
+                _ax.annotate(
+                    ('Annual\n'+agg if agg=='max' else agg),
+                    (df.index.max(), df[agg].mean()),
+                    xytext=(4, 0), textcoords='offset points',
+                    ha='left', va='center', annotation_clip=False,
+                )
+
+    _ax.set_xlabel('Model year')
+    _ax.xaxis.set_minor_locator(mpl.ticker.MultipleLocator(year_spacing))
+    _ax.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
+    _ax.set_ylim(0)
+    _ax.set_title(ylabels['demand'], x=0, ha='left', weight='bold', fontsize='x-large')
+    ## PV and wind
+    _ax = ax[1]
+    for col, tech in enumerate(['upv', 'wind-ons']):
+        x = {y: col*year_spacing + (y - weathermid) * xspan for y in allweather}
+        df = dfvre.xs(tech, 1, 'i')
+        df.index = df.index.map(x)
+        _ax.plot(
+            df.index, df['mean'], lw=0, color=colors[tech],
+            marker='o', markersize=3, markeredgewidth=0,
+        )
+        _ax.fill_between(
+            df.index, df['max'], df['min'],
+            lw=0, alpha=0.25, color=colors[tech],
+        )
+        for agg in ['min', 'max']:
+            _ax.plot(
+                df.index, df[agg], lw=0, color=colors[tech],
+                marker='o', markersize=1.5, markeredgewidth=0,
+            )
+        _ax.annotate(
+            ylabels[tech],
+            (col*year_spacing, 0),
+            xytext=(0, 1), textcoords='offset points',
+            ha='center', va='bottom', color=colors[tech],
+            weight='bold', fontsize='x-large',
+        )
+    _ax.set_title(
+        'Daily CF [%]', weight='bold', fontsize='x-large',
+    )
+    _ax.set_xticks([])
+    _ax.set_ylim(0)
+    _ax.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
+
+    reeds.plots.despine(ax)
+
+    return f, ax, {'demand': dfdemand, 'vre': dfvre}
 
 
 def plot_units_existing(
@@ -242,7 +399,7 @@ def plot_units_existing(
         & ~dfunits.T_PNM.isin(bad_locations)
     ].copy()
     ## Sort techs by installed capacity
-    techs = dfunits.groupby('tech').cap.sum().sort_values(ascending=False).index
+    techs = dfunits.groupby('tech').summer_power_capacity_MW.sum().sort_values(ascending=False).index
     if onlytechs:
         if isinstance(onlytechs, str):
             techs = [onlytechs]
@@ -287,10 +444,10 @@ def plot_units_existing(
     ## Units
     for tech in techs:
         df = dfunits.loc[dfunits.tech==tech]
-        label = f'{tech} ({df.cap.sum()/1e3:.0f})' if gw_label else tech
+        label = f'{tech} ({df.summer_power_capacity_MW.sum()/1e3:.0f})' if gw_label else tech
         df.plot(
             ax=ax, color=colors.get(tech,'k'), marker=techmarkers.get(tech,'o'),
-            markersize=df.cap*scale, lw=0, label=label, alpha=alpha,
+            markersize=df.summer_power_capacity_MW*scale, lw=0, label=label, alpha=alpha,
         )
     ## Legend
     leg = ax.legend(
@@ -308,10 +465,127 @@ def plot_units_existing(
         for i, row in dfscale.iterrows():
             ax.annotate(
                 f'{row.cap/1e3:.1f}'+(' GW' if i == len(dfscale) - 1 else ''),
-                (row.x+1e5, row.y), va='center')
+                (row.x+1e5, row.y), va='center', annotation_clip=False,
+            )
     ## Formatting
     ax.axis('off')
     return f, ax, dfunits
+
+
+def plot_existing_unitsize(
+    case=None,
+    level='transreg',
+    techs=['gas-ct', 'gas-cc', 'nuclear'],
+    year=2025,
+    scale=1.5,
+    binwidth=None,
+    numbins=41,
+):
+    """
+    """
+    ### Parse inputs
+    sw = reeds.io.get_switches(case)
+    hierarchy = reeds.io.get_hierarchy(case)
+    county2zone = reeds.io.get_county2zone(case)
+    unitsize = pd.read_csv(
+        os.path.join(
+            reeds.io.reeds_path, 'inputs', 'plant_characteristics',
+            f'unitsize_{sw.pras_unitsize_source}.csv'
+        ),
+        index_col='tech'
+    ).MW.map(lambda x: [x])
+    capcol = 'summer_power_capacity_MW'
+    if case is None:
+        dfunits = pd.read_csv(
+            os.path.join(
+                reeds.io.reeds_path, 'inputs', 'capacity_exogenous',
+                'ReEDS_generator_database_final_EIA-NEMS.csv',
+            )
+        )
+        dfunits['reeds_ba'] = dfunits.FIPS.str.strip('p').map(county2zone)
+    else:
+        dfunits = pd.read_csv(os.path.join(case, 'inputs_case', 'unitdata.csv'))
+
+    ### Subset to year, techs, and regions
+    dfplot = dfunits.loc[
+        (dfunits.StartYear <= year)
+        & (dfunits.RetireYear > year)
+        & (dfunits.tech.isin(techs))
+    ].copy()
+    dfplot['region'] = dfplot.reeds_ba.map(hierarchy[level])
+
+    ### Set up plot
+    regions = hierarchy[level].unique()
+    nrows, ncols, coords = reeds.reedsplots.layout_subplots(
+        row_list=regions, col_list=techs,
+    )
+    ### Plot it
+    plt.close()
+    f,ax = plt.subplots(
+        nrows, ncols, figsize=(ncols*scale*1.5, nrows*scale*0.5), sharex='col',
+        gridspec_kw={'wspace':0.4, 'hspace':0.3}
+    )
+    for tech in techs:
+        xmax = dfplot.loc[dfplot.tech==tech][capcol].max()
+        for region in regions:
+            _ax = ax[coords[region, tech]]
+            df = dfplot.loc[(dfplot.tech==tech)&(dfplot.region==region), capcol]
+            if not len(df):
+                continue
+            if binwidth is not None:
+                bins = np.arange(0, xmax+0.00001, binwidth)
+            elif numbins is not None:
+                bins = np.linspace(0, xmax+0.00001, numbins)
+            else:
+                raise ValueError('Only one of binwidth and numbins should be provided')
+            _ax.hist(df, bins=bins, color='C0')
+            ## ATB
+            for x in unitsize[tech]:
+                _ax.axvline(x, c='C3', ls='--', lw=0.75)
+            ymax = max(_ax.get_ylim()[1], 1)
+            _ax.set_ylim(0, ymax)
+            # ymax = max(_ax.get_ylim()[1], 10)
+            # _ax.set_yscale('log')
+            # _ax.set_ylim(0.5, ymax)
+            if len(coords[region, tech]) == 2:
+                if coords[region, tech][0] == 0:
+                    x = max(unitsize[tech])
+                    _ax.annotate(
+                        f"ATB: {', '.join(sorted(set([str(i) for i in unitsize[tech]])))}",
+                        xy=(x, ymax),
+                        xytext=(2,-2), textcoords='offset points',
+                        ha='left', va='top', color='C3',
+                    )
+            ## Median
+            mean = df.agg('mean')
+            _ax.axvline(mean, c='k', ls=':', lw=0.75)
+            if len(coords[region, tech]) == 2:
+                _ax.annotate(
+                    f'{mean:.0f}',
+                    xy=(mean, 0),
+                    # xy=(mean, 0.5),
+                    xytext=(2,2), textcoords='offset points',
+                    ha='left', va='bottom', color='k',
+                    path_effects=[pe.withStroke(linewidth=2.0, foreground='w', alpha=0.95)]
+                )
+    ## Formatting
+    if (nrows == 1) and (ncols == 1):
+        ax.set_title(tech, fontsize='x-large', weight='bold')
+        ax.set_xlim(0)
+        ax.xaxis.set_minor_locator(mpl.ticker.MultipleLocator(100))
+        ax.set_ylabel(region, rotation=0, ha='right', va='center')
+    elif (nrows > 1) and (ncols > 1):
+        for col, tech in enumerate(techs):
+            ax[0,col].set_title(tech, fontsize='x-large', weight='bold')
+            ax[0,col].set_xlim(0)
+            ax[0,col].xaxis.set_minor_locator(mpl.ticker.MultipleLocator(100))
+        for row, region in enumerate(regions):
+            ax[row,0].set_ylabel(region, rotation=0, ha='right', va='center')
+        ax[-1,0].set_xlabel('Capacity [MW]', x=0, ha='left')
+    else:
+        ...
+    reeds.plots.despine(ax)
+    return f, ax, dfplot
 
 
 def plot_regional_cost_difference(
@@ -325,25 +599,29 @@ def plot_regional_cost_difference(
     },
     cmap=plt.cm.RdBu_r,
     scale=4,
+    vlim=30,
 ):
+    dfmap = reeds.io.get_dfmap(case)
     ### Get data
     if case is None:
+        ## County resolution
         fpath = os.path.join(
             reeds.io.reeds_path, 'inputs', 'financials', 'reg_cap_cost_diff_default.csv',
         )
+        dfin = pd.read_csv(fpath, index_col='r') * 100
+        dfcounty = gpd.read_file(
+            os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'US_county_2022')
+        ).set_index('rb')
+        dfcounty.geometry = dfcounty.intersection(dfmap['country'].geometry.squeeze()).simplify(1000)
+        dfplot = dfcounty.merge(dfin, left_index=True, right_index=True)
     else:
+        ## Model zone resolution
         fpath = os.path.join(case, 'inputs_case', 'regional_cap_cost_diff.csv')
-    ## Convert to percent
-    dfin = pd.read_csv(fpath, index_col='r') * 100
-    ### Get shapefiles
-    dfmap = reeds.io.get_dfmap(case)
-    dfcounty = gpd.read_file(
-        os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'US_county_2022')
-    ).set_index('rb')
-    dfcounty.geometry = dfcounty.intersection(dfmap['country'].geometry.squeeze()).simplify(1000)
-    dfplot = dfcounty.merge(dfin, left_index=True, right_index=True)
+        dfin = pd.read_csv(fpath, index_col='r') * 100
+        dfplot = dfmap['r'].merge(dfin, left_index=True, right_index=True)
     ### Set up plot
-    vlim = max(abs(dfin.min().min()), dfin.max().max())
+    if vlim in [None, 0]:
+        vlim = max(abs(dfin.min().min()), dfin.max().max())
     nrows, ncols, coords = reeds.plots.get_coordinates(dfin.columns, ncols=3)
     ### Plot it
     plt.close()
@@ -492,7 +770,7 @@ def map_supplycurves(
     tech=None,
     access='reference',
     cmap=cmocean.cm.rain,
-    crs=None,
+    crs='EPSG:5070',
     include_techneutral_adder=True,
     dollaryear=2023,
     figsize=(12,9),
@@ -522,10 +800,6 @@ def map_supplycurves(
     - markers: Scatter plot if True (faster but looks worse, especially for sub-US)
     """
     ### Get inputs
-    if (crs is None) and (tech is None):
-        crs = 'EPSG:5070'
-    elif (crs is None):
-        crs = 'EPSG:5070' if tech == 'wind-ofs' else 'ESRI:102008'
     sw = reeds.io.get_switches(case)
     dfmap = reeds.io.get_dfmap(case=case)
     for key in dfmap:
@@ -694,7 +968,7 @@ if __name__ == '__main__':
     write = args.write
 
     # #%% Inputs for testing
-    # case = os.path.join(reeds.io.reeds_path, 'runs', 'v20250820_revM0_Pacific')
+    # case = os.path.join(reeds.io.reeds_path, 'runs', 'v20251209_scM0_USA_defaults')
     # interactive = True
     # write = 'png'
 
@@ -732,12 +1006,14 @@ if __name__ == '__main__':
     ### Demand, PV, and wind profiles
     colors = {'demand':'k', 'pv':'C1', 'wind':'C0'}
     for datum in colors:
+        ## Daily max/mean/min for all RA weather years for a single datum
         try:
             f, ax, df = plot_profile(case, datum=datum, color=colors[datum])
             saveit(f"{datum}{'_lastyear' if datum in ['demand','load'] else ''}_ra")
         except Exception:
             print(traceback.format_exc())
 
+        ## Daily max/mean/min plus hourly squiggle for the representative year(s)
         try:
             f, ax, df = plot_profile(
                 case,
@@ -751,6 +1027,7 @@ if __name__ == '__main__':
         except Exception:
             print(traceback.format_exc())
 
+    ## Daily max/mean/min for all RA weather years for demand, PV, and wind
     try:
         plt.close()
         f,ax = plt.subplots(len(colors), 1, figsize=(5, 3.75), sharex=True)
@@ -767,10 +1044,25 @@ if __name__ == '__main__':
     except Exception:
         print(traceback.format_exc())
 
+    ## Weather years and model years for demand
+    try:
+        f, ax, df = plot_modelyears_weatheryears(case)
+        saveit('demand,pv,wind_modelyears_weatheryears')
+    except Exception:
+        print(traceback.format_exc())
+
     ### Existing units
+    ## Scatter map
     try:
         f, ax, df = plot_units_existing(case=case)
         saveit('Existing capacity')
+    except Exception:
+        print(traceback.format_exc())
+
+    ## Size distribution
+    try:
+        f, ax, df = plot_existing_unitsize(case=case)
+        saveit('Unit size distribution')
     except Exception:
         print(traceback.format_exc())
 
@@ -797,7 +1089,7 @@ if __name__ == '__main__':
     ### Supply curves
     extras = (True if 'usa' in sw.GSw_Region.lower() else False)
     try:
-        for tech in ['upv', 'wind-ons', 'wind-ofs', 'geohydro', 'egs']:
+        for tech in ['upv', 'wind-ons', 'wind-ofs', 'egs']:
             plot_generator = map_supplycurves(
                 case=case,
                 tech=tech,
@@ -807,7 +1099,7 @@ if __name__ == '__main__':
             while True:
                 try:
                     f, ax, df, col = next(plot_generator)
-                    saveit(f"{tech} {col}")
+                    saveit(f"Supplycurve {tech} {col}")
                 except StopIteration:
                     break
     except Exception:

@@ -16,6 +16,9 @@ Brown, M.; Awara, S.; Ntiamoah J.; Yuan, M. 2025. "[Distributional impacts of te
 Brown, P.R.; Cole, W.J.; Mai, T. 2024. “[An interregional optimization approach for time series aggregation in continent-scale electricity system models](https://www.sciencedirect.com/science/article/pii/S0360544225014720?via%3Dihub).” _Energy_, 324, 135830.
 
 
+Chen, Y., B. Sergi, J. Ho, G. Stephen, W. Cole, and K. Powell. 2025. "[Sparse Chronology Strategy for Integrating Seasonal Energy Storage in Capacity Expansion Models](https://www.sciencedirect.com/science/article/pii/S2352152X25026635)." _Journal of Energy Storage_, 132, 117950.
+
+
 Douville, T. et al. 2025. [_West Coast Offshore Wind Transmission Study_](https://www.osti.gov/servlets/purl/2500279/). NREL/TP-6A40-92512, PNNL-37067. 
 
 
@@ -42,6 +45,9 @@ Brinkman, G., Bannister, M., Bredenkamp, S., Carveth, L., Corbus, D., Green, R.,
 Brown, P. R., Williams, T., Brown, M. L., & Murphy, C. 2024. “[System-Cost-Minimizing Deployment of PV-Wind Hybrids in Low-Carbon U.S. Power Systems](https://www.sciencedirect.com/science/article/pii/S0306261924005348?via%3Dihub).” _Applied Energy_, 365, 123151.
 
 
+Cole, W., Vanatta, M. and Schleifer, A. 2024. [_Long-Term Electricity Projections for Kentucky_](https://docs.nrel.gov/docs/fy25osti/91633.pdf). Golden, CO: National Renewable Energy Laboratory. NREL/PR-6A40-91633.
+
+
 Diffendorfer, Jay E., Brian Sergi, Anthony Lopez, Travis Williams, Michael Gleason, Zach Ancona, and Wesley Cole. 2024. “[The Interplay of Future Solar Energy, Land Cover Change, and Their Projected Impacts on Natural Lands and Croplands in the U.S](https://doi.org/10.1016/j.scitotenv.2024.173872).” _Science of The Total Environment_, June, 173872.
 
 
@@ -63,10 +69,16 @@ Kahrl, F., Jorgenson, J., Kim, J. H., Kiboma, L., Millstein, D., Frick, N. M., &
 Karmakar, Akash, and Wesley Cole. 2024. “[Nodal Capacity Expansion Modeling With ReEDS: A Case Study of the RTS-GMLC Test System](https://www.nrel.gov/docs/fy24osti/87870.pdf).” NREL/TP-6A40-87870. Golden, CO: National Renewable Energy Laboratory.
 
 
-Sergi, B., Avraam, C., Cakir Erdener, B., & Kuna, J. (2024). [_Evaluating Transmission’s Role in Resource Adequacy_](https://docs.nrel.gov/docs/fy24osti/90617.pdf). National Renewable Energy Laboratory (NREL), Golden, CO (United States).
+Pham, A., W. Cole, and P. Gagnon. 2024. [_Average and Marginal Capacity Credit Values of Renewable Energy and Battery Storage in the United States Power System_](https://docs.nrel.gov/docs/fy25osti/89587.pdf), Golden, CO: National Renewable Energy Laboratory. NREL/TP-7A40-89587.
 
 
-Sergi, B., Brown, P., & Cole, W. (2024). “[Transmission interface limits for high-spatial resolution capacity expansion modeling](https://ieeexplore.ieee.org/abstract/document/10688700)”. IEEE Power and Energy Society General Meeting.
+Sergi, B., Avraam, C., Cakir Erdener, B., & Kuna, J. 2024. [_Evaluating Transmission’s Role in Resource Adequacy_](https://docs.nrel.gov/docs/fy24osti/90617.pdf). National Renewable Energy Laboratory (NREL), Golden, CO (United States).
+
+
+Sergi, B., Brown, P., & Cole, W. 2024. “[Transmission interface limits for high-spatial resolution capacity expansion modeling](https://ieeexplore.ieee.org/abstract/document/10688700)”. IEEE Power and Energy Society General Meeting.
+
+
+Turan, M., Bhosekar, A., Brown, M., Cole, W., Christensen, A. 2024. [_ReEDS Performance Improvement_](https://docs.nrel.gov/docs/fy25osti/91641.pdf). Golden, CO: National Renewable Energy Laboratory. NREL/PR-6A40-91641.
 
 
 U.S. Department of Energy, Grid Deployment Office. 2024. [The National Transmission Planning Study](https://www.energy.gov/gdo/national-transmission-planning-study). Washington, D.C.: U.S. Department of Energy.

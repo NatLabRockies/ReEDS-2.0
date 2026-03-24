@@ -2,9 +2,6 @@
 <!-- saved from url=(0014)about:internet -->
 <html lang="en">
     <head>
-        <style>
-          {% include 'styles.css' %}
-        </style>
         <meta charset="utf-8">
         {{ bokeh_css }}
         {{ bokeh_js }}
@@ -12,11 +9,5 @@
     <body>
         {{ plot_div|indent(8) }}
         {{ plot_script|indent(8) }}
-        <script>
-          {% include 'jquery-3.6.0.min.js' %}
-        </script>
-        <script>
-          {% include 'scripts.js' %}
-        </script>
     </body>
 </html>

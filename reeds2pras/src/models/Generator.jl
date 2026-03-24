@@ -1,16 +1,16 @@
 abstract type Generator end
 
 # Getter Functions
-get_name(gen::GEN) where {GEN <: Generator} = gen.name
+get_name(gen::Generator) = gen.name
 
-get_legacy(gen::GEN) where {GEN <: Generator} = gen.legacy
+get_legacy(gen::Generator) = gen.legacy
 
 # Helper Functions
-get_outage_rate(gen::GEN) where {GEN <: Generator} = outage_to_rate(gen.FOR, gen.MTTR)
+get_outage_rate(gen::Generator) = outage_to_rate(gen.FOR, gen.MTTR)
 
 function get_λ(gen::Generator)
     λ = getfield(get_outage_rate(gen), :λ)
-    if typeof(λ) == Float64
+    if (isa(λ, Float64))
         out = fill(λ, 1, gen.timesteps)
     else
         out = reshape(λ, 1, :)
@@ -18,8 +18,7 @@ function get_λ(gen::Generator)
     return out
 end
 
-get_μ(gen::GEN) where {GEN <: Generator} =
-    fill(getfield(get_outage_rate(gen), :μ), 1, gen.timesteps)
+get_μ(gen::Generator) = fill(getfield(get_outage_rate(gen), :μ), 1, gen.timesteps)
 
 function get_generators_in_region(gens::Vector{<:Generator}, reg_name::String)
     reg_gens = filter(gen -> gen.region_name == reg_name, gens)

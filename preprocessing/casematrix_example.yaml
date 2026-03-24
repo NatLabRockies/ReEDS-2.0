@@ -24,19 +24,19 @@ dimensions:
       GSw_TCPhaseout_forceyear: 0
   demand:
     DemLo:
-      GSw_EFS1_AllYearLoad: EER_Baseline_AEO2023
+      GSw_LoadProfiles: EER_Baseline_AEO2023
     DemMd:
-      GSw_EFS1_AllYearLoad: EER_IRAlow
+      GSw_LoadProfiles: EER_IRAlow
     DemHi:
-      GSw_EFS1_AllYearLoad: EER_100by2050
+      GSw_LoadProfiles: EER_100by2050
     Dem2023Lo:
-      GSw_EFS1_AllYearLoad: EER_Baseline_AEO2022_v2023
+      GSw_LoadProfiles: EER_Baseline_AEO2022_v2023
     Dem2023MdLo:
-      GSw_EFS1_AllYearLoad: EER_IRAlow_v2023
+      GSw_LoadProfiles: EER_IRAlow_v2023
     Dem2023Md:
-      GSw_EFS1_AllYearLoad: EER_IRAmoderate_v2023
+      GSw_LoadProfiles: EER_IRAmoderate_v2023
     Dem2023Hi:
-      GSw_EFS1_AllYearLoad: EER_100by2050_v2023
+      GSw_LoadProfiles: EER_100by2050_v2023
   sensitivity:
     core: {}
     100by2045:

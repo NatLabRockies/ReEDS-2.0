@@ -46,7 +46,7 @@ GSw_ClimateStartYear,2022
 GSw_ClimateWater,0
 GSw_CoalIGCC,1
 GSw_CoalNew,1
-GSw_CoalRetire,0
+GSw_RetireYears_Coal,0
 GSw_CofireNew,1
 GSw_CoolingTechMults,1
 GSw_CurtMarket,0
@@ -55,7 +55,7 @@ GSw_DAC_Gas,0
 GSw_DAC_Gas_Case,BVRE_2021_mid
 GSw_DR,0
 GSw_DRReserves,0
-GSw_EFS1_AllYearLoad,EER_100by2050
+GSw_LoadProfiles,EER_100by2050
 GSw_EFS2_FlexCase,EPMEDIUM_EnhancedflexStretch2046
 GSw_EFS_Flex,0
 GSw_EVMC,0
@@ -261,7 +261,7 @@ ccs_upgrade_cost_case,atb22_1p2_moderate
 ccsflexscen,ccsflex_ATB_2020
 climateloc,inputs/climate
 climatescen,HadGEM2-ES_rcp45_AT
-coalretireyrs,10
+GSw_RetireYears_Coal,10
 coalscen,AEO_2023_reference
 construction_schedules_suffix,default
 construction_times_suffix,default
@@ -292,7 +292,7 @@ financials_sys_suffix,ATB2024
 financials_tech_suffix,ATB2024
 financials_trans_suffix,default
 geodiscov,ALL
-geohydrosupplycurve,reV
+geohydrosupplycurve,ATB_2023
 plantchar_geo,geo_ATB_2024_advanced
 h2combustionfuelscen,reference
 plantchar_h2combustion,h2-combustion_ATB_2024

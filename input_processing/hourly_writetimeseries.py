@@ -363,7 +363,7 @@ def get_yearly_flexibility(
 # %% ===========================================================================
 ### --- MAIN FUNCTION ---
 ### ===========================================================================
-def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1):
+def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=True):
     """ """
     # #%% Settings for testing
     # reeds_path = os.path.realpath(os.path.join(os.path.dirname(__file__),'..'))
@@ -374,10 +374,11 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1):
     # make_plots = 0
 
     #%% Set up logger
-    _log = reeds.log.makelog(
-        scriptname=__file__,
-        logpath=os.path.join(inputs_case,'..','gamslog.txt'),
-    )
+    if logging:
+        _log = reeds.log.makelog(
+            scriptname=__file__,
+            logpath=os.path.join(inputs_case,'..','gamslog.txt'),
+        )
 
     # %% Parse some switches
     if not isinstance(sw["GSw_HourlyWeatherYears"], list):
@@ -465,6 +466,7 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1):
             'evmc_storage_energy': ['*i','r','h','t'],
             'flex_frac_all': ['*flex_type','r','h','t'],
             'peak_h': ['*r','h','t','MW'],
+            'prm_stress': ['*r','t','prm'],
         }
         for f, columns in write.items():
             pd.DataFrame(columns=columns).to_csv(
@@ -1489,6 +1491,7 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1):
             False,
         ],
         "peak_h": [pd.DataFrame(columns=["*r", "h", "t", "MW"]), True, False],
+        "prm_stress": [pd.DataFrame(columns=['*r','t','prm']), True, False],
     }
 
     # %% Write output csv files

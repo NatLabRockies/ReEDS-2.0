@@ -71,12 +71,8 @@ def aggreg_methods(
     df1 = df.copy()
     ### Pre-aggregation: Map old regions to new regions
     if aggfunc in ['sum','mean','first','min','sc_cat','resources']:
-        # Exception for load_hourly.h5 because it is not converted from wide format to long format so the columns
-        # are still the regions and need to be mapped to aggreg regions differently
-        if row.name == 'load_hourly.h5':
-            df1.columns = df1.columns.map(r2aggreg)
         # Exception for dr_shed_hourly becuase the wide column contains tech|region
-        elif 'dr_shed_hourly' in row.name :   
+        if 'dr_shed_hourly' in row.name:
             # Separate tech and region from the 'wide' column
             df1[['tech', 'region']] = df1['wide'].str.split('|', expand=True)
             # Map regions to aggregated regions
@@ -171,19 +167,15 @@ def aggreg_methods(
         df1.cf = df1.cap_times_cf / df1.MW
         df1 = df1.rename(columns={'cf':'value'}).reset_index()
         # Revert i column so rsctech is not included in the name.
-        # This ensures the resource h5 files will be in the same format when read in ldc_prep.py
+        # This ensures the resource h5 files will be in the same format when read in recf.py
         # regardless of the spatial resolution
         df1['i'] = df1['i'].str.replace(f'{rsctech}_','')
         ### Remake the resources (column names) with new regions
         df1['wide'] = df1.i + '|' + df1.r
         df1 = df1.set_index(indexnames + ['wide'])[['value']].astype(np.float32)
     elif aggfunc in ['sum','mean','first','min']:
-        # Exception for load_hourly.h5 because it is not converted from wide format to long format so the columns
-        # are still the regions and need to be summed differently
-        if row.name == 'load_hourly.h5':
-            df1 = df1.groupby(df1.columns, axis=1).agg(aggfunc)
         # Exception for dr_shed_hourly becuase the wide column contains tech|region
-        elif 'dr_shed_hourly' in row.name : 
+        if 'dr_shed_hourly' in row.name : 
             # Group by relevant columns and aggregate values
             df1 = df1.groupby(['datetime', 'wide', 'year'], as_index=False).sum().drop(columns=['tech', 'region'])    
         else:
@@ -238,17 +230,6 @@ def aggreg_methods(
             # Combine cap and cost to get back into original format
             df1 = pd.concat([df1_cap, df1_cost])
             df1 = refilter_regions(df1, region_cols, region_col,val_r_all)
-        ### Special Case: file kept in wide format, as long-format disaggregation of
-        ### national hourly load causes memory limit issues
-        elif row.name == 'load_hourly.h5':
-            fracdata = disagg_data[aggfunc]
-            fracdata = fracdata.loc[fracdata['PCA_REG'].isin(df1.columns)]
-            fracdata.set_index('FIPS',inplace=True)
-            df1 = pd.concat(
-                {fips: row.fracdata * df1[row.PCA_REG]
-                    for fips, row in fracdata.iterrows()},
-                axis=1
-            ).astype(np.float32)
 
         elif row.name =='dr_shed_hourly.h5' :
             # separate tech | region
@@ -298,11 +279,6 @@ def aggreg_methods(
         if ('*r' in region_cols) and ('rr' in region_cols):
             df1 = df1.loc[df1.index.get_level_values('*r').isin(val_r_all)]
             df1 = df1.loc[df1.index.get_level_values('rr').isin(val_r_all)]
-
-        # Exception for load_hourly.h5 because it is not converted from wide format to long format so the columns
-        # are still the regions and need to be filtered differently
-        elif row.name == 'load_hourly.h5':
-            df1 = df1[[col for col in df1.columns if col in val_r_all]]
         elif row.name =='dr_shed_hourly.h5':
             # separate tech | region to filter
             df1 = df1.loc[df1.wide.str.split('|',expand=True)[1].isin(val_r_all)]
@@ -312,11 +288,7 @@ def aggreg_methods(
     ################################
     ### Put back in original format ###
 
-    # Exception for load_hourly.h5 because it is not converted from wide format to long format so
-    # just needs the index reset before saving to inputs_case folder
-    if row.name == 'load_hourly.h5':
-        dfout = df1.reset_index()
-    elif row.name == 'dr_shed_hourly.h5':
+    if row.name == 'dr_shed_hourly.h5':
         dfout = df1.set_index(['datetime','year','wide']).unstack('wide')['value'].reset_index()
     elif (aggfunc == 'sc_cat') and (not row.wide):
         dfout = df1.stack().rename(row.key).reset_index()[columns]
@@ -367,11 +339,7 @@ def reshape_to_long(
     region_col,
     region_cols,
 ):
-    if filepath == 'load_hourly.h5':
-        ### Special Case: keep file in wide format, as long-format disaggregation of
-        ### national hourly load causes memory limit issues
-        df = dfin.set_index(indexnames)
-    elif (aggfunc == 'sc_cat') and (not row.wide):
+    if (aggfunc == 'sc_cat') and (not row.wide):
         ### Supply-curve format. Expect an sc_cat column with 'cap' and 'cost' values.
         ## 'cap' values are summed; 'cost' values use the 'cap'-weighted mean
         df = dfin.pivot(
@@ -593,11 +561,6 @@ def agg_disagg(filepath, r2aggreg_glob, r_ba_glob, runfiles_row):
         if header == 'keepindex':
             indexnames = (dfin.index.names)
             if (len(indexnames) == 1) and (not indexnames[0]):
-                indexnames = ['index']
-            # Special Case: change index name for recf_csp.h5 to 'index to be
-            # consistent with the other recf_{tech}.h5 files
-            if (filepath == 'recf_csp.h5') and (indexnames[0] == 'hour'):
-                dfin.index.name = 'index'
                 indexnames = ['index']
             dfin = dfin.reset_index()
     elif filetype == 'gdx':
@@ -849,6 +812,12 @@ def agg_disagg(filepath, r2aggreg_glob, r_ba_glob, runfiles_row):
         if not ba_addition and county_addition:
             dfout = df_disagg.copy()
 
+        # If neither data exists, skip file
+        if not ba_addition and not county_addition:
+            if verbose > 1:
+                logprint(filepath, 'empty')
+            return
+
 
     ########## Single Resolution Procedure ##########
     else:
@@ -1008,14 +977,17 @@ else:
             os.path.join(inputs_case,'disagg_population.csv'),
             header=0,
             dtype={'fracdata':np.float32},
+            usecols=["PCA_REG", "FIPS", "fracdata"]
         ),
         'geosize': pd.read_csv(
             os.path.join(inputs_case,'disagg_geosize.csv'),
             header=0,
+            usecols=["PCA_REG", "FIPS", "fracdata"]
         ),
         'hydroexist': pd.read_csv(
             os.path.join(inputs_case,'disagg_hydroexist.csv'),
             header=0,
+            usecols=["PCA_REG", "FIPS", "i", "fracdata"]
         )
     }
 
@@ -1028,31 +1000,13 @@ else:
 if 'aggreg' in agglevel:
     if agglevel_variables['lvl'] == 'mult':
         r_ba = r_aggreg
-    if anchortype in ['load','demand','MW','MWh']:
-        ### Take the "anchor" zone as the zone with the largest annual demand in 2010.
-        ## Get annual average load
-        load = pd.read_csv(
-            os.path.join(reeds_path, 'inputs', 'variability', 'multi_year', 'load.csv.gz'),
-            index_col=0,
-        ).mean().rename_axis('r').rename('MW').to_frame()
-        ## Add column for new regions
-        load['aggreg'] = load.index.map(r_ba)
-        ## Take the original zone with largest demand
-        aggreg2anchorreg = load.groupby('aggreg').idxmax()['MW'].rename('rb')
-    elif anchortype in ['size','km2','area']:
-        ### Take the "anchor" zone as the zone with the largest area [km2]
-        dfba = reeds.io.get_zonemap(os.path.dirname(inputs_case))
-        dfba['km2'] = dfba.area / 1e6
-        ## Add column for new regions
-        dfba['aggreg'] = dfba.index.map(r_ba)
-        ## Take the original zone with largest area
-        aggreg2anchorreg = dfba.groupby('aggreg').km2.idxmax().rename('rb')
-    else:
-        raise ValueError(f'Invalid choice of anchortype: {anchortype}')
-    anchorreg2aggreg = pd.Series(index=aggreg2anchorreg.values, data=aggreg2anchorreg.index)
-    ## Save it for plotting
-    aggreg2anchorreg.to_csv(os.path.join(inputs_case, 'aggreg2anchorreg.csv'))
 
+    # Written in reeds.io.get_zonemap()
+    aggreg2anchorreg = pd.read_csv(os.path.join(inputs_case, 'aggreg2anchorreg.csv'))
+    aggreg2anchorreg = aggreg2anchorreg.set_index('aggreg')
+    aggreg2anchorreg = aggreg2anchorreg.squeeze()
+    anchorreg2aggreg = pd.Series(index=aggreg2anchorreg.values, data=aggreg2anchorreg.index)    
+    
     ### Get RSC VRE available capacity to use in capacity-weighted averages
     ### We need the original un-aggregated supply curves, so run writesupplycurves again
     # rscweight = pd.read_csv(os.path.join(inputs_case, 'rsc_combined.csv'))
@@ -1226,7 +1180,7 @@ r_ba_glob = r_ba
 # loop over inputfiles from runfiles and call aggregation/disaggregation function
 for filepath in inputfiles:
     ### For debugging: Specify a file
-    # filepath = 'load_hourly.h5'
+    # filepath = ''
     ### Get the appropriate row from runfiles
     row = runfiles.loc[os.path.basename(filepath)]
     try:

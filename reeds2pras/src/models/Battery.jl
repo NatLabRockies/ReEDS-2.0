@@ -36,6 +36,8 @@
         Carryover efficiency
     FOR : Float64
         Factor of restoration
+    SOR : Vector{Float32}
+        Scheduled Outage Rate
     MTTR : Int64
         Mean time to restore
 
@@ -50,12 +52,13 @@ struct Battery <: Storage
     type::String
     charge_cap::Float64
     discharge_cap::Float64
-    energy_cap::Float64
+    energy_cap::Vector{Float64}
     legacy::String
     charge_eff::Float64
     discharge_eff::Float64
     carryover_eff::Float64
-    FOR::Float64
+    FOR::Vector{Float32}
+    SOR::Vector{Float32}
     MTTR::Int64
 
     # Inner Constructors & Checks
@@ -66,12 +69,13 @@ struct Battery <: Storage
         type = "init_type",
         charge_cap = 1.0,
         discharge_cap = 1.0,
-        energy_cap = 4.0,
+        energy_cap = fill(4.0, timesteps),
         legacy = "New",
         charge_eff = 1.0,
         discharge_eff = 1.0,
         carryover_eff = 1.0,
-        FOR = 0.0,
+        FOR = zeros(Float32, timesteps),
+        SOR = zeros(Float32, timesteps),
         MTTR = 24,
     )
         @debug "cap_P = $(discharge_cap) MW and cap_E = $(energy_cap) MWh"
@@ -84,7 +88,7 @@ struct Battery <: Storage
             "Discharge capacity passed is not allowed (should be > 0.0) :  $(name) - $(discharge_cap) MW",
         )
 
-        energy_cap > 0.0 || error(
+        all(energy_cap .> 0.0) || error(
             "Energy capacity passed is not allowed (should be > 0.0) : $(name) - $(energy_cap) MWh",
         )
 
@@ -94,7 +98,7 @@ struct Battery <: Storage
         all(0.0 .<= [charge_eff, discharge_eff, carryover_eff] .<= 1.0) ||
             error("$(name) charge/discharge/carryover efficiency value is < 0.0 or > 1.0")
 
-        0.0 <= FOR <= 1.0 || error("$(name) FOR value is < 0 or > 1")
+        all(0.0 .<= FOR .<= 1.0) || error("$(name) FOR value is < 0 or > 1")
 
         MTTR > 0 || error("$(name) MTTR value is <= 0")
 
@@ -111,6 +115,7 @@ struct Battery <: Storage
             discharge_eff,
             carryover_eff,
             FOR,
+            SOR,
             MTTR,
         )
     end
@@ -123,4 +128,3 @@ get_charge_capacity(stor::Battery) = fill(round(Int, stor.charge_cap), 1, stor.t
 get_discharge_capacity(stor::Battery) =
     fill(round(Int, stor.discharge_cap), 1, stor.timesteps)
 
-get_energy_capacity(stor::Battery) = fill(round(Int, stor.energy_cap), 1, stor.timesteps)

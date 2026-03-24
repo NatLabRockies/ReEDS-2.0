@@ -22,6 +22,8 @@
         State of the Variable Generator, i.e., existing or new.
     FOR : Float64
         Forced Outage Rate parameter of the Variable Generator.
+    SOR : Float64
+        Scheduled Outage Rate parameter of the Variable Generator.        
     MTTR : Int64
         Mean Time To Repair parameter of the Variable Generator.
 
@@ -38,7 +40,8 @@ struct Variable_Gen <: Generator
     capacity::Vector{Float64}
     type::String
     legacy::String
-    FOR::Float64
+    FOR::Vector{Float32}
+    SOR::Vector{Float32}
     MTTR::Int64
 
     # Inner Constructors & Checks
@@ -50,7 +53,8 @@ struct Variable_Gen <: Generator
         capacity = zeros(Float64, timesteps),
         type = "wind-ons_init_name",
         legacy = "New",
-        FOR = 0.0,
+        FOR = zeros(Float32, timesteps),
+        SOR = zeros(Float32, timesteps),
         MTTR = 24,
     )
         all(0.0 .<= capacity .<= installed_capacity) || if ~(startswith(type, "hyd"))
@@ -62,13 +66,19 @@ struct Variable_Gen <: Generator
         end
 
         length(capacity) == timesteps ||
-            error("The length of the $(name) time series data is $(length(capacity))
+            error("The length of the $(name) capacity time series data is $(length(capacity))
                    but it should be should be equal to PRAS timesteps ($(timesteps))")
 
         legacy in ["Existing", "New"] ||
             error("$(name) has legacy $(legacy) which is not in [Existing, New]")
 
-        0.0 <= FOR <= 1.0 || error("$(name) FOR value is < 0 or > 1")
+        all(0.0 .<= FOR .<= 1.0) || error("$(name) FOR value is < 0 or > 1")
+
+        if !isnothing(SOR)
+            length(SOR) == timesteps ||
+                error("The length of the $(name) SOR time series data is $(length(SOR))
+                but it should be should be equal to PRAS timesteps ($(timesteps))")
+        end        
 
         MTTR > 0 || error("$(name) MTTR value is <= 0")
 
@@ -81,6 +91,7 @@ struct Variable_Gen <: Generator
             type,
             legacy,
             FOR,
+            SOR,
             MTTR,
         )
     end
@@ -88,7 +99,10 @@ end
 
 # Getter Functions
 
-get_capacity(gen::Variable_Gen) = permutedims(round.(Int, gen.capacity))
+get_capacity(gen::Variable_Gen) =
+    isnothing(gen.SOR) ?
+    round.(Int, gen.capacity)' :
+    round.(Int, gen.capacity .* (1 .-gen.SOR))'
 
 get_category(gen::Variable_Gen) = "$(gen.legacy)|$(gen.type)"
 

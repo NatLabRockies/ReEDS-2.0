@@ -9,13 +9,12 @@
     ----------
     ReEDS_data : ReEDSdatapaths
         data paths with specific ReEDS file paths
-    weather_year : Int
-        variable generation profile year
     timesteps : Int
         Number of timesteps
     solve_year : Int
         ReEDS solve year
-
+    scheduled_outage : Bool,
+        Flag to read the scheduled_outage_hourly file (if available)
     Returns
     -------
     lines : Array{Line}
@@ -34,6 +33,7 @@ function parse_reeds_data(
     timesteps::Int,
     solve_year::Int;
     hydro_energylim = false,
+    scheduled_outage = false,
     pras_agg_ogs_lfillgas = false,
     pras_existing_unit_size = true,
     pras_max_unitsize_prm = true,
@@ -60,15 +60,18 @@ function parse_reeds_data(
     FOR_dict = Dict(forced_outage_data[!, "ResourceType"] .=> forced_outage_data[!, "FOR"])
 
     @info "reading hourly forced outage rates"
-    filepath = joinpath(ReEDS_data.ReEDSfilepath, "inputs_case", "outage_forced_hourly.h5")
-    forcedoutage_hourly = DataFrames.DataFrame(
-        HDF5.h5read(filepath, "data")',
-        HDF5.h5read(filepath, "columns"),
-    )
+    forcedoutage_hourly = get_hourly_forced_outage_data(ReEDS_data)
 
     @info "reading in ATB unit size data for use with disaggregation..."
     unitsize_data = get_unitsize_mapping(ReEDS_data)
     unitsize_dict = Dict(unitsize_data[!, "tech"] .=> unitsize_data[!, "MW"])
+
+    scheduled_outage_hourly = nothing
+    # read the scheduled_outage CSV file if scheduled_outage
+    if scheduled_outage
+        @info "reading hourly scheduled outage rates..."
+        scheduled_outage_hourly = get_hourly_scheduled_outage_data(ReEDS_data)
+    end
 
     @info "reading MTTR data"
     mttr_dict = get_MTTR_data(ReEDS_data)
@@ -83,6 +86,7 @@ function parse_reeds_data(
         timesteps,
         solve_year,
         mttr_dict,
+        scheduled_outage_hourly = scheduled_outage_hourly,
         pras_agg_ogs_lfillgas = pras_agg_ogs_lfillgas,
         pras_existing_unit_size = pras_existing_unit_size,
         pras_max_unitsize_prm = pras_max_unitsize_prm,
@@ -98,10 +102,12 @@ function parse_reeds_data(
     storage_array = process_storages(
         storage,
         FOR_dict,
+        forcedoutage_hourly,
         unitsize_dict,
         ReEDS_data,
         timesteps,
         mttr_dict,
+        scheduled_outage_hourly = scheduled_outage_hourly,
     )
 
     @info "Processing hydroelectric generators..."
@@ -116,6 +122,7 @@ function parse_reeds_data(
         timesteps,
         mttr_dict,
         unitsize_dict,
+        scheduled_outage_hourly = scheduled_outage_hourly,
         hydro_energylim = hydro_energylim,
     )
 
