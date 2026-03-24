@@ -1,0 +1,280 @@
+--- Job d1_financials.gms Start 03/20/26 03:32:29 48.6.0 f19e462d WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\48\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Output C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\z-ethan\z_check_d1fin_syntax.lst
+    Action C
+    ScrDir C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\225a\
+    SysDir C:\GAMS\48\
+    LogOption 2
+Licensee: Ethan Gallup, Single User License              G250423|0002AO-WIN
+          University of Utah,                                       DC17182
+          C:\Users\ethan\OneDrive\Documents\GAMS\gamslice.txt
+          ethan.gallup@utah.edu                                            
+          The maintenance period of the license will expire on May 18, 2026
+Processor information: 1 socket(s), 10 core(s), and 12 thread(s) available
+GAMS 48.6.0   Copyright (C) 1987-2025 GAMS Development. All rights reserved
+--- Starting compilation
+--- d1_financials.gms(3) 2 Mb
+*** GDXIN failed C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\outputs%ds%tc_phaseout_data%ds%tc_phaseout_mult_%cur_year%.gdx
+*** Msg: No such file or directory
+--- d1_financials.gms(3) 2 Mb 1 Error
+*** Error 510 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unable to open gdx file for $GDXIN
+--- d1_financials.gms(4) 2 Mb 2 Errors
+*** Error 502 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    GDXIN  file not open - ignore rest of line
+--- d1_financials.gms(7) 3 Mb 7 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(11) 3 Mb 8 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(17) 3 Mb 17 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 119 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Number (primary) expected
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error   8 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    ')' expected
+*** Error  36 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    '=' or '..' or ':=' or '$=' operator expected
+    rest of statement ignored
+*** Error   8 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    ')' expected
+*** Error 409 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unrecognizable item - skip to find a new statement
+      looking for a ';' or a key word to get started again
+--- d1_financials.gms(19) 3 Mb 18 Errors
+*** Error 408 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Too many ),] or }
+--- d1_financials.gms(24) 3 Mb 22 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(25) 3 Mb 24 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(26) 3 Mb 25 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(27) 3 Mb 28 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(28) 3 Mb 29 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(30) 3 Mb 30 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(34) 3 Mb 31 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(37) 3 Mb 33 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(38) 3 Mb 36 Errors
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(40) 3 Mb 37 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(43) 3 Mb 38 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(49) 3 Mb 39 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(50) 3 Mb 40 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(51) 3 Mb 41 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(59) 3 Mb 42 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(60) 3 Mb 44 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(97) 3 Mb 45 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(98) 3 Mb 46 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(99) 3 Mb 47 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(108) 3 Mb 49 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(113) 3 Mb 50 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(114) 3 Mb 52 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(115) 3 Mb 53 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(122) 3 Mb 56 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(123) 3 Mb 57 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(128) 3 Mb 60 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 116 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Label is unknown
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(130) 3 Mb 61 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(132) 3 Mb 63 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(137) 3 Mb 65 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(141) 3 Mb 66 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(142) 3 Mb 69 Errors
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 340 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    A label/element with the same name exist. You may have forgotten
+       to quote a label/element reference. For example,
+       set i / a,b,c /; parameter x(i); x('a') = 10;
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(143) 3 Mb 70 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(167) 3 Mb 71 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(171) 3 Mb 72 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(173) 3 Mb 80 Errors
+*** Error 120 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown identifier entered as set
+*** Error 340 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    A label/element with the same name exist. You may have forgotten
+       to quote a label/element reference. For example,
+       set i / a,b,c /; parameter x(i); x('a') = 10;
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(174) 3 Mb 81 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(178) 3 Mb 84 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(179) 3 Mb 85 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(180) 3 Mb 86 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(183) 3 Mb 88 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(184) 3 Mb 89 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(185) 3 Mb 90 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(210) 3 Mb 91 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(211) 3 Mb 92 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(214) 3 Mb 93 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(215) 3 Mb 94 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(216) 3 Mb 95 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+--- d1_financials.gms(219) 3 Mb 98 Errors
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 140 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Unknown symbol
+*** Error 116 in C:\Users\ethan\code\research\ReEDS-2.0-nuclear-stor\d1_financials.gms
+    Label is unknown
+--- d1_financials.gms(247) 3 Mb 98 Errors
+*** Status: Compilation error(s)
+--- Job d1_financials.gms Stop 03/20/26 03:32:29 elapsed 0:00:00.035

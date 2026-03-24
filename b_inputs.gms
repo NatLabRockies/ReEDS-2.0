@@ -6039,14 +6039,22 @@ resourcescaler(i)$csp(i) = CSP_SM(i) / csp_sm_baseline ;
 *            = [cost(nuclear) + cost(stor) * bcr ] * cap(nuclear)
 
 * Turbine generator + electrical equipment costs should scale with the nuclear portion cost over time.
-* Fractions provided are relative to cost_cap_nuclear_stor_p(i,t).
+* Fractions are from ATB 2024 Table 6, GN-COA breakdown (Abou-Jaoude et al. 2024, INL/RPT-24-77048):
+*   Code 23 (Energy Conversion System): Large=3.92%, SMR=3.86%
+*   Code 24 (Electrical Equipment):     Large=6.32%, SMR=9.46%
+* These are removed from the nuclear cost because the TES power block (energy island)
+* replaces the turbine-generator and electrical equipment, sized at (1+bcr) × nuclear capacity.
 parameter
-  turbine_generator_cost_nuc_stor(i,t) "--2004$/MW-- turbine generator cost component for nuclear+storage"
-  electrical_cost_nuc_stor(i,t)        "--2004$/MW-- electrical equipment cost component for nuclear+storage" ;
+  turbine_generator_cost_nuc_stor(i,t) "--2004$/MW-- turbine generator cost component for nuclear+storage (GN-COA 23)"
+  electrical_cost_nuc_stor(i,t)        "--2004$/MW-- electrical equipment cost component for nuclear+storage (GN-COA 24)" ;
 
-* Default: regular nuclear reactor fractions
-turbine_generator_cost_nuc_stor(i,t)$nuclear_stor(i) = cost_cap_nuclear_stor_p(i,t) * 0.0392 ;
-electrical_cost_nuc_stor(i,t)$nuclear_stor(i)        = cost_cap_nuclear_stor_p(i,t) * 0.0632 ;
+* Use gentech-specific fractions: large reactor vs SMR have different cost shares
+turbine_generator_cost_nuc_stor(i,t)$nuclear_stor(i) =
+    sum{ii$nuclear_stor_gentech(i,ii),
+        cost_cap_nuclear_stor_p(i,t) * (0.0392$sameas(ii,"nuclear") + 0.0386$sameas(ii,"nuclear-smr")) } ;
+electrical_cost_nuc_stor(i,t)$nuclear_stor(i) =
+    sum{ii$nuclear_stor_gentech(i,ii),
+        cost_cap_nuclear_stor_p(i,t) * (0.0632$sameas(ii,"nuclear") + 0.0946$sameas(ii,"nuclear-smr")) } ;
 
 * Compose nuclear+storage capex:
 * - Start from nuclear portion capex

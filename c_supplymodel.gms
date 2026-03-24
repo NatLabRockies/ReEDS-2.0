@@ -3262,7 +3262,7 @@ eq_battery_minduration(i,v,r,t)$[valcap(i,v,r,t)$tmodel(t)$newv(v)$(battery(i) o
 
     + CAP(i,v,r,t) * mintesduration$tes(i)
 
-    + CAP(i,v,r,t) * minnuclear_storduration$nuclear_stor(i)
+    + CAP(i,v,r,t) * bcr(i) * minnuclear_storduration$nuclear_stor(i)
 ;
 
 * ---------------------------------------------------------------------------

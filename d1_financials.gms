@@ -184,8 +184,25 @@ cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_s
 cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_noITC(ii,r,t)} ;
 cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t)$nuclear_stor(i) = sum{ii$ nuclear_stor_stortech(i,ii), cost_cap_fin_mult_no_credits(ii,r,t)} ;
 
-* Assign cost_cap_fin_mult for nuclear_stor to reflect the nuclear portion only.
-* Storage-related financing multipliers are handled separately (e.g., cost_cap_fin_mult_nuclear_stor_s).
+* The storage multipliers above use the standalone storage tech's financing_risk_mult.
+* For a hybrid nuclear+storage plant, the whole project carries nuclear-level financing risk,
+* so replace the storage tech's financing_risk_mult with the nuclear gentech's.
+* financing_risk_mult is a simple multiplicative factor in cost_cap_fin_mult and _noITC,
+* so the adjustment is: adjusted_s = s * (nuclear_risk / storage_risk).
+* _no_credits does not include financing_risk_mult, so no adjustment is needed.
+cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) =
+    cost_cap_fin_mult_nuclear_stor_s(i,r,t)
+    * sum{ii$nuclear_stor_gentech(i,ii), financing_risk_mult(ii,t)}
+    / sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)} ;
+
+cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$nuclear_stor(i) =
+    cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)
+    * sum{ii$nuclear_stor_gentech(i,ii), financing_risk_mult(ii,t)}
+    / sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)} ;
+
+* Compute cost-weighted average of nuclear and storage financial multipliers.
+* The storage multipliers retain the storage tech's ccmult (IDC) and depreciation schedule
+* (5-year MACRS for storage vs 15-year for nuclear), but now carry nuclear financing risk.
 parameter nuc_stor_cost_nuc(i,t)  "--$/MW-- nuclear-side cost weight for nuclear_stor"
           nuc_stor_cost_stor(i,t) "--$/MW-- storage-side cost weight for nuclear_stor";
 
@@ -201,11 +218,20 @@ nuc_stor_cost_nuc(i,t)$[nuclear_stor(i)$thermal_storage(i)] = cost_cap_nuclear_s
 nuc_stor_cost_stor(i,t)$[nuclear_stor(i)$thermal_storage(i)] = (1 + bcr(i)) * cost_cap_nuclear_stor_s(i,t)
     + gridcharge_ratio(i) * sum{ii$[nuclear_stor_stortech(i,ii)$heater_char(ii,t,"capcost")], heater_char(ii,t,"capcost") };
 
-cost_cap_fin_mult(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = cost_cap_fin_mult_nuclear_stor_p(i,r,t) ;
+cost_cap_fin_mult(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    (nuc_stor_cost_nuc(i,t) * cost_cap_fin_mult_nuclear_stor_p(i,r,t)
+     + nuc_stor_cost_stor(i,t) * cost_cap_fin_mult_nuclear_stor_s(i,r,t))
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) ;
 
-cost_cap_fin_mult_noITC(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t) ;
+cost_cap_fin_mult_noITC(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    (nuc_stor_cost_nuc(i,t) * cost_cap_fin_mult_nuclear_stor_p_noITC(i,r,t)
+     + nuc_stor_cost_stor(i,t) * cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t))
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) ;
 
-cost_cap_fin_mult_no_credits(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t) ;
+cost_cap_fin_mult_no_credits(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] =
+    (nuc_stor_cost_nuc(i,t) * cost_cap_fin_mult_nuclear_stor_p_no_credits(i,r,t)
+     + nuc_stor_cost_stor(i,t) * cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t))
+    / (nuc_stor_cost_nuc(i,t) + nuc_stor_cost_stor(i,t)) ;
 
 * Round these entries because the global rounding happens earlier in this file.
 cost_cap_fin_mult(i,r,t)$[nuclear_stor(i)$valinv_irt(i,r,t)] = round(cost_cap_fin_mult(i,r,t),3);

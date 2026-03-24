@@ -39,8 +39,14 @@ eq_ObjFn_inv(t)$tmodel(t)..
                        cost_cap_fin_mult(i,r,t) * cost_cap(i,t) * INV(i,v,r,t)
                       }
 
-                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))],
+                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i))],
                                                         cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t)
+                      }
+
+* nuclear_stor energy investment uses storage-specific multiplier (with nuclear financing risk)
+* since cost_cap_energy is purely a storage cost
+                  + sum{(i,v,r)$[valinv(i,v,r,t)$nuclear_stor(i)],
+                       cost_cap_fin_mult_nuclear_stor_s(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t)
                       }
 
 * --- penalty for exceeding interconnection queue limit  ---
@@ -126,8 +132,11 @@ eq_ObjFn_inv(t)$tmodel(t)..
                             cost_cap_fin_mult(i,r,t) * INV_CAP_UP(i,v,r,rscbin,t) * cost_cap_up(i,v,r,rscbin,t) }
 
 * cost of energy upsizing
-                  + sum{(i,v,r,rscbin)$allow_ener_up(i,v,r,rscbin,t),
+                  + sum{(i,v,r,rscbin)$[allow_ener_up(i,v,r,rscbin,t)$(not nuclear_stor(i))],
                             cost_cap_fin_mult(i,r,t) * INV_ENER_UP(i,v,r,rscbin,t) * cost_ener_up(i,v,r,rscbin,t) }
+
+                  + sum{(i,v,r,rscbin)$[allow_ener_up(i,v,r,rscbin,t)$nuclear_stor(i)],
+                            cost_cap_fin_mult_nuclear_stor_s(i,r,t) * INV_ENER_UP(i,v,r,rscbin,t) * cost_ener_up(i,v,r,rscbin,t) }
 
 * H2 transport network investment costs
                   + sum{(r,rr)$h2_routes_inv(r,rr), cost_h2_transport_cap(r,rr,t) * H2_TRANSPORT_INV(r,rr,t) }$(Sw_H2 = 2)

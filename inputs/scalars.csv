@@ -59,7 +59,7 @@ minloadfrac_nuclear_flex,0.4,"--fraction-- nuclear mingen if running with flexib
 minbatteryduration,0.2,"--hours-- minimum storage duration for li-ion battery"
 mintesduration,2,"--hours-- minimum storage duration for tes"
 nuclear_growth_limit_absolute,0,"--MW/year-- absolute growth limit for nuclear capacity additions per year"
-minnuclear_storduration,2,"--hours-- minimum storage duration for nuclear energy storage"
+minnuclear_storduration,1.5,"--hours-- minimum storage duration for nuclear energy storage"
 tes_heatercost,75.933,"--2004$/kWt-- cost of electric resistance heater for thermal energy storage, based on 2020 cost of $104/kWt from SAMS (https://sam.nrel.gov/technology/costs) and escalated to 2004 dollars using the upgrade_inflator scalar"
 molWeightCH4,16.043,"--g/mol--molecular weight of CH4"
 molWeightCO2,44.009,"--g/mol--molecular weight of CO2"

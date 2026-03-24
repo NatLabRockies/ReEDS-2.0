@@ -166,6 +166,8 @@ def main(casepath, t, switch_mods=switch_mods_default, label='', overwrite=False
     Args:
         kwargs: Passed to hourly_reppreiods.main()
     """
+    # %% Resolve to absolute path before changing directory
+    casepath = os.path.abspath(casepath)
     # %% Switch to run folder
     os.chdir(casepath)
 
