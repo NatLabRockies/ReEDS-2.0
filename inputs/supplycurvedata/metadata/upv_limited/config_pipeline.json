@@ -1,0 +1,11 @@
+{
+    "logging": {
+        "log_file": null,
+        "log_level": "INFO"
+    },
+    "pipeline": [
+        {
+            "rep-profiles": "./config_rep-profiles_aggprof.json"
+        }
+    ]
+}

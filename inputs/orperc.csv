@@ -1,0 +1,4 @@
+,or_load,or_wind,or_pv
+spin,0.03,,
+reg,0.01,0.005,0.003
+flex,,0.1,0.04

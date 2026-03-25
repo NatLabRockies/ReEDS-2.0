@@ -1,0 +1,30 @@
+repos:
+-   repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+    - id: black
+      language_version: python3.9
+      files: ^(hourlize/tests/.*\.py?|hourlize/reeds_to_rev.*\.py?)$
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-json
+    -   id: check-yaml
+        exclude: ^conda.recipe/
+    -   id: end-of-file-fixer
+        exclude_types: [csv]
+        files: ^(hourlize/tests/.*\.py?|hourlize/reeds_to_rev.*\.py?)$
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: mixed-line-ending
+        exclude_types: [csv]
+        files: ^(hourlize/tests/.*\.py?|hourlize/reeds_to_rev.*\.py?)$
+    -   id: requirements-txt-fixer
+-   repo: https://github.com/PyCQA/pylint
+    rev: v2.16.2
+    hooks:
+    -   id: pylint
+        args: [
+            "hourlize"
+        ]

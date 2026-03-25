@@ -1,0 +1,303 @@
+{
+    "cf_dset": "cf_mean-means",
+    "data_layers": {
+        "ais_transit_count_2019": {
+            "dset": "ais_transit_count_2019",
+            "method": "mean"
+        },
+        "artificial_reefs": {
+            "dset": "artificial_reefs",
+            "method": "sum"
+        },
+        "avian_abundance_collision_sensitivity": {
+            "dset": "avian_abundance_collision_sensitivity",
+            "method": "mean"
+        },
+        "avian_abundance_displacement_sensitivity": {
+            "dset": "avian_abundance_displacement_sensitivity",
+            "method": "mean"
+        },
+        "avian_richness_collision_sensitivity": {
+            "dset": "avian_richness_collision_sensitivity",
+            "method": "mean"
+        },
+        "avian_richness_displacement_sensitivity": {
+            "dset": "avian_richness_displacement_sensitivity",
+            "method": "mean"
+        },
+        "bathymetry": {
+            "dset": "bathymetry",
+            "method": "mean"
+        },
+        "biologically_important_areas_cetaceans_sci_name": {
+            "dset": "biologically_important_areas_cetaceans_sci_name",
+            "method": "category"
+        },
+        "biologically_important_areas_cetaceans_type": {
+            "dset": "biologically_important_areas_cetaceans_type",
+            "method": "category"
+        },
+        "boem_wind_planning_areas_03292021": {
+            "dset": "boem_wind_planning_areas_03292021",
+            "method": "sum"
+        },
+        "boem_wind_leases_06082021": {
+            "dset": "boem_wind_leases_06082021",
+            "method": "sum"
+        },
+        "coastal_critical_habitat_designations": {
+            "dset": "coastal_critical_habitat_designations",
+            "method": "category"
+        },
+        "conmap_sediment": {
+            "dset": "conmap_sediment",
+            "method": "category"
+        },
+        "dist_to_coast": {
+            "dset": "dist_to_coast",
+            "method": "mean"
+        },
+        "dod_designations": {
+            "dset": "dod_designations",
+            "method": "category"
+        },
+        "dpp_option_areas": {
+            "dset": "dpp_option_areas",
+            "method": "category"
+        },
+        "fishing_revenue_intensity_atl": {
+            "dset": "fishing_revenue_intensity_atl",
+            "method": "mean"
+        },
+        "gl_fish_spawning_atlas": {
+            "dset": "gl_fish_spawning_atlas",
+            "method": "category"
+        },
+        "gl_invasive_species": {
+            "dset": "gl_invasive_species",
+            "method": "category"
+        },
+        "gl_reef_locations": {
+            "dset": "gl_reef_locations",
+            "method": "category"
+        },
+        "gl_substrate": {
+            "dset": "gl_substrate",
+            "method": "category"
+        },
+        "mhk_planning_areas_06082021": {
+            "dset": "mhk_planning_areas_06082021",
+            "method": "category"
+        },
+        "north_atlantic_right_whale_seasonal_management_areas": {
+            "dset": "north_atlantic_right_whale_seasonal_management_areas",
+            "method": "sum"
+        },
+        "nys_areas_consideration": {
+            "dset": "nys_areas_consideration",
+            "method": "category"
+        },
+        "ocs_protraction_diagrams": {
+            "dset": "ocs_protraction_diagrams",
+            "method": "category"
+        },
+        "port_access_fairways": {
+            "dset": "port_access_fairways",
+            "method": "sum"
+        }
+    },
+    "log_directory": "./logs",
+    "excl_dict": {
+        "abb_gas_pipelines_61m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "abb_oil_pipelines_61m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "adjusted_shipping_lanes": {
+            "exclude_values": [
+                1,
+                2,
+                3
+            ]
+        },
+        "boem_wind_planning_areas_03292021": {
+            "force_include_values": [
+                1
+            ]
+        },
+        "boem_wind_leases_06082021": {
+            "force_include_values": [
+                1
+            ]
+        },
+        "conservation_areas": {
+            "exclude_values": [
+                2,
+                3,
+                4,
+                6
+            ]
+        },
+        "danger_zones_and_restricted_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "dist_to_coast": {
+            "inclusion_range": [
+                4828,
+                99999999
+            ]
+        },
+        "dod_designations": {
+            "exclude_values": [
+                3
+            ]
+        },
+        "dpp_option_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "federal_state_waters": {
+            "exclude_values": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40
+            ]
+        },
+        "gas_wells_250m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "great_lake_shipwrecks_50m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "great_lakes_marine_protected_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "great_lakes_military_restricted_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "military_ship_shock_boxes": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "military_submarine_transit_lanes": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "noaa_charted_submarine_cables_500m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "ocean_disposal_sites": {
+            "exclude_values": [
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        "ocs_sand_gravel_borrow_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "oil_platforms_250m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "unexploded_ordnance_areas": {
+            "exclude_values": [
+                1
+            ]
+        },
+        "unexploded_ordnance_locations_100m_buffer": {
+            "exclude_values": [
+                1
+            ]
+        }
+    },
+    "excl_fpath": "/projects/rev/data/exclusions/Offshore_Exclusions.h5",
+    "execution_control": {
+        "allocation": "wetosa",
+        "feature": "--qos=normal",
+        "memory": 179,
+        "nodes": 1,
+        "option": "eagle",
+        "walltime": 2
+    },
+    "gen_fpath": "/shared-projects/rev/projects/weto/fy22/standard_scenarios/rev/generation/4_moderate_offshore/4_moderate_offshore_multi-year.h5",
+    "lcoe_dset": "lcoe_fcr-means",
+    "power_density": 5.314625850340136,
+    "res_class_dset": "ws_mean-means",
+    "res_fpath": "/datasets/WIND/conus/v1.0.0/wtk_conus_{}.h5",
+    "resolution": 118,
+    "tm_dset": "techmap_wtk",
+    "cap_cost_scale": "np.interp(capacity, [0, 25, 50, 100, 250, 500, 600, 1000, 1500, 2000, 2500], [2.03, 2.03, 1.48, 1.19, 1.03, 1.02, 1.0, 0.98, 0.99, 0.98, 0.99])",
+    "pre_extract_inclusions": true,
+    "h5_dsets": [
+        "capital_cost",
+        "fixed_operating_cost",
+        "system_capacity",
+        "fixed_charge_rate",
+        "variable_operating_cost",
+        "turb_generic_loss",
+        "export",
+        "array"
+    ],
+    "recalc_lcoe": false
+}

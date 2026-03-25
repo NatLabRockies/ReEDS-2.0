@@ -1,0 +1,22 @@
+FIELD,TITLE,UNITS
+ba_regions,Balancing Authority Areas,
+cnty_fips,County FIPS,
+detort_habitat,Desert Tortoise Habitat,cells
+detort_range,Desert Tortoise Range,cells
+fed_land_owner,Federal Land Ownership,
+grpchi_habitat,Greater Prairie Chicken Habitat,cells
+grpchi_range,Greater Prairie Chicken Range,cells
+lbnl_convex_hull_existing_farms_2018,LBNL Wind Turbine Database Hulls - 2018,cells
+lbnl_upv_1km_buffer,LBNL UPV 1km Buffer ,cells
+lepchi_habitat,Lesser Prairie Chicken Habitat,cells
+lepchi_range,Lesser Prairie Chicken Range,cells
+nrel_region,NREL Region,
+reeds_regions,ReEDS Regions,
+resolution_128_sc_point_gid,Grid IDs,
+saggro_habitat,Sage Grouse Habitat,cells
+saggro_lek,Sage Grouse Lek,
+saggro_range,Sage Grouse Range,cells
+shtgro_habitat,Sharp-tailed Grouse Habitat,cells
+shtgro_range,Sharp-tailed Grouse Range,cells
+transmission_multiplier,Transmission Cost Multiplier,
+usa_mrlc_nlcd2011,NLCD 2011,

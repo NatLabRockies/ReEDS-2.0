@@ -1,0 +1,16 @@
+r,rr,status,trtype,t,MW
+p1,p9,Possible,LCC,0,2700
+p9,p10,Possible,LCC,0,2700
+p10,p13,Possible,LCC,0,2700
+p13,p33,Possible,LCC,0,2700
+p33,p48,Possible,LCC,0,2700
+p33,p72,Possible,LCC,0,2700
+p10,p28,Possible,LCC,0,2700
+p28,p66,Possible,LCC,0,2700
+p66,p94,Possible,LCC,0,2700
+p94,p101,Possible,LCC,0,2700
+p66,p72,Possible,LCC,0,2700
+p70,p72,Possible,LCC,0,2700
+p43,p70,Possible,LCC,0,2700
+p35,p43,Possible,LCC,0,2700
+p1,p35,Possible,LCC,0,2700

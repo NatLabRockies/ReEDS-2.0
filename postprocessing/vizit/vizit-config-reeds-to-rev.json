@@ -1,0 +1,38 @@
+{
+  "fileNames": [
+    "df_sc_out.csv",
+    "style.csv"
+  ],
+  "globalStyleFile": "style.csv",
+  "filter": {
+    "year": {
+      "filter_type": "slider",
+      "filter_val": "2020"
+    }
+  },
+  "dashboards": [
+    {
+      "title": "Capacity by reV site",
+      "description": "Click \"Global Styles and Filters\" above to operate the year slider.",
+      "charts": [
+        {
+          "traces": [
+            {
+              "dataSource": "df_sc_out.csv",
+              "type": "lat/lon/size dot map",
+              "agg": "none",
+              "lat": "latitude",
+              "lon": "longitude",
+              "name": "tech",
+              "marker_size": "built_capacity",
+              "text": "built_capacity"
+            }
+          ],
+          "style": {
+            "Dot Max Value": "2000"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+file,i,DisplayName,Scenario
+conv_ATB_2022,Gas-CT,NG F-Frame CT,Moderate
+conv_ATB_2022,Gas-CC,NG F-Frame CC,Moderate
+conv_ATB_2022,Gas-CC-CCS_mod,NG F-Frame CC 90% CCS,Moderate
+conv_ATB_2022,Coal-new,Coal,Moderate
+conv_ATB_2022,Coal-IGCC,Coal-IGCC,Moderate
+conv_ATB_2022,coal-CCS_mod,Coal-90%-CCS,Moderate
+conv_ATB_2022,Nuclear,Nuclear - AP1000,Moderate
+conv_ATB_2022,Nuclear-SMR,Nuclear - Small Modular Reactor,Moderate
+conv_ATB_2022,biopower,Biopower - Dedicated,Moderate

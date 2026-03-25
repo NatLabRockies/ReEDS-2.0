@@ -1,0 +1,64 @@
+r,rr,status,trtype,t,MW,notes
+p61,p62,Certain,AC,2010,1021
+p61,p63,Certain,AC,2010,387
+p12,p13,Certain,AC,2011,1262
+p12,p15,Certain,AC,2011,765
+p60,p63,Certain,AC,2011,606
+p99,p100,Certain,AC,2011,2706
+p100,p116,Certain,AC,2011,2308
+p115,p116,Certain,AC,2011,2077
+p2,p5,Certain,AC,2012,1275
+p40,p53,Certain,AC,2012,514
+p60,p61,Certain,AC,2012,493
+p61,p63,Certain,AC,2012,387
+p12,p13,Certain,AC,2013,1262
+p50,p51,Certain,AC,2013,866
+p60,p63,Certain,AC,2013,1819
+p61,p62,Certain,AC,2013,1021
+p61,p64,Certain,AC,2013,418
+p79,p80,Certain,AC,2013,772
+p131,p132,Certain,AC,2013,1098
+p43,p46,Certain,AC,2014,839
+p48,p50,Certain,AC,2014,908
+p49,p50,Certain,AC,2014,460
+p2,p5,Certain,AC,2015,1275
+p37,p43,Certain,AC,2015,402
+p38,p44,Certain,AC,2015,490
+p43,p44,Certain,AC,2015,615
+p45,p69,Certain,AC,2015,648
+p111,p115,Certain,AC,2015,836
+p122,p126,Certain,AC,2015,2140
+p131,p133,Certain,AC,2015,1479
+p132,p133,Certain,AC,2015,1104
+p45,p68,Certain,AC,2016,704
+p41,p54,Certain,AC,2017,665
+p46,p78,Certain,AC,2018,549
+p70,p71,Certain,AC,2018,797
+p71,p81,Certain,AC,2018,736
+p81,p82,Certain,AC,2018,1074
+p82,p83,Certain,AC,2018,1055
+p105,p107,Certain,AC,2018,4385
+p36,p38,Certain,AC,2019,464
+p5,p7,Certain,AC,2020,1974
+p7,p15,Certain,AC,2020,1215
+p42,p43,Certain,AC,2020,654
+p83,p105,Certain,AC,2020,710
+p10,p28,Possible,AC,2023,970
+p15,p16,Possible,AC,2024,1391
+p16,p21,Possible,AC,2024,1624
+p21,p24,Possible,AC,2024,3026
+p21,p33,Possible,AC,2024,1023
+p25,p26,Possible,AC,2024,2046
+p26,p33,Possible,AC,2024,1088
+p28,p31,Possible,AC,2025,3000
+p5,p15,Possible,AC,2026,1100
+### vvv The next lines are prospective lines; they were used for the National
+### Transmission Planning study but are turned off by default
+# p33,p34,Certain,AC,2030,3274,Colorado Power Pathway (2x 500 kV)
+# p12,p13,Certain,AC,2030,2000,Greenlink Nevada (525 kV)
+# p13,p25,Certain,AC,2030,1600,TransWest Express
+# p24,p25,Certain,LCC,2030,3000,TransWest Express
+# p5,p15,Certain,AC,2030,1732,Boardman to Hemingway
+### ^^^
+p80,p104,Possible,AC,0,100000,Allows Chicago to connect to rest of PJM
+p104,p111,Possible,AC,0,100000,Allows SW Michigan to connect to rest of PJM

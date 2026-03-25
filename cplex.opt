@@ -1,0 +1,68 @@
+*** https://www.gams.com/latest/docs/S_CPLEX.html
+*** threads (integer): global default thread count
+threads = 4
+
+*** lpmethod (integer): algorithm to be used for LP problems [4 = barrier]
+lpmethod = 4
+
+*** advind (integer): advanced basis use [0 = do not use advanced basis]
+advind 0
+
+*** reslim (integer): solve time limit in seconds [172800 seconds = 2 days]
+reslim 172800
+
+*** scaind (integer): matrix scaling on/off [1 = modified, more aggressive scaling method]
+scaind 1
+
+*** aggind (integer): aggregator on/off [5 = aggregator will be applied 5 times]
+aggind 5
+
+*** iis (boolean): run the conflict refiner also known as IIS finder if the problem is infeasible
+iis 1
+
+*** eprhs (float): feasibility tolerance [default = 1e-6]
+eprhs = 1e-5
+
+*** epopt (float): optimality tolerance [default = 1e-6]
+*epopt = 1e-5
+
+*** memoryemphasis (boolean): reduces use of memory but writes large files to disk
+memoryemphasis 0
+
+*** epmrk (float): Markowitz pivot tolerance
+*epmrk = 0.1
+
+*** barepcomp (float): tolerance on complementarity for convergence of the barrier algorithm [default 1e-8]
+*barepcomp = 1e-7
+
+*############################################################################################
+*## The settings below can reduce solve time substantially, but their impacts on the solution
+*## have not yet been fully characterized, and some of them might do nothing. Use at your own risk.
+*## Some background details are available at
+*## https://www.slideshare.net/IEA-ETSAP/improving-the-solution-time-of-times-by-playing-with-cplexbarrier
+*## https://iea-etsap.org/webinar/CPLEX%20options%20for%20running%20TIMES%20models.pdf
+
+*** numericalemphasis (boolean): emphasizes precision in numerically unstable or difficult problems [default 0]
+* numericalemphasis 1
+
+*** depind (integer): dependency checker on/off. 3 = turn on at beginning and end of preprocessing [default -1]
+* depind 3
+
+*** barcolnz (integer): specifies the number of entries in columns to be considered as dense [default 0]
+*** commenting this out (i.e., setting back to zero) can improve solve time when running with hydrogen transport (GSw_H2=2)
+barcolnz 30
+
+*** barorder (integer): row ordering algorithm selection. 1 = approximate minimum degree (AMD) [default 0]
+* barorder 1
+
+*** baralg (integer): barrier algorithm selection. 1 = infeasibility-estimate start [default 0]
+* baralg 1
+
+*** barstartalg (integer): barrier starting point algorithm. 2 = default primal, estimate dual [default 1]
+* barstartalg 2
+
+*** scaind (described above)
+* scaind 0
+
+*** Can use bardisplay=2 to print more diagnostics about the barrier method and choice of barcolnz
+* bardisplay 2

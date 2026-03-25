@@ -1,0 +1,16 @@
+{
+
+    "log_directory": "./logs",
+    "execution_control": {
+        "allocation": "wetosa",
+        "feature": "--qos=normal",
+        "memory": 90,
+        "nodes": 4,
+        "option": "eagle",
+        "walltime": 3
+    },
+    "fixed_charge_rate": 0.051,
+    "sc_points": "PIPELINE",
+    "simple": true,
+    "trans_table": "/shared-projects/rev/transmission_tables/least_cost/offshore/connections_118off_to_128on.csv"
+}

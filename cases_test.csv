@@ -1,0 +1,7 @@
+,ERCOT,Pacific,USA,ERCOT_agg1,USA_agg1,USA_agg2
+ignore,1,,1,1,1,1
+endyear,2030,2030,,2030,,
+GSw_Region,ercot,cendiv/PA,,interconnect/texas,,
+GSw_AggregateRegions,,,,1,1,1
+GSw_HierarchyFile,,,,,,agg
+GSw_GasCurve,2,2,,2,,

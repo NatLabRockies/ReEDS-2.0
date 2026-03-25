@@ -1,0 +1,4 @@
+objscale = 1e9
+ScaleFlag = 2
+Threads = 4
+method = 2

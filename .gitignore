@@ -1,0 +1,58 @@
+## Ignore:
+#setup files
+setuplog.txt
+setuperr.txt
+errors.log
+gams
+.bashrc
+gamslice.txt
+
+# files in runs folder
+runs/*
+inout/variabilitycalculations/ldcfiles/
+inout/gdxfiles/*.gdx
+
+# temporary GAMS files
+*.~gm
+225*/
+
+# pyc files
+*.pyc
+*__pycache__
+
+# jupyter notebook checkpoints
+*.ipynb_checkpoints*/
+
+# lst and g00 files
+*.lst
+*.g00
+
+# ds_store files
+*.DS_Store
+
+# distpv csv input files
+inout/dSolar_Inputs/*.csv
+inputs/capacitydata/distpv/*.csv
+
+# R stuff
+*.Rhistory
+*.RData
+
+# Julia stuff
+Manifest.toml
+
+# raw input files for retail rates
+retail_rate_module/inputs/EIA861/*
+postprocessing/retail_rate_module/inputs/EIA861/*
+
+# IDE stuff
+*.vscode
+
+# GAMS project files
+*.gpr
+
+# IDE files
+*.vscode
+
+# NREL HPC files
+slurm*.out

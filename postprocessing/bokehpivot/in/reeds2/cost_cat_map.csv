@@ -1,0 +1,50 @@
+raw,display
+cap_trade_export_cost,Capacity Export
+cap_trade_import_cost,Capacity Import
+energy_trade_export_cost,Energy Export
+energy_trade_import_cost,Energy Import
+inv_co2_network_pipe,CO2 T&S Capex
+inv_co2_network_spur,CO2 T&S Capex
+inv_converter_costs,Trans Capex
+inv_dac,DAC Capex
+inv_geothermal_investment,Gen & Stor Capex
+inv_growth_penalty,Gen & Stor Capex
+inv_h2_production,H2 Prod Capex
+inv_h2_pipeline,H2 Prod Capex
+inv_h2_storage,H2 Prod Capex
+inv_investment_capacity_costs,Gen & Stor Capex
+inv_investment_refurbishment_capacity,Gen & Stor Capex
+inv_investment_spurline_costs_rsc_technologies,Interconnection
+inv_investment_water_access,Gen & Stor Capex
+inv_itc_payments_negative_refurbishments,ITC
+inv_itc_payments_negative,ITC
+inv_pumpedhydro_investment,Gen & Stor Capex
+inv_substation_investment_costs,Interconnection
+inv_spurline_investment,Interconnection
+inv_transmission_intrazone_investment,Interconnection
+inv_transmission_line_investment,Trans Capex
+op_acp_compliance_costs,ACP
+op_co2_incentive_negative,CCS Incentives
+op_co2_network_fom_pipe,CO2 T&S O&M
+op_co2_network_fom_spur,CO2 T&S O&M
+op_co2_storage,CO2 T&S Capex
+op_co2_transport_storage,CO2 T&S Capex
+op_consume_fom,Gen & Stor O&M
+op_consume_vom,Gen & Stor O&M
+op_emissions_taxes,Emissions Tax
+op_fom_costs,Gen & Stor O&M
+op_fuelcosts_objfn,Fuel
+op_gen_pol_costs,ACP
+op_h2_fuel_costs,H2 Prod O&M
+op_h2_revenue_exog,H2 Revenue
+op_h2_transport,H2 Prod O&M
+op_h2_storage,H2 Prod O&M
+op_h2_vom,H2 Prod O&M
+op_operating_reserve_costs,Gen & Stor O&M
+op_ptc_payments_negative,PTC
+op_rect_fuel_costs,Fuel
+op_spurline_fom,Interconnection
+op_transmission_fom,Trans O&M
+op_transmission_hurdle_rate,Trans O&M
+op_transmission_intrazone_fom,Trans O&M
+op_vom_costs,Gen & Stor O&M

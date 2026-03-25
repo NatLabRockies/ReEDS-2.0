@@ -1,0 +1,22 @@
+nlcd_value,nlcd_class,color
+11,open water,#5475a8
+12,perennial ice/snow,#ffffff
+21,"developed, open space",#e8d1d1
+22,"developed, low intensity",#e29e8c
+23,"developed, medium intensity",#ff0000
+24,"developed, high intensity",#b50000
+31,barren land (rock/sand/clay),#d2cdc0
+41,deciduous forest,#85c77e
+42,evergreen forest,#38814e
+43,mixed forest,#d4e7b0
+51,dwarf shrub (Alaska),#dcca8f
+52,shrub/scrub,#dcca8f
+71,grassland/herbaceous,#e2e2c1
+72,sedge/herbacious,#e2e2c1
+73,lichens (Alaska),#e2e2c1
+74,moss (Alaska),#e2e2c1
+81,pasture/hay,#fbf65d
+82,cultivated crops,#ca9146
+90,woody wetlands,#c8e6f8
+95,emergent herbaceous wetlands,#64b3d5
+9999,unclassified,#808080

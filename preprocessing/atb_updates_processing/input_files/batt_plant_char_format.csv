@@ -1,0 +1,16 @@
+﻿file,i,Scenario,DisplayName
+battery_ATB_2022_moderate,battery_2,Moderate,Utility-Scale Battery Storage - 2Hr
+battery_ATB_2022_moderate,battery_4,Moderate,Utility-Scale Battery Storage - 4Hr
+battery_ATB_2022_moderate,battery_6,Moderate,Utility-Scale Battery Storage - 6Hr
+battery_ATB_2022_moderate,battery_8,Moderate,Utility-Scale Battery Storage - 8Hr
+battery_ATB_2022_moderate,battery_10,Moderate,Utility-Scale Battery Storage - 10Hr
+battery_ATB_2022_advanced,battery_2,Advanced,Utility-Scale Battery Storage - 2Hr
+battery_ATB_2022_advanced,battery_4,Advanced,Utility-Scale Battery Storage - 4Hr
+battery_ATB_2022_advanced,battery_6,Advanced,Utility-Scale Battery Storage - 6Hr
+battery_ATB_2022_advanced,battery_8,Advanced,Utility-Scale Battery Storage - 8Hr
+battery_ATB_2022_advanced,battery_10,Advanced,Utility-Scale Battery Storage - 10Hr
+battery_ATB_2022_conservative,battery_2,Conservative,Utility-Scale Battery Storage - 2Hr
+battery_ATB_2022_conservative,battery_4,Conservative,Utility-Scale Battery Storage - 4Hr
+battery_ATB_2022_conservative,battery_6,Conservative,Utility-Scale Battery Storage - 6Hr
+battery_ATB_2022_conservative,battery_8,Conservative,Utility-Scale Battery Storage - 8Hr
+battery_ATB_2022_conservative,battery_10,Conservative,Utility-Scale Battery Storage - 10Hr

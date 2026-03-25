@@ -1,0 +1,189 @@
+{
+    "cf_dset": "cf_mean-means",
+    "data_layers": {
+        "usa_mrlc_nlcd2011": {
+            "dset": "usa_mrlc_nlcd2011",
+            "method": "category"
+        },
+        "cnty_fips": {
+            "dset": "cnty_fips",
+            "method": "mode"
+        },
+        "fed_land_owner": {
+            "dset": "fed_land_owner",
+            "method": "category"
+        },
+        "lbnl_convex_hull_existing_farms_2018": {
+            "dset": "lbnl_convex_hull_existing_farms_2018",
+            "method": "sum"
+        },
+        "lbnl_convex_hull_existing_farms_2021": {
+            "dset": "lbnl_convex_hull_existing_farms_2021",
+            "method": "sum"
+        },
+        "nlcd_2016_treecanopy_2019_08_31_rev90m": {
+            "dset": "nlcd_2016_treecanopy_2019_08_31_rev90m",
+            "method": "mean"
+        },
+        "2016_30m_cdls_rev90m": {
+            "dset": "2016_30m_cdls_rev90m",
+            "method": "category"
+        },
+        "shadow_flicker_120m": {
+            "dset": "shadow_flicker_120m",
+            "method": "sum"
+        },
+        "shadow_flicker_135m": {
+            "dset": "shadow_flicker_135m",
+            "method": "sum"
+        }
+    },
+    "log_directory": "./logs",
+    "excl_dict": {
+        "shadow_flicker_120m": {
+            "exclude_values": 1
+        },
+        "kansas_flint_hills": {
+            "exclude_values": 1
+        },
+        "tl_2020_us_mil": {
+            "exclude_values": 1
+        },
+        "srtm_slope": {
+            "inclusion_range": [
+                0,
+                13
+            ]
+        },
+        "dist_to_coast": {
+            "include_values": 0
+        },
+        "albers": {
+            "include_values": 1
+        },
+        "lbnl_convex_hull_existing_farms_2021": {
+            "force_include_values": 1
+        },
+        "nexrad_green_los": {
+            "exclude_values": 1
+        },
+        "dod_los": {
+            "exclude_values": 1
+        },
+        "atlas_landform_elev_exclusion": {
+            "exclude_values": 1
+        },
+        "all_federal_lands_exclusion": {
+            "exclude_values": 1
+        },
+        "all_land_25pct_slope_exclusion_srtm": {
+            "exclude_values": 1
+        },
+        "county_existing_hub_height_exclusions": {
+            "exclude_values": 1
+        },
+        "kentucky_existing_structure_setbacks": {
+            "exclude_values": 1
+        },
+        "minnesota_existing_structures_setbacks": {
+            "exclude_values": 1
+        },
+        "minnesota_existing_road_setbacks": {
+            "exclude_values": 1
+        },
+        "oklahoma_existing_structure_setbacks": {
+            "exclude_values": 1
+        },
+        "wisconsin_existing_structures_setbacks": {
+            "exclude_values": 1
+        },
+        "wyoming_existing_structure_setbacks": {
+            "exclude_values": 1
+        },
+        "county_existing_hwy111_setback": {
+            "exclude_values": 1
+        },
+        "county_existing_river_setbacks": {
+            "exclude_values": 1
+        },
+        "conus_xmission_percent": {
+            "use_as_weights": 1
+        },
+        "conus_rail_percent": {
+            "use_as_weights": 1
+        },
+        "conus_roads_percent": {
+            "use_as_weights": 1
+        },
+        "conus_building_percent": {
+            "use_as_weights": 1
+        },
+        "open_access": {
+            "exclude_values": 1
+        },
+        "nlcd_water_wetlands_1000ft": {
+            "exclude_values": 1
+        },
+        "county_high_extrap_rail_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_high_extrap_trans_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_high_extrap_road_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_high_extrap_structure_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_existing_rail_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_existing_trans_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_existing_road_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "county_existing_structure_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "connecticut_existing_structures_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "steuben_existing_river_setbacks_mid": {
+            "exclude_values": 1
+        },
+        "currituck_hwys_mid": {
+            "exclude_values": 1
+        }
+    },
+    "excl_fpath": [
+        "/projects/rev/data/exclusions/ATB_Exclusions.h5"
+    ],
+    "execution_control": {
+        "allocation": "wetosa",
+        "feature": "--qos=normal",
+        "memory": 179,
+        "nodes": 1,
+        "option": "eagle",
+        "walltime": 2
+    },
+    "gen_fpath": "/shared-projects/rev/projects/weto/fy22/standard_scenarios/rev/generation/0_moderate/0_moderate_multi-year.h5",
+    "lcoe_dset": "lcoe_fcr-means",
+    "power_density": 3,
+    "res_class_dset": "ws_mean-means",
+    "res_fpath": "/datasets/WIND/conus/v1.0.0/wtk_conus_{}.h5",
+    "resolution": 128,
+    "tm_dset": "techmap_wtk",
+    "cap_cost_scale": "np.interp(capacity, [0, 20, 50, 100, 150, 200, 400, 1000, 2000], [1.23, 1.23, 1.12, 1.06, 1.02, 1.0, 0.97, 0.96, 0.96])",
+    "pre_extract_inclusions": true,
+    "h5_dsets": [
+        "capital_cost",
+        "fixed_operating_cost",
+        "system_capacity",
+        "fixed_charge_rate",
+        "variable_operating_cost"
+    ],
+    "recalc_lcoe": true
+}

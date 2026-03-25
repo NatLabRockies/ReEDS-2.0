@@ -1,0 +1,174 @@
+{
+  "fileNames": [
+    "cap.csv",
+    "cap_new_ann.csv",
+    "elec_price.csv",
+    "emissions.csv",
+    "gen.csv",
+    "gen_final_timeslice.csv",
+    "retire_ann.csv",
+    "runtime.csv",
+    "style.csv",
+    "sys_cost.csv"
+  ],
+  "globalStyleFile": "style.csv",
+  "dashboards": [
+    {
+      "title": "Standard Reduced Report",
+      "charts": [
+        {
+          "traces": [
+            {
+              "dataSource": "gen.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Generation (TWh)",
+              "name": "tech",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Generation",
+            "Y Title": "TWh/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "cap.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Capacity",
+            "Y Title": "GW"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "cap_new_ann.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "New Annual Capacity",
+            "Y Title": "GW/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "retire_ann.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "New Annual Retirements",
+            "Y Title": "GW/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "gen_final_timeslice.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "timeslice",
+              "y": "Generation (GW)",
+              "name": "tech",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "X Label Angle (deg)": "-45",
+            "Plot Title": "Final Generation by Timeslice",
+            "Y Title": "GW"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "elec_price.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "$",
+              "name": "type",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Bulk System Electricity Price",
+            "Y Title": "$/MWh"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "sys_cost.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "scenario",
+              "y": "Discounted Cost (Bil $)",
+              "name": "cost_cat"
+            }
+          ],
+          "style": {
+            "Plot Title": "Present Value of System Cost through 2050",
+            "Y Title": "Billion $"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "emissions.csv",
+              "type": "line",
+              "agg": "sum",
+              "x": "year",
+              "y": "Emissions (tonne)",
+              "name": "scenario",
+              "row": "e"
+            }
+          ],
+          "style": {
+            "Plot Title": "Emissions",
+            "Y Title": "tonne"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "runtime.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "scenario",
+              "y": "processtime",
+              "name": "process"
+            }
+          ],
+          "style": {
+            "Plot Title": "Runtime",
+            "Y Title": "hours"
+          }
+        }
+      ]
+    }
+  ]
+}

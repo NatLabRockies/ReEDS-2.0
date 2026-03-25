@@ -1,0 +1,12 @@
+r,rr,trtype,MW,Project(s),Notes
+p5,p10,LCC,2780,Pacific DC Intertie,
+p10,p25,LCC,1920,Intermountain Power Project (DC),
+p20,p35,B2B,200,Miles City Intertie (West-East),
+p24,p39,B2B,310,Virginia Smith Intertie and Segall Intertie (West-East),200 VS; 110 Segall
+p31,p47,B2B,200,Artesia Intertie (West-ERCOT),
+p31,p48,B2B,200,Blackwater Intertie (West-East),
+p32,p38,B2B,200,Rapid City Intertie (West-East),
+p34,p52,B2B,210,Lamar Intertie (West-East),
+p37,p43,LCC,1500,CU HVDC and Square Butte (DC),
+p50,p60,B2B,220,Oklaunion Intertie (ERCOT-East),
+p57,p63,B2B,600,Welsh Intertie (ERCOT-East),

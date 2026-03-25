@@ -1,0 +1,19 @@
+{
+    "log_directory": "./logs",
+    "execution_control": {
+        "allocation": "wetosa",
+        "feature": "--qos=normal",
+        "memory": 90,
+        "nodes": 4,
+        "option": "eagle",
+        "walltime": 2
+    },
+    "fixed_charge_rate": 0.049,
+    "sc_points": "PIPELINE",
+    "simple": true,
+    "trans_table": [
+        "/shared-projects/rev/exclusions/least_cost_xmission/100MW_costs_128.csv",
+        "/shared-projects/rev/exclusions/least_cost_xmission/200MW_costs_128.csv",
+        "/shared-projects/rev/exclusions/least_cost_xmission/400MW_costs_128.csv"
+    ]
+}

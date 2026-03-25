@@ -1,0 +1,154 @@
+{
+  "fileNames": [
+    "cap.csv",
+    "cap_new_ann.csv",
+    "elec_price.csv",
+    "emissions.csv",
+    "gen.csv",
+    "gen_final_timeslice.csv",
+    "retire_ann.csv",
+    "style.csv"
+  ],
+  "filter": {
+    "st": {
+      "filter_type": "include",
+      "filter_val": ["ca","tx","ny"]
+    }
+  },
+  "globalStyleFile": "style.csv",
+  "dashboards": [
+    {
+      "title": "State Report",
+      "description": "To change the shown states, click on \"Global Styles and Filters\" and update the set of selected states.",
+      "charts": [
+        {
+          "traces": [
+            {
+              "dataSource": "gen.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Generation (TWh)",
+              "name": "tech",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Generation",
+            "Y Title": "TWh/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "cap.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Capacity",
+            "Y Title": "GW"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "cap_new_ann.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "New Annual Capacity",
+            "Y Title": "GW/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "retire_ann.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "Capacity (GW)",
+              "name": "tech",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "New Annual Retirements",
+            "Y Title": "GW/yr"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "gen_final_timeslice.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "timeslice",
+              "y": "Generation (GW)",
+              "name": "tech",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "X Label Angle (deg)": "-45",
+            "Plot Title": "Final Generation by Timeslice",
+            "Y Title": "GW"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "elec_price.csv",
+              "type": "bar",
+              "agg": "sum",
+              "x": "year",
+              "y": "$",
+              "name": "type",
+              "row": "st",
+              "col": "scenario"
+            }
+          ],
+          "style": {
+            "Plot Title": "Bulk System Electricity Price",
+            "Y Title": "$/MWh"
+          }
+        },
+        {
+          "traces": [
+            {
+              "dataSource": "emissions.csv",
+              "type": "line",
+              "agg": "sum",
+              "x": "year",
+              "y": "Emissions (tonne)",
+              "name": "scenario",
+              "row": "st"
+            }
+          ],
+          "style": {
+            "Plot Title": "CO2 Emissions",
+            "Y Title": "Mtonne",
+            "Y Scale": ".000001"
+          }
+        }
+      ]
+    }
+  ]
+}

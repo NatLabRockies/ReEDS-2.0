@@ -1,0 +1,15 @@
+,core,ML0,MG0,MLG0,MLG0_OR0,MLG0_OR0_d25,MLG0_OR0_d20,MLG0_OR0_LCGBN0,MLG0_OR0_y5,MLG0_OR0_agg0,MLG0_OR0_agg0_d25,MLG0_OR0_agg0_d20,MLG0_OR0_agg0_LCGBN0,MLG0_OR0_agg0_y5,MLG0_OR0_agg1,MLG0_OR0_agg1_d25,MLG0_OR0_agg1_d20,MLG0_OR0_agg1_LCGBN0,MLG0_OR0_agg1_y5,MLG0_OR0_agg2,MLG0_OR0_agg2_d25,MLG0_OR0_agg2_d20,MLG0_OR0_agg2_LCGBN0,MLG0_OR0_agg2_y5
+ignore,,,,,,,,,,,,,,,,,,,,,,,,
+GSw_MinLoading,,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GSw_Mingen,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GSw_OpRes,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GSw_AggregateRegions,,,,,,,,,,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+GSw_HierarchyFile,,,,,,,,,,agg0,agg0,agg0,agg0,agg0,,,,,,agg2,agg2,agg2,agg2,agg2
+GSw_TransSquiggliness,,,,,,,,,,,,,,,1.07,1.07,1.07,1.07,1.07,1.07,1.07,1.07,1.07,1.07
+GSw_HourlyNumClusters,,,,,,25,20,,,,25,20,,,,25,20,,,,25,20,,
+GSw_LfillGas,,,,,,,,0,,,,,0,,,,,0,,,,,0,
+GSw_CSP,,,,,,,,0,,,,,0,,,,,0,,,,,0,
+GSw_Geothermal,,,,,,,,0,,,,,0,,,,,0,,,,,0,
+GSw_Biopower,,,,,,,,0,,,,,0,,,,,0,,,,,0,
+GSw_Nuclear,,,,,,,,0,,,,,0,,,,,0,,,,,0,
+yearset_suffix,,,,,,,,,5yr,,,,,5yr,,,,,5yr,,,,,5yr

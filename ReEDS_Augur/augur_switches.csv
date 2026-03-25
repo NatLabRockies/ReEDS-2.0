@@ -1,0 +1,18 @@
+key,value,dtype,description
+cc_all_resources,FALSE,boolean,indicate whether to calculate capacity credit between all pairs of resources and regions (TRUE) or just for resources within region (FALSE)
+cc_ann_hours,20,int,number of top hours considered in annual cc calculations
+cc_calc_annual,FALSE,boolean,when true: annual cc values are calculated
+cc_calc_seasonal,TRUE,boolean,when true: seasonal cc values are calculated
+cc_default_rte,0.85,float,default efficiency value to use for assessing peaking storage potential
+cc_marg_dr_mw,100,int,step size used for marginal DR cc calculations
+cc_max_stor_pen,0.9,float,max fraction of peak load considered for storage peaking capacity assessment
+cc_safety_bin_size,100000,int,default value (in MW) for the safety bin size in ReEDS
+cc_stor_buffer,60,int,additional duration (in minutes) that is required of storage to receive full capacity credit
+cc_stor_stepsize,100,int,step size (in MW) used when determining the peaking capacity potential of storage
+decimals,3,int,number of decimals to round results to for ReEDS
+flex_consume_techs,"dac,electrolyzer",list,list of consume techs that are flexible
+keepfiles,"dropped_load,cf",list,list of temporary files to keep
+marg_vre_steps,2,int,Number of previous solve years to consider when evaluating the marginal VRE step size (default: 2). Must be at least 1; a value of 2 can help reduce oscillations. Augur will automatically drop from consideration solves that are more than 5 years from the previous solve.
+plot_years,"2020,2022,2023,2029,2030,2035,2036,2040,2041,2050",list,indicate years for which to make plots of intermediate Augur results
+stress_hierarchy_level,country,str,Level of hierarchy at which to quantify stress_metric. Has no effect if stress_metric = 'absolute'.
+storcap_cutoff,1,float,[MW and MWh] Minimum storage capacity to send to ReEDS2PRAS (applies to both power and energy capacity)

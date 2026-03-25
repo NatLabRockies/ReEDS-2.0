@@ -1,0 +1,44 @@
+order,color
+Capital,#1f77b4
+Fixed O&M,#ff7f0e
+Variable O&M and Fuel,#2ca02c
+NG Fuel,#d62728
+Bio Fuel,#9467bd
+Supply Curve,#8c564b
+Energy,#e377c2
+Reserve Margin,#7f7f7f
+Operating Reserves,#bcbd22
+Curtailment Caused,#17becf
+Curtailment Realized,#aec7e8
+National RPS,#ffbb78
+State RPS,#98df8a
+Emissions,#ff9896
+CO2 Capture and Storage,#c5b0d5
+"invtran, eq_objfn_inv",#c49c94
+eq_ab32_cap,#f7b6d2
+eq_batterymandate,#c7c7c7
+eq_cap_new_noret,#dbdb8d
+eq_capacity_limit,#9edae5
+eq_captran,#1f77b4
+eq_csapr_assurance,#ff7f0e
+eq_csapr_budget,#2ca02c
+eq_dhyd_dispatch,#d62728
+eq_forceprescription,#9467bd
+eq_growthlimit_relative,#8c564b
+eq_minloading,#7f7f7f
+eq_orcap,#bcbd22
+eq_prmtradelimit,#17becf
+eq_rec_bundlelimit,#aec7e8
+eq_rec_launder,#ffbb78
+eq_refurblim,#98df8a
+eq_rsc_inv_account,#ff9896
+eq_rsc_invlim,#c5b0d5
+eq_storage_capacity,#c49c94
+eq_storage_duration,#f7b6d2
+eq_storage_level,#c7c7c7
+eq_storage_in_min,#dbdb8d
+eq_storage_in_max,#9edae5
+eq_transmission_limit,#ff7f0e
+kW,#2ca02c
+MWh,#d62728
+Other,#9467bd

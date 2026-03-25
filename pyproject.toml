@@ -1,0 +1,9 @@
+[tool.black]
+include = '''
+(
+    hourlize/tests/.*\.py?$
+    | hourlize/reeds_to_rev\.py?$
+)
+'''
+
+

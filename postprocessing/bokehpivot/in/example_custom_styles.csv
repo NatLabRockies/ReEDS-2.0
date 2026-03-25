@@ -1,0 +1,33 @@
+scenario,scenario_custom_colors,tech,tech_custom_colors
+"Moderate Tech, Reference Access",#1f77b4,nuclear,#820000
+"Moderate Tech, Limited Access",#2ca02c,coal,#222222
+"Advanced Tech, Open Access",#9467bd,cofire,#66C238
+"Advanced Tech, Limited Access",#8c564b,gas-cc,#52216B
+,,gas-cc-ccs_mod,#5E1688
+,,gas-cc-ccs_max,#70298D
+,,gas-ct,#C2A1DB
+,,o-g-s,#3D3376
+,,hydro,#187F94
+,,geothermal,#A96235
+,,biopower,#5B9844
+,,lfill-gas,#88BA41
+,,wind-ons,#00B6EF
+,,wind-ofs,#106BA7
+,,csp,#FC761A
+,,upv,#FFC903
+,,dupv,#FFAB02
+,,distpv,#FEE603
+,,pumped-hydro,#CC0079
+,,pumped-hydro-flex,#CC0079
+,,caes,#FF4741
+,,battery,#FF4A88
+,,battery_2,#FF7F9D
+,,battery_4,#FF6882
+,,battery_6,#DF5282
+,,battery_8,#CC015C
+,,battery_10,#9B014F
+,,storage-h2,#FF7FBB
+,,Canada,#193A71
+,,coal-ccs_mod,#707685
+,,coal-ccs_max,#c6c8ce
+,,Other,#ff69b4

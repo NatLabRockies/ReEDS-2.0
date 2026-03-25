@@ -1,0 +1,4 @@
+﻿*parameter,none,2025_2050_linear
+hydro_capcredit_delta,0,-0.2
+thermal_summer_cap_delta,0,-0.15
+trans_summer_cap_delta,0,-0.05

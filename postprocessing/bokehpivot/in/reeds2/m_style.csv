@@ -1,0 +1,23 @@
+order,color
+Summer 10pm-6am,#1f77b4
+Summer 6am-1pm,#ff7f0e
+Summer 1pm-5pm,#2ca02c
+Summer Peak,#d62728
+Summer 5pm-10pm,#9467bd
+Fall 10pm-6am,#8c564b
+Fall 6am-1pm,#e377c2
+Fall 1pm-5pm,#7f7f7f
+Fall 5pm-10pm,#bcbd22
+Winter 10pm-6am,#17becf
+Winter 6am-1pm,#aec7e8
+Winter 1pm-5pm,#ffbb78
+Winter 5pm-10pm,#98df8a
+Spring 10pm-6am,#ff9896
+Spring 6am-1pm,#c5b0d5
+Spring 1pm-5pm,#c49c94
+Spring 5pm-10pm,#f7b6d2
+Summer,#1f77b4
+Fall,#ff7f0e
+Winter,#2ca02c
+Spring,#d62728
+Annual,#1f77b4

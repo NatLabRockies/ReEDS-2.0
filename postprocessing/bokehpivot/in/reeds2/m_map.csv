@@ -1,0 +1,23 @@
+raw,display
+h1,Summer 10pm-6am
+h2,Summer 6am-1pm
+h3,Summer 1pm-5pm
+h4,Summer 5pm-10pm
+h5,Fall 10pm-6am
+h6,Fall 6am-1pm
+h7,Fall 1pm-5pm
+h8,Fall 5pm-10pm
+h9,Winter 10pm-6am
+h10,Winter 6am-1pm
+h11,Winter 1pm-5pm
+h12,Winter 5pm-10pm
+h13,Spring 10pm-6am
+h14,Spring 6am-1pm
+h15,Spring 1pm-5pm
+h16,Spring 5pm-10pm
+h17,Summer Peak
+summ,Summer
+fall,Fall
+wint,Winter
+spri,Spring
+ann,Annual

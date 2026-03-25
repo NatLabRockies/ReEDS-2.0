@@ -1,0 +1,19 @@
+{
+    "log_directory": "./logs",
+    "execution_control": {
+        "allocation": "atbespoke",
+        "feature": "--partition=debug",
+        "option": "eagle",
+        "memory": 90,
+        "nodes": 4,
+        "walltime": 1
+    },
+    "sc_points": "PIPELINE",
+    "simple": true,
+    "trans_table": [
+        "/shared-projects/rev/transmission_tables/reinforced_transmission_within_state_bounds/least_cost_transmission/transmission_reinforced_100MW_128.csv",
+        "/shared-projects/rev/transmission_tables/reinforced_transmission_within_state_bounds/least_cost_transmission/transmission_reinforced_200MW_128.csv",
+        "/shared-projects/rev/transmission_tables/reinforced_transmission_within_state_bounds/least_cost_transmission/transmission_reinforced_400MW_128.csv"
+    ],
+    "fixed_charge_rate": 0.06077
+}

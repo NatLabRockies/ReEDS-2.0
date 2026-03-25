@@ -1,0 +1,145 @@
+﻿file,DisplayName,Scenario,i
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_1
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_2
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_3
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_4
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_5
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_6
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_7
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Flash,Moderate,geohydro_pflash_8
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_1
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_2
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_3
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_4
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_5
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_6
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_7
+geo_ATB_2022_moderate_FOM,Geothermal - Hydro / Binary,Moderate,geohydro_pbinary_8
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_1
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_2
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_3
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_4
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_5
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_6
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_7
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Flash,Moderate,NF-EGS_pflash_8
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_1
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_2
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_3
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_4
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_5
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_6
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_7
+geo_ATB_2022_moderate_FOM,Geothermal - NF EGS / Binary,Moderate,NF-EGS_pbinary_8
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_1
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_2
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_3
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_4
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_5
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_6
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_7
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Flash,Moderate,deep-egs_pflash_8
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_1
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_2
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_3
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_4
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_5
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_6
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_7
+geo_ATB_2022_moderate_FOM,Geothermal - Deep EGS / Binary,Moderate,deep-egs_pbinary_8
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_1
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_2
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_3
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_4
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_5
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_6
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_7
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Flash,Advanced,geohydro_pflash_8
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_1
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_2
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_3
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_4
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_5
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_6
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_7
+geo_ATB_2022_advanced_FOM,Geothermal - Hydro / Binary,Advanced,geohydro_pbinary_8
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_1
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_2
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_3
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_4
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_5
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_6
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_7
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Flash,Advanced,NF-EGS_pflash_8
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_1
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_2
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_3
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_4
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_5
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_6
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_7
+geo_ATB_2022_advanced_FOM,Geothermal - NF EGS / Binary,Advanced,NF-EGS_pbinary_8
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_1
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_2
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_3
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_4
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_5
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_6
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_7
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Flash,Advanced,deep-egs_pflash_8
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_1
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_2
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_3
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_4
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_5
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_6
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_7
+geo_ATB_2022_advanced_FOM,Geothermal - Deep EGS / Binary,Advanced,deep-egs_pbinary_8
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_1
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_2
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_3
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_4
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_5
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_6
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_7
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Flash,Conservative,geohydro_pflash_8
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_1
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_2
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_3
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_4
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_5
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_6
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_7
+geo_ATB_2022_conservative_FOM,Geothermal - Hydro / Binary,Conservative,geohydro_pbinary_8
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_1
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_2
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_3
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_4
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_5
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_6
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_7
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Flash,Conservative,NF-EGS_pflash_8
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_1
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_2
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_3
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_4
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_5
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_6
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_7
+geo_ATB_2022_conservative_FOM,Geothermal - NF EGS / Binary,Conservative,NF-EGS_pbinary_8
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_1
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_2
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_3
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_4
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_5
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_6
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_7
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Flash,Conservative,deep-egs_pflash_8
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_1
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_2
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_3
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_4
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_5
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_6
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_7
+geo_ATB_2022_conservative_FOM,Geothermal - Deep EGS / Binary,Conservative,deep-egs_pbinary_8

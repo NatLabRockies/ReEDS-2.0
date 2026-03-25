@@ -1,0 +1,59 @@
+raw,display
+"cap, eq_objfn_op",Fixed O&M
+"inv, eq_objfn_op",Fixed O&M
+"gen, eq_objfn_op",Variable O&M and Fuel
+"inv, eq_objfn_inv",Capital
+"gen, eq_objfn_inv",Capital
+"inv_refurb, eq_objfn_inv",Capital
+"inv_rsc, eq_objfn_inv",Supply Curve
+"upgrades, eq_objfn_inv",Capital
+"invtran, eq_objfn_inv","invtran, eq_objfn_inv"
+"opres, eq_objfn_op",Operating Reserves
+eq_ab32_cap,eq_ab32_cap
+eq_batterymandate,eq_batterymandate
+eq_bioused,Bio Fuel
+eq_cap_new_noret,eq_cap_new_noret
+eq_capacity_limit,eq_capacity_limit
+eq_captran,eq_captran
+eq_csapr_assurance,eq_csapr_assurance
+eq_csapr_budget,eq_csapr_budget
+eq_curt_gen_balance,Curtailment Realized
+eq_curtailment,Curtailment Caused
+eq_dhyd_dispatch,eq_dhyd_dispatch
+eq_emit_accounting,Emissions
+eq_forceprescription,eq_forceprescription
+eq_gasused,NG Fuel
+eq_gasaccounting_national,Variable O&M and Fuel
+eq_gasaccounting_regional,Variable O&M and Fuel
+eq_growthlimit_relative,eq_growthlimit_relative
+eq_growthbin_limit,eq_growthbin_limit
+eq_mingen_lb,Curtailment Caused
+eq_mingen_ub,Curtailment Caused
+eq_minloading,eq_minloading
+eq_min_cf,Variable O&M and Fuel
+eq_national_gen,National RPS
+eq_opres_requirement,Operating Reserves
+eq_orcap,eq_orcap
+eq_prmtradelimit,eq_prmtradelimit
+eq_rec_bundlelimit,eq_rec_bundlelimit
+eq_rec_generation,State RPS
+eq_rec_launder,eq_rec_launder
+eq_refurblim,eq_refurblim
+eq_reserve_margin,Reserve Margin
+eq_cap_sdbin_balance,Reserve Margin
+eq_sdbin_limit,Reserve Margin
+eq_rps_ofswind,State RPS
+eq_rsc_inv_account,eq_rsc_inv_account
+eq_rsc_invlim,eq_rsc_invlim
+eq_storage_capacity,eq_storage_capacity
+eq_storage_duration,eq_storage_duration
+eq_storage_level,eq_storage_level
+eq_storage_in_min,Energy
+eq_storage_in_min_szn,Energy
+eq_storage_in_max,Curtailment Caused
+eq_supply_demand_balance,Energy
+eq_loadcon,Energy
+eq_co2_capture,CO2 Capture and Storage
+eq_transmission_limit,eq_transmission_limit
+kW,kW
+MWh,MWh

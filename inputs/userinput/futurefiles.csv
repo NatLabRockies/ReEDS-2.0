@@ -1,0 +1,211 @@
+filename,filetype,ignore,key,year_col,fix_cols,wide,header,forecast_fit,clip_min,clip_max,notes,forecast_fit_old
+acp_prices.csv,.csv,0,None,wide,st,1,0,constant,None,None,done,constant
+capnonrsc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+allout_RSC.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+alpha.csv,.csv,0,None,t,None,1,0,constant,None,None,done,linear_10
+bio_priceramp.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+bio_supplycurve.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+can_exports_h_frac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+can_exports.csv,.csv,0,None,wide,Unnamed: 0,1,0,constant,None,None,done,constant
+can_imports_szn_frac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+can_imports.csv,.csv,0,None,wide,Unnamed: 0,1,0,constant,None,None,done,constant
+cangrowth.csv,.csv,0,None,wide,Unnamed: 0,1,0,linear_5,None,None,done,linear_10
+canmexload.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cap_cost_mult_for_ratebase.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"originally at 2,5 year resolution, upsampled to 1 year",constant
+cap_cost_mult_noITC.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"originally at 2,5 year resolution, upsampled to 1 year",constant
+cap_cost_mult.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"originally at 2,5 year resolution, upsampled to 1 year",constant
+cappayments_ba.csv,.csv,0,None,t,*r,0,0,constant,None,None,done,constant
+capture_rates.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ccreg.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ccs_link.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ccsflex_perf.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cd_beta0_allsector.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cd_beta0.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cendivweights.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ces_fraction.csv,.csv,0,None,wide,st,1,0,linear_5,0,1,done,linear_5
+cf_vre.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+climate_hydadjann.csv,.csv,0,None,wide,r,1,0,constant,0,None,done,constant
+climate_hydadjsea.csv,.csv,0,None,wide,"r,szn",1,0,constant,0,None,done,constant
+climate_loaddelta_timeslice.csv,.csv,0,None,wide,"r,h",1,0,constant,0,None,done,constant
+climate_UnappWaterMult.csv,.csv,0,None,wide,"wst,r,szn",1,0,constant,0,None,done,constant
+climate_UnappWaterMultAnn.csv,.csv,0,None,wide,"wst,r",1,0,constant,0,None,done,constant
+climate_UnappWaterSeaAnnDistr.csv,.csv,0,None,wide,"wst,r,szn",1,0,constant,0,1,done,constant
+co2_cap.csv,.csv,0,None,*t,None,0,0,constant,0,None,"constant, linear, or saturate?",constant
+co2_tax.csv,.csv,0,None,0,None,0,None,linear_5,None,None,"constant, linear, or saturate?",linear_5
+coal_fom_adj.csv,.csv,0,None,0,None,0,None,constant,None,None,"constant, linear, or saturate?",linear_5
+consume_char_low.csv,.csv,0,None,t,"*i,parameter",0,0,constant,None,None,done,constant
+consume_char_ref.csv,.csv,0,None,t,"*i,parameter",0,0,constant,None,None,done,constant
+cost_cap_mult.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_hurdle_country.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_opres_default.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_opres_market.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_opres.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_vom_mult.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+cost_vom.csv,.csv,0,None,t,"i,v,r",0,0,constant,0,None,done,constant
+crf.csv,.csv,0,None,0,None,0,None,constant,None,None,done,constant
+csapr_ozone_season.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+d_szn.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dac_assumptions.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+deflator.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+degradation_annual.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+depreciation_schedules.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+df_capex_init.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+distPVcap.csv,.csv,0,None,wide,Unnamed: 0,1,0,constant,None,None,"constant, linear, or saturate?",constant
+distPVCF_hourly.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_dec.csv,.csv,1,None,9999,None,9999,0,constant,None,None,,constant
+dr_decrease.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_hrs.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_inc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,,constant
+dr_increase.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_shed.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_shifts.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+dr_types.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+emit_rate.csv,.csv,0,None,t,"e,i,v,r",0,0,constant,0,None,done,constant
+emit_scale.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+emitrate.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ev_dynamic_demand.csv,.csv,0,None,2,"0,1",0,None,linear_5,None,None,linear or saturate?,linear_5
+ev_static_demand.csv,.csv,0,None,2,"0,1",0,None,linear_5,None,None,linear or saturate?,linear_5
+firstyear.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+flex_frac_all.csv,.csv,0,None,wide,"flextype,r,h",1,0,constant,None,1,linear or constant? projection takes quite a while for this one,linear_5
+forced_retirements.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+fprice.csv,.csv,0,None,t,r,1,0,constant,None,None,done,linear_5
+fuel_price.csv,.csv,0,None,t,"i,r",0,0,constant,0,None,done,linear_5
+futurefiles.csv,.csv,1,None,9999,None,9999,0,constant,None,None,so meta,constant
+geo_discovery.csv,.csv,0,None,0,None,0,None,constant,None,1,what projection to use?,linear_10
+geo_fom_mult.csv,.csv,0,None,1,0,0,None,constant,None,1,done,constant
+geo_fom.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+geo_rsc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+geocapcostmult.csv,.csv,0,None,Unnamed: 0,None,1,0,constant,0,None,projection?,linear_5
+growth_limit_absolute.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+h_dt_szn.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+peak_h.csv,.csv,2,None,wide,"r,h",1,0,linear_5,None,None,"TODO: ignore if not EFS, else apply projection",linear_10
+h2_ba_share.csv,.csv,0,None,1,0,0,None,constant,0,None,done,constant
+h2_exogenous_demand.csv,.csv,0,None,t,p,1,0,linear_5,0,None,done,constant
+heat_rate_adj.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+heat_rate_mult.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+heat_rate_penalty_spin.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+heat_rate.csv,.csv,0,None,t,"i,v,r",0,0,constant,0,None,done,constant
+hierarchy.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hintage_data.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hourly_operational_characteristics.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hyd_add_upg_cap.csv,.csv,0,None,wide,"r,i,rscbin",1,0,constant,0,None,done,constant
+hyd_fom.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hydrocapcostmult.csv,.csv,0,None,Unnamed: 0,None,1,0,constant,0,None,projection?,linear_5
+i_coolingtech_watersource_link.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+i_coolingtech_watersource_upgrades_link.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+i_coolingtech_watersource_upgrades.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+i_coolingtech_watersource.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ice_fom.csv,.csv,0,None,0,None,0,None,constant,0,None,projection?,linear_5
+index_hr_map.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+inflation.csv,.csv,0,None,t,None,0,0,constant,None,None,done,constant
+itc_fractions.csv,.csv,0,None,t,"i,country,itc_tax_equity_penalty",0,0,constant,None,None,done,constant
+ivt_default.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done (special case: ivt is extended in calc_financial_inputs.py since ivt is needed there),constant
+ivt_small.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done (special case: ivt is extended in calc_financial_inputs.py since ivt is needed there),constant
+ivt_step.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ivt.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done (special case: ivt is extended in calc_financial_inputs.py since ivt is needed there),constant
+load_2010.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+load_allyear.csv,.csv,0,None,t,"*r,h",0,0,linear_5,0,None,done,linear_5
+load_multiplier.csv,.csv,0,None,wide,cendiv,1,0,linear_5,0,None,done,linear_5
+maxage.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+methane_leakage_rate.csv,.csv,0,None,*t,None,0,0,constant,None,None,done,constant
+mex_growth_rate.csv,.csv,0,None,0,None,0,None,linear_5,0,None,done,linear_5
+min_retire_age.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+minCF.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hydmin.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+minloadfrac0.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+modeledyears.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+nat_gen_tech_frac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+national_gen_frac_allScen.csv,.csv,0,None,Unnamed: 0,None,1,0,linear_5,0,1,projection?,constant
+national_rps_frac_allScen.csv,.csv,0,None,t,None,1,0,constant,0,1,done,constant
+net_trade_can.csv,.csv,0,None,t,"*r,h",0,0,constant,None,None,done,constant
+ng_crf_penalty.csv,.csv,0,None,*t,None,0,0,constant,None,None,done,constant
+ng_demand_elec.csv,.csv,0,None,wide,Unnamed: 0,1,0,constant,0,None,done,linear_5
+ng_demand_tot.csv,.csv,0,None,wide,Unnamed: 0,1,0,constant,0,None,done,linear_5
+ng_price_cendiv.csv,.csv,0,None,wide,cendiv,1,0,constant,0,None,done,linear_5
+nuclear_ba_ban_list.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+nuke_fom_adj.csv,.csv,0,None,0,None,0,None,constant,None,None,done,linear_5
+numhours.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+offshore_goal_fix.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
+offshore_goal_float.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
+offshore_req.csv,.csv,0,None,wide,st,1,0,constant,0,None,done,constant
+ofswind_rsc_mult.csv,.csv,0,None,Unnamed: 0,None,1,0,constant,0,None,done,linear_5
+orperc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+outage_forced.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+outage_planned.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+peak_szn.csv,.csv,2,None,wide,"r,szn",1,0,linear_5,None,None,"TODO: ignore if not EFS, else apply projection",linear_10
+prescribed_nonRSC.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+prescribed_rsc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+prm_annual.csv,.csv,0,None,t,*nercr,0,0,constant,None,None,done,constant
+ptc_unit_value.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ptc_values.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+pv_cf_improve.csv,.csv,0,None,0,None,0,None,constant,None,None,done,constant
+pvb_bcr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+pvb_ilr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+pvbcapcostmult.csv,.csv,0,None,Unnamed: 0,None,0,0,constant,None,None,done,constant
+pvf_cap.csv,.csv,1,None,0,None,0,None,linear_5,0,None,done (but double-check that it is written correctly by calc_financial_inputs.py),linear_5
+pvf_onm_int.csv,.csv,1,None,0,None,0,None,linear_10,0,None,done (but double-check that it is written correctly by calc_financial_inputs.py),linear_10
+ramprate.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+ramptime.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+rps_fraction.csv,.csv,0,None,t,st,1,0,linear_5,None,1,done,linear_5
+rectable.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+reeds_ba_tz_map.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+region_map.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+regions.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+resources.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+retirements.csv,.csv,1,None,9999,None,9999,0,constant,None,None,"TODO: discuss, make sure it should just be copied",constant
+rev_transmission_basecost.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+rggicon.csv,.csv,0,None,0,None,0,None,constant,None,None,done,constant
+rsc_combined.csv,.csv,0,None,t,"*i,r,sc_cat,rscbin",0,0,constant,None,None,done,constant
+scalars.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+spur_parameters.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+state_cap.csv,.csv,0,None,0,None,0,None,constant,None,None,done,constant
+storage_duration_pshdata.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+storage_duration.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+storage_mandates.csv,.csv,0,None,1,0,0,None,constant,None,None,done,constant
+storinmaxfrac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+superpeak_hour_mapper.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+switches.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+tech-subset-table.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+techs_banned.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+tg_rsc_cspagg_tmp.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+tranloss.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+trans_cap_cost_mult_noITC.csv,.csv,0,None,*t,None,0,0,constant,None,None,done,constant
+trans_cap_cost_mult.csv,.csv,0,None,*t,None,0,0,constant,None,None,done,constant
+trans_itc_fractions.csv,.csv,1,None,9999,None,9999,0,constant,None,None,constant or expire?,constant
+transmission_capacity_initial.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+transmission_distance.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+unapp_water_sea_distr.csv,.csv,1,None,9999,None,9999,0,constant,None,None,TODO: check for climate impacts,constant
+upgrade_link.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+upgradelink_water.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+va_ng_crf_penalty.csv,.csv,0,None,0,None,0,None,constant,None,None,done,constant
+val_r.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+var_map.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+wat_access_cap_cost.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+water_with_cons_rate.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+wind_retirements.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+wind-ofs_prescribed_builds.csv,.csv,1,None,9999,None,9999,0,constant,None,None, done,constant
+wind-ons_exog_cap.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+wind-ons_prescribed_builds.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+windcfmult.csv,.csv,0,None,t,None,1,0,constant,None,None,constant or saturate?,constant
+windows_2100.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+windows_default.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+windows_step10.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+windows_step5.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+inputs.gdx,.gdx,1,None,9999,None,9999,0,constant,None,None,done (wouldn't exist yet in normal run),constant
+plexos_inputs.gdx,.gdx,1,None,9999,None,9999,0,constant,None,None,done (wouldn't exist yet in normal run),constant
+can_trade_8760.h5,.h5,0,None,t,"r,h",9999,0,constant,None,None,done,constant
+load.h5,.h5,0,None,year,hour,1,keepindex,linear_5,None,None,done,linear_5
+recf.h5,.h5,1,None,9999,None,9999,0,constant,None,None,done,constant
+retail_cap_cost_mult.h5,.h5,1,None,9999,None,9999,0,constant,None,None,done,constant
+retail_depreciation_sch.h5,.h5,1,None,9999,None,9999,0,constant,None,None,done,constant
+retail_eval_period.h5,.h5,1,None,9999,None,9999,0,constant,None,None,done,constant
+geoexist.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+hydcf.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant
+hydcfadj.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant
+hydrofrac_policy.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+oosfrac.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
+plantcharout.txt,.txt,0,None,1,"0,2",0,None,constant,None,None,"done. consider field-specific projections (i.e. linear projection for capcost for PV, but constant projection for heatrate and rte)",constant
+rsc_combined.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant
+scalars.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant
+threads.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant
+transmission_line_cost.txt,.txt,1,None,9999,None,9999,0,constant,None,None,done,constant

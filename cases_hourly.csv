@@ -1,0 +1,20 @@
+,Default Value,ERCOT_day,ERCOT_wek,ERCOT_year,ERCOT_day_stress,ERCOT_wek_stress,ERCOT_day_agg0,ERCOT_year_agg0,ERCOT_year_agg1,USA,USA_wek,USA_year_agg1,USA_year_agg2,USA_s10,USA_s20
+ignore,1,0,0,0,0,0,0,,,,,,,,
+endyear,2050,2030,2030,2030,2030,2030,2030,2030,2030,,,,,,
+GSw_Region,USA,interconnect/texas,interconnect/texas,interconnect/texas,interconnect/texas,interconnect/texas,interconnect/texas,interconnect/texas,interconnect/texas,,,,,,
+GSw_GasCurve,1,2,2,2,2,2,2,2,2,,,,,,
+GSw_AggregateRegions,0,,,,,,1,1,1,,,1,1,,
+GSw_HierarchyFile,default,,,,,,agg0,agg0,,,,,agg2,,
+GSw_TransSquiggliness,1,,,,,,,,,,,,,,
+GSw_MinLoadTechs,4,,,0,,,,0,0,,,0,0,,
+GSw_HourlyType,day,,wek,year,,wek,,year,year,,wek,year,year,,
+GSw_HourlyNumClusters,33,,,,,,,,,,20,,,,
+capcredit_szn_hours,1,,,10,,,,10,10,,2,10,10,,
+GSw_OpRes,1,,,0,,,,0,0,,,0,0,,
+GSw_HourlyWrapLevel,season,,,,,,,,,,,,,,
+GSw_HourlyPeakLevel,interconnect,,,,False,False,,,,,,,,False,False
+GSw_HourlyMinRElevel,interconnect,,,,False,False,,,,,,,,False,False
+GSw_PRM_StressSeedLoadLevel,False,,,,interconnect,interconnect,,,,,,,,interconnect,interconnect
+GSw_PRM_StressSeedMinRElevel,False,,,,interconnect,interconnect,,,,,,,,interconnect,interconnect
+GSw_PRM_MaxStressPeriods,0,,,,10,10,,,,,,,,10,20
+GSw_PRM_CapCredit,1,,,,0,0,,,,,,,,0,0

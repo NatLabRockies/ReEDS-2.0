@@ -1,0 +1,15 @@
+{
+  "constrain_to_bins": true,
+  "priority": {
+    "*cost_col*": "ascending"
+  },
+  "reduced_only": true,
+  "reeds_path": "DATA_PATH",
+  "run_folder": "DATA_PATH/reeds/",
+  "tech_supply_curves": {
+    "upv": "DATA_PATH/supply_curves/upv_reference/results/upv_supply_curve_raw.csv",
+    "wind-ofs": "DATA_PATH/supply_curves/wind-ofs_0_open_moderate/results/wind-ofs_supply_curve_raw.csv",
+    "wind-ons": "DATA_PATH/supply_curves/wind-ons_reference/results/wind-ons_supply_curve_raw.csv",
+    "dupv": "DATA_PATH/supply_curves/dupv_sc_naris_scaled.csv"
+  }
+}

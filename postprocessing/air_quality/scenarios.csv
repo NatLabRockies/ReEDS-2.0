@@ -1,0 +1,6 @@
+run,path
+All Options,/Volumes/ReEDS/FY21-2035-Study-WJC/Runs/decarb_1_7/decarb_1_7_AllOptions
+Constrained,/Volumes/ReEDS/FY21-2035-Study-WJC/Runs/decarb_1_7/decarb_1_7_Constrained
+No CCS,/Volumes/ReEDS/FY21-2035-Study-WJC/Runs/decarb_1_7/decarb_1_7_NoCDR
+Infrastructure,/Volumes/ReEDS/FY21-2035-Study-WJC/Runs/decarb_1_7/decarb_1_7_Infrastructure
+Reference-ADE,/Volumes/ReEDS/FY21-2035-Study-WJC/Runs/decarb_1_7/decarb_1_7_AllOptions_noPolicy

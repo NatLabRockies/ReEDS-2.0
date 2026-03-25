@@ -1,0 +1,363 @@
+filename,filepath (for input files only),filetype,ignore when aggregating,aggfunc,region_col,fix_cols,i_col,wide (1 if any parameters are in wide format),header (0 if file has column labels),key,post_copy (files are created after copy_files),notes
+acp_disallowed.csv,inputs/state_policies/acp_disallowed.csv,.csv,1,ignore,*st,"RPSCat,val",,,0,,,done
+acp_prices.csv,inputs/state_policies/acp_prices.csv,.csv,1,ignore,st,st,,1,0,,,done
+aggreg.csv,,.csv,1,ignore,ignore,,,0,0,,,done
+aggreg2anchorreg.csv,,.csv,1,ignore,ignore,,,0,0,,,done
+alpha.csv,,.csv,1,,,,,1,0,,,done
+bio_supplycurve.csv,inputs/supplycurvedata/bio_supplycurve.csv,.csv,1,,usda_region,,,,0,,,done
+bir.csv,,.csv,1,,,,,0,0,,,done
+can_exports.csv,inputs/canada_imports/can_exports.csv,.csv,0,sum,r,wide,,1,0,,,done
+can_exports_h_frac.csv,inputs/canada_imports/can_exports_h_frac.csv,.csv,1,,,,,,0,,,done
+can_imports.csv,inputs/canada_imports/can_imports.csv,.csv,0,sum,r,wide,,1,0,,,done
+can_imports_capacity.csv,,.csv,0,sum,*r,t,,0,0,,1,done
+can_imports_szn_frac.csv,inputs/canada_imports/can_imports_szn_frac.csv,.csv,1,,,,,,0,,,done
+cangrowth.csv,inputs/loaddata/cangrowth.csv,.csv,1,,st,,,1,0,,,done
+canmexload.csv,,.csv,0,sum,*r,h,,0,0,,1,done
+cap_cost_mult_noITC.csv,,.csv,0,mean,r,"*i,t",,0,0,,1,done
+cap_cspns.csv,,.csv,0,sum,*r,t,,0,0,,1,done
+capnonrsc.csv,,.csv,0,sum,r,i,,0,0,,1,done
+cappayments_ba.csv,inputs/capacitydata/cappayments_ba.csv,.csv,1,,,*r,,0,0,,,not done but not used
+caprsc.csv,,.csv,0,sum,r,i,,0,0,,1,done
+capture_rates.csv,,.csv,1,,,,,,0,,,done
+ccmult.csv,,.csv,1,,,,,,0,,,done
+ccreg.csv,,.csv,1,,,,,,0,,,done
+ccs_link.csv,inputs/carbonconstraints/ccs_link.csv,.csv,1,,,,,,0,,,done
+ccsflex_perf.csv,,.csv,1,,,,,,0,,,done
+cd_beta0.csv,inputs/fuelprices/cd_beta0.csv,.csv,1,,*cendiv,,,,0,,,done
+cd_beta0_allsector.csv,inputs/fuelprices/cd_beta0_allsector.csv,.csv,1,,*cendiv,,,,0,,,done
+cendivweights.csv,inputs/fuelprices/cendivweights.csv,.csv,0,mean,r_cendiv,wide,,1,0,,,Includes two region definitions
+ces_fraction.csv,inputs/state_policies/ces_fraction.csv,.csv,1,,st,st,,1,0,,,done
+cf_vre.csv,,.csv,0,mean_cap,r,"*i,h",*i,0,0,,1,done (TODO: double-check)
+climate_heuristics_finalyear.csv,,.csv,1,,,,,,0,,,done
+climate_heuristics_yearfrac.csv,,.csv,1,,,,,,0,,,done
+climate_hydadjann.csv,,.csv,1,,,r,,1,0,,,not done but rarely used; ignore for now
+climate_hydadjsea.csv,,.csv,1,,,"r,szn",,1,0,,,not done but rarely used; ignore for now
+climate_loaddelta_timeslice.csv,,.csv,1,,,"r,h",,1,0,,,not done but rarely used; ignore for now
+climate_UnappWaterMult.csv,,.csv,1,,,"wst,r,szn",,1,0,,,not done but rarely used; ignore for now
+climate_UnappWaterMultAnn.csv,,.csv,1,,,"wst,r",,1,0,,,not done but rarely used; ignore for now
+climate_UnappWaterSeaAnnDistr.csv,,.csv,1,,,"wst,r,szn",,1,0,,,not done but rarely used; ignore for now
+co2_cap.csv,,.csv,1,,,,,0,0,,,done
+co2_capture_incentive.csv,,.csv,1,,,,,,0,,,done
+co2_site_char.csv,inputs/ctus/co2_site_char.csv,.csv,1,,cs,,,0,,,,done
+co2_tax.csv,,.csv,1,,,,,0,,,,done
+coal_fom_adj.csv,inputs/capacitydata/coal_fom_adj.csv,.csv,1,,,,,0,,,,done
+construction_times.csv,,.csv,1,,,,,,0,,,done
+consume_char_low.csv,inputs/consume/consume_char_low.csv,.csv,1,,,"*i,t,parameter",,0,0,,,done
+consume_char_ref.csv,inputs/consume/consume_char_ref.csv,.csv,1,,,"*I,t,parameter",,0,0,,,done
+consumechardac.csv,,.csv,1,,,"*i,t,variable",,0,0,,,done
+cost_cap_mult.csv,inputs/waterclimate/cost_cap_mult.csv,.csv,1,,,,,,0,,,done
+cost_hurdle_country.csv,inputs/transmission/cost_hurdle_country.csv,.csv,1,,*country,,,,0,,,done
+cost_opres.csv,,.csv,1,,,,,,0,,,done
+cost_opres_default.csv,inputs/plant_characteristics/cost_opres_default.csv,.csv,1,,,,,,0,,,done
+cost_opres_market.csv,inputs/plant_characteristics/cost_opres_market.csv,.csv,1,,,,,,0,,,done
+cost_vom.csv,,.csv,1,mean,r,"i,v,t",,0,0,,1,done (ReEDS-to-PLEXOS output)
+cost_vom_mult.csv,inputs/waterclimate/cost_vom_mult.csv,.csv,1,,,,,,0,,,done
+crf_co2_incentive.csv,,.csv,1,,,,,,0,,,done
+crf.csv,,.csv,1,,,,,0,,,,done
+cs.csv,inputs/ctus/cs.csv,.csv,1,,,,,0,,,,done
+csapr_group1_ex.csv,inputs/csapr/csapr_group1_ex.csv,.csv,1,,*st,,,,0,,,done
+csapr_group2_ex.csv,inputs/csapr/csapr_group2_ex.csv,.csv,1,,*st,,,,0,,,done
+csapr_ozone_season.csv,inputs/csapr/csapr_ozone_season.csv,.csv,1,,st,,,,0,,,done
+d_osprey.csv,,.csv,1,,,,,,0,,,done
+d_szn.csv,,.csv,1,,,,,,0,,,done
+dac_assumptions.csv,,.csv,1,,,,,,0,,,done
+dac_gas.csv,,.csv,1,,,,,0,,,,done
+deflator.csv,inputs/deflator.csv,.csv,1,,,,,,0,,,done
+degradation_adj.csv,,.csv,1,,,,,,0,,,done
+degradation_annual.csv,,.csv,1,,,,,,0,,,done
+depreciation_schedules.csv,,.csv,1,,,,,,0,,,done
+df_capex_init.csv,postprocessing/retail_rate_module/calc_historical_capex/df_capex_init.csv,.csv,0,sum,region,"i,t,wide",,1,0,,,done
+distPVcap.csv,,.csv,0,sum,Unnamed: 0,wide,,1,0,,,done
+distPVCF_hourly.csv,,.csv,0,mean,Unnamed: 0,wide,,1,0,,,TODO: change to capacity-weighted (using straight mean for now)
+dr_dec.csv,,.csv,0,mean,wide,"i,hour,year",,1,0,,1,done
+dr_decrease.csv,,.csv,0,mean,1,"0,2",,0,,,1,done
+dr_hrs.csv,,.csv,1,,,,,,0,,,done
+dr_inc.csv,,.csv,0,mean,wide,"i,hour,year",,1,0,,1,done
+dr_increase.csv,,.csv,0,mean,1,"0,2",,0,,,1,done
+dr_shed.csv,,.csv,1,,,,,,0,,,done
+dr_shifts.csv,,.csv,1,,,,,,0,,,done
+dr_types.csv,,.csv,1,,,,,,0,,,done
+emit_rate.csv,,.csv,1,,,"e,i,v,r",,0,0,,,done (ReEDS-to-PLEXOS output)
+emit_scale.csv,inputs/carbonconstraints/emit_scale.csv,.csv,1,,,,,,0,,,done
+emitrate.csv,inputs/carbonconstraints/emitrate.csv,.csv,1,,,,,,0,,,done
+ev_dynamic_demand.csv,inputs/loaddata/ev_dynamic_demand.csv,.csv,0,sum,*r,"szn,t",,0,0,,,done
+ev_static_demand.csv,,.csv,0,sum,*r,"h,t",,0,0,,1,done
+eval_period_adj_mult.csv,,.csv,1,,,,,,0,,,done
+financing_risk_mult.csv,,.csv,1,,,,,,0,,,done
+firstyear.csv,inputs/capacitydata/firstyear.csv,.csv,1,,,,,,0,,,done
+flex_frac_all.csv,,.csv,0,mean,r,"*flextype,h,wide",,1,0,,1,done
+forced_retirements.csv,inputs/state_policies/forced_retirements.csv,.csv,0,min,r,"*i,t",,0,0,,,done
+forceperiods.csv,,.csv,1,,,,,,,,,done
+fprice.csv,,.csv,0,mean,r,"t,wide",,1,0,,1,done
+frac_h_quarter_weights.csv,inputs/variability/frac_h_quarter_weights.csv,.csv,1,,,,,,,,,done
+fuel_price.csv,,.csv,1,,,"i,r",,0,0,,,done (ReEDS-to-PLEXOS output)
+futurefiles.csv,,.csv,1,,,,,,0,,,done
+gbin_min.csv,inputs/growth_constraints/gbin_min.csv,.csv,1,,,,,,0,,,done
+gen_mandate_tech_list.csv,,.csv,1,,,,,,0,,,done
+gen_mandate_trajectory.csv,,.csv,1,,,,,,0,,,done
+geo_discovery.csv,,.csv,1,,,,,0,,,,done
+geo_fom.csv,,.csv,0,mean,r,*i,,0,0,,1,done
+geo_fom_mult.csv,,.csv,1,,,0,,0,,,,done
+geo_rsc.csv,,.csv,0,sc_cat,r,*i,,0,0,value,1,done
+geocapcostmult.csv,,.csv,1,,,,,1,0,,,done
+geoexist.csv,,.csv,0,sum,r,*i,,0,0,,1,done
+growth_bin_size_mult.csv,inputs/growth_constraints/growth_bin_size_mult.csv,.csv,1,,,,,,0,,,done
+growth_limit_absolute.csv,inputs/growth_constraints/growth_limit_absolute.csv,.csv,1,,,,,,0,,,done
+growth_penalty.csv,inputs/growth_constraints/growth_penalty.csv,.csv,1,,,,,,0,,,done
+gswitches.csv,,.csv,1,,,,,,0,,,done
+h_actualszn.csv,,.csv,1,,,,,,0,,,done
+h_dt_szn.csv,inputs/variability/h_dt_szn.csv,.csv,1,,,,,,0,,,done
+h_szn.csv,inputs/variability/h_szn.csv,.csv,1,,,,,0,0,,,done
+h_szn_end.csv,inputs/variability/h_szn_end.csv,.csv,1,,,,,,0,,,done
+h_szn_prm.csv,inputs/variability/h_szn_prm.csv,.csv,1,,,,,,0,,,done
+h_szn_start.csv,inputs/variability/h_szn_start.csv,.csv,1,,,,,,0,,,done
+h2_ba_share.csv,inputs/consume/h2_ba_share.csv,.csv,0,sum,*r,t,,0,0,,,done
+h2_compressor_cap_cost_mult.csv,,.csv,1,,,,,,,,1,done
+h2_exogenous_demand.csv,inputs/consume/h2_exogenous_demand.csv,.csv,1,,,p,,1,0,,,done
+h2_pipeline_cap_cost_mult.csv,,.csv,1,,,,,,,,1,done
+h2_storage_cap_cost_mult.csv,,.csv,1,,,,,,,,1,done
+h2_storage_rb.csv,inputs/consume/h2_storage_rb.csv,.csv,0,first,rb,,,0,0,,,done
+h2_transport_and_storage_costs.csv,inputs/consume/h2_transport_and_storage_costs.csv,.csv,1,,,,,,,,,done
+heat_rate.csv,,.csv,1,,,"i,v,r",,0,0,,,done (ReEDS-to-PLEXOS output)
+heat_rate_adj.csv,inputs/plant_characteristics/heat_rate_adj.csv,.csv,1,,,,,,0,,,done
+heat_rate_mult.csv,inputs/waterclimate/heat_rate_mult.csv,.csv,1,,,,,,0,,,done
+heat_rate_penalty_spin.csv,inputs/plant_characteristics/heat_rate_penalty_spin.csv,.csv,1,,,,,,0,,,done
+hierarchy.csv,,.csv,0,first,*r,"nercr,transreg,cendiv,st,interconnect,country,usda_region,aggreg,ccreg",,0,0,,,done
+hintage_data.csv,,.csv,1,,,,,,0,,,done (handled separately in WriteHintage.py)
+hmap_myr.csv,,.csv,1,,,,,,0,,,done
+hmap_7yr.csv,,.csv,1,,,,,,0,,,done
+hour_szn_group.csv,,.csv,1,,,,,,,,,done
+hourly_operational_characteristics.csv,inputs/variability/hourly_operational_characteristics.csv,.csv,1,,,,,,0,,,done
+hourly_szn_end.csv,,.csv,1,,,,,,,,,done
+hourly_szn_start.csv,,.csv,1,,,,,,,,,done
+hours_hourly.csv,,.csv,1,,,,,,,,,done
+hset_hourly.csv,,.csv,1,,,,,,,,,done
+hyd_add_upg_cap.csv,inputs/supplycurvedata/hyd_add_upg_cap.csv,.csv,0,sum,r,"i,rscbin,wide",,1,0,,,done
+hyd_fom.csv,inputs/hydrodata/hyd_fom.csv,.csv,0,mean,wide,i,,1,0,,,done
+hydcf.csv,,.csv,0,mean,r,"*i,szn,t",,0,0,,1,done
+hydcfadj.csv,,.csv,0,mean,r,"*i,szn",,0,0,,1,done
+hydro_mingen.csv,inputs/hydrodata/hydro_mingen.csv,.csv,0,mean,r,"*i,quarter",,0,0,,,might be better to do something capacity-weighted
+hydrocapcostmult.csv,,.csv,1,,,,,1,0,,,done
+hydrofrac_policy.csv,inputs/state_policies/hydrofrac_policy.csv,.csv,1,,st,"RPS_All,CES",,,0,,,done
+i_coolingtech_watersource.csv,inputs/waterclimate/i_coolingtech_watersource.csv,.csv,1,,,,,,0,,,done
+i_coolingtech_watersource_link.csv,inputs/waterclimate/i_coolingtech_watersource_link.csv,.csv,1,,,,,,0,,,done
+i_coolingtech_watersource_upgrades.csv,inputs/upgrades/i_coolingtech_watersource_upgrades.csv,.csv,1,,,,,,0,,,done
+i_coolingtech_watersource_upgrades_link.csv,inputs/upgrades/i_coolingtech_watersource_upgrades_link.csv,.csv,1,,,,,,0,,,done
+ice_fom.csv,inputs/plant_characteristics/ice_fom.csv,.csv,1,,,,,0,,,,done
+index_hr_map.csv,,.csv,1,,,,,,0,,,done
+inflation.csv,,.csv,1,,,,,0,0,,,done
+itc_frac_monetized.csv,,.csv,1,,,,,,0,,,done
+itc_fractions.csv,,.csv,1,,,"i,country,itc_tax_equity_penalty",,0,0,,,done
+ivt.csv,,.csv,1,,,,,,0,,,done
+ivt_default.csv,,.csv,1,,,,,,0,,,done
+ivt_small.csv,,.csv,1,,,,,,0,,,done
+ivt_step.csv,inputs/userinput/ivt_step.csv,.csv,1,,,,,,0,,,done
+load_2010.csv,,.csv,0,sum,r,wide,,1,0,,1,done
+load_allyear.csv,,.csv,0,sum,*r,"h,t",,0,0,,1,done
+load_h_hourly.csv,,.csv,0,sum,r,"h,wide",,1,0,,1,done
+load_hourly.csv,,.csv,0,sum,r,*h,,0,0,,1,done
+load_multiplier.csv,,.csv,1,,,cendiv,,1,0,,,done
+load_multiplier_r.csv,,.csv,1,,,,,1,0,,,done
+maxage.csv,inputs/capacitydata/maxage.csv,.csv,1,,,,,,0,,,done
+methane_leakage_rate.csv,,.csv,1,,,,,0,0,,,done
+mex_growth_rate.csv,inputs/loaddata/mex_growth_rate.csv,.csv,1,,,,,0,,,,done
+min_retire_age.csv,inputs/capacitydata/min_retire_age.csv,.csv,1,,,,,,0,,,done
+minCF.csv,inputs/plant_characteristics/minCF.csv,.csv,1,,,,,,0,,,done
+minloadfrac0.csv,inputs/plant_characteristics/minloadfrac0.csv,.csv,1,,,,,,0,,,done
+modeled_regions.csv,,.csv,1,,,,,,,,,done
+modeledyears.csv,,.csv,1,,,,,,0,,,done
+nat_gen_tech_frac.csv,inputs/national_generation/nat_gen_tech_frac.csv,.csv,1,,,,,,0,,,done
+national_gen_frac_allScen.csv,inputs/national_generation/national_gen_frac_allScen.csv,.csv,1,,,,,1,0,,,done
+national_rps_frac_allScen.csv,inputs/RPSdata/national_rps_frac_allScen.csv,.csv,1,,,,,1,0,,,done
+net_trade_can.csv,,.csv,0,sum,*r,"h,t",,0,0,,1,done
+nexth_actualszn.csv,,.csv,1,,,,,,0,,,done
+ng_crf_penalty.csv,,.csv,1,,,,,0,0,,,done
+ng_crf_penalty_st.csv,inputs/state_policies/ng_crf_penalty_st.csv,.csv,1,ignore,st,"*t,value (CRF_X / CRF_20)",,0,0,,,done
+ng_demand_elec.csv,,.csv,1,,cendiv,,,1,0,,1,done
+ng_demand_tot.csv,,.csv,1,,cendiv,,,1,0,,1,done
+ng_price_cendiv.csv,,.csv,1,,cendiv,,,1,0,,1,done
+nuclear_ba_ban_list.csv,inputs/state_policies/nuclear_ba_ban_list.csv,.csv,0,first,*r,,,0,0,,,done
+nuclear_subsidies.csv,inputs/state_policies/nuclear_subsidies.csv,.csv,1,,*st,year,,0,0,,,done
+nuke_fom_adj.csv,inputs/capacitydata/nuke_fom_adj.csv,.csv,1,,,,,0,,,,done
+numhours.csv,,.csv,1,,,,,,0,,1,done
+offshore_req.csv,,.csv,1,,st,,,1,0,,,done
+ofswind_rsc_mult.csv,,.csv,1,,,,,1,0,,,done
+oosfrac.csv,inputs/state_policies/oosfrac.csv,.csv,1,,*st,,,,0,,,done
+opres_periods.csv,inputs/reserves/opres_periods.csv,.csv,1,,,,,,0,,,done
+orperc.csv,inputs/orperc.csv,.csv,1,,,,,,0,,,done
+outage_forced.csv,inputs/plant_characteristics/outage_forced.csv,.csv,1,,,,,,0,,,done
+outage_planned.csv,inputs/plant_characteristics/outage_planned.csv,.csv,1,,,,,,0,,,done
+peak_h.csv,,.csv,0,sum,r,"h,wide",,1,0,,1,done
+peak_szn.csv,,.csv,0,sum,*r,"szn,t",,0,0,,1,done (ok because it's load during peak NERC hour)
+period_szn.csv,,.csv,1,,,,,,0,,,done
+period_weights.csv,,.csv,1,,,,,,0,,,done
+periodmap_1yr.csv,,.csv,1,,,,,0,0,,,done
+pipeline_cost_mult.csv,inputs/consume/pipeline_cost_mult.csv,.csv,0,trans_lookup,"*r,rr",,,0,0,drop_dup_r,,done
+plantcharout.csv,,.csv,1,,,"0,2",,0,,,,done
+poi_cap_init.csv,,.csv,0,sum,*rb,,,0,0,,1,done
+prescribed_nonRSC.csv,,.csv,0,sum,r,"t,i",,0,0,,1,done
+prescribed_rsc.csv,,.csv,0,sum,r,"t,i",,0,0,,1,done
+prm_annual.csv,,.csv,1,,*nercr,,,0,0,,,done
+psh_sc_duration.csv,,.csv,1,,,,,,,,1,done
+ptc_value_scaled.csv,,.csv,1,mean,,"*i,v,t",,0,0,,,done
+ptc_values.csv,,.csv,1,mean,,"i,v,t,wide",,1,0,,,only for retail
+pv_cf_improve.csv,,.csv,1,,,,,0,,,,done
+pv_frac_of_depreciation.csv,,.csv,1,,,,,,0,,,done
+pvb_bir.csv,,.csv,1,,,,,,0,,,done
+pvb_ilr.csv,,.csv,1,,,,,,0,,,done
+pvbcapcostmult.csv,,.csv,1,,,,,0,0,,,done
+pvf_cap.csv,,.csv,1,,,,,0,,,,done
+pvf_onm_int.csv,,.csv,1,,,,,0,,,,done
+r.csv,,.csv,0,first,0,,,0,,,1,done
+r_cs.csv,inputs/ctus/r_cs.csv,.csv,0,first,*r,cs,,0,0,,,done
+r_cs_distance_mi.csv,inputs/ctus/r_cs_distance_mi.csv,.csv,0,mean,*r,cs,,0,0,,,may need special handling given subset on both r and cs for now should work
+r_rr_adj.csv,inputs/transmission/r_rr_adj.csv,.csv,0,first,"*r,rr",,,0,0,,,done
+ramprate.csv,inputs/plant_characteristics/ramprate.csv,.csv,1,,,,,,0,,,done
+ramptime.csv,inputs/reserves/ramptime.csv,.csv,1,,,,,,0,,,done
+rb.csv,,.csv,0,first,0,,,0,,,1,done
+recstyle.csv,inputs/state_policies/recstyle.csv,.csv,1,,*st,"RPSCat,style",,,0,,,done
+rectable.csv,inputs/state_policies/rectable.csv,.csv,1,,st_st,st,,,0,,,done
+reeds_ba_tz_map.csv,inputs/variability/reeds_ba_tz_map.csv,.csv,0,trans_lookup,r,,,0,0,,,tz of the aggregated region is the tz of the original region with the highest 2010 demand
+reg_cap_cost_mult.csv,,.csv,0,mean,r,*i,,0,0,,1,done
+region_map.csv,inputs/valuestreams/region_map.csv,.csv,1,,,,,,0,,,only for valuestreams
+regions.csv,,.csv,1,,,,,,0,,,not done but only for retail
+resources.csv,,.csv,0,resources,r,"i,ccreg",i,0,0,,1,done
+retire_penalty.csv,inputs/financials/retire_penalty.csv,.csv,1,,,,,,0,,,done
+retirements.csv,,.csv,0,sum,r,"t,i",,0,0,,1,done
+rev_transmission_basecost.csv,inputs/transmission/rev_transmission_basecost.csv,.csv,1,,,,,,0,,,done
+rggi_states.csv,inputs/carbonconstraints/rggi_states.csv,.csv,1,ignore,*st,,,,0,,,done
+rggicon.csv,inputs/carbonconstraints/rggicon.csv,.csv,1,,,,,0,,,,done
+rps_fraction.csv,inputs/state_policies/rps_fraction.csv,.csv,1,,st,st,,1,0,,,done
+rsc_combined.csv,,.csv,0,sc_cat,r,"*i,rscbin",*i,0,0,value,1,done for upv/wind-ons with re-aggregation of bins but CSP/DUPV don't re-aggregate
+rsc_dr.csv,,.csv,0,sc_cat,r,"*tech,rscbin,t",,0,0,value,1,done
+rsc_wsc.csv,,.csv,1,,,,,,0,,,done
+runfiles.csv,runfiles.csv,.csv,1,ignore,ignore,,,0,0,,,so meta
+safe_harbor_max.csv,,.csv,1,,,,,,0,,,done
+scalars.csv,inputs/scalars.csv,.csv,1,,,,,,0,,,done
+set_allh.csv,,.csv,1,,,,,,0,,,done
+set_actualszn.csv,,.csv,1,,,,,,0,,,done
+set_allszn.csv,,.csv,1,,,,,,0,,,done
+set_h.csv,inputs/variability/set_h.csv,.csv,1,,,,,,,,,done
+set_szn.csv,inputs/variability/set_szn.csv,.csv,1,,,,,,,,,done
+site_bin_map.csv,,.csv,1,,,,,,0,,,done
+spur_parameters.csv,,.csv,1,,,,,,0,,,"TODO (only used for plotting so ignoring for now, but should be fixed)"
+spurline_cost.csv,,.csv,1,,,,,,0,,,done
+spurline_sitemap.csv,,.csv,1,,,,,,0,,,handled in writesupplycurves.py
+state_cap.csv,inputs/carbonconstraints/state_cap.csv,.csv,1,,*st,t,,0,0,,,done
+storage_duration.csv,inputs/storagedata/storage_duration.csv,.csv,1,,,,,,0,,,done
+storage_duration_pshdata.csv,inputs/storagedata/storage_duration_pshdata.csv,.csv,0,mean,r,"*i,v",,0,0,,,probably better to do something capacity-weighted
+storage_mandates.csv,inputs/state_policies/storage_mandates.csv,.csv,1,,*st,t,,0,0,,,done
+storinmaxfrac.csv,inputs/storagedata/storinmaxfrac.csv,.csv,0,mean,r,"*i,v",,0,0,,,done
+superpeak_hour_mapper.csv,inputs/variability/superpeak_hour_mapper.csv,.csv,1,,,,,,0,,,done
+switches.csv,,.csv,1,,,,,,0,,,done
+tax_rate.csv,,.csv,1,,,,,,0,,,done
+tc_phaseout_schedule.csv,,.csv,1,,,,,,0,,,done
+tech_resourceclass.csv,inputs/techs/tech_resourceclass.csv,.csv,1,,,,,,0,,,done
+techs_banned.csv,inputs/state_policies/techs_banned.csv,.csv,1,,wide_st,i,,,0,,,done
+techs_banned_ces.csv,inputs/state_policies/techs_banned_ces.csv,.csv,1,,wide_st,i,,,0,,,done
+techs_banned_imports_rps.csv,inputs/state_policies/techs_banned_imports_rps.csv,.csv,1,,wide_st,i,,,0,,,done
+techs_banned_rps.csv,inputs/state_policies/techs_banned_rps.csv,.csv,1,,wide_st,i,,,0,,,done
+tech-subset-table.csv,inputs/tech-subset-table.csv,.csv,1,,,,,,0,,,done
+tg_rsc_cspagg_tmp.csv,inputs/waterclimate/tg_rsc_cspagg_tmp.csv,.csv,1,,,,,,0,,,done
+threads.csv,,.csv,1,,,,,,0,,,done
+timestamps.csv,,.csv,1,,,,,,0,,,done
+trancap_fut.csv,,.csv,0,sum,"*r,rr","status,trtype,t",,0,0,drop_dup_r,1,done
+trancap_init_energy.csv,,.csv,0,sum,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+trancap_init_prm.csv,,.csv,0,sum,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+tranloss.csv,,.csv,0,trans_lookup,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+trans_cap_cost_mult.csv,,.csv,1,,,,,0,0,,,done
+trans_cap_cost_mult_noITC.csv,,.csv,1,,,,,0,0,,,done
+trans_intra_cost_adder.csv,inputs/supplycurvedata/trans_intra_cost_adder.csv,.csv,1,,,,,,0,,,done
+trans_itc_fractions.csv,,.csv,1,,,,,,0,,,done
+transmission_capacity_initial.csv,inputs/transmission/transmission_capacity_initial.csv,.csv,1,,,,,,0,,,not done but only used for retail
+transmission_distance.csv,,.csv,0,trans_lookup,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+transmission_line_capcost.csv,,.csv,0,trans_lookup,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+transmission_line_fom.csv,,.csv,0,trans_lookup,"*r,rr",trtype,,0,0,drop_dup_r,1,done
+unapp_water_sea_distr.csv,inputs/waterclimate/unapp_water_sea_distr.csv,.csv,0,mean,r,"wst,wide",,1,0,,,done
+unbundled_limit_ces.csv,inputs/state_policies/unbundled_limit_ces.csv,.csv,1,,st,,,,0,,,done
+unbundled_limit_rps.csv,inputs/state_policies/unbundled_limit_rps.csv,.csv,1,,st,,,,0,,,done
+upv_exog_cap.csv,,.csv,1,sum,r,"*i,t",,0,0,,1,handled in writesupplycurves.py
+upgrade_costs_ccs_coal.csv,,.csv,1,,,,,,0,,,done
+upgrade_costs_ccs_gas.csv,,.csv,1,,,,,,0,,,done
+upgrade_link.csv,inputs/upgrades/upgrade_link.csv,.csv,1,,,,,,0,,,done
+upgrade_mult.csv,inputs/upgrades/upgrade_mult.csv,.csv,1,,,,,,0,,,done
+upgrade_mult_atb23_ccs_adv.csv,inputs/upgrades/upgrade_mult_atb23_ccs_adv.csv,.csv,1,,,,,,0,,,done
+upgrade_mult_atb23_ccs_con.csv,inputs/upgrades/upgrade_mult_atb23_ccs_con.csv,.csv,1,,,,,,0,,,done
+upgrade_mult_atb23_ccs_mid.csv,inputs/upgrades/upgrade_mult_atb23_ccs_mid.csv,.csv,1,,,,,,0,,,done
+upgrade_mult_reduced.csv,inputs/upgrades/upgrade_mult_reduced.csv,.csv,1,,,,,,0,,,done
+upgradelink_water.csv,inputs/upgrades/upgradelink_water.csv,.csv,1,,,,,,0,,,done
+unitdata.csv,,.csv,1,,,,,,0,,,done
+unitsize.csv,inputs/plant_characteristics/unitsize.csv,.csv,1,,,,,,0,,,done
+va_ng_crf_penalty.csv,,.csv,1,,,,,0,0,,,done
+val_aggreg.csv,,.csv,1,,,,,0,none,,,done
+val_cendiv.csv,,.csv,1,,,,,0,none,,,done
+val_country.csv,,.csv,1,,,,,0,none,,,done
+val_cs.csv,,.csv,1,,,,,0,none,,,done
+val_interconnect.csv,,.csv,1,,,,,0,none,,,done
+val_nercr.csv,,.csv,1,,,,,0,none,,,done
+val_r.csv,,.csv,0,first,0,,,0,none,,1,done
+val_st.csv,,.csv,1,,,,,0,none,,,done
+val_transgrp.csv,,.csv,1,,,,,0,none,,,done
+val_transreg.csv,,.csv,1,,,,,0,none,,,done
+val_usda_region.csv,,.csv,1,,,,,0,none,,,done
+var_map.csv,inputs/valuestreams/var_map.csv,.csv,1,,,,,,0,,,done
+wat_access_cap_cost.csv,inputs/waterclimate/wat_access_cap_cost.csv,.csv,0,sc_cat,r,*wst,,0,0,value,,done
+water_req_psh_10h_1_51.csv,inputs/waterclimate/water_req_psh_10h_1_51.csv,.csv,0,mean,r,wide,,1,0,,,done
+water_with_cons_rate.csv,inputs/waterclimate/water_with_cons_rate.csv,.csv,0,mean,wide,"i,ctt,w",,1,0,,,done
+wind_retirements.csv,,.csv,0,sum,r,"i,v,wide",,1,0,,1,done
+windcfmult.csv,,.csv,1,,,,,1,0,,,done
+wind-ofs_prescribed_builds.csv,,.csv,0,sum,region,year,,0,0,,,done
+wind-ons_exog_cap.csv,,.csv,1,sum,r,"*i,t",,0,0,,1,handled in writesupplycurves.py
+wind-ons_prescribed_builds.csv,,.csv,0,sum,region,year,,0,0,,,done
+windows_2100.csv,,.csv,1,,,,,,0,,,done
+windows_default.csv,,.csv,1,,,,,,0,,,done
+windows_step10.csv,,.csv,1,,,,,,0,,,done
+windows_step5.csv,,.csv,1,,,,,,0,,,done
+x.csv,,.csv,1,,,,,,0,,,done
+x_r.csv,,.csv,1,first,"*x,r",,,0,0,,1,handled in writesupplycurves.py
+inputs.gdx,,.gdx,1,,,,,,0,,,done
+plexos_inputs.gdx,,.gdx,1,,,,,,0,,,done
+can_trade_8760.h5,,.h5,0,sum,r,"h,t",,0,0,,1,done (but weird that it ends up with more values)
+load.h5,,.h5,0,sum,wide,"year,hour",,1,keepindex,,1,done
+recf.h5,,.h5,0,recf,wide,index,index,1,keepindex,,1,done
+csp.h5,,.h5,0,recf,wide,index,index,1,keepindex,,1,done
+retail_cap_cost_mult.h5,,.h5,0,mean,r,"i,t",,0,0,,1,done
+retail_depreciation_sch.h5,,.h5,1,mode,,"i,t",,0,0,,,done
+retail_eval_period.h5,,.h5,1,mode,,"i,t",,0,0,,,done
+gswitches.txt,,.txt,1,,,,,,0,,,done
+scalars.txt,,.txt,1,,,,,,0,,,done
+Augur.py,Augur.py,,1,,,,,,,,,done
+Project.toml,Project.toml,,1,,,,,,,,,done
+augurbatch.py,augurbatch.py,,1,,,,,,,,,done
+b_inputs.gms,b_inputs.gms,,1,,,,,,,,,done
+c_supplymodel.gms,c_supplymodel.gms,,1,,,,,,,,,done
+c_supplyobjective.gms,c_supplyobjective.gms,,1,,,,,,,,,done
+cbc.opt,cbc.opt,,1,,,,,,,,,done
+cplex.op2,cplex.op2,,1,,,,,,,,,done
+cplex.op3,cplex.op3,,1,,,,,,,,,done
+cplex.op4,cplex.op4,,1,,,,,,,,,done
+cplex.opt,cplex.opt,,1,,,,,,,,,done
+createmodel.gms,createmodel.gms,,1,,,,,,,,,done
+d_solveallyears.gms,d_solveallyears.gms,,1,,,,,,,,,done
+d_solveoneyear.gms,d_solveoneyear.gms,,1,,,,,,,,,done
+d_solve_iterate.py,d_solve_iterate.py,,1,,,,,,,,,done
+d_solveprep.gms,d_solveprep.gms,,1,,,,,,,,,done
+d_solvewindow.gms,d_solvewindow.gms,,1,,,,,,,,,done
+d1_temporal_params.gms,d1_temporal_params.gms,,1,,,,,,,,,done
+d2_varfix.gms,d2_varfix.gms,,1,,,,,,,,,done
+d3_augur_data_dump.gms,d3_augur_data_dump.gms,,1,,,,,,,,,done
+dump_alldata.gms,dump_alldata.gms,,1,,,,,,,,,done
+e_ccsflex.gms,e_ccsflex.gms,,1,,,,,,,,,done
+e_powfrac_calc.gms,e_powfrac_calc.gms,,1,,,,,,,,,done
+e_report.gms,e_report.gms,,1,,,,,,,,,done
+e_report_dump.py,e_report_dump.py,,1,,,,,,,,,done
+e_report_params.csv,e_report_params.csv,,1,,,,,,,,,done
+gamslice.txt,gamslice.txt,,1,,,,,,,,,done
+gurobi.opt,gurobi.opt,,1,,,,,,,,,done
+transmission_line_cost.csv,inputs/transmission/transmission_line_cost.csv,,1,,,,,,,,,done
+interim_report.py,interim_report.py,,1,,,,,,,,,done
+raw_value_streams.py,raw_value_streams.py,,1,,,,,,,,,done
+tc_phaseout.py,tc_phaseout.py,,1,,,,,,,,,done
+utilities.py,utilities.py,,1,,,,,,,,,done
+valuestreams.gms,valuestreams.gms,,1,,,,,,,,,done
+valuestreams.py,valuestreams.py,,1,,,,,,,,,done

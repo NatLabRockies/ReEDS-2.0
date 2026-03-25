@@ -1,0 +1,83 @@
+Residential Retired Equipment Efficiencies of 2009 stock																																								
+Last Modified: August 2014 Tech Update	
+Definition:    Efficiencies for each of the residential equipment																																								
+               classes in forecasted years.																																								
+Units:         Dimensionless (energy out/energy in) except 																																								
+               refrigerators, freezers, dryers (UECs in kWh/yr)																																								
+               Source: Navigant Consulting, Fourth DRAFT EIA - Technology Forecast Updates – Residential and Commercial Building Technologies – Reference Case  	
+																																								
+																																								
+Comments:      Values in this table give the average efficiencies of																																								
+               equipment expected to be retired from the initial RECS stock in each projection year.  																																								
+               The columns represent years 2010-2050.																																								
+                 
+																																								
+																																								
+																																								
+																																								
+       																																								
+																																								
+2010	2011	2012	2013	2014	2015	2016	2017	2018	2019	2020	2021	2022	2023	2024	2025	2026	2027	2028	2029	2030	2031	2032	2033	2034	2035	2036	2037	2038	2039	2040	2041	2042	2043	2044	2045	2046	2047	2048	2049	2050
+ 41*0.990
+ 41*2.23
+ 41*0.78
+ 41*0.80
+ 41*0.80
+ 41*0.78
+ 41*0.80
+ 41*0.80
+ 41*0.65
+ 41*3.0
+ 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 	 1.300 
+ 41*2.70
+ 41*3.34
+ 41*3.52
+ 41*12.3
+ 41*.6
+ 41*.26
+ 41*0.69
+ 41*0.591
+ 41*0.892
+ 41*0.5
+ 41*.591
+ 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 	 1.000 
+ 41*0.385
+ 41*0.385
+ 41*601.0
+ 41*3.14
+ 41*3.55
+ 41*659.
+ 41*568.
+																																								
+																																								
+<---Rows are listed in this order--->																																								
+Electric Furnaces																																								
+Air Source Heat Pumps (heat)																																								
+Natural Gas Furnaces																																								
+Natural Gas Other																																								
+Kerosene Furnaces																																								
+LPG Furnaces																																								
+Distillate Furnaces																																								
+Distillate Other																																								
+Wood Stoves																																								
+Ground Source Heat Pumps (heat)																																								
+Natural Gas Heat Pumps (heat)																																								
+Room Air Conditioners																																								
+Central Air Conditioners																																								
+Air Source Heat Pumps (cool)																																								
+Ground Source Heat Pumps (cool)																																								
+Natural Gas Heat Pumps (cool)																																								
+Clothes Washers																																								
+Dishwashers																																								
+Natural Gas Water Heaters																																								
+Electric Water Heaters																																								
+Distillate Water Heaters																																								
+LPG Water Heaters																																								
+Solar Water Heaters																																								
+Natural Gas Stoves																																								
+LPG Stoves																																								
+Electric Stoves																																								
+Natural Gas Dryers																																								
+Electric Dryers																																								
+Refrigerators																																								
+Freezers																																								
