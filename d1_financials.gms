@@ -190,12 +190,13 @@ cost_cap_fin_mult_nuclear_stor_s_no_credits(i,r,t)$nuclear_stor(i) = sum{ii$ nuc
 * financing_risk_mult is a simple multiplicative factor in cost_cap_fin_mult and _noITC,
 * so the adjustment is: adjusted_s = s * (nuclear_risk / storage_risk).
 * _no_credits does not include financing_risk_mult, so no adjustment is needed.
-cost_cap_fin_mult_nuclear_stor_s(i,r,t)$nuclear_stor(i) =
+* Guard: skip adjustment if the storage tech has no financing_risk_mult (avoids division by zero).
+cost_cap_fin_mult_nuclear_stor_s(i,r,t)$[nuclear_stor(i)$sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)}] =
     cost_cap_fin_mult_nuclear_stor_s(i,r,t)
     * sum{ii$nuclear_stor_gentech(i,ii), financing_risk_mult(ii,t)}
     / sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)} ;
 
-cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$nuclear_stor(i) =
+cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)$[nuclear_stor(i)$sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)}] =
     cost_cap_fin_mult_nuclear_stor_s_noITC(i,r,t)
     * sum{ii$nuclear_stor_gentech(i,ii), financing_risk_mult(ii,t)}
     / sum{ii$nuclear_stor_stortech(i,ii), financing_risk_mult(ii,t)} ;
