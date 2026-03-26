@@ -651,7 +651,9 @@ gen_h_nat(i,h,t)$tmodel_new(t) = sum{r, gen_h(i,r,h,t) } ;
 gen_h_stress(i,r,allh,t)$[tmodel_new(t)$valgen_irt(i,r,t)$h_stress_t(allh,t)] =
   sum{v$valgen(i,v,r,t), GEN.l(i,v,r,allh,t)
 * less storage charging
-      - STORAGE_IN.l(i,v,r,allh,t)$[storage_standalone(i) or hyd_add_pump(i)] }
+      - STORAGE_IN.l(i,v,r,allh,t)$[storage_standalone(i) or hyd_add_pump(i)]
+* less storage charging for hybrid storage
+      - STORAGE_IN_GRID.l(i,v,r,allh,t)$storage_hybrid(i) }
 * less load from hydrogen production
   - sum{(v,p)$[consume(i)$valcap(i,v,r,t)$i_p(i,p)],
         PRODUCE.l(p,i,v,r,allh,t) / prod_conversion_rate(i,v,r,t)}$Sw_Prod
@@ -1318,7 +1320,7 @@ systemcost_techba("inv_investment_capacity_costs",i,r,t)$tmodel_new(t) =
               sum{v$valinv(i,v,r,t),
                    INV.l(i,v,r,t) * (cost_cap_fin_mult_noITC(i,r,t) * cost_cap(i,t) ) }
 *plus investment energy costs (without the subtraction of any ITC/PTC value)
-              + sum{v$[valinv(i,v,r,t)$(battery(i) or tes(i))],
+              + sum{v$[valinv(i,v,r,t)$(battery(i) or tes(i) or nuclear_stor(i))],
                    INV_ENERGY.l(i,v,r,t) * (cost_cap_fin_mult_noITC(i,r,t) * cost_cap_energy(i,t) ) }
 *plus supply curve adjustment to capital cost (separated in outputs but part of m_rsc_dat(r,i,rscbin,"cost"))
               + sum{(v,rscbin)$[m_rscfeas(r,i,rscbin)$valinv(i,v,r,t)$rsc_i(i)$[not sccapcosttech(i)]$(not spur_techs(i))],
@@ -1420,9 +1422,17 @@ systemcost_techba("inv_investment_water_access",i,r,t)$tmodel_new(t) =
 * DOES NOT INCLUDE COSTS NOT INDEXED BY TECH (e.g., ACP COMPLIANCE)
 
 systemcost_techba("op_vom_costs",i,r,t)$tmodel_new(t)  =
-*variable O&M costs
-              sum{(v,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)],
+*variable O&M costs (non-hybrid and non-nuclear_stor)
+              sum{(v,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)$(not nuclear_stor(i))],
                    hours(h) * cost_vom(i,v,r,t) * GEN.l(i,v,r,h,t) }
+
+* nuclear_stor plant-side VOM (uses GEN_PLANT, matching objective function)
+              + sum{(v,h)$[valgen(i,v,r,t)$cost_vom(i,v,r,t)$nuclear_stor(i)],
+                   hours(h) * cost_vom(i,v,r,t) * GEN_PLANT.l(i,v,r,h,t) }$Sw_HybridPlant
+
+* nuclear_stor storage-side VOM (uses GEN_STORAGE, matching objective function)
+              + sum{(v,h)$[valgen(i,v,r,t)$cost_vom_nuclear_stor_s(i,v,r,t)$nuclear_stor(i)],
+                   hours(h) * cost_vom_nuclear_stor_s(i,v,r,t) * GEN_STORAGE.l(i,v,r,h,t) }$Sw_HybridPlant
 
 * include production costs from production technologies
               + sum{(p,v,h)$[(h2(i) or dac(i))$valcap(i,v,r,t)$i_p(i,p)],
@@ -1455,10 +1465,13 @@ systemcost_techba("op_operating_reserve_costs",i,r,t)$tmodel_new(t)  =
 
 systemcost_techba("op_fuelcosts_objfn",i,r,t)$tmodel_new(t)  =
 *cost of coal and nuclear fuel (except coal used for cofiring)
+*for nuclear_stor, only the plant side burns fuel (use GEN_PLANT, matching objective function)
               + sum{(v,h)$[valgen(i,v,r,t)$heat_rate(i,v,r,t)
                          $(not gas(i))$(not bio(i))$(not cofire(i))
                          $((not h2_combustion(i)) or h2_combustion(i)$[(Sw_H2=0) or h_stress(h)])],
-                   hours(h) * heat_rate(i,v,r,t) * fuel_price(i,r,t) * GEN.l(i,v,r,h,t) }
+                   hours(h) * heat_rate(i,v,r,t) * fuel_price(i,r,t)
+                   * ( GEN.l(i,v,r,h,t)$(not nuclear_stor(i))
+                     + GEN_PLANT.l(i,v,r,h,t)$nuclear_stor(i) ) }
 
 *cofire coal consumption - cofire bio consumption already accounted for in accounting of BIOUSED
               + sum{(v,h)$[valgen(i,v,r,t)$cofire(i)$heat_rate(i,v,r,t)],
@@ -1476,8 +1489,12 @@ systemcost_techba("op_fuelcosts_objfn",i,r,t)$tmodel_new(t)  =
 
 systemcost_techba("op_emissions_taxes",i,r,t)$tmodel_new(t)  =
 *plus any taxes on emissions
+*for nuclear_stor, only the plant side emits (use GEN_PLANT, matching objective function)
               sum{(e,v,h)$[valgen(i,v,r,t)],
-                    hours(h) * (emit_rate("process",e,i,v,r,t) + emit_rate("upstream",e,i,v,r,t)$Sw_Upstream) * GEN.l(i,v,r,h,t) * emit_tax(e,r,t) }
+                    hours(h) * (emit_rate("process",e,i,v,r,t) + emit_rate("upstream",e,i,v,r,t)$Sw_Upstream)
+                    * ( GEN.l(i,v,r,h,t)$(not nuclear_stor(i))
+                      + GEN_PLANT.l(i,v,r,h,t)$nuclear_stor(i) )
+                    * emit_tax(e,r,t) }
 ;
 
 systemcost_techba("op_h2_fuel_costs",i,r,t)$tmodel_new(t)  =

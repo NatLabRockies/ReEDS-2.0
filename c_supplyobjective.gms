@@ -39,7 +39,7 @@ eq_ObjFn_inv(t)$tmodel(t)..
                        cost_cap_fin_mult(i,r,t) * cost_cap(i,t) * INV(i,v,r,t)
                       }
 
-                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i))],
+                  + sum{(i,v,r)$[valinv(i,v,r,t)$(battery(i) or tes(i))$(not nuclear_stor(i))],
                                                         cost_cap_fin_mult(i,r,t) * cost_cap_energy(i,t) * INV_ENERGY(i,v,r,t)
                       }
 
