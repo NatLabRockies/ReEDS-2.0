@@ -18,6 +18,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
 
 
+
+
 #%% ===========================================================================
 ### --- General Read Functions---
 ### ===========================================================================
@@ -1165,7 +1167,11 @@ def write_county_vre_hourly_profiles(inputs_case, reeds_path):
     present_in_fv = 0
     file_version_updates = 0
     missing_file_versions = []
+    # github runner test settings
+    # tries to get environment variable from github, if it's not found it defaults to False
+    github_test = os.getenv("GITHUB_COUNTY_TEST", False)
     for i,row in profile_data.iterrows():
+        techlabel = f"{row.tech}{'_radial' if row.tech == 'wind-ofs' else ''}"
         # If the profile is already present, do nothing
         if row['present'] is True:
             present_in_fv += 1
@@ -1186,14 +1192,8 @@ def write_county_vre_hourly_profiles(inputs_case, reeds_path):
             access_case = row['access_case']
             # If NLR user, then attempt to copy data from the remote location defined in
             # rev_paths.csv.
-
-            # github runner test settings
-            # tries to get environment variable from github, if it's not found it defaults to False
-            github_test = os.getenv("GITHUB_COUNTY_TEST", False)
-
             if 'github.nrel.gov' in remote_url:
                 sc_path = row['sc_path']
-                techlabel = f"{row.tech}{'_radial' if row.tech == 'wind-ofs' else ''}"
                 print(f'Copying county-level hourly profiles for {techlabel} {row["access_case"]}')
 
                 if github_test:
@@ -1244,15 +1244,27 @@ def write_county_vre_hourly_profiles(inputs_case, reeds_path):
                     file_version_new = pd.concat([file_version_new, newrow])
                 file_version_updates += 1
 
-            # If non-NLR user, then save the name of the missing file, and write it out
+            # If non-NLR user, CHECK IF THE FILES EXISTS then save the name of the missing file, and write it out
             # in the error message below
             else:
-                missing_file_versions.append(f'{row["tech"]}-{access_case}_county.h5')
+                # expected file path
+                fpath = os.path.join(
+                        reeds_path,'inputs','variability','multi_year',
+                        f'{techlabel}-{access_case}_county.h5',
+                    )
+                if os.path.exists(fpath):
+                    continue
+                else:
+                    print(
+                        f"File not found at {fpath}.\n"
+                    )
+                    missing_file_versions.append(f'{row["tech"]}-{access_case}_county.h5')
+
     # If any county-level file is missing from the inputs folder but a file_version.csv exists,
     # then print out an error message to delete the file_version.csv and restart the run
     if (existing_fv) and (present_in_fv < 1):
         error = ("It appears that there is a file_version.csv present in\n"
-            "/inputs/variability/multi-year/ despite a county-level file(s) missing\n"
+            "/inputs/variability/multi_year/ despite a county-level file(s) missing\n"
             "from the folder. Delete file_version.csv from the folder and restart the run\n"
             "to have ReEDS redownload the missing county-level file(s)."
         )
@@ -1261,7 +1273,7 @@ def write_county_vre_hourly_profiles(inputs_case, reeds_path):
     # file names and where to download them
     if len(missing_file_versions) > 0:
         error = ("To run ReEDS at county-level spatial resolution, please download the following\n"
-            "county-level data files from OpenEI to /inputs/variability/multi-year/\n\n"
+            "county-level data files from OpenEI to /inputs/variability/multi_year/\n\n"
             "Files:\n"
             +"\n".join(missing_file_versions)+"\n\n"
             +"OpenEI files link:\n"
