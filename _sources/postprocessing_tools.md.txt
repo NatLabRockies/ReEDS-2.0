@@ -34,9 +34,9 @@ For example, since the dimensions are "policy", "demand", and "sensitivity":
 
 This script takes as its required argument a filepath to a completed ReEDS case.
 
-- If the optional `-r/--rep` flag is added (as in `python preprocessing/get_case_periods.py path/to/casename -r`), the representative periods for the provided run are written to `inputs/variability/period_szn_user_{name}.csv`, where `name` is either provided by the `-n/--name` argument or (if no name is provided) given by the case name.
+- If the optional `-r/--rep` flag is added (as in `python preprocessing/get_case_periods.py path/to/casename -r`), the representative periods for the provided run are written to `inputs/temporal/period_szn_user_{name}.csv`, where `name` is either provided by the `-n/--name` argument or (if no name is provided) given by the case name.
   - In a subsequent case, these representative periods can be used by setting `GSw_HourlyClusterAlgorithm` to `user_{name}`.
-- If the optional `-s/--stress` flag is added, the stress periods for the provided run are written to `inputs/variability/stressperiods_user_{name}.csv`.
+- If the optional `-s/--stress` flag is added, the stress periods for the provided run are written to `inputs/temporal/stressperiods_user_{name}.csv`.
   - In a subsequent case, these stress periods can be used by setting `GSw_PRM_StressModel` to `user_{name}`.
 
 ## Managing currently-running cases

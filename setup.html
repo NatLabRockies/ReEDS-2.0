@@ -62,7 +62,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#running-reeds">Running ReEDS</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#understanding-cases-csv">Understanding cases.csv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#county-resolution-data">County Resolution Data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#additional-resources">Additional Resources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nlr-specific-setup">NLR Specific Setup</a></li>
 </ul>
@@ -364,11 +363,6 @@
 </ul>
 <p>The user may also create custom case configuration files by using the suffix in the file name (e.g., “cases_smalltests.csv”). It should follow the same column formatting as cases.csv, but does not need to include all available switches.</p>
 </section>
-<section id="county-resolution-data">
-<h3>County Resolution Data<a class="headerlink" href="#county-resolution-data" title="Link to this heading"></a></h3>
-<p>For non-NLR users, some additional data is required to run the ReEDS model at the ‘county’ spatial resolution. This is currently considered a special case and some data was required to be kept outside the ReEDS repository because the data is simply too large. The hourly renewable capacity factor data is now available to all at: <a class="reference external" href="https://data.openei.org/submissions/5986">https://data.openei.org/submissions/5986</a>.</p>
-<p>If you would like to run the model at county resolution, download the files available from the link provided, unzip each folder, and place the files obtained into inputs/variability/multi-year in your locally cloned ReEDS repository. The input_processing scripts have also been updated to check for these files for any county-level runs. The ‘cases_spatialflex.csv’ file provides examples of specific switch settings to run ReEDS at county-level.</p>
-</section>
 <section id="additional-resources">
 <h3>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading"></a></h3>
 <p>NLR has a YouTube channel that contains tutorial videos for ReEDS. The following are recommended videos for getting started with ReEDS:</p>
@@ -413,7 +407,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on February 02, 2026.
+      <span class="lastupdated">Last updated on March 26, 2026.
       </span></p>
   </div>
 

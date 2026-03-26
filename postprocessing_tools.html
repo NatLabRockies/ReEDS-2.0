@@ -141,12 +141,12 @@ For example, since the dimensions are “policy”, “demand”, and “sensiti
 <h3>Fix representative/stress periods: <code class="docutils literal notranslate"><span class="pre">preprocessing/get_case_periods.py</span></code><a class="headerlink" href="#fix-representative-stress-periods-preprocessing-get-case-periods-py" title="Link to this heading"></a></h3>
 <p>This script takes as its required argument a filepath to a completed ReEDS case.</p>
 <ul class="simple">
-<li><p>If the optional <code class="docutils literal notranslate"><span class="pre">-r/--rep</span></code> flag is added (as in <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">preprocessing/get_case_periods.py</span> <span class="pre">path/to/casename</span> <span class="pre">-r</span></code>), the representative periods for the provided run are written to <code class="docutils literal notranslate"><span class="pre">inputs/variability/period_szn_user_{name}.csv</span></code>, where <code class="docutils literal notranslate"><span class="pre">name</span></code> is either provided by the <code class="docutils literal notranslate"><span class="pre">-n/--name</span></code> argument or (if no name is provided) given by the case name.</p>
+<li><p>If the optional <code class="docutils literal notranslate"><span class="pre">-r/--rep</span></code> flag is added (as in <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">preprocessing/get_case_periods.py</span> <span class="pre">path/to/casename</span> <span class="pre">-r</span></code>), the representative periods for the provided run are written to <code class="docutils literal notranslate"><span class="pre">inputs/temporal/period_szn_user_{name}.csv</span></code>, where <code class="docutils literal notranslate"><span class="pre">name</span></code> is either provided by the <code class="docutils literal notranslate"><span class="pre">-n/--name</span></code> argument or (if no name is provided) given by the case name.</p>
 <ul>
 <li><p>In a subsequent case, these representative periods can be used by setting <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code> to <code class="docutils literal notranslate"><span class="pre">user_{name}</span></code>.</p></li>
 </ul>
 </li>
-<li><p>If the optional <code class="docutils literal notranslate"><span class="pre">-s/--stress</span></code> flag is added, the stress periods for the provided run are written to <code class="docutils literal notranslate"><span class="pre">inputs/variability/stressperiods_user_{name}.csv</span></code>.</p>
+<li><p>If the optional <code class="docutils literal notranslate"><span class="pre">-s/--stress</span></code> flag is added, the stress periods for the provided run are written to <code class="docutils literal notranslate"><span class="pre">inputs/temporal/stressperiods_user_{name}.csv</span></code>.</p>
 <ul>
 <li><p>In a subsequent case, these stress periods can be used by setting <code class="docutils literal notranslate"><span class="pre">GSw_PRM_StressModel</span></code> to <code class="docutils literal notranslate"><span class="pre">user_{name}</span></code>.</p></li>
 </ul>
@@ -251,7 +251,7 @@ For more information on how to use bokehpivot, see the <a class="reference inter
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on February 02, 2026.
+      <span class="lastupdated">Last updated on March 26, 2026.
       </span></p>
   </div>
 

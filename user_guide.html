@@ -57,6 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="developer_best_practices.html">Developer Resources</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_documentation.html">Model Documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#large-input-files">Large input files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#temporal-resolution">Temporal resolution</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#temporal-resolution-switches">Temporal resolution switches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#conventions">Conventions</a></li>
@@ -152,6 +153,31 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="user-guide">
 <h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
+<section id="large-input-files">
+<h2>Large input files<a class="headerlink" href="#large-input-files" title="Link to this heading"></a></h2>
+<p>Large input files,
+including hourly electricity demand projections and hourly capacity factor profiles for solar and wind,
+are hosted remotely.
+The URLs for the remote files are stored in <code class="docutils literal notranslate"><span class="pre">inputs/remote_files.csv</span></code>.
+At the start of a ReEDS run (or when running <code class="docutils literal notranslate"><span class="pre">reeds/remote.py</span></code>),
+if the required files are not already present,
+they are downloaded from the host to <code class="docutils literal notranslate"><span class="pre">inputs/remote</span></code>.
+The name of each file in <code class="docutils literal notranslate"><span class="pre">inputs/remote</span></code> ends with the <code class="docutils literal notranslate"><span class="pre">record_id</span></code> from <code class="docutils literal notranslate"><span class="pre">inputs/remote_files.csv</span></code>;
+multiple different versions of a single file can thus be kept in the <code class="docutils literal notranslate"><span class="pre">inputs/remote</span></code> folder to help avoid unnecessary downloads when switching between branches or commits that reference different versions of the file.
+During a ReEDS run, links to the versions used by the present commit are saved to <code class="docutils literal notranslate"><span class="pre">inputs/profiles_cf</span></code> and <code class="docutils literal notranslate"><span class="pre">inputs/profiles_demand</span></code>, without the <code class="docutils literal notranslate"><span class="pre">record_id</span></code>.
+Code within ReEDS should generally point to the links in <code class="docutils literal notranslate"><span class="pre">inputs/profiles_cf</span></code> and <code class="docutils literal notranslate"><span class="pre">inputs/profiles_demand</span></code> instead of to a specific version of a record.</p>
+<p>Here is partial list of remotely hosted files used by ReEDS:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://zenodo.org/records/18407659">ReEDS: Utility-scale PV profiles</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18421976">ReEDS: Distributed PV profiles</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18422199">ReEDS: Land-based wind profiles</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18423722">ReEDS: Offshore wind profiles</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18435263">ReEDS: Electricity demand profiles 2025</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18423997">ReEDS: Electricity demand profiles 2023</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18461542">ReEDS: Electricity demand profiles 2022</a></p></li>
+<li><p><a class="reference external" href="https://zenodo.org/records/18462670">ReEDS: Historic electricity demand profiles</a></p></li>
+</ul>
+</section>
 <section id="temporal-resolution">
 <h2>Temporal resolution<a class="headerlink" href="#temporal-resolution" title="Link to this heading"></a></h2>
 <section id="temporal-resolution-switches">
@@ -182,12 +208,12 @@
 </div>
 <ul class="simple">
 <li><p>If set to ‘optimized’, then a two-step custom optimization is performed using the <code class="docutils literal notranslate"><span class="pre">hourly_repperiods.optimize_period_weights()</span></code> and <code class="docutils literal notranslate"><span class="pre">hourly_repperiods.assign_representative_days()</span></code> functions to minimize the deviation in regional load and PV/wind CF between the weighted representative periods and the full year.</p></li>
-<li><p>If set to a string containing the substring ‘user’, then instead of optimizing the choice of representative periods for this run, we read them from the inputs/variability/period_szn_user.csv file.</p>
+<li><p>If set to a string containing the substring ‘user’, then instead of optimizing the choice of representative periods for this run, we read them from the inputs/temporal/period_szn_user.csv file.</p>
 <ul>
 <li><p>The scenario name is in the first column, labeled ‘scenario’. ReEDS will use rows with the same label as <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code>.</p>
 <ul>
 <li><p>So if you want to use the example period:szn map, just set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm=user</span></code>.</p></li>
-<li><p>If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/variability/period_szn_user.csv with a unique scenario name in the ‘scenario’ column, and set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code> to your unique scenario name, <em>which must contain the substring ‘user’</em>. (For example, I could use a mapping called ‘user_myname_20230130’ by adding my period:szn map to inputs/variability/period_szn_user.csv with ‘user_myname_20230130’ in the ‘scenario’ column and setting <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm=user_myname_20230130</span></code>.)</p></li>
+<li><p>If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/temporal/period_szn_user.csv with a unique scenario name in the ‘scenario’ column, and set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code> to your unique scenario name, <em>which must contain the substring ‘user’</em>. (For example, I could use a mapping called ‘user_myname_20230130’ by adding my period:szn map to inputs/temporal/period_szn_user.csv with ‘user_myname_20230130’ in the ‘scenario’ column and setting <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm=user_myname_20230130</span></code>.)</p></li>
 <li><p>Make sure the settings for <code class="docutils literal notranslate"><span class="pre">GSw_HourlyType</span></code> and <code class="docutils literal notranslate"><span class="pre">GSw_HourlyWeatherYears</span></code> match your user-defined map. For example, if your ‘user_myname_20230130’ map includes 365 representative days for weather year 2012, then set <code class="docutils literal notranslate"><span class="pre">GSw_HourlyType=day</span></code> and <code class="docutils literal notranslate"><span class="pre">GSw_HourlyWeatherYears=2012</span></code>.</p></li>
 <li><p>You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods.
 More detail can be found in the <a href="postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py">postprocessing tools</a> guide.</p></li>
@@ -261,7 +287,7 @@ More detail can be found in the <a href="postprocessing_tools.html#fix-represent
 </ul>
 <p>To further reduce solve time, you can make the following changes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">yearset_suffix</span> <span class="pre">=</span> <span class="pre">fiveyear</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">yearset</span> <span class="pre">=</span> <span class="pre">2010_2015_2020_2025_2030_2035_2040_2045_2050</span></code></p>
 <ul>
 <li><p>Solve in 5-year steps</p></li>
 </ul>
@@ -292,7 +318,8 @@ More detail can be found in the <a href="postprocessing_tools.html#fix-represent
 <h2>Electricity Demand Profiles<a class="headerlink" href="#electricity-demand-profiles" title="Link to this heading"></a></h2>
 <section id="switch-options-for-gsw-loadprofiles">
 <h3>Switch options for GSw_LoadProfiles<a class="headerlink" href="#switch-options-for-gsw-loadprofiles" title="Link to this heading"></a></h3>
-<p>These files are stored in <code class="docutils literal notranslate"><span class="pre">inputs/load/{switch_name}_load_hourly.h5</span></code>.</p>
+<p>The hourly load files are hosted remotely as described in <a class="reference internal" href="#large-input-files"><span class="xref myst">Large Input Files</span></a>.
+The <code class="docutils literal notranslate"><span class="pre">GSw_LoadProfiles</span></code> switch corresponds to a file saved to <code class="docutils literal notranslate"><span class="pre">inputs/remote/demand_{GSw_LoadProfiles}_{record_id}.h5</span></code> and its link at <code class="docutils literal notranslate"><span class="pre">inputs/profiles_demand/demand_{GSw_LoadProfiles}.h5</span></code>.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Switch Name</p></th>
@@ -307,73 +334,73 @@ More detail can be found in the <a href="postprocessing_tools.html#fix-represent
 <td><p>Produced by the ReEDS team from a compilation of data sources. More detail can be found in the <a class="reference external" href="https://github.com/NatLabRockies/ReEDS-2.0/tree/main/hourlize">hourlize readme</a>.</p></td>
 <td><p>2007-2013 &amp; 2016-2023</p></td>
 </tr>
-<tr class="row-odd"><td><p>Clean2035_LTS</p></td>
+<tr class="row-odd"><td><p>EFS_Clean2035_LTS</p></td>
 <td><p>Net-zero emissions, economy wide, by 2050 based on the White House’s Long Term Strategy as shown here: <a class="reference external" href="https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf">https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf</a></p></td>
 <td><p>Developed for the 100% Clean Electricity by 2035 study: <a class="reference external" href="https://www.nrel.gov/docs/fy22osti/81644.pdf">https://www.nrel.gov/docs/fy22osti/81644.pdf</a></p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>Clean2035</p></td>
+<tr class="row-even"><td><p>EFS_Clean2035</p></td>
 <td><p>Accelerated Demand Electrification (ADE) profile. This profile was custom made for the 100% Clean Electricity by 2035 study. More information about how it was formed can be found in <a class="reference external" href="https://www.nrel.gov/docs/fy22osti/81644.pdf">https://www.nrel.gov/docs/fy22osti/81644.pdf</a> Appendix C.</p></td>
 <td><p>Developed for the 100% Clean Electricity by 2035 study: <a class="reference external" href="https://www.nrel.gov/docs/fy22osti/81644.pdf">https://www.nrel.gov/docs/fy22osti/81644.pdf</a></p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-odd"><td><p>Clean2035clip1pct</p></td>
+<tr class="row-odd"><td><p>EFS_Clean2035clip1pct</p></td>
 <td><p>Same as Clean2035 but clips off the top 1% of load hours.</p></td>
 <td><p>Developed for the 100% Clean Electricity by 2035 study: <a class="reference external" href="https://www.nrel.gov/docs/fy22osti/81644.pdf">https://www.nrel.gov/docs/fy22osti/81644.pdf</a></p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>EPHIGH</p></td>
+<tr class="row-even"><td><p>EFS_HIGH</p></td>
 <td><p>Features a combination of technology advancements, policy support and consumer enthusiasm that enables transformational change in electrification.</p></td>
 <td><p>Developed for the Electrification Futures Study <a class="reference external" href="https://www.nrel.gov/docs/fy18osti/71500.pdf">https://www.nrel.gov/docs/fy18osti/71500.pdf</a>.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-odd"><td><p>EPMEDIUMStretch2046</p></td>
-<td><p>An average of the EPMEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA.</p></td>
-<td><p>NLR researchers combined the EPMEDIUM profile and the AEO reference trajectory.</p></td>
+<tr class="row-odd"><td><p>EFS_MEDIUMStretch2046</p></td>
+<td><p>An average of the EFS_MEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA.</p></td>
+<td><p>NLR researchers combined the EFS_MEDIUM profile and the AEO reference trajectory.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>EPMEDIUM</p></td>
+<tr class="row-even"><td><p>EFS_MEDIUM</p></td>
 <td><p>Features a future with widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps and select industrial applications, but one that does not result in transformational change.</p></td>
 <td><p>Developed for the Electrification Futures Study <a class="reference external" href="https://www.nrel.gov/docs/fy18osti/71500.pdf">https://www.nrel.gov/docs/fy18osti/71500.pdf</a>.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-odd"><td><p>EPREFERENCE</p></td>
+<tr class="row-odd"><td><p>EFS_REFERENCE</p></td>
 <td><p>Features the least incremental change in electrification through 2050, which serves as a baseline of comparison to the other scenarios.</p></td>
 <td><p>Developed for the Electrification Futures Study <a class="reference external" href="https://www.nrel.gov/docs/fy18osti/71500.pdf">https://www.nrel.gov/docs/fy18osti/71500.pdf</a>.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>EER_Baseline_AEO2022_v2023</p></td>
+<tr class="row-even"><td><p>EER2023_Baseline_AEO2022</p></td>
 <td><p>Business as usual load growth. Based on the service demand projections from AEO 2022. This does not include the impacts of the Inflation Reduction Act.</p></td>
 <td><p>Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in <a class="reference external" href="https://www.evolved.energy/post/adp2022">EER’s 2022 Annual Decarbonization Report</a>. This is the “Baseline” scenario in EER’s 2022 ADP.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-odd"><td><p>EER_IRAlow_v2023</p></td>
+<tr class="row-odd"><td><p>EER2023_IRAlow</p></td>
 <td><p>Modeling load change under conservative assumptions about the Inflation Reduction Act</p></td>
 <td><p>Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER’s 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the <a class="reference external" href="https://repeatproject.org/">Princeton REPEAT project</a> when using this profile.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>EER_IRAmoderate_v2023</p></td>
+<tr class="row-even"><td><p>EER2023_IRAmoderate</p></td>
 <td><p>Modeling load change under moderate assumptions about the Inflation Reduction Act</p></td>
 <td><p>Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER’s 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the <a class="reference external" href="https://repeatproject.org/">Princeton REPEAT project</a> when using this profile.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-odd"><td><p>EER_100by2050_v2023</p></td>
-<td><p>100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER_IRAlow.</p></td>
+<tr class="row-odd"><td><p>EER2023_100by2050</p></td>
+<td><p>100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER2025_IRAlow.</p></td>
 <td><p>Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in <a class="reference external" href="https://www.evolved.energy/post/adp2022">EER’s 2022 Annual Decarbonization Report</a>. This is the “Central” scenario in EER’s 2022 ADP.</p></td>
 <td><p>2007-2013</p></td>
 </tr>
-<tr class="row-even"><td><p>EER_Baseline_AEO2023</p></td>
+<tr class="row-even"><td><p>EER2025_Baseline_AEO2023</p></td>
 <td><p>Business as usual load growth. Based on the service demand projections from AEO 2023. This does not include the impacts of the Inflation Reduction Act.</p></td>
 <td><p>Purchased from Evolved Energy Research in 2024. More information can be found in <a class="reference external" href="https://www.evolved.energy/us-adp-2024">EER’s 2024 Annual Decarbonization Report</a>. This is the “Baseline” scenario in EER’s 2024 ADP.</p></td>
 <td><p>2007-2013 &amp; 2016-2023</p></td>
 </tr>
-<tr class="row-odd"><td><p>EER_IRAlow</p></td>
+<tr class="row-odd"><td><p>EER2025_IRAlow</p></td>
 <td><p>Modeling load change under conservative assumptions about the Inflation Reduction Act</p></td>
 <td><p>Purchased from Evolved Energy Research in 2024. This scenario is not described in EER’s 2024 ADP. It is most similar to the “Current Policy” scenario; however, that scenario has “moderate assumptions about the Inflation Reduction Act” compared to this scenario which has “conservative assumptions about the Inflation Reduction Act”. This scenario was originally prepared for the Princeton REPEAT project. Please cite the <a class="reference external" href="https://repeatproject.org/">Princeton REPEAT project</a> when using this profile.</p></td>
 <td><p>2007-2013 &amp; 2016-2023</p></td>
 </tr>
-<tr class="row-even"><td><p>EER_100by2050</p></td>
-<td><p>100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER_IRAlow.</p></td>
+<tr class="row-even"><td><p>EER2025_100by2050</p></td>
+<td><p>100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER2025_IRAlow.</p></td>
 <td><p>Purchased from Evolved Energy Research in 2024. More information can be found in <a class="reference external" href="https://www.evolved.energy/us-adp-2024">EER’s 2024 Annual Decarbonization Report</a>. This is the “Central” scenario in EER’s 2024 ADP.</p></td>
 <td><p>2007-2013 &amp; 2016-2023</p></td>
 </tr>
@@ -726,7 +753,7 @@ However, all analyses (both ours and from other research groups) indicate that h
 <section id="id1">
 <h3>Other notes<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Supply curve files can be found in <code class="docutils literal notranslate"><span class="pre">inputs/supply_curve</span></code>, with the corresponding hourly profiles for wind and solar in <code class="docutils literal notranslate"><span class="pre">inputs/variability/multi_year</span></code></p></li>
+<li><p>Supply curve files can be found in <code class="docutils literal notranslate"><span class="pre">inputs/supply_curve</span></code>, with the corresponding hourly profiles for wind and solar in <code class="docutils literal notranslate"><span class="pre">inputs/profiles_cf</span></code></p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">rev_paths.csv</span></code> in <code class="docutils literal notranslate"><span class="pre">inputs/supply_curve</span></code>provides details on the available access case for each technology and the corresponding supply curve vintage.</p></li>
 <li><p>Supply curves for wind, solar, and geothermal are generated by hourlize; for more details see <a class="reference internal" href="#hourlize.md"><span class="xref myst">Using Hourlize</span></a>.</p></li>
 </ul>
@@ -951,14 +978,14 @@ with the same <code class="docutils literal notranslate"><span class="pre">W1,</
 <h4>Example 2. Sampling load forecast scenarios per state<a class="headerlink" href="#example-2-sampling-load-forecast-scenarios-per-state" title="Link to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load_st</span>
 <span class="w">  </span><span class="nt">assignments_list</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">GSw_LoadProfiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">EER_100by2050</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">EER_IRAlow</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">GSw_LoadProfiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">EER2025_100by2050</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">EER2025_IRAlow</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">dist</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dirichlet</span>
 <span class="w">  </span><span class="nt">dist_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">weight_r</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">st</span>
 </pre></div>
 </div>
 <p>Each state receives its own weighted combination of the two load scenarios.<br />
-<code class="docutils literal notranslate"><span class="pre">Sample_load</span> <span class="pre">=</span> <span class="pre">W1*(EER_100by2050)</span> <span class="pre">+</span>&#160; <span class="pre">W2*(EER_IRAlow)</span></code> with <code class="docutils literal notranslate"><span class="pre">W1</span> <span class="pre">+</span> <span class="pre">W2</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">Sample_load</span> <span class="pre">=</span> <span class="pre">W1*(EER2025_100by2050)</span> <span class="pre">+</span>&#160; <span class="pre">W2*(EER2025_IRAlow)</span></code> with <code class="docutils literal notranslate"><span class="pre">W1</span> <span class="pre">+</span> <span class="pre">W2</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
 </section>
 <section id="example-3-discrete-siting-uncertainty-for-wind-and-solar">
 <h4>Example 3. Discrete siting uncertainty for wind and solar<a class="headerlink" href="#example-3-discrete-siting-uncertainty-for-wind-and-solar" title="Link to this heading"></a></h4>
@@ -1148,7 +1175,12 @@ temporally and spatially.</p>
 <section id="quickstart-resource">
 <h4>Quickstart: Resource<a class="headerlink" href="#quickstart-resource" title="Link to this heading"></a></h4>
 <ol class="arabic simple">
-<li><p>Copy any new reV supply curves to the supply curve folder and update the rev_paths file (<a class="reference internal" href="#setup-for-rev-supply-curves"><span class="xref myst">details</span></a>).</p></li>
+<li><p>Copy any new reV supply curves to the supply curve folder and update the rev_paths file (<a class="reference internal" href="#setup-for-rev-supply-curves"><span class="xref myst">details</span></a>).</p>
+<ol class="arabic simple">
+<li><p>Make sure to include the <code class="docutils literal notranslate"><span class="pre">sam.json</span></code> file, which specifies the capacity factor modeling assumptions used in SAM.
+(An example file on kestrel is: <code class="docutils literal notranslate"><span class="pre">/projects/rev/projects/seto/fy25/standard_scenarios/rev/generation/moderate_2035/sam.json</span></code>)</p></li>
+</ol>
+</li>
 <li><p>Update settings in <code class="docutils literal notranslate"><span class="pre">config_base.json</span></code> as needed (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>).</p></li>
 <li><p>Update settings in the relevant <code class="docutils literal notranslate"><span class="pre">config_[tech].json</span></code> files as needed (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>).</p></li>
 <li><p>Specify cases to run in <code class="docutils literal notranslate"><span class="pre">cases.json</span></code> or create your own cases file (<a class="reference internal" href="#cases-json"><span class="xref myst">details</span></a>).</p></li>
@@ -1156,7 +1188,7 @@ temporally and spatially.</p>
 <li><p>Run using <code class="docutils literal notranslate"><span class="pre">run_hourlize.py</span> <span class="pre">resource</span></code> (<a class="reference internal" href="#running-hourlize"><span class="xref myst">details</span></a>).</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">tests/get_subset_h5.py</span></code> to produce the county-level test h5 files, after specifying the relevant techs at the top of that file.</p></li>
 <li><p>Update <code class="docutils literal notranslate"><span class="pre">inputs/supply_curve/dollaryear.csv</span></code> if needed. The dollar year typically aligns with the ATB year of the reV run, although it’s best to confirm with the reV team to make sure all their costs have been converted to that dollar year.</p></li>
-<li><p>Sync up new supply curve files on HPC, nrelnas01, and Yampa as needed</p></li>
+<li><p>If the results are intended to be used on the main branch, then after testing and quality control, upload the new profiles to the remote host as described in <code class="docutils literal notranslate"><span class="pre">preprocessing/README.md</span></code></p></li>
 </ol>
 </section>
 <section id="quickstart-load">
@@ -1165,7 +1197,12 @@ temporally and spatially.</p>
 <li><p>Update settings in <code class="docutils literal notranslate"><span class="pre">config_base.json</span></code> as needed (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>), including <code class="docutils literal notranslate"><span class="pre">load_source</span></code>.</p></li>
 <li><p>If running on the HPC, specify run allocation or other submission settings in <code class="docutils literal notranslate"><span class="pre">inputs/configs/srun_template.sh</span></code> (<a class="reference internal" href="#config-jsons"><span class="xref myst">details</span></a>).</p></li>
 <li><p>Run using <code class="docutils literal notranslate"><span class="pre">run_hourlize.py</span> <span class="pre">load</span></code> (<a class="reference internal" href="#running-hourlize"><span class="xref myst">details</span></a>).</p></li>
-<li><p>Outputs are written to <code class="docutils literal notranslate"><span class="pre">ReEDS-2.0/inputs/load</span></code>.</p></li>
+<li><p>Outputs are written to <code class="docutils literal notranslate"><span class="pre">ReEDS-2.0/inputs/load</span></code>.</p>
+<ol class="arabic simple">
+<li><p>If the results are intended to be used on the main branch, then after testing and quality control, upload the new profiles to the remote host as described in <code class="docutils literal notranslate"><span class="pre">preprocessing/README.md</span></code>.</p></li>
+<li><p>If the results are not intended for general use, they can still be used locally in ReEDS by setting the <code class="docutils literal notranslate"><span class="pre">GSw_LoadProfiles</span></code> switch to the absolute filepath of the resulting hourly demand file.</p></li>
+</ol>
+</li>
 </ol>
 <p>For more details and run options see further below.</p>
 </section>
@@ -1308,7 +1345,7 @@ python<span class="w"> </span>run_hourlize.py<span class="w"> </span>resource<sp
 <li><p><code class="docutils literal notranslate"><span class="pre">supplycurve_{tech}.csv</span></code>: A supply curve with rows for each site and columns for region, class, available capacity, and costs. E.g. see <code class="docutils literal notranslate"><span class="pre">inputs/supply_curve/wind-ons_supply_curve-reference_ba.csv</span></code> (within ReEDS repo)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">{tech}_exog_cap.csv</span></code>: Exogenous (built pre-2010) capacity with columns for region, site and year. This is not capacity builds in each year, but rather cumulative capacity of each existing site over time. E.g. see <code class="docutils literal notranslate"><span class="pre">inputs/capacity_exogenous/wind-ons_exog_cap_reference_ba.csv</span></code> (within ReEDS repo)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">{tech}_prescribed_builds.csv</span></code>: Capacity prescribed builds (2010 - present) with columns for region, year, capacity. This is the installed capacity in each year rather than cumulative capacity over time. E.g. see <code class="docutils literal notranslate"><span class="pre">inputs/capacity_exogenous/wind-ons_prescribed_builds_reference_ba.csv</span></code> (within ReEDS repo)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{tech}_.h5</span></code>: Hourly capacity factor profiles for each region/class. See <code class="docutils literal notranslate"><span class="pre">inputs/variability/multi_year/wind-ons-reference_ba.h5</span></code> within the ReEDS repository as an example. These files include datasets with column names (class|region) and an index with datetime and timezone information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{tech}_.h5</span></code>: Hourly capacity factor profiles for each region/class. See <code class="docutils literal notranslate"><span class="pre">inputs/profiles_cf/cf_wind-ons_reference_ba.h5</span></code> within the ReEDS repository as an example. These files include datasets with column names (class|region) and an index with datetime and timezone information.</p></li>
 </ul>
 </section>
 <section id="shared-drive-locations">
@@ -1777,7 +1814,7 @@ These characteristics include:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on February 02, 2026.
+      <span class="lastupdated">Last updated on March 26, 2026.
       </span></p>
   </div>
 

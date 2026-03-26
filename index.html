@@ -92,14 +92,15 @@
 <p><a class="reference external" href="https://github.nrel.gov/ReEDS/ReEDS-2.0/actions/workflows/python-app.yaml"><img alt="CI" src="https://github.nrel.gov/ReEDS/ReEDS-2.0/actions/workflows/python-app.yaml/badge.svg" /></a>
 <a class="reference external" href="https://natlabrockies.github.io/ReEDS-2.0"><img alt="Documentation" src="https://img.shields.io/badge/Documentation-view%20online-0a7f5e?logo=readthedocs&amp;logoColor=white&amp;labelColor=555" /></a>
 <img alt="Static Badge" src="https://img.shields.io/badge/python-3.11-blue" />
-<img alt="GitHub License" src="https://img.shields.io/github/license/natlabrockies/ReEDS-2.0" />
+<img alt="GitHub License" src="https://img.shields.io/github/license/NatLabRockies/ReEDS-2.0" />
 <a class="reference external" href="https://doi.org/10.5281/zenodo.16943302"><img alt="DOI" src="https://zenodo.org/badge/189060033.svg" /></a></p>
 </br>
 </br>
 <p>This GitHub repository contains the source code for NLR’s ReEDS model.
 The ReEDS model source code is available at no cost from the National Laboratory of the Rockies.
 The ReEDS model can be downloaded or cloned from <a class="reference external" href="https://github.com/NatLabRockies/ReEDS-2.0">https://github.com/NatLabRockies/ReEDS-2.0</a>.</p>
-<p><strong>For more information about the model, see the <a class="reference external" href="https://NatLabRockies.github.io/ReEDS-2.0">open source ReEDS-2.0 Documentation</a>.</strong></p>
+<p><strong>For more information about the model, see the <a class="reference external" href="https://pages.github.nrel.gov/ReEDS/ReEDS-2.0">ReEDS-2.0 Documentation</a>.</strong></p>
+<!-- **For more information about the model, see the [open source ReEDS-2.0 Documentation](https://natlabrockies.github.io/ReEDS-2.0).** -->
 <p>ReEDS training videos are available on the <a class="reference external" href="https://youtube.com/playlist?list=PLmIn8Hncs7bG558qNlmz2QbKhsv7QCKiC&amp;amp;si=NgGBaL_MxNcYiIEX">NLR Learning YouTube channel</a>.</p>
 <p><a name="Introduction"></a></p>
 </section>
@@ -141,6 +142,7 @@ A step-by-step guide for getting started with ReEDS is available <a class="refer
 </li>
 <li><p>Activate the <code class="docutils literal notranslate"><span class="pre">reeds2</span></code> environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">reeds2</span></code></p></li>
 <li><p>Instantiate the Julia environment: <code class="docutils literal notranslate"><span class="pre">julia</span> <span class="pre">--project=.</span> <span class="pre">instantiate.jl</span></code></p></li>
+<li><p>(Optional) Several large data files are hosted remotely. These are downloaded automatically as needed during a ReEDS run, but to finish all the internet-requiring steps upfront, you can download them all by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">reeds/remote.py</span></code>.</p></li>
 </ol>
 </li>
 <li><p>Run ReEDS on a test case from the root of the cloned repository:</p>
@@ -174,7 +176,7 @@ note: to change the maxdepth of the toctree, you need to change 'navigation_dept
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on February 02, 2026.
+      <span class="lastupdated">Last updated on March 26, 2026.
       </span></p>
   </div>
 

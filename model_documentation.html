@@ -211,7 +211,7 @@ We are especially grateful to Walter Short who first envisioned and developed th
 Finally, we are grateful to all those who helped sponsor ReEDS model development and analysis, particularly supporters from the U.S. Department of Energy (DOE) but also others who have funded our work over the years.</p>
 <div class="admonition-suggested-citation admonition">
 <p class="admonition-title">Suggested Citation</p>
-<p>National Laboratory of the Rockies. (2026, February). <em>Model documentation — ReEDS 2.0</em>. https://natlabrockies.github.io/ReEDS-2.0/model_documentation.html</p>
+<p>National Laboratory of the Rockies. (2026, March). <em>Model documentation — ReEDS 2.0</em>. https://natlabrockies.github.io/ReEDS-2.0/model_documentation.html</p>
 </div>
 </section>
 <section id="list-of-abbreviations-and-acronyms">
@@ -897,7 +897,7 @@ If using <code class="docutils literal notranslate"><span class="pre">GSw_Hourly
 <li><p><code class="docutils literal notranslate"><span class="pre">GSw_HourlyWeatherYears</span></code> (default <code class="docutils literal notranslate"><span class="pre">2012</span></code>): Weather years from which to select representative periods.
 Multiple years can be used by passing a <code class="docutils literal notranslate"><span class="pre">_</span></code>-delimited string; for example, to select representative periods from 2011 to 2013, set the value to <code class="docutils literal notranslate"><span class="pre">2011_2012_2013</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span></code> (default <code class="docutils literal notranslate"><span class="pre">optimized</span></code>): Algorithm used to select representative periods.
-Choices are <code class="docutils literal notranslate"><span class="pre">optimized</span></code> (for the method described above), <code class="docutils literal notranslate"><span class="pre">hierarchical</span></code> (for hierarchical clustering), <code class="docutils literal notranslate"><span class="pre">kmeans</span></code> (for <em>k</em>-means clustering), <code class="docutils literal notranslate"><span class="pre">kmedoids</span></code> (for <em>k</em>-medoids clustering), or <code class="docutils literal notranslate"><span class="pre">user{label}</span></code> (for user-defined periods and weights as specified by a file located at <code class="docutils literal notranslate"><span class="pre">inputs/variability/period_szn_user{label}</span></code>).</p></li>
+Choices are <code class="docutils literal notranslate"><span class="pre">optimized</span></code> (for the method described above), <code class="docutils literal notranslate"><span class="pre">hierarchical</span></code> (for hierarchical clustering), <code class="docutils literal notranslate"><span class="pre">kmeans</span></code> (for <em>k</em>-means clustering), <code class="docutils literal notranslate"><span class="pre">kmedoids</span></code> (for <em>k</em>-medoids clustering), or <code class="docutils literal notranslate"><span class="pre">user{label}</span></code> (for user-defined periods and weights as specified by a file located at <code class="docutils literal notranslate"><span class="pre">inputs/temporal/period_szn_user{label}</span></code>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">GSw_HourlyNumClusters</span></code> (default <code class="docutils literal notranslate"><span class="pre">33</span></code>): Maximum number of representative periods.
 The default value of 33 periods is chosen as a trade-off between runtime and accuracy (both of which increase with the number of representative periods modeled).
 When using <code class="docutils literal notranslate"><span class="pre">GSw_HourlyClusterAlgorithm</span> <span class="pre">=</span> <span class="pre">optimized</span></code>, fewer periods may be required.
@@ -1599,7 +1599,7 @@ Improved performance characteristics are captured through slightly enhanced batt
 <section id="distributed-pv">
 <h5>Distributed PV<a class="headerlink" href="#distributed-pv" title="Link to this heading"></a></h5>
 <p>Rooftop PV includes commercial, industrial, and residential systems.
-These systems are assumed to have an inverter loading ratio (ILR) of 1.1.
+These systems are assumed to have an inverter loading ratio (ILR) of 1.21.
 Existing rooftop PV capacities are obtained from U.S. Energy Information Administration (EIA)-861 data spanning 2010 to 2022 <span id="id90">[<a class="reference internal" href="#id917" title="EIA. Annual Electric Power Industry Report, Form EIA-861. Technical Report, Energy Information Administration, 2024. URL: https://www.eia.gov/electricity/data/eia861/index.php (visited on 2024-11-19).">EIA, 2024</a>]</span>.
 dGen, a consumer adoption model for the CONUS rooftop PV market, is used to develop future scenarios for rooftop PV capacity, including the capacity deployed by zone and the precurtailment energy production <span id="id91">[<a class="reference internal" href="#id2292" title="Benjamin Sigrin, Michael Gleason, Robert Preus, Ian Baring-Gould, and Robert Margolis. The Distributed Generation Market Demand Model (dGen): Documentation. Technical Report NREL/TP-6A20-65231, National Renewable Energy Laboratory, Golden, CO, February 2016. URL: http://www.nrel.gov/docs/fy16osti/65231.pdf.">Sigrin <em>et al.</em>, 2016</a>]</span>.
 The default dGen trajectories used in this version of ReEDS are based on the residential and commercial PV cost projections described in the 2023 ATB <span id="id92">[<a class="reference internal" href="#id1979" title="NREL. 2023 Annual Technology Baseline. Technical Report, National Renewable Energy Laboratory, Golden, CO, 2023. URL: https://atb.nrel.gov/.">NREL, 2023</a>]</span>.
@@ -1613,7 +1613,7 @@ For example, the Tax Credit Extension scenario also includes an extension of the
 <p>reV produces hourly generation profiles for all <a class="reference internal" href="#weather-years"><span class="xref myst">weather years</span></a> using the NSRDB point closest to the centroid of each county in the CONUS.
 The profiles represent residential and commercial systems with a 16° tilt and 180° azimuth.
 The residential profiles assume an inverter efficiency of 96%, and the commercial profiles assume an inverter efficiency of 98%.
-To create a single profile for each region, we determine the NSRDB point(s) existing in or, if none exists, closest to the region and take the average of the corresponding profiles.</p>
+To create a single profile for each county, we take the average of the residential and commercial profiles.</p>
 <p>ReEDS assumes distributed PV generation is not allowed to be curtailed.</p>
 <div class="admonition-distributed-pv-settings admonition">
 <p class="admonition-title">Distributed PV settings</p>
@@ -2245,12 +2245,12 @@ EER builds hourly, state-level load profiles for each end-use sector, and we agg
 The profiles are defined for model years 2025, 2030, 2035, 2040, 2045, and 2050
 (values for intermediate years are interpolated linearly),
 each of which features 15 weather years of data (2007–2013 and 2016–2023).
-There are three sets of EER profiles, each reflecting different electrification assumptions: EER_Baseline_AEO2023, EER_IRAlow, and EER_100by2050.
-EER_Baseline_AEO2023 reflects business-as-usual electrification based on load estimates from AEO2023.
-EER_IRAlow reflects the impacts of the Inflation Reduction Act (IRA), which features tax credits and subsidies for electric end-use technologies such as electric vehicles and heat pumps.
-Specifically, EER_IRAlow “reflects relatively conservative assumptions about the impact of demand-side provisions in the Inflation Reduction Act (relative, compared to other scenarios developed by EER)” <span id="id145">[<a class="reference internal" href="#id1169" title="Pieter Gagnon, An Pham, Wesley Cole, Sarah Awara, Anne Barlas, Maxwell Brown, Patrick Brown, Vincent Carag, Stuart Cohen, Anne Hamilton, Jonathan Ho, Sarah Inskeep, Akash Karmakar, Luke Lavin, Anthony Lopez, Trieu Mai, Joseph Mowers, Matthew Mowers, Caitlin Murphy, Paul Pinchuk, Anna Schleifer, Brian Sergi, Daniel Steinberg, and Travis Williams. 2023 Standard Scenarios Report: A U.S. Electricity Sector Outlook. Technical Report NREL/TP-6A40-87724, National Renewable Energy Laboratory, January 2024. URL: https://www.nrel.gov/docs/fy24osti/87724.pdf.">Gagnon <em>et al.</em>, 2024</a>]</span>.
-EER_100by2050 reflects the electrification required to reach 100% economywide decarbonization by 2050.
-ReEDS defaults to EER_IRAlow.
+There are three sets of EER profiles, each reflecting different electrification assumptions: EER2025_Baseline_AEO2023, EER2025_IRAlow, and EER2025_100by2050.
+EER2025_Baseline_AEO2023 reflects business-as-usual electrification based on load estimates from AEO2023.
+EER2025_IRAlow reflects the impacts of the Inflation Reduction Act (IRA), which features tax credits and subsidies for electric end-use technologies such as electric vehicles and heat pumps.
+Specifically, EER2025_IRAlow “reflects relatively conservative assumptions about the impact of demand-side provisions in the Inflation Reduction Act (relative, compared to other scenarios developed by EER)” <span id="id145">[<a class="reference internal" href="#id1169" title="Pieter Gagnon, An Pham, Wesley Cole, Sarah Awara, Anne Barlas, Maxwell Brown, Patrick Brown, Vincent Carag, Stuart Cohen, Anne Hamilton, Jonathan Ho, Sarah Inskeep, Akash Karmakar, Luke Lavin, Anthony Lopez, Trieu Mai, Joseph Mowers, Matthew Mowers, Caitlin Murphy, Paul Pinchuk, Anna Schleifer, Brian Sergi, Daniel Steinberg, and Travis Williams. 2023 Standard Scenarios Report: A U.S. Electricity Sector Outlook. Technical Report NREL/TP-6A40-87724, National Renewable Energy Laboratory, January 2024. URL: https://www.nrel.gov/docs/fy24osti/87724.pdf.">Gagnon <em>et al.</em>, 2024</a>]</span>.
+EER2025_100by2050 reflects the electrification required to reach 100% economywide decarbonization by 2050.
+ReEDS defaults to EER2025_IRAlow.
 Compound annual growth rates (CAGRs) and 2050 CONUS-wide annual demand for each set of profiles are shown in <a class="reference internal" href="#eer-growth-rates-and-2050-electric-load"><span class="std std-numref">Table 10</span></a>.</p>
 <table class="docutils align-default" id="eer-growth-rates-and-2050-electric-load">
 <caption><span class="caption-number">Table 10 </span><span class="caption-text">Compound annual growth rates and 2050 electric load values for the EER load profiles available in ReEDS.</span><a class="headerlink" href="#eer-growth-rates-and-2050-electric-load" title="Link to this table"></a></caption>
@@ -2261,15 +2261,15 @@ Compound annual growth rates (CAGRs) and 2050 CONUS-wide annual demand for each 
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>EER_Baseline_AEO2023</p></td>
+<tr class="row-even"><td><p>EER2025_Baseline_AEO2023</p></td>
 <td><p>1.2%</p></td>
 <td><p>5,504</p></td>
 </tr>
-<tr class="row-odd"><td><p>EER_IRAlow (default)</p></td>
+<tr class="row-odd"><td><p>EER2025_IRAlow (default)</p></td>
 <td><p>1.8%</p></td>
 <td><p>6,402</p></td>
 </tr>
-<tr class="row-even"><td><p>EER_100by2050</p></td>
+<tr class="row-even"><td><p>EER2025_100by2050</p></td>
 <td><p>2.7%</p></td>
 <td><p>7,975</p></td>
 </tr>
@@ -2282,11 +2282,11 @@ Compound annual growth rates (CAGRs) and 2050 CONUS-wide annual demand for each 
 The profiles use one weather year of data (2012).
 Because there is only a single weather year, the model duplicates these profiles to match the number of weather years specified by the user.
 Note that this results in loss of synchronicity between demand and other weather-based data when weather years beyond 2012 are selected.
-There are five sets of profiles, each reflecting different electrification assumptions: EPREFERENCE, EPMEDIUM, EPMEDIUMStretch2040, EPMEDIUMStretch2046, and EPHIGH.
-EPREFERENCE serves as a baseline of comparison to the other scenarios, featuring the least incremental change in electrification through 2050.
-EPMEDIUM features widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps, and select industrial applications.
-EPMEDIUMStretch2040 and EPMEDIUMStretch2046 are modified versions of EPMEDIUM that lower the aggressiveness of its electrification assumptions by “stretching” its load growth through 2040 and 2046 respectively out to 2050 such that total 2040 and 2046 load from EPMEDIUM are equivalent to 2050 load from EPMEDIUMStretch2040 and EPMEDIUMStretch2046 respectively.
-EPHIGH features a combination of technology advancements, policy support, and consumer enthusiasm that enables transformational change in electrification.
+There are five sets of profiles, each reflecting different electrification assumptions: EFS_REFERENCE, EFS_MEDIUM, EFS_MEDIUMStretch2040, EFS_MEDIUMStretch2046, and EFS_HIGH.
+EFS_REFERENCE serves as a baseline of comparison to the other scenarios, featuring the least incremental change in electrification through 2050.
+EFS_MEDIUM features widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps, and select industrial applications.
+EFS_MEDIUMStretch2040 and EFS_MEDIUMStretch2046 are modified versions of EFS_MEDIUM that lower the aggressiveness of its electrification assumptions by “stretching” its load growth through 2040 and 2046 respectively out to 2050 such that total 2040 and 2046 load from EFS_MEDIUM are equivalent to 2050 load from EFS_MEDIUMStretch2040 and EFS_MEDIUMStretch2046 respectively.
+EFS_HIGH features a combination of technology advancements, policy support, and consumer enthusiasm that enables transformational change in electrification.
 The 2050 CONUS-wide annual demand and overall peak CONUS-wide demand for each set of profiles are shown in <a class="reference internal" href="#efs-2050-and-peak-electric-load"><span class="std std-numref">Table 11</span></a>.</p>
 <table class="docutils align-default" id="efs-2050-and-peak-electric-load">
 <caption><span class="caption-number">Table 11 </span><span class="caption-text">2050 electric load and overall peak load values for the Electrification Futures Study load profiles available in ReEDS.</span><a class="headerlink" href="#efs-2050-and-peak-electric-load" title="Link to this table"></a></caption>
@@ -2297,23 +2297,23 @@ The 2050 CONUS-wide annual demand and overall peak CONUS-wide demand for each se
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>EPREFERENCE</p></td>
+<tr class="row-even"><td><p>EFS_REFERENCE</p></td>
 <td><p>4,788</p></td>
 <td><p>852</p></td>
 </tr>
-<tr class="row-odd"><td><p>EPMEDIUMStretch2040</p></td>
+<tr class="row-odd"><td><p>EFS_MEDIUMStretch2040</p></td>
 <td><p>5,062</p></td>
 <td><p>963</p></td>
 </tr>
-<tr class="row-even"><td><p>EPMEDIUMStretch2046</p></td>
+<tr class="row-even"><td><p>EFS_MEDIUMStretch2046</p></td>
 <td><p>5,499</p></td>
 <td><p>1,049</p></td>
 </tr>
-<tr class="row-odd"><td><p>EPMEDIUM</p></td>
+<tr class="row-odd"><td><p>EFS_MEDIUM</p></td>
 <td><p>5,799</p></td>
 <td><p>1,104</p></td>
 </tr>
-<tr class="row-even"><td><p>EPHIGH</p></td>
+<tr class="row-even"><td><p>EFS_HIGH</p></td>
 <td><p>6,699</p></td>
 <td><p>1,279</p></td>
 </tr>
@@ -2940,12 +2940,13 @@ New transmission capacity is derated by 15% during stress periods to approximate
 Seed stress periods are included because <a class="reference internal" href="#representative-periods"><span class="xref myst">representative periods</span></a> do not, in general, include outlying periods (such as peak demand days) that drive capacity investments.
 A system planned only with representative periods would therefore almost certainly fail to meet resource adequacy targets when considering a broader collection of weather and demand conditions,
 and the inclusion of seed stress periods allows this initial failing iteration to be skipped, reducing runtime.</p>
-<p>By default, seed stress periods include peak demand days by planning subregion for each model year, in addition to minimum availability days for solar and wind by interconnection (shown in <a class="reference internal" href="#figure-ra-seed-stressperiods"><span class="std std-numref">Fig. 56</span></a> for an illustrative high-electrification scenario).</p>
+<p>By default, seed stress periods include peak demand days by planning subregion for each model year, in addition to minimum availability days for solar and wind by interconnection (shown in <a class="reference internal" href="#figure-ra-seed-stressperiods"><span class="std std-numref">Fig. 56</span></a> for an illustrative demand scenario).</p>
+<!-- Settings for figure: GSw_LoadProfiles = EER2025_IRAlow, yearset = 2010_2015_2020..2050..3, GSw_PRM_StressSeedMinRElevel = interconnect, GSw_PRM_StressSeedLoadLevel = transgrp -->
 <figure class="align-default" id="figure-ra-seed-stressperiods">
 <img alt="_images/ra-seed_stressperiods.png" src="_images/ra-seed_stressperiods.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 56 </span><span class="caption-text">Example “seed” stress periods for a high-electrification scenario.
-In this scenario, many regions in the northern half of the country switch from summer peaking to winter peaking by midcentury.</span><a class="headerlink" href="#figure-ra-seed-stressperiods" title="Link to this image"></a></p>
+<p><span class="caption-number">Fig. 56 </span><span class="caption-text">Example “seed” stress periods for an illustrative demand scenario.
+In this scenario, many regions switch from summer peaking to winter peaking by midcentury.</span><a class="headerlink" href="#figure-ra-seed-stressperiods" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -3241,10 +3242,10 @@ The method for deriving the dynamic increment to the reserve margin is described
 Updating the PRM may help with convergence between ReEDS and PRAS in certain scenarios with many ReEDS-PRAS iterations.</p>
 <div class="admonition-updating-the-planning-reserve-margin admonition">
 <p class="admonition-title">Updating the planning reserve margin</p>
-<p>Updating the planning reserve margin is controlled by the <code class="docutils literal notranslate"><span class="pre">GSw_PRM_StressUpdate</span></code> switch, which supports the following options:</p>
+<p>Updating the planning reserve margin is controlled by the <code class="docutils literal notranslate"><span class="pre">GSw_PRM_UpdateMethod</span></code> switch, which supports the following options:</p>
 <ul class="simple">
 <li><p>(0) no update (default)</p></li>
-<li><p>(1) static update set by <code class="docutils literal notranslate"><span class="pre">GSw_PRM_StressUpdateIncrement</span></code> (default = 0.02, i.e., update the PRM from 10 to 12%)</p></li>
+<li><p>(1) static update set by <code class="docutils literal notranslate"><span class="pre">GSw_PRM_UpdateFraction</span></code> (default = 0.02, i.e., update the PRM from 10 to 12%)</p></li>
 <li><p>(2) dynamic update informed by PRAS</p></li>
 <li><p>(3) dynamic update but only after all new stress periods have been added</p></li>
 </ul>
@@ -4381,53 +4382,59 @@ The mandates are required to be met with battery storage, and any duration of st
 <td class="text-center"><p>2,325</p></td>
 <td class="text-center"><p>2,325</p></td>
 </tr>
-<tr class="row-odd"><td><p>MA</p></td>
+<tr class="row-odd"><td><p>IL</p></td>
+<td class="text-center"><p></p></td>
+<td class="text-center"><p>1,038</p></td>
+<td class="text-center"><p>3,000</p></td>
+</tr>
+<tr class="row-even"><td><p>MA</p></td>
 <td class="text-center"><p>50</p></td>
 <td class="text-center"><p>50</p></td>
 <td class="text-center"><p>50</p></td>
 </tr>
-<tr class="row-even"><td><p>MD</p></td>
+<tr class="row-odd"><td><p>MD</p></td>
 <td class="text-center"><p></p></td>
 <td class="text-center"><p>2,102</p></td>
 <td class="text-center"><p>3,000</p></td>
 </tr>
-<tr class="row-odd"><td><p>MI</p></td>
+<tr class="row-even"><td><p>MI</p></td>
 <td class="text-center"><p></p></td>
 <td class="text-center"><p>2,500</p></td>
 <td class="text-center"><p>2,500</p></td>
 </tr>
-<tr class="row-even"><td><p>NJ</p></td>
+<tr class="row-odd"><td><p>NJ</p></td>
 <td class="text-center"><p>600</p></td>
 <td class="text-center"><p>2,000</p></td>
 <td class="text-center"><p>2,000</p></td>
 </tr>
-<tr class="row-odd"><td><p>NV</p></td>
+<tr class="row-even"><td><p>NV</p></td>
 <td class="text-center"><p></p></td>
 <td class="text-center"><p>1,000</p></td>
 <td class="text-center"><p>1,000</p></td>
 </tr>
-<tr class="row-even"><td><p>NY</p></td>
+<tr class="row-odd"><td><p>NY</p></td>
 <td class="text-center"><p>500</p></td>
 <td class="text-center"><p>3,000</p></td>
 <td class="text-center"><p>3,000</p></td>
 </tr>
-<tr class="row-odd"><td><p>OR</p></td>
+<tr class="row-even"><td><p>OR</p></td>
 <td class="text-center"><p>2.5</p></td>
 <td class="text-center"><p>2.5</p></td>
 <td class="text-center"><p>2.5</p></td>
 </tr>
-<tr class="row-even"><td><p>RI</p></td>
+<tr class="row-odd"><td><p>RI</p></td>
 <td class="text-center"><p></p></td>
 <td class="text-center"><p>195</p></td>
 <td class="text-center"><p>195</p></td>
 </tr>
-<tr class="row-odd"><td><p>VA</p></td>
+<tr class="row-even"><td><p>VA</p></td>
 <td class="text-center"><p>42.7</p></td>
 <td class="text-center"><p>1,350</p></td>
 <td class="text-center"><p>3,100</p></td>
 </tr>
 </tbody>
 </table>
+<p>Note: The required capacity in Illinois increases to 3,000 MW in 2031.</p>
 </section>
 <section id="nuclear-power-plant-policies">
 <h3>Nuclear Power Plant Policies<a class="headerlink" href="#nuclear-power-plant-policies" title="Link to this heading"></a></h3>
@@ -6457,7 +6464,7 @@ Prescribed retirements are power plant retirements that are forced into the mode
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, NREL.
-      <span class="lastupdated">Last updated on February 02, 2026.
+      <span class="lastupdated">Last updated on March 26, 2026.
       </span></p>
   </div>
 
