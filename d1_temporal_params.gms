@@ -1,8 +1,8 @@
 *=============================================
 * -- Timeslices and seasons --
 *=============================================
+
 Sets
-* Most of these are copied from inputs/variability, overwritten by hourly_writetimeseries.py
 h_rep(allh) "representative timeslices"
 /
 $offlisting
@@ -259,52 +259,20 @@ hours_daily(h_rep) = %GSw_HourlyChunkLengthRep% ;
 hours_daily(h_stress) = %GSw_HourlyChunkLengthStress% ;
 
 
-*=============================================
-* -- Climate, hydro, and water --
-*=============================================
-watsa(wst,r,allszn,t) = 0 ;
-watsa(wst,r,szn,t)$[tmodel_new(t)$Sw_WaterMain] =
-    sum{quarter,
-        szn_quarter_weights(szn,quarter) * watsa_temp(wst,r,quarter) } ;
-
-* update seasonal distribution factors for water sources other than fresh surface unappropriated
-* and also fsu with missing data
-watsa(wst,r,szn,t)$[(not sum{sznn, watsa(wst,r,sznn,t)})$tmodel_new(t)$Sw_WaterMain] = 
-    round(numdays(szn)/365 , 4) ;
-
-
-
-$ifthen.climatewater %GSw_ClimateWater% == 1
-* Update seasonal distribution factors for fsu; other water types are unchanged
-* declared over allt to allow for external data files that extend beyond end_year
-* Written by climateprep.py
-table watsa_climate(wst,r,allszn,allt)  "time-varying fractional seasonal allocation of water"
-$offlisting
-$ondelim
-$include inputs_case%ds%%temporal_inputs%%ds%climate_UnappWaterSeaAnnDistr.csv
-$offdelim
-$onlisting
-;
-* Use the sparse assignment $= to make sure we don't assign zero to wst's not included in watsa_climate
-watsa(wst,r,szn,t)$[wst_climate(wst)$r_country(r,"USA")$tmodel_new(t)$Sw_WaterMain$(yeart(t)>=Sw_ClimateStartYear)] $=
-  sum{allt$att(allt,t), watsa_climate(wst,r,szn,allt) };
-* If wst is in wst_climate but does not have data in input file, assign its multiplier to the fsu multiplier
-watsa(wst,r,szn,t)$[wst_climate(wst)$r_country(r,"USA")$tmodel_new(t)$Sw_WaterMain$(yeart(t)>=Sw_ClimateStartYear)$sum{allt$att(allt,t), (not watsa_climate(wst,r,szn,allt)) }] $=
-  sum{allt$att(allt,t), watsa_climate('fsu',r,szn,allt) };
-$endif.climatewater
-
+*===============================================
+* -- Climate Adjustments to Transmission --
+*===============================================
 
 trans_cap_delta(allh,t) = 0 ;
-trans_cap_delta(h,t) =
+trans_cap_delta(h,t) = 
     climate_heuristics_finalyear('trans_summer_cap_delta') * climate_heuristics_yearfrac(t)
-    * sum{quarter$sameas(quarter,"summ"), frac_h_quarter_weights(h,quarter) }
-;
-
+    * sum{quarter$sameas(quarter,"summ"), frac_h_quarter_weights(h,quarter) };
 
 
 *=============================================
 * -- Mexico and Canada --
 *=============================================
+
 $ifthene.Canada %GSw_Canada% == 1
 parameter can_imports_szn_frac(allszn) "--unitless-- [Sw_Canada=1] fraction of annual imports that occur in each season"
 /
@@ -350,15 +318,16 @@ $offempty
 *=============================================
 * -- Air quality policies --
 *=============================================
+
 h_weight_csapr(allh) = 0 ;
 h_weight_csapr(h) =
     sum{quarter, frac_h_quarter_weights(h,quarter) * quarter_weight_csapr(quarter) } ;
 
 
-
 *==================================================
 * -- Availability (forced and scheduled outages) --
 *==================================================
+
 parameter outage_forced_h(i,r,allh) "--fraction-- forced outage rate"
 /
 $offlisting
@@ -405,9 +374,11 @@ avail(i,r,h)$valcap_ir(i,r) = 1 ;
 
 avail(i,r,h)$[valcap_ir(i,r)] = (1 - outage_forced_h(i,r,h)) * (1 - outage_scheduled_h(i,h)) ;
 
+
 *=============================================
 * -- DR Shed --
 *=============================================
+
 * Written by hourly_writetimeseries.py
 $onempty
 parameter dr_shed_out(i,r,allh)  "--fraction-- fraction of capacity available for DR shed resources"
@@ -451,10 +422,10 @@ seas_cap_frac_delta(i,v,r,szn,t)$valcap(i,v,r,t) =
     sum{quarter, szn_quarter_weights(szn,quarter) * quarter_cap_frac_delta(i,v,r,quarter,t) } ;
 
 
-
 *=============================================
 * -- Hydrogen --
 *=============================================
+
 * assign hydrogen demand by region and timeslice
 * we assumed demand is flat, i.e., timeslices w/ more hours 
 * have more demand in metric tons but the same rate in metric tons/hour
@@ -466,6 +437,7 @@ h2_exogenous_demand_regional(r,p,h,t)$[tmodel_new(t)$h2_share(r,t)]
 *=============================================
 * -- Capacity factor --
 *=============================================
+
 * Written by cfgather.py, overwritten by hourly_writetimeseries.py
 parameter cf_in(i,r,allh) "--fraction-- capacity factors for renewable technologies"
 /
@@ -499,16 +471,6 @@ $offempty
 
 $ifthen.climatehydro %GSw_ClimateHydro% == 1
 
-* declared over allt to allow for external data files that extend beyond end_year
-* Written by climateprep.py
-table climate_hydro_annual(r,allt)  "annual dispatchable hydropower availability"
-$offlisting
-$ondelim
-$include inputs_case%ds%%temporal_inputs%%ds%climate_hydadjann.csv
-$offdelim
-$onlisting
-;
-
 * Written by climateprep.py
 table climate_hydro_seasonal(r,allszn,allt)  "annual/seasonal nondispatchable hydropower availability"
 $offlisting
@@ -540,7 +502,6 @@ $include inputs_case%ds%stress%stress_year%%ds%cap_hyd_szn_adj.csv
 $offdelim
 $onlisting
 / ;
-
 
 *Upgraded hydro parameters:
 * By default, capacity factors for upgraded hydro techs use what we upgraded from.
@@ -608,9 +569,10 @@ dayhours(allh) = 0 ;
 dayhours(h)$[sum{(i,v,r,t)$[pv(i)$valgen(i,v,r,t)], m_cf(i,v,r,h,t) }] = yes ;
 
 
-*=============================================
-* -- Water accounting initialization --
-*=============================================
+*=====================================================================================
+* -- Cooling Water Initialization, Seasonal Distribution, & Climate Adjustment -- 
+*=====================================================================================
+
 * Initialize water capacity based on water requirements of existing fleet in base year. 
 * We conservatively assume plants have enough water available to operate up to a 
 * 100% capacity factor, or to operate at full capacity at any time of the year.
@@ -622,12 +584,61 @@ if(%cur_year% = sum{t$tfirst(t), yeart(t) },
                                 } / 1E6 ;
 
     m_watsc_dat(wst,"cap",r,t)$tmodel_new(t) = wat_supply_new(wst,"cap",r) + wat_supply_init(wst,r) ;
+
+* --- Climate Impacts: Cooling Water Capacity ---
+$ifthen.climatewater %GSw_ClimateWater% == 1
+* Update water supply curve with annually-varying water supply. Multiplier is applied to (wat_supply_new + wat_supply_init).
+* NOTE: Only the capacity changes, not the cost
+    m_watsc_dat(wst,"cap",r,t)$[wst_climate(wst)$tmodel_new(t)$(yeart(t)>=Sw_ClimateStartYear)
+                               ] $= sum{allt$att(allt,t), 
+                                       m_watsc_dat(wst,"cap",r,t) * wat_supply_climate(wst,r,allt) } ;
+* If wst is in wst_climate but does not have data in input file, assign its multiplier to the fsu multiplier
+    m_watsc_dat(wst,"cap",r,t)$[wst_climate(wst)$tmodel_new(t)$(yeart(t)>=Sw_ClimateStartYear)
+                               $sum{allt$att(allt,t), (not wat_supply_climate(wst,r,allt)) }
+                               ] $= sum{allt$att(allt,t), 
+                                       m_watsc_dat(wst,"cap",r,t) * wat_supply_climate('fsu',r,allt) } ;
+$endif.climatewater
 ) ;
+
+* Initialize seasonal distribution factors for new unappropriated water access
+watsa(wst,r,allszn,t) = 0 ;
+watsa(wst,r,szn,t)$[tmodel_new(t)$Sw_WaterMain] =
+    sum{quarter,
+        szn_quarter_weights(szn,quarter) * watsa_temp(wst,r,quarter) } ;
+
+* update seasonal distribution factors for water sources other than fresh surface unappropriated
+* and also fsu with missing data
+watsa(wst,r,szn,t)$[(not sum{sznn, watsa(wst,r,sznn,t)})$tmodel_new(t)$Sw_WaterMain] = 
+    round(numdays(szn)/365 , 4) ;
+
+* --- Climate Impacts: Cooling Water Seasonal Distribution --- 
+$ifthen.climatewater %GSw_ClimateWater% == 1
+* Update seasonal distribution factors for fsu; other water types are unchanged
+* declared over allt to allow for external data files that extend beyond end_year
+* Written by climateprep.py
+table watsa_climate(wst,r,allszn,allt)  "time-varying fractional seasonal allocation of water"
+$offlisting
+$ondelim
+$include inputs_case%ds%%temporal_inputs%%ds%climate_UnappWaterSeaAnnDistr.csv
+$offdelim
+$onlisting
+;
+* Use the sparse assignment $= to make sure we don't assign zero to wst's not included in watsa_climate
+watsa(wst,r,szn,t)$[wst_climate(wst)$tmodel_new(t)$(yeart(t)>=Sw_ClimateStartYear)
+                   $Sw_WaterMain
+                   ] $= sum{allt$att(allt,t), watsa_climate(wst,r,szn,allt) };
+* If wst is in wst_climate but does not have data in input file, assign its multiplier to the fsu multiplier
+watsa(wst,r,szn,t)$[wst_climate(wst)$tmodel_new(t)$(yeart(t)>=Sw_ClimateStartYear)
+                   $sum{allt$att(allt,t), (not watsa_climate(wst,r,szn,allt)) }
+                   $Sw_WaterMain
+                   ] $= sum{allt$att(allt,t), watsa_climate('fsu',r,szn,allt) };
+$endif.climatewater
 
 
 *=============================================
 * -- Operating reserves and minloading --
 *=============================================
+
 $onempty
 set opres_periods(allszn) "Periods within which the operating reserve constraint applies"
 /
@@ -684,7 +695,6 @@ minloadfrac(r,i,h)$[(Sw_MinLoadTechs=3)$(not nuclear(i))$(not hydro(i))] = 0 ;
 minloadfrac(r,i,h)$[(Sw_MinLoadTechs=4)$(not boiler(i))$(not hydro(i))] = 0 ;
 
 
-
 *=============================================
 * -- Electricity demand --
 *=============================================
@@ -702,7 +712,6 @@ $onlisting
 
 
 * EV adoptable managed charging
-
 parameter evmc_baseline_load(r,allh,allt) "--fraction-- how much adopted shaped EV load is allowed to be shed in each timeslice h"
 /
 $offlisting
@@ -772,19 +781,15 @@ $onlisting
 load_exog(r,allh,t) = 0 ;
 load_exog(r,h,t) = load_allyear(r,h,t) / (1.0 - distloss) ;
 
-* update PRM as needed to address unserved energy in PRAS
-$onempty
-parameter prm_stress(r,t) "--fraction-- planning reserve margin by BA, updated by stress_periods.py"
+parameter prm_year(r) "--fraction-- planning reserve margin for the current solve year"
 / 
 $offlisting
 $ondelim
-$include inputs_case%ds%stress%stress_year%%ds%prm_stress.csv
+$include inputs_case%ds%stress%stress_year%%ds%prm.csv
 $offdelim
 $onlisting
 / ;
-$offempty
-
-prm(r,t)$[prm_stress(r,t)] = prm_stress(r,t) ;
+prm(r,t)$tmodel(t) = prm_year(r) ;
 
 * Stress-period load is scaled up by PRM
 load_exog(r,h,t)$h_stress(h) = load_exog(r,h,t) * (1 + prm(r,t)) ;
@@ -864,10 +869,10 @@ peakdem_static_h(r,allh,t) = 0 ;
 peakdem_static_h(r,h,t) = peak_h(r,h,t) * (1 - sum{flex_type, flex_demand_frac(flex_type,r,h,t) }) / (1.0 - distloss) ;
 
 
-
 *=============================================
 * -- Fossil gas supply curve --
 *=============================================
+
 gasadder_cd(cendiv,t,allh) = 0 ;
 gasadder_cd(cendiv,t,h) = (gasprice_ref(cendiv,t) - gasprice_nat(t))/2 ;
 
@@ -881,9 +886,11 @@ szn_adj_gas(h) = 1 ;
 szn_adj_gas(h)$frac_h_quarter_weights(h,"wint") =
     szn_adj_gas(h) + frac_h_quarter_weights(h,"wint") * szn_adj_gas_winter ;
 
+
 *=============================================
 * -- Round parameters for GAMS --
 *=============================================
+
 avail(i,r,h)$avail(i,r,h) = round(avail(i,r,h),3) ;
 can_imports_szn(r,szn,t)$can_imports_szn(r,szn,t) = round(can_imports_szn(r,szn,t),3) ;
 can_exports_h(r,h,t)$can_exports_h(r,h,t) = round(can_exports_h(r,h,t),3) ;

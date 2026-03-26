@@ -31,8 +31,8 @@ data = {
         'idx_cols': ['flextype','r','timeslice'],
     },
     'hourly_load': {
-        'input_file': os.path.join(inputs_dir_path, 'variability', 'EFS_Load', load_switch + '_load_hourly.csv.gz'),
-        'output_file': os.path.join(inputs_dir_path, 'variability', 'EFS_Load', load_switch + new_suffix + '_load_hourly.csv.gz'),
+        'input_file': os.path.join(inputs_dir_path, 'profiles_demand', f'demand_{load_switch}.csv.gz'),
+        'output_file': os.path.join(inputs_dir_path, 'profiles_demand', f'demand_{load_switch}{new_suffix}.csv.gz'),
         'reshape': False,
         'round': True,
         'idx_cols': ['year','hour'],

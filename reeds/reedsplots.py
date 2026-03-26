@@ -745,7 +745,6 @@ def plot_trans_onecase(
         ax=None,
         scale=True,
         title=True,
-        routes=False,
         tolerance=1000,
         subtract_baseyear=None,
         show_overlap=True,
@@ -779,14 +778,6 @@ def plot_trans_onecase(
     if thickborders not in [None,'','none','None',False]:
         if thickborders in hierarchy:
             dfthick = dfmap[thickborders].copy()
-    ## Get route linestrings if necessary
-    if routes:
-        transmission_routes = gpd.read_file(
-            os.path.join(reeds_path,'inputs','shapefiles','transmission_routes-500kVac.gpkg')
-        ).set_index(['r','rr']).to_crs(crs)
-
-        if tolerance:
-            transmission_routes['geometry'] = transmission_routes.simplify(tolerance)
 
     ### Load run-specific output data
     if dfin is None:
@@ -886,63 +877,29 @@ def plot_trans_onecase(
 
 
     ###### Lines
-    if routes:
-        if show_overlap:
-            for i in dfplot.index:
-                row = dfplot.loc[i]
-                transmission_routes.loc[[(row.r,row.rr)]].buffer(wscale*row['MW']).plot(
-                    ax=ax, alpha=alpha,
-                    zorder=(1000 if isinstance(colors,str) else zorders[row['trtype']]),
-                    color=(colors if isinstance(colors,str) else colors[row['trtype']]),
-                )    
-        else:
-            if isinstance(colors,dict):
-                for trtype in trtypes:
-                    alllines = gpd.GeoDataFrame(
-                        dfplot.loc[dfplot.trtype==trtype]
-                        .merge(
-                            transmission_routes[['geometry']],
-                            left_on=['r','rr'], right_index=True)
-                    )
-                    alllines['dummy'] = 'dummy'
-                    alllines['geometry'] = alllines.buffer(alllines.MW*wscale)
-                    alllines = alllines.dissolve('dummy')
-                    alllines.plot(ax=ax, alpha=alpha, color=colors[trtype], label=trtype)
-            else:
-                alllines = gpd.GeoDataFrame(
-                    dfplot.merge(
-                        transmission_routes[['geometry']],
-                        left_on=['r','rr'], right_index=True)
-                )
-                alllines['dummy'] = 'dummy'
-                alllines['geometry'] = alllines.buffer(alllines.MW*wscale)
-                alllines = alllines.dissolve('dummy')
-                alllines.plot(ax=ax, alpha=alpha, color=colors)
-
+    if show_overlap:
+        for i in dfplot.index:
+            row = dfplot.loc[i]
+            ax.plot(
+                [row['r_x'], row['rr_x']], [row['r_y'], row['rr_y']],
+                color=(colors if isinstance(colors, str) else colors[row['trtype']]),
+                lw=wscale*row['MW'], solid_capstyle='butt',
+                alpha=alpha,
+            )
+            if label_line_capacity and (row.MW/1000 >= label_line_capacity):
+                _label_line(row=row, ax=ax, wscale=wscale)
     else:
-        if show_overlap:
-            for i in dfplot.index:
-                row = dfplot.loc[i]
-                ax.plot(
-                    [row['r_x'], row['rr_x']], [row['r_y'], row['rr_y']],
-                    color=(colors if isinstance(colors, str) else colors[row['trtype']]),
-                    lw=wscale*row['MW'], solid_capstyle='butt',
-                    alpha=alpha,
-                )
-                if label_line_capacity and (row.MW/1000 >= label_line_capacity):
-                    _label_line(row=row, ax=ax, wscale=wscale)
-        else:
-            alllines = []
-            for i in dfplot.index:
-                row = dfplot.loc[i]
-                alllines.append(
-                    shapely.geometry.LineString(
-                        [(row.r_x, row.r_y), (row.rr_x, row.rr_y)]
-                    ).buffer(row.MW*wscale)
-                )
-            alllines = shapely.ops.unary_union(alllines)
-            alllines = gpd.GeoSeries([alllines]).set_crs(crs)
-            alllines.plot(ax=ax, alpha=alpha, color=colors)
+        alllines = []
+        for i in dfplot.index:
+            row = dfplot.loc[i]
+            alllines.append(
+                shapely.geometry.LineString(
+                    [(row.r_x, row.r_y), (row.rr_x, row.rr_y)]
+                ).buffer(row.MW*wscale)
+            )
+        alllines = shapely.ops.unary_union(alllines)
+        alllines = gpd.GeoSeries([alllines]).set_crs(crs)
+        alllines.plot(ax=ax, alpha=alpha, color=colors)
 
     ###### VSC converters (if necessary)
     if show_converters and ('VSC' in dfplot.trtype.unique()):
@@ -962,7 +919,7 @@ def plot_trans_onecase(
             ),
             (0.1,1), xycoords='axes fraction', fontsize=10)
     if scale:
-        if routes or (not show_overlap):
+        if not show_overlap:
             gpd.GeoSeries(
                 shapely.geometry.LineString([(-1.9e6,-0.9e6),(-1.6e6,-0.9e6)])
             ).buffer(wscale*10e3).plot(
@@ -1644,7 +1601,7 @@ def plot_max_imports(
 
 def plot_vresites_transmission(
         case, year=2050, crs='ESRI:102008',
-        routes=True, wscale=1.5, show_overlap=False,
+        wscale=1.5, show_overlap=False,
         subtract_baseyear=None,
         alpha=0.25, colors='k',
         techs=['upv','wind-ons','wind-ofs'],
@@ -1732,7 +1689,7 @@ def plot_vresites_transmission(
             alpha=alpha, colors=colors,
             f=f, ax=ax,
             title=False, scale=False,
-            routes=routes, tolerance=1000,
+            tolerance=1000,
             subtract_baseyear=subtract_baseyear,
             show_overlap=show_overlap,
             crs=crs, show_converters=0,
@@ -1741,7 +1698,7 @@ def plot_vresites_transmission(
     if show_transmission and trans_scale:
         ymin = ax.get_ylim()[0]
         xmin = ax.get_xlim()[0]
-        if routes or (not show_overlap):
+        if not show_overlap:
             gpd.GeoSeries(
                 shapely.geometry.LineString([(xmin*0.8,ymin*0.6),(xmin*0.6,ymin*0.6)])
             ).buffer(wscale*10e3).plot(
@@ -6825,3 +6782,65 @@ def map_output_byyear(
                 **kwargs,
             )
     return f, ax, dictplot
+
+
+def map_prm(case, tmin=2023, cmap=cmocean.cm.rain, scale=3, fontsize=7, vmax=None):
+    dfmap = reeds.io.get_dfmap(case)
+    sw = reeds.io.get_switches(case)
+    ### Get final iterations
+    year2iteration = (
+        pd.DataFrame([
+            os.path.basename(i).strip('neue_.csv').split('i')
+            for i in sorted(glob(os.path.join(case, 'outputs', 'neue_*.csv')))
+        ], columns=['year','iteration']).astype(int)
+        .drop_duplicates(subset='year', keep='last')
+        .set_index('year').iteration
+        .loc[tmin:]
+    )
+    ### Get PRMs
+    prm_final = (
+        pd.read_csv(os.path.join(case, 'outputs', 'prm.csv'))
+        .rename(columns={'*r':'r'})
+        .set_index(['r','t']).squeeze(1)
+        * 100
+    )
+    if vmax in [None, 0, 'max', 'data', 'auto', 'scale']:
+        vmax = prm_final.max()
+
+    ### Plot it
+    nrows, ncols, coords = plots.get_coordinates(year2iteration.index, aspect=1.8)
+    level = sw.GSw_PRM_StressThreshold.split('_')[0]
+    plt.close()
+    f,ax = plt.subplots(
+        nrows, ncols, figsize=(ncols*scale, nrows*scale*0.8), sharex=True, sharey=True,
+        gridspec_kw={'hspace':0, 'wspace':0},
+    )
+    for year in coords:
+        _ax = ax[coords[year]]
+        dfmap[level].plot(ax=_ax, facecolor='none', edgecolor='k', lw=0.25, zorder=1e7)
+        dfplot = dfmap['r'].copy()
+        dfplot['prm'] = prm_final.xs(year, 0, 't')
+        dfplot.plot(ax=_ax, column='prm', cmap=cmap, vmin=0, vmax=vmax)
+        _ax.set_title(year, fontsize='x-large', y=0.9, weight='bold')
+        _ax.axis('off')
+        if fontsize:
+            dflabel = dfmap[level].copy()
+            dflabel['prm'] = dfplot.groupby(level).prm.max()
+            for r, row in dflabel.sort_values('prm').iterrows():
+                _ax.annotate(
+                    f"{row.prm:.0f}",
+                    [row.centroid_x, row.centroid_y],
+                    ha='center', va='center', c='k',
+                    fontsize=fontsize,
+                    path_effects=[pe.withStroke(linewidth=1.5, foreground='w', alpha=0.7)],
+                )
+        if year == max(year2iteration.index):
+            plots.addcolorbarhist(
+                f, _ax, dfplot['prm'].values, vmin=0, vmax=vmax, cmap=cmap,
+                title='PRM [%]',
+                cbarheight=0.8, cbarhoffset=0.1, cbarwidth=0.05,
+                histcolor='w', histratio=0.01,
+            )
+    plots.trim_subplots(ax, nrows, ncols, len(coords))
+
+    return f, ax, prm_final

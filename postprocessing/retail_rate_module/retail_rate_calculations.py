@@ -9,6 +9,7 @@ import numpy as np
 import gdxpds
 import os
 import sys
+import urllib
 ### Local imports
 import ferc_distadmin
 import calculate_historical_capex
@@ -334,9 +335,6 @@ def main(run_dir, inputpath='inputs.csv', write=True, verbose=0):
     stacked_regions_map = regions_map[['r', 'state']].drop_duplicates().rename(columns={'r':'region'})
     reedsregion2state = dict(zip(stacked_regions_map.region.values, stacked_regions_map.state.values))
     states = list(set(reedsregion2state.values()))
-    # Ingest map to convert s regions to p regions
-    rs_map = pd.read_csv(os.path.join(mdir, 'inputs', 'rsmap.csv'))
-    s2r = dict(zip(rs_map['rs'], rs_map['r']))
 
     if verbose > 1:
         print(f'inputs: \n{inputs}')
@@ -418,9 +416,6 @@ def main(run_dir, inputpath='inputs.csv', write=True, verbose=0):
     system_costs = system_costs.rename(
         columns={'sys_costs':'cost_type', 'r':'region', 't':'t', 'Value':'cost',
                  'Dim1':'cost_type','Dim2':'region','Dim3':'t','Val':'cost'})
-    # Convert s regions to p regions if necessary
-    system_costs.loc[system_costs['region'].str.contains('s'), 'region'] = (
-        system_costs.loc[system_costs['region'].str.contains('s'), 'region'].map(s2r))
     system_costs = system_costs.groupby(
         by=['cost_type', 'region', 't'], as_index=False).agg({'cost':'sum'})
 
@@ -759,9 +754,6 @@ def main(run_dir, inputpath='inputs.csv', write=True, verbose=0):
         ).rename(columns={
             'i':'i', 'r':'region', 't':'t_modeled', 'Value':'cap_new', 
             'Dim1':'i', 'Dim2':'v', 'Dim3':'region', 'Dim4':'t_modeled', 'Val':'cap_new'})
-    # Convert s regions to p regions if necessary
-    cap_new_ivrt.loc[cap_new_ivrt['region'].str.contains('s'), 'region'] = (
-        cap_new_ivrt.loc[cap_new_ivrt['region'].str.contains('s'), 'region'].map(s2r))
     cap_new_ivrt = cap_new_ivrt.groupby(
         by=['i', 'region', 't_modeled'], as_index=False).agg({'cap_new':'sum'})
     
@@ -905,9 +897,6 @@ def main(run_dir, inputpath='inputs.csv', write=True, verbose=0):
         os.path.join(run_dir, 'inputs_case', 'df_capex_init.csv'))
     df_gen_capex_init = df_gen_capex_init[df_gen_capex_init['t']<=first_year]
     df_gen_capex_init = df_gen_capex_init[df_gen_capex_init['t']>=first_hist_year]
-    # Convert s regions to p regions
-    df_gen_capex_init.loc[df_gen_capex_init['region'].str.contains('s'), 'region'] = (
-        df_gen_capex_init.loc[df_gen_capex_init['region'].str.contains('s'), 'region'].map(s2r))
     df_gen_capex_init = df_gen_capex_init.groupby(
         by=['i', 'region', 't'], as_index=False).agg({'cap_new':'sum', 'capex':'sum'})
     
@@ -1942,8 +1931,6 @@ def retail_plots(run_dir, inputpath='inputs.csv', startyear=2010,
     import matplotlib as mpl
     ### Local imports
     plots.plotparams()
-    ### Get module directory for relative paths
-    mdir = os.path.dirname(os.path.abspath(__file__))
     print('Creating Plots:')
 
     #%%######################################################
@@ -2263,16 +2250,23 @@ def retail_plots(run_dir, inputpath='inputs.csv', startyear=2010,
     print(' - Plot 2: EIA861 Historic vs ReEDS rates')
     
     ### Get the historical EIA861 rates
-    dfeia = pd.read_excel(
-        os.path.join(mdir,'inputs','Table_9.8_Average_Retail_Prices_of_Electricity.xlsx'),
-        engine='openpyxl', sheet_name='Annual Data',
-        skiprows=list(range(10))+[11], index_col=0, na_values=['Not Available'],
+    keepcol = 'Average Price of Electricity to Ultimate Customers, Total'
+    try:
+        dfeia = pd.read_excel(
+            'https://www.eia.gov/totalenergy/data/browser/xls.php?tbl=T09.08',
+            engine='openpyxl', sheet_name='Annual Data',
+            skiprows=list(range(10))+[11], index_col=0, na_values=['Not Available'],
         )
+    except urllib.error.URLError as e:
+        print(
+            'Historical retail rate download failed; '
+            f'check internet connection or SSL certificates\n{e}'
+        )
+        dfeia = pd.DataFrame(columns=['t', keepcol]).set_index('t')
     inflatable = ferc_distadmin.get_inflatable(
         os.path.join(run_dir, 'inputs_case', 'inflation.csv'))
     dfeia['inflator'] = dfeia.index.map(lambda x: inflatable[x,plot_dollar_year])
-    dfeia['RetailTotal_real'] = (
-        dfeia['Average Retail Price of Electricity, Total'] * dfeia.inflator)
+    dfeia['RetailTotal_real'] = dfeia[keepcol] * dfeia.inflator
     ### Write the rates to facilitate plot recreation
     pd.concat([
         (dfeia.RetailTotal_real.rename('retailrate')

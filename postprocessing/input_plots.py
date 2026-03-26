@@ -609,9 +609,7 @@ def plot_regional_cost_difference(
             reeds.io.reeds_path, 'inputs', 'financials', 'reg_cap_cost_diff_default.csv',
         )
         dfin = pd.read_csv(fpath, index_col='r') * 100
-        dfcounty = gpd.read_file(
-            os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'US_county_2022')
-        ).set_index('rb')
+        dfcounty = reeds.io.get_countymap().set_index('rb')
         dfcounty.geometry = dfcounty.intersection(dfmap['country'].geometry.squeeze()).simplify(1000)
         dfplot = dfcounty.merge(dfin, left_index=True, right_index=True)
     else:

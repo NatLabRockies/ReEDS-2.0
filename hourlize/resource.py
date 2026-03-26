@@ -811,14 +811,15 @@ def save_sc_outputs(
             df_exog = df_exog.sort_values(['year',profile_id_col]).round(decimals)
             df_exog.to_csv(os.path.join(outpath, 'results', tech + '_exog_cap.csv'), index=False)
         #Prescribed capacity output
-        df_pre = df_exist[df_exist['online_year'] >= start_year].copy()
-        if not df_pre.empty:
-            df_pre = df_pre[['region','online_year','existing_capacity']].copy()
-            df_pre = df_pre.rename(columns={'online_year':'year', 'existing_capacity':'capacity'})
-            df_pre = df_pre.groupby(['region','year'], sort=False, as_index =False).sum()
-            df_pre['capacity'] =  df_pre['capacity'].round(decimals)
-            df_pre = df_pre.sort_values(['year','region'])
-            df_pre.to_csv(os.path.join(outpath, 'results', tech + '_prescribed_builds.csv'), index=False)
+        if tech in ['wind-ons', 'wind-ofs']:
+            df_pre = df_exist[df_exist['online_year'] >= start_year].copy()
+            if not df_pre.empty:
+                df_pre = df_pre[[profile_id_col,'online_year','existing_capacity']].copy()
+                df_pre = df_pre.rename(columns={'online_year':'year', 'existing_capacity':'capacity'})
+                df_pre = df_pre.groupby([profile_id_col,'year'], sort=False, as_index =False).sum()
+                df_pre['capacity'] =  df_pre['capacity'].round(decimals)
+                df_pre = df_pre.sort_values(['year',profile_id_col])
+                df_pre.to_csv(os.path.join(outpath, 'results', tech + '_prescribed_builds.csv'), index=False)
         #Reduce supply curve based on exogenous (pre-start-year) capacity
         if subtract_exog:
             criteria = (df_sc['online_year'] > 0) & (df_sc['online_year'] < start_year)
@@ -914,7 +915,7 @@ def copy_outputs(
                 os.path.join(resultspath, f'{tech}_prescribed_builds.csv'),
                 os.path.join(
                     inputspath, 'capacity_exogenous',
-                    f'prescribed_builds_{techlabel}_{access_case}_{level}.csv',
+                    f'prescribed_builds_{techlabel}_{access_case}.csv',
                 )
             )
         except Exception:
@@ -929,21 +930,6 @@ def copy_outputs(
             )
         except Exception:
             print('WARNING: No exogenous capacity')
-
-        #Hourly profiles
-        if reg_out_col == "FIPS" or "county" in casename:
-            print("""County-level supply profiles are not kept in the repo due to their size
-                    and will not be copied to ReEDS""")
-        else:
-            try:
-                shutil.copy2(
-                    os.path.join(resultspath, f'{tech}.h5'),
-                    os.path.join(
-                        inputspath, 'variability', 'multi_year',
-                        f'{techlabel}-{access_case}_{level}.h5')
-                )
-            except Exception:
-                print('WARNING: No hourly profiles')
 
         ## Metadata
         # rev configs
@@ -975,6 +961,14 @@ def copy_outputs(
                 )
             except Exception:
                 pass
+
+        # Hourly profiles
+        print(
+            "Hourly profiles are not copied to the ReEDS repository. "
+            "When finalized, these files should be uploaded to Zenodo "
+            "and inputs/remote_files.csv should be updated accordingly. "
+            "See preprocessing/README.md for upload instructions."
+        )
 
     if copy_to_shared:
         shared_drive_path = os.path.join(sc_path, os.path.basename(os.path.normpath(outpath)))

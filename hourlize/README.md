@@ -15,6 +15,8 @@ Hourlize is run by a call to `run_hourlize.py`, which assembles information on t
 ### Quickstart: Resource
 
 1. Copy any new reV supply curves to the supply curve folder and update the rev_paths file ([details](#setup-for-rev-supply-curves)).
+    1. Make sure to include the `sam.json` file, which specifies the capacity factor modeling assumptions used in SAM.
+    (An example file on kestrel is: `/projects/rev/projects/seto/fy25/standard_scenarios/rev/generation/moderate_2035/sam.json`)
 1. Update settings in `config_base.json` as needed ([details](#config-jsons)).
 1. Update settings in the relevant `config_[tech].json` files as needed ([details](#config-jsons)).
 1. Specify cases to run in `cases.json` or create your own cases file ([details](#cases-json)).
@@ -22,7 +24,7 @@ Hourlize is run by a call to `run_hourlize.py`, which assembles information on t
 1. Run using `run_hourlize.py resource` ([details](#running-hourlize)).
 1. Run `tests/get_subset_h5.py` to produce the county-level test h5 files, after specifying the relevant techs at the top of that file.
 1. Update `inputs/supply_curve/dollaryear.csv` if needed. The dollar year typically aligns with the ATB year of the reV run, although it's best to confirm with the reV team to make sure all their costs have been converted to that dollar year.
-1. Sync up new supply curve files on HPC, nrelnas01, and Yampa as needed
+1. If the results are intended to be used on the main branch, then after testing and quality control, upload the new profiles to the remote host as described in `preprocessing/README.md`
 
 ### Quickstart: Load
 
@@ -30,6 +32,8 @@ Hourlize is run by a call to `run_hourlize.py`, which assembles information on t
 1. If running on the HPC, specify run allocation or other submission settings in `inputs/configs/srun_template.sh` ([details](#config-jsons)).
 1. Run using `run_hourlize.py load` ([details](#running-hourlize)).
 1. Outputs are written to `ReEDS-2.0/inputs/load`.
+    1. If the results are intended to be used on the main branch, then after testing and quality control, upload the new profiles to the remote host as described in `preprocessing/README.md`.
+    1. If the results are not intended for general use, they can still be used locally in ReEDS by setting the `GSw_LoadProfiles` switch to the absolute filepath of the resulting hourly demand file.
 
 For more details and run options see further below.
 
@@ -170,7 +174,7 @@ By default, the outputs will be dumped to a subdirectory named `results` within 
 * `supplycurve_{tech}.csv`: A supply curve with rows for each site and columns for region, class, available capacity, and costs. E.g. see `inputs/supply_curve/wind-ons_supply_curve-reference_ba.csv` (within ReEDS repo)
 * `{tech}_exog_cap.csv`: Exogenous (built pre-2010) capacity with columns for region, site and year. This is not capacity builds in each year, but rather cumulative capacity of each existing site over time. E.g. see `inputs/capacity_exogenous/wind-ons_exog_cap_reference_ba.csv` (within ReEDS repo)
 * `{tech}_prescribed_builds.csv`: Capacity prescribed builds (2010 - present) with columns for region, year, capacity. This is the installed capacity in each year rather than cumulative capacity over time. E.g. see `inputs/capacity_exogenous/wind-ons_prescribed_builds_reference_ba.csv` (within ReEDS repo)
-* `{tech}_.h5`: Hourly capacity factor profiles for each region/class. See `inputs/variability/multi_year/wind-ons-reference_ba.h5` within the ReEDS repository as an example. These files include datasets with column names (class|region) and an index with datetime and timezone information.
+* `{tech}_.h5`: Hourly capacity factor profiles for each region/class. See `inputs/profiles_cf/cf_wind-ons_reference_ba.h5` within the ReEDS repository as an example. These files include datasets with column names (class|region) and an index with datetime and timezone information.
 
 ### Shared Drive Locations
 

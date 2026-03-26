@@ -31,6 +31,7 @@ import datetime
 import numpy as np
 import os
 import pandas as pd
+from pathlib import Path
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
@@ -487,117 +488,6 @@ def duplicate_weather_years(load_hourly, weather_years):
 
     return load_hourly
 
-def apply_regional_load_adjustments(
-    regional_load_hourly: pd.DataFrame,
-    inputs_case: str, 
-    GSw_LoadAdjust_Profiles: str,
-    GSw_LoadAdjust_Adoption: str
-) -> pd.DataFrame:
-    """
-    Adjust hourly regional load profiles by adding hourly regional
-    load adjustment profiles, weighted by annual adoption rates.
-    
-    Args:
-        regional_load_hourly: Hourly regional load profiles in MWh.
-        inputs_case: Path to the inputs case directory.
-        GSw_LoadAdjust_Profiles: "__"-separated suffixes for files containing
-            hourly regional load adjustment profiles in MWh.
-        GSw_LoadAdjust_Adoption: "__"-separated suffixes for files containing
-            annual adoption rates for load adjustment profiles.
-
-    Returns:
-        pd.DataFrame
-    """
-    # Splitting load adjustment profiles and adoption rates
-    LoadAdjust_Profiles = GSw_LoadAdjust_Profiles.split("__")
-    LoadAdjust_Adoption = GSw_LoadAdjust_Adoption.split("__")
-    # Checking for an equal # of load adjustment profiles and adoption rates
-    if len(LoadAdjust_Adoption) != len(LoadAdjust_Profiles):
-        sys.exit(
-            "Number of GSw load adjustment profiles does not equal the "
-            "same number of adoption rate profiles"
-        )
-    # Creating a list of load profile years and regions
-    regional_load_hourly_years = (
-        regional_load_hourly.reset_index()
-        .year
-        .unique()
-        .tolist()
-    )
-    regional_load_hourly_regions = regional_load_hourly.columns.tolist()
-    # Creating a load profile with specified adoption rates
-    for i in range(len(GSw_LoadAdjust_Profiles)):
-        # Reading in the load adjustment profiles and adoption rates
-        profile = pd.read_csv(
-            os.path.join(
-                inputs_case,
-                f'ghp_delta_{GSw_LoadAdjust_Profiles[i]}.csv'
-            )
-        )
-        adoption = pd.read_csv(
-            os.path.join(
-                inputs_case,
-                f'adoption_trajectories_{GSw_LoadAdjust_Adoption[i]}.csv'
-            )
-        )
-        # Drop Years from adoption rates that are not in load profiles
-        adoption = adoption[adoption["year"].isin(regional_load_hourly_years)]
-        # Reshape load adjustment profiles and adoption rates
-        profile = pd.melt(
-            profile, id_vars=["hour"], var_name="Regions", value_name="Amount"
-        )
-        adoption = pd.melt(
-            adoption,
-            id_vars=["year"],
-            var_name="Regions",
-            value_name="Adoption Rate",
-        )
-        # Merge adoption rates and load adjustment profiles on "Regions"
-        adoption_by_profile = pd.merge(adoption, profile, on="Regions")
-
-        # Calculate regional load adjustment (weighted by adoption rate)
-        adoption_by_profile["Load Value"] = (
-            adoption_by_profile["Adoption Rate"]
-            * adoption_by_profile["Amount"]
-        )
-        #Drop unnecessary columns, filter regions, and create pivot table
-        adoption_by_profile = adoption_by_profile.drop(
-            columns=["Adoption Rate", "Amount"]
-        )
-        adoption_by_profile = adoption_by_profile[
-            adoption_by_profile["Regions"].isin(regional_load_hourly_regions)
-        ]
-        adoption_by_profile = pd.pivot(
-            adoption_by_profile,
-            index=["year", "hour"],
-            columns="Regions",
-            values="Load Value",
-        )
-        # Shaping the data to match the 7-year VRE profiles
-        adoption_by_profile_wide = adoption_by_profile.unstack("year")
-        if len(adoption_by_profile_wide) == 8760:
-            adoption_by_profile = (
-                pd.concat(
-                    [adoption_by_profile_wide] * 7,
-                    axis=0,
-                    ignore_index=True
-                )
-                .rename_axis("hour")
-                .stack("year")
-                .reorder_levels(["year", "hour"])
-                .sort_index(axis=0, level=["year", "hour"])
-            )
-        # Adding the regional load adjustment to regional_load_hourly
-        regional_load_hourly = pd.concat(
-            [regional_load_hourly, adoption_by_profile]
-        )
-        regional_load_hourly = (
-            regional_load_hourly.groupby(["year", "hour"])
-            .sum()
-        )
-
-    return regional_load_hourly
-
 def apply_distribution_loss_factor(
     load_hourly: pd.DataFrame,
     distloss: float = 0.05
@@ -729,7 +619,10 @@ def main(reeds_path, inputs_case):
     historical_state_load_annual = reeds.io.get_historical_state_load_annual()
 
     match sw.GSw_LoadProfiles:
-        case _ if 'EER_' in sw.GSw_LoadProfiles:
+        case _ if (
+            sw.GSw_LoadProfiles.startswith('EER')
+            or Path(sw.GSw_LoadProfiles).is_file()
+        ):
             endyear = int(sw.endyear)
             state_load_hourly = interpolate_missing_model_years(
                 state_load_hourly,
@@ -786,14 +679,6 @@ def main(reeds_path, inputs_case):
     #%%%#########################################
     #    -- Performing Load Modifications --    #
     #############################################
-
-    if int(sw.GSw_LoadAdjust):
-        regional_load_hourly = apply_regional_load_adjustments(
-            regional_load_hourly,
-            inputs_case,
-            sw.GSw_LoadAdjust_Profiles,
-            sw.GSw_LoadAdjust_Adoption
-        )
 
     regional_load_hourly = apply_distribution_loss_factor(
         regional_load_hourly,

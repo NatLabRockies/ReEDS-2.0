@@ -2,7 +2,8 @@ import os
 import sys
 import pandas as pd
 import geopandas as gpd
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 import reeds
 
 
@@ -147,3 +148,70 @@ def assign_to_offshore_zones(unitdata):
     dfout.loc[index2offshorezone.index, 'reeds_ba'] = index2offshorezone.values
 
     return dfout
+
+
+def get_map(resolution='county', source='tiger', crs='ESRI:102008'):
+    """
+    Download (if necessary) and read a U.S. map.
+
+    Parent URL:
+    https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html
+    or
+    https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
+    """
+    urls = {
+        'county': (
+            'https://www2.census.gov/geo/tiger/GENZ2018/shp/cb_2018_us_county_500k.zip'
+            if source.lower() == 'census' else
+            'https://www2.census.gov/geo/tiger/TIGER2022/COUNTY/tl_2022_us_county.zip'
+        ),
+        'country': 'https://www2.census.gov/geo/tiger/GENZ2018/shp/cb_2018_us_nation_5m.zip',
+        'state': (
+            'https://www2.census.gov/geo/tiger/GENZ2018/shp/cb_2018_us_state_500k.zip'
+            if source.lower() == 'census' else
+            'https://www2.census.gov/geo/tiger/TIGER2025/STATE/tl_2025_us_state.zip'
+        ),
+        'urban': 'https://www2.census.gov/geo/tiger/GENZ2018/shp/cb_2018_us_ua10_500k.zip',
+    }
+    index = {
+        'state': 'STUSPS',
+        'country': 'GEOID',
+        'county': 'GEOID',
+        'urban': 'GEOID10',
+    }
+    drop = {
+        'state': {'STUSPS': ['AK', 'AS', 'HI', 'VI', 'PR', 'MP', 'GU']},
+        'county': {'STATEFP': ['02', '60', '15', '78', '72', '69', '66']}
+    }
+    aliases = {
+        'state': ['st', 'states'],
+        'county': ['counties', 'fips'],
+        'country': ['nation', 'usa', 'u.s.a.'],
+        'urban': ['city', 'cities'],
+    }
+    for key, val in aliases.items():
+        for v in val:
+            urls[v] = urls[key]
+            if key in index:
+                index[v] = index[key]
+            if key in drop:
+                drop[v] = drop[key]
+
+    ## Parse and load it
+    url = urls[resolution.lower()]
+    cachepath = Path(reeds.io.reeds_path, 'inputs', 'shapefiles', 'cache')
+    cachepath.mkdir(exist_ok=True, parents=True)
+    fpath = Path(cachepath, Path(url).stem)
+    try:
+        df = gpd.read_file(fpath)
+    except Exception:
+        reeds.remote.download(url, fpath, unzip=True)
+        df = gpd.read_file(fpath)
+    df = df.to_crs(crs)
+    ## Downselect if necessary
+    for key, val in drop.get(resolution, {}).items():
+        df = df.loc[~df[key].isin(val)].copy()
+    if resolution in index:
+        df = df.set_index(index[resolution]).copy()
+
+    return df

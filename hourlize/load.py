@@ -427,9 +427,9 @@ def main(
         None
     """
     scenario_outfile_prefix_map = {
-        'IRA cons': 'EER_IRAlow',
-        'central': 'EER_100by2050',
-        'baseline': 'EER_Baseline_AEO2023'
+        'IRA cons': 'EER2025_IRAlow',
+        'central': 'EER2025_100by2050',
+        'baseline': 'EER2025_Baseline_AEO2023'
     }
     valid_scenarios = list(scenario_outfile_prefix_map.keys())
     state_name_code_map = get_state_name_code_map(reeds_path)
@@ -446,7 +446,7 @@ def main(
             reeds_path,
             "inputs",
             "load",
-            f"{scenario_outfile_prefix_map[scenario]}_load_hourly.h5"
+            f"demand_{scenario_outfile_prefix_map[scenario]}.h5"
         )
         for model_year in model_years:
             create_hourly_state_load_for_model_year(

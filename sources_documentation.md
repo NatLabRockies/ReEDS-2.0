@@ -2,14 +2,9 @@
 
 
   - [hourlize](#hourlize)
-    - [eer_to_reeds](#hourlize-eer-to-reeds)
-      - [eer_load_participation_factors](#hourlize-eer-to-reeds-eer-load-participation-factors)
-      - [eer_splice](#hourlize-eer-to-reeds-eer-splice)
     - [inputs](#hourlize-inputs)
       - [load](#hourlize-inputs-load)
       - [resource](#hourlize-inputs-resource)
-    - [plexos_to_reeds](#hourlize-plexos-to-reeds)
-      - [inputs](#hourlize-plexos-to-reeds-inputs)
     - [tests](#hourlize-tests)
       - [data](#hourlize-tests-data)
         - [r2r_expanded](#hourlize-tests-data-r2r-expanded)
@@ -50,21 +45,23 @@
     - [hydro](#inputs-hydro)
     - [load](#inputs-load)
     - [national_generation](#inputs-national-generation)
+    - [outages](#inputs-outages)
     - [plant_characteristics](#inputs-plant-characteristics)
+    - [profiles_cf](#inputs-profiles-cf)
+    - [profiles_demand](#inputs-profiles-demand)
+    - [remote](#inputs-remote)
     - [reserves](#inputs-reserves)
     - [sets](#inputs-sets)
     - [shapefiles](#inputs-shapefiles)
-      - [WKT_csvs](#inputs-shapefiles-wkt-csvs)
     - [state_policies](#inputs-state-policies)
     - [storage](#inputs-storage)
     - [supply_curve](#inputs-supply-curve)
     - [techs](#inputs-techs)
+    - [temporal](#inputs-temporal)
     - [transmission](#inputs-transmission)
     - [upgrades](#inputs-upgrades)
     - [userinput](#inputs-userinput)
     - [valuestreams](#inputs-valuestreams)
-    - [variability](#inputs-variability)
-      - [multi_year](#inputs-variability-multi-year)
     - [waterclimate](#inputs-waterclimate)
   - [postprocessing](#postprocessing)
     - [air_quality](#postprocessing-air-quality)
@@ -72,19 +69,12 @@
     - [bokehpivot](#postprocessing-bokehpivot)
       - [in](#postprocessing-bokehpivot-in)
         - [reeds2](#postprocessing-bokehpivot-in-reeds2)
-      - [out](#postprocessing-bokehpivot-out)
-        - [report-2025-03-21-13-05-27](#postprocessing-bokehpivot-out-report-2025-03-21-13-05-27)
-        - [report-2025-06-03-11-55-40](#postprocessing-bokehpivot-out-report-2025-06-03-11-55-40)
-        - [report-2025-06-03-11-59-51](#postprocessing-bokehpivot-out-report-2025-06-03-11-59-51)
-        - [report-2025-06-03-12-06-11](#postprocessing-bokehpivot-out-report-2025-06-03-12-06-11)
-        - [report-2025-06-03-12-06-21](#postprocessing-bokehpivot-out-report-2025-06-03-12-06-21)
-        - [report-2025-06-05-12-38-18](#postprocessing-bokehpivot-out-report-2025-06-05-12-38-18)
-        - [view](#postprocessing-bokehpivot-out-view)
     - [combine_runs](#postprocessing-combine-runs)
     - [land_use](#postprocessing-land-use)
       - [inputs](#postprocessing-land-use-inputs)
     - [plots](#postprocessing-plots)
     - [retail_rate_module](#postprocessing-retail-rate-module)
+      - [calc_historical_capex](#postprocessing-retail-rate-module-calc-historical-capex)
       - [inputs](#postprocessing-retail-rate-module-inputs)
     - [reValue](#postprocessing-revalue)
     - [tableau](#postprocessing-tableau)
@@ -94,8 +84,7 @@
   - [reeds2pras](#reeds2pras)
     - [test](#reeds2pras-test)
       - [reeds_cases](#reeds2pras-test-reeds-cases)
-        - [Pacific](#reeds2pras-test-reeds-cases-pacific)
-        - [USA_VSC_2035](#reeds2pras-test-reeds-cases-usa-vsc-2035)
+        - [test](#reeds2pras-test-reeds-cases-test)
   - [ReEDS_Augur](#reeds-augur)
   - [tests](#tests)
     - [data](#tests-data)
@@ -108,6 +97,9 @@
   - **Description:** Contains the configuration settings for the ReEDS run(s).
   - **Dollar year:** 2004
   - **Citation:** [https://github.nrel.gov/ReEDS/ReEDS-2.0/blob/38e6610a8c6a92291804598c95c11b707bf187b9/cases.csv](https://github.nrel.gov/ReEDS/ReEDS-2.0/blob/38e6610a8c6a92291804598c95c11b707bf187b9/cases.csv)
+---
+
+- [cases_county.csv](/cases_county.csv)
 ---
 
 - [cases_examples.csv](/cases_examples.csv)
@@ -143,27 +135,6 @@
 ### hourlize
 
 
-<a id='hourlize-eer-to-reeds'></a>
-#### hourlize/eer_to_reeds
-
-
-<a id='hourlize-eer-to-reeds-eer-load-participation-factors'></a>
-##### hourlize/eer_to_reeds/eer_load_participation_factors
-
-  - [ba_state_map.csv](/hourlize/eer_to_reeds/eer_load_participation_factors/ba_state_map.csv)
----
-
-
-<a id='hourlize-eer-to-reeds-eer-splice'></a>
-##### hourlize/eer_to_reeds/eer_splice
-
-  - [ba_timezone.csv](/hourlize/eer_to_reeds/eer_splice/ba_timezone.csv)
----
-
-  - [load_factors.csv](/hourlize/eer_to_reeds/eer_splice/load_factors.csv)
----
-
-
 <a id='hourlize-inputs'></a>
 #### hourlize/inputs
 
@@ -171,24 +142,13 @@
 <a id='hourlize-inputs-load'></a>
 ##### hourlize/inputs/load
 
-  - [ba_timezone.csv](/hourlize/inputs/load/ba_timezone.csv)
-    - **Description:** Contains timezone information for BAs with respect to GMT.
-    - **Indices:** r
+  - [dummy_agg_op_datacenters.csv](/hourlize/inputs/load/dummy_agg_op_datacenters.csv)
 ---
 
-  - [EIA_2010loadbystate.csv](/hourlize/inputs/load/EIA_2010loadbystate.csv)
-    - **Description:** Contains 2010 EIA load information (GWh) with respect to each state in the US.
-    - **Indices:** r
+  - [legacy_ba_state_map.csv](/hourlize/inputs/load/legacy_ba_state_map.csv)
 ---
 
-  - [EIA_loadbystate.csv](/hourlize/inputs/load/EIA_loadbystate.csv)
-    - **Description:** Contains historical (2010-2022) EIA load information (GWh) with respect to each state in the US.
-    - **Indices:** t,r
----
-
-  - [load_participation_factors_st_to_ba.csv](/hourlize/inputs/load/load_participation_factors_st_to_ba.csv)
-    - **Description:** Contains load participation factors for each of the BAs
-    - **Indices:** r
+  - [legacy_ba_timezone.csv](/hourlize/inputs/load/legacy_ba_timezone.csv)
 ---
 
 
@@ -198,12 +158,10 @@
   - [egs_resource_classes.csv](/hourlize/inputs/resource/egs_resource_classes.csv)
 ---
 
-  - [fair_market_value.csv](/hourlize/inputs/resource/fair_market_value.csv)
-    - **Description:** Contains estimates of fair market land value in $ per hectare for each reV supply curve site
-    - **Citation:** Provided by Anthony Lopez in June 2023
+  - [geohydro_resource_classes.csv](/hourlize/inputs/resource/geohydro_resource_classes.csv)
 ---
 
-  - [geohydro_resource_classes.csv](/hourlize/inputs/resource/geohydro_resource_classes.csv)
+  - [offshore_zone_names.csv](/hourlize/inputs/resource/offshore_zone_names.csv)
 ---
 
   - [rev_sc_columns.csv](/hourlize/inputs/resource/rev_sc_columns.csv)
@@ -225,30 +183,6 @@
 
   - [wind-ons_resource_classes.csv](/hourlize/inputs/resource/wind-ons_resource_classes.csv)
     - **Description:** Contains information related to Onshore wind class segregation based on mean wind speeds.
----
-
-
-<a id='hourlize-plexos-to-reeds'></a>
-#### hourlize/plexos_to_reeds
-
-
-<a id='hourlize-plexos-to-reeds-inputs'></a>
-##### hourlize/plexos_to_reeds/inputs
-
-  - [month_to_season.csv](/hourlize/plexos_to_reeds/inputs/month_to_season.csv)
-    - **Description:** Maps the season to month in a year
----
-
-  - [plexos_node_monthly_lpf_ercot.csv](/hourlize/plexos_to_reeds/inputs/plexos_node_monthly_lpf_ercot.csv)
----
-
-  - [plexos_node_seasonal_lpf_wi.csv](/hourlize/plexos_to_reeds/inputs/plexos_node_seasonal_lpf_wi.csv)
----
-
-  - [plexos_node_to_reeds_ba.csv](/hourlize/plexos_to_reeds/inputs/plexos_node_to_reeds_ba.csv)
----
-
-  - [plexos_node_to_zone_ei.csv](/hourlize/plexos_to_reeds/inputs/plexos_node_to_zone_ei.csv)
 ---
 
 
@@ -756,7 +690,10 @@
   - [hierarchy_agg69.csv](/inputs/hierarchy_agg69.csv)
 ---
 
-  - [modeledyears.csv](/inputs/modeledyears.csv)
+  - [hierarchy_offshore.csv](/inputs/hierarchy_offshore.csv)
+---
+
+  - [remote_files.csv](/inputs/remote_files.csv)
 ---
 
   - [scalars.csv](/inputs/scalars.csv)
@@ -848,147 +785,31 @@
   - [interconnection_queues.csv](/inputs/capacity_exogenous/interconnection_queues.csv)
 ---
 
-  - [prescribed_builds_geohydro_allkm_reference.csv](/inputs/capacity_exogenous/prescribed_builds_geohydro_allkm_reference.csv)
+  - [prescribed_builds_wind-ofs_meshed_limited.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_meshed_limited.csv)
 ---
 
-  - [prescribed_builds_geohydro_reference_ba.csv](/inputs/capacity_exogenous/prescribed_builds_geohydro_reference_ba.csv)
+  - [prescribed_builds_wind-ofs_meshed_open.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_meshed_open.csv)
 ---
 
-  - [prescribed_builds_geohydro_reference_county.csv](/inputs/capacity_exogenous/prescribed_builds_geohydro_reference_county.csv)
+  - [prescribed_builds_wind-ofs_meshed_reference.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_meshed_reference.csv)
 ---
 
-  - [prescribed_builds_upv_limited_ba.csv](/inputs/capacity_exogenous/prescribed_builds_upv_limited_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with limited siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ofs_radial_limited.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_radial_limited.csv)
 ---
 
-  - [prescribed_builds_upv_limited_county.csv](/inputs/capacity_exogenous/prescribed_builds_upv_limited_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with limited siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ofs_radial_open.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_radial_open.csv)
 ---
 
-  - [prescribed_builds_upv_open_ba.csv](/inputs/capacity_exogenous/prescribed_builds_upv_open_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with open siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ofs_radial_reference.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_radial_reference.csv)
 ---
 
-  - [prescribed_builds_upv_open_county.csv](/inputs/capacity_exogenous/prescribed_builds_upv_open_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with open siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ons_limited.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_limited.csv)
 ---
 
-  - [prescribed_builds_upv_reference_ba.csv](/inputs/capacity_exogenous/prescribed_builds_upv_reference_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with reference siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ons_open.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_open.csv)
 ---
 
-  - [prescribed_builds_upv_reference_county.csv](/inputs/capacity_exogenous/prescribed_builds_upv_reference_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** UPV prescribed builds with reference siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ofs_limited_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_limited_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ofs prescribed builds with limited siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ofs_limited_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_limited_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ofs prescribed builds with limited siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ofs_open_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_open_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ofs prescribed builds with open siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ofs_open_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_open_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ofs prescribed builds with open siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ofs_reference_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_reference_ba.csv)
----
-
-  - [prescribed_builds_wind-ofs_reference_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ofs_reference_county.csv)
----
-
-  - [prescribed_builds_wind-ons_limited_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_limited_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with limited siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ons_limited_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_limited_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with limited siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ons_open_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_open_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with open siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ons_open_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_open_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with open siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ons_reference_ba.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_reference_ba.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with reference siting assumptions at BA resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
----
-
-  - [prescribed_builds_wind-ons_reference_county.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_reference_county.csv)
-    - **File Type:** Prescribed capacity
-    - **Description:** wind-ons prescribed builds with reference siting assumptions at county resolution
-    - **Indices:** r,t
-    - **Units:** MW
-
+  - [prescribed_builds_wind-ons_reference.csv](/inputs/capacity_exogenous/prescribed_builds_wind-ons_reference.csv)
 ---
 
   - [ReEDS_generator_database_final_EIA-NEMS.csv](/inputs/capacity_exogenous/ReEDS_generator_database_final_EIA-NEMS.csv)
@@ -1006,11 +827,6 @@
   - [climate_heuristics_yearfrac.csv](/inputs/climate/climate_heuristics_yearfrac.csv)
 ---
 
-  - [CoolSlopes.csv](/inputs/climate/CoolSlopes.csv)
----
-
-  - [HeatSlopes.csv](/inputs/climate/HeatSlopes.csv)
----
 
 
 <a id='inputs-climate-gfdl-esm2m-rcp4p5-wm'></a>
@@ -1020,18 +836,38 @@
 ---
 
   - [hydadjann.csv](/inputs/climate/GFDL-ESM2M_RCP4p5_WM/hydadjann.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual dispatchable hydropower for the GFDL-ESM2M_RCP4p5_WM climate scenario
+    - **Indices:** r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [hydadjsea.csv](/inputs/climate/GFDL-ESM2M_RCP4p5_WM/hydadjsea.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual/monthly non-dispatchable hydropower for the GFDL-ESM2M_RCP4p5_WM climate scenario
+    - **Indices:** r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/GFDL-ESM2M_RCP4p5_WM/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the GFDL-ESM2M_RCP4p5_WM climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/GFDL-ESM2M_RCP4p5_WM/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the GFDL-ESM2M_RCP4p5_WM climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/GFDL-ESM2M_RCP4p5_WM/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the GFDL-ESM2M_RCP4p5_WM climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1042,12 +878,24 @@
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/HadGEM2-ES_RCP2p6/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the HadGEM2-ES_RCP2p6 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/HadGEM2-ES_RCP2p6/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the HadGEM2-ES_RCP2p6 climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/HadGEM2-ES_RCP2p6/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the HadGEM2-ES_RCP2p6 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1058,18 +906,38 @@
 ---
 
   - [hydadjann.csv](/inputs/climate/HadGEM2-ES_rcp45_AT/hydadjann.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual dispatchable hydropower for the HadGEM2-ES_rcp45_AT climate scenario
+    - **Indices:** r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [hydadjsea.csv](/inputs/climate/HadGEM2-ES_rcp45_AT/hydadjsea.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual/monthly non-dispatchable hydropower for the HadGEM2-ES_rcp45_AT climate scenario
+    - **Indices:** r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/HadGEM2-ES_rcp45_AT/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the HadGEM2-ES_rcp45_AT climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/HadGEM2-ES_rcp45_AT/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the HadGEM2-ES_rcp45_AT climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/HadGEM2-ES_rcp45_AT/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the HadGEM2-ES_rcp45_AT climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1080,12 +948,24 @@
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/HadGEM2-ES_RCP4p5/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the HadGEM2-ES_RCP4p5 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/HadGEM2-ES_RCP4p5/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the HadGEM2-ES_RCP4p5 climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/HadGEM2-ES_RCP4p5/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the HadGEM2-ES_RCP4p5 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1096,18 +976,38 @@
 ---
 
   - [hydadjann.csv](/inputs/climate/HadGEM2-ES_rcp85_AT/hydadjann.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual dispatchable hydropower for the HadGEM2-ES_rcp85_AT climate scenario
+    - **Indices:** r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [hydadjsea.csv](/inputs/climate/HadGEM2-ES_rcp85_AT/hydadjsea.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual/monthly non-dispatchable hydropower for the HadGEM2-ES_rcp85_AT climate scenario
+    - **Indices:** r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/HadGEM2-ES_rcp85_AT/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the HadGEM2-ES_rcp85_AT climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/HadGEM2-ES_rcp85_AT/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the HadGEM2-ES_rcp85_AT climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/HadGEM2-ES_rcp85_AT/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the HadGEM2-ES_rcp85_AT climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1118,12 +1018,24 @@
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/HadGEM2-ES_RCP8p5/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the HadGEM2-ES_RCP8p5 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/HadGEM2-ES_RCP8p5/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the HadGEM2-ES_RCP8p5 climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/HadGEM2-ES_RCP8p5/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the HadGEM2-ES_RCP8p5 climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1134,18 +1046,38 @@
 ---
 
   - [hydadjann.csv](/inputs/climate/IPSL-CM5A-LR_RCP8p5_WM/hydadjann.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual dispatchable hydropower for the IPSL-CM5A-LR_RCP8p5_WM climate scenario
+    - **Indices:** r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [hydadjsea.csv](/inputs/climate/IPSL-CM5A-LR_RCP8p5_WM/hydadjsea.csv)
+    - **Description:** Climate-impact capacity factor multipliers for annual/monthly non-dispatchable hydropower for the IPSL-CM5A-LR_RCP8p5_WM climate scenario
+    - **Indices:** r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMult.csv](/inputs/climate/IPSL-CM5A-LR_RCP8p5_WM/UnappWaterMult.csv)
+    - **Description:** Climate-impact water availability multipliers for annual/monthly unappropriated fresh surface water for the IPSL-CM5A-LR_RCP8p5_WM climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterMultAnn.csv](/inputs/climate/IPSL-CM5A-LR_RCP8p5_WM/UnappWaterMultAnn.csv)
+    - **Description:** Climate-impact water availability multipliers for annual unappropriated fresh surface water for the IPSL-CM5A-LR_RCP8p5_WM climate scenario
+    - **Indices:** wst,r,t
+    - **Units:** multipliers (unitless)
+
 ---
 
   - [UnappWaterSeaAnnDistr.csv](/inputs/climate/IPSL-CM5A-LR_RCP8p5_WM/UnappWaterSeaAnnDistr.csv)
+    - **Description:** Fractional distribution of unappropriated fresh surface water for each month of a given year for the  IPSL-CM5A-LR_RCP8p5_WM climate scenario
+    - **Indices:** wst,r,month,t
+    - **Units:** multipliers (unitless)
+
 ---
 
 
@@ -1240,22 +1172,6 @@
     - **Citation:** N/A
 ---
 
-  - [h2_storage_ba.csv](/inputs/consume/h2_storage_ba.csv)
-    - **File Type:** Inputs
-    - **Description:** Cheapest H2 storage type that exists in each ReEDS BA. Storage locations come from https://www.sciencedirect.com/science/article/pii/S0360319914021223.
-    - **Indices:** r
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [h2_storage_county.csv](/inputs/consume/h2_storage_county.csv)
-    - **File Type:** Inputs
-    - **Description:** Cheapest H2 storage type that exists in each county. Storage locations come from https://www.sciencedirect.com/science/article/pii/S0360319914021223.
-    - **Indices:** r
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
   - [h2_transport_and_storage_costs.csv](/inputs/consume/h2_transport_and_storage_costs.csv)
     - **File Type:** Inputs
     - **Description:** Transport and storage costs of hydrogen per year
@@ -1286,6 +1202,15 @@
 <a id='inputs-demand-response'></a>
 #### inputs/demand_response
 
+  - [dr_shed_avail_scalar.csv](/inputs/demand_response/dr_shed_avail_scalar.csv)
+---
+
+  - [dr_shed_capacity_scalar_demo_data_IEF_January_2025.csv](/inputs/demand_response/dr_shed_capacity_scalar_demo_data_IEF_January_2025.csv)
+---
+
+  - [dr_shed_hourly.h5](/inputs/demand_response/dr_shed_hourly.h5)
+---
+
   - [ev_load_Baseline.h5](/inputs/demand_response/ev_load_Baseline.h5)
     - **File Type:** inputs
     - **Description:** Baseline electricity load from EV charging by timeslice h and year t
@@ -1305,10 +1230,10 @@
   - [evmc_storage_decrease_profile_Baseline.h5](/inputs/demand_response/evmc_storage_decrease_profile_Baseline.h5)
 ---
 
-  - [evmc_storage_energy_Baseline.h5](/inputs/demand_response/evmc_storage_energy_Baseline.h5)
+  - [evmc_storage_increase_profile_Baseline.h5](/inputs/demand_response/evmc_storage_increase_profile_Baseline.h5)
 ---
 
-  - [evmc_storage_increase_profile_Baseline.h5](/inputs/demand_response/evmc_storage_increase_profile_Baseline.h5)
+  - [evmc_storage_profile_energy_Baseline.h5](/inputs/demand_response/evmc_storage_profile_energy_Baseline.h5)
 ---
 
 
@@ -1399,6 +1324,9 @@
     - **Indices:** FIPS
 ---
 
+  - [county_state_lpf.csv](/inputs/disaggregation/county_state_lpf.csv)
+---
+
   - [disagg_hydroexist.csv](/inputs/disaggregation/disagg_hydroexist.csv)
     - **Description:** The hydropower capacity fraction of each county within a given ReEDS BA, used as multipliers for downselecting data
     - **Indices:** r
@@ -1435,11 +1363,14 @@
 ---
 
   - [emitrate.csv](/inputs/emission_constraints/emitrate.csv)
-    - **Description:** Emition rates for thermal generator for SO2, NOx, and CO2
+    - **Description:** Emition rates for thermal generators with values from Table 5 of https://docs.nrel.gov/docs/fy25osti/93005.pdf
     - **Indices:** i,e
 ---
 
   - [gwp.csv](/inputs/emission_constraints/gwp.csv)
+---
+
+  - [h2_leakage_rate.csv](/inputs/emission_constraints/h2_leakage_rate.csv)
 ---
 
   - [methane_leakage_rate.csv](/inputs/emission_constraints/methane_leakage_rate.csv)
@@ -1548,13 +1479,7 @@
 ---
 
   - [nuclear_energy_communities.csv](/inputs/financials/nuclear_energy_communities.csv)
-    - **File Type:**  LLNL
-    - **Description:** Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL
-    - **Indices:**  INL
-    - **Dollar year:**  ORNL
-    - **Citation:**  SNL
-    - **Units:**  Argonne
-
+    - **Description:** "Counties belonging to metropolitan statistical areas (MSAs) for which at least 0.17 percent of direct employment has been related to nuclear power at any point since 2010. These are determined partly by following the process described in Section 2.6 of https://home.treasury.gov/system/files/8861/EnergyCommunities_Data_Documentation.pdf and substituing in the NAICS code for nuclear electric power generation (221113) and partly by determining counties that belong to MSAs where the number of people employed by national labs engaged in nuclear research and development (PNNL, INL, ORNL, SNL, LLNL, Argonne, and LANL) has been at least 0.17 percent of the MSA's total employment at any point since 2010."
 ---
 
   - [reg_cap_cost_diff_default.csv](/inputs/financials/reg_cap_cost_diff_default.csv)
@@ -1907,75 +1832,54 @@
 <a id='inputs-load'></a>
 #### inputs/load
 
-  - [Adoption_Trajectories_Commercial.csv](/inputs/load/Adoption_Trajectories_Commercial.csv)
----
-
-  - [Adoption_Trajectories_Residential.csv](/inputs/load/Adoption_Trajectories_Residential.csv)
----
-
-  - [Baseline_load_hourly.h5](/inputs/load/Baseline_load_hourly.h5)
----
-
   - [cangrowth.csv](/inputs/load/cangrowth.csv)
     - **Description:** Canada load growth multiplier
 ---
 
-  - [Clean2035_load_hourly.h5](/inputs/load/Clean2035_load_hourly.h5)
----
-
-  - [Clean2035_LTS_load_hourly.h5](/inputs/load/Clean2035_LTS_load_hourly.h5)
----
-
-  - [Clean2035clip1pct_load_hourly.h5](/inputs/load/Clean2035clip1pct_load_hourly.h5)
----
-
-  - [Commercial_GHP_Delta.csv](/inputs/load/Commercial_GHP_Delta.csv)
----
-
   - [demand_AEO_2023_high.csv](/inputs/load/demand_AEO_2023_high.csv)
+    - **Description:** Load growth projection from the AEO2023 High Economic Growth scenario
+    - **Units:** unitless
+
 ---
 
   - [demand_AEO_2023_low.csv](/inputs/load/demand_AEO_2023_low.csv)
+    - **Description:** Load growth projection from the AEO2023 Low Economic Growth scenario
+    - **Units:** unitless
+
 ---
 
   - [demand_AEO_2023_reference.csv](/inputs/load/demand_AEO_2023_reference.csv)
+    - **Description:** Load growth projection from the AEO2023 Reference scenario
+    - **Units:** unitless
+
 ---
 
-  - [EER_100by2050_load_hourly.h5](/inputs/load/EER_100by2050_load_hourly.h5)
+  - [demand_AEO_2025_high.csv](/inputs/load/demand_AEO_2025_high.csv)
+    - **Description:** Load growth projection from the AEO2025 High Economic Growth scenario
+    - **Units:** unitless
+
 ---
 
-  - [EER_Baseline_AEO2022_load_hourly.h5](/inputs/load/EER_Baseline_AEO2022_load_hourly.h5)
+  - [demand_AEO_2025_low.csv](/inputs/load/demand_AEO_2025_low.csv)
+    - **Description:** Load growth projection from the AEO2025 Low Economic Growth scenario
+    - **Units:** unitless
+
 ---
 
-  - [EER_IRAlow_load_hourly.h5](/inputs/load/EER_IRAlow_load_hourly.h5)
+  - [demand_AEO_2025_reference.csv](/inputs/load/demand_AEO_2025_reference.csv)
+    - **Description:** Load growth projection from the AEO2025 Reference scenario
+    - **Units:** unitless
+
 ---
 
-  - [EER_IRAmoderate_load_hourly.h5](/inputs/load/EER_IRAmoderate_load_hourly.h5)
+  - [EIA_loadbystate.csv](/inputs/load/EIA_loadbystate.csv)
 ---
 
-  - [EPHIGH_load_hourly.h5](/inputs/load/EPHIGH_load_hourly.h5)
----
-
-  - [EPMEDIUM_load_hourly.h5](/inputs/load/EPMEDIUM_load_hourly.h5)
----
-
-  - [EPMEDIUMStretch2040_load_hourly.h5](/inputs/load/EPMEDIUMStretch2040_load_hourly.h5)
----
-
-  - [EPMEDIUMStretch2046_load_hourly.h5](/inputs/load/EPMEDIUMStretch2046_load_hourly.h5)
----
-
-  - [EPREFERENCE_load_hourly.h5](/inputs/load/EPREFERENCE_load_hourly.h5)
----
-
-  - [historic_load_hourly.h5](/inputs/load/historic_load_hourly.h5)
+  - [loadsite_country_test.csv](/inputs/load/loadsite_country_test.csv)
 ---
 
   - [mex_growth_rate.csv](/inputs/load/mex_growth_rate.csv)
     - **Description:** Mexico load growth multiplier
----
-
-  - [Residential_GHP_Delta.csv](/inputs/load/Residential_GHP_Delta.csv)
 ---
 
 
@@ -1989,6 +1893,13 @@
 ---
 
   - [national_rps_frac_allScen.csv](/inputs/national_generation/national_rps_frac_allScen.csv)
+---
+
+
+<a id='inputs-outages'></a>
+#### inputs/outages
+
+  - [temperature_celsius-st.h5](/inputs/outages/temperature_celsius-st.h5)
 ---
 
 
@@ -2079,6 +1990,15 @@
     - **Description:** Dollar year mapping for each plant cost scenario
 ---
 
+  - [dr_shed_capcost_demo_data_IEF_January_2025.csv](/inputs/plant_characteristics/dr_shed_capcost_demo_data_IEF_January_2025.csv)
+---
+
+  - [dr_shed_fom.csv](/inputs/plant_characteristics/dr_shed_fom.csv)
+---
+
+  - [dr_shed_vom.csv](/inputs/plant_characteristics/dr_shed_vom.csv)
+---
+
   - [evmc_shape_Baseline.csv](/inputs/plant_characteristics/evmc_shape_Baseline.csv)
 ---
 
@@ -2115,8 +2035,11 @@
   - [geo_ATB_2024_moderate.csv](/inputs/plant_characteristics/geo_ATB_2024_moderate.csv)
 ---
 
+  - [h2-combustion_ATB_2023.csv](/inputs/plant_characteristics/h2-combustion_ATB_2023.csv)
+---
+
   - [h2-combustion_ATB_2024.csv](/inputs/plant_characteristics/h2-combustion_ATB_2024.csv)
-    - **Description:** Hydrogen CT and CC plant costs generated in preprocessing from moderate case NLR ATB 2024 data
+    - **Description:** Hydrogen CT and CC plant costs generated in preprocessing from moderate case NREL ATB 2024 data
 ---
 
   - [heat_rate_adj.csv](/inputs/plant_characteristics/heat_rate_adj.csv)
@@ -2163,6 +2086,9 @@
 
   - [minloadfrac0.csv](/inputs/plant_characteristics/minloadfrac0.csv)
     - **Description:** characteristics/minloadfrac0 database of minloadbed generator cs
+---
+
+  - [mttr.csv](/inputs/plant_characteristics/mttr.csv)
 ---
 
   - [nuclear-smr_ATB_2024_advanced.csv](/inputs/plant_characteristics/nuclear-smr_ATB_2024_advanced.csv)
@@ -2283,7 +2209,7 @@
   - [startcost.csv](/inputs/plant_characteristics/startcost.csv)
 ---
 
-  - [unitsize.csv](/inputs/plant_characteristics/unitsize.csv)
+  - [unitsize_atb.csv](/inputs/plant_characteristics/unitsize_atb.csv)
 ---
 
   - [upv_ATB_2023_advanced.csv](/inputs/plant_characteristics/upv_ATB_2023_advanced.csv)
@@ -2326,8 +2252,257 @@
 ---
 
 
+<a id='inputs-profiles-cf'></a>
+#### inputs/profiles_cf
+
+  - [cf_distpv_county.h5](/inputs/profiles_cf/cf_distpv_county.h5)
+---
+
+  - [cf_upv_limited_ba.h5](/inputs/profiles_cf/cf_upv_limited_ba.h5)
+---
+
+  - [cf_upv_limited_county.h5](/inputs/profiles_cf/cf_upv_limited_county.h5)
+---
+
+  - [cf_upv_open_ba.h5](/inputs/profiles_cf/cf_upv_open_ba.h5)
+---
+
+  - [cf_upv_open_county.h5](/inputs/profiles_cf/cf_upv_open_county.h5)
+---
+
+  - [cf_upv_reference_ba.h5](/inputs/profiles_cf/cf_upv_reference_ba.h5)
+---
+
+  - [cf_upv_reference_county.h5](/inputs/profiles_cf/cf_upv_reference_county.h5)
+---
+
+  - [cf_wind-ofs_meshed_limited_ba.h5](/inputs/profiles_cf/cf_wind-ofs_meshed_limited_ba.h5)
+---
+
+  - [cf_wind-ofs_meshed_open_ba.h5](/inputs/profiles_cf/cf_wind-ofs_meshed_open_ba.h5)
+---
+
+  - [cf_wind-ofs_meshed_reference_ba.h5](/inputs/profiles_cf/cf_wind-ofs_meshed_reference_ba.h5)
+---
+
+  - [cf_wind-ofs_radial_limited_ba.h5](/inputs/profiles_cf/cf_wind-ofs_radial_limited_ba.h5)
+---
+
+  - [cf_wind-ofs_radial_limited_county.h5](/inputs/profiles_cf/cf_wind-ofs_radial_limited_county.h5)
+---
+
+  - [cf_wind-ofs_radial_open_ba.h5](/inputs/profiles_cf/cf_wind-ofs_radial_open_ba.h5)
+---
+
+  - [cf_wind-ofs_radial_open_county.h5](/inputs/profiles_cf/cf_wind-ofs_radial_open_county.h5)
+---
+
+  - [cf_wind-ofs_radial_reference_ba.h5](/inputs/profiles_cf/cf_wind-ofs_radial_reference_ba.h5)
+---
+
+  - [cf_wind-ofs_radial_reference_county.h5](/inputs/profiles_cf/cf_wind-ofs_radial_reference_county.h5)
+---
+
+  - [cf_wind-ons_limited_ba.h5](/inputs/profiles_cf/cf_wind-ons_limited_ba.h5)
+---
+
+  - [cf_wind-ons_limited_county.h5](/inputs/profiles_cf/cf_wind-ons_limited_county.h5)
+---
+
+  - [cf_wind-ons_open_ba.h5](/inputs/profiles_cf/cf_wind-ons_open_ba.h5)
+---
+
+  - [cf_wind-ons_open_county.h5](/inputs/profiles_cf/cf_wind-ons_open_county.h5)
+---
+
+  - [cf_wind-ons_reference_ba.h5](/inputs/profiles_cf/cf_wind-ons_reference_ba.h5)
+---
+
+  - [cf_wind-ons_reference_county.h5](/inputs/profiles_cf/cf_wind-ons_reference_county.h5)
+---
+
+
+<a id='inputs-profiles-demand'></a>
+#### inputs/profiles_demand
+
+  - [demand_EER2023_100by2050.h5](/inputs/profiles_demand/demand_EER2023_100by2050.h5)
+---
+
+  - [demand_EER2023_Baseline_AEO2022.h5](/inputs/profiles_demand/demand_EER2023_Baseline_AEO2022.h5)
+---
+
+  - [demand_EER2023_IRAlow.h5](/inputs/profiles_demand/demand_EER2023_IRAlow.h5)
+---
+
+  - [demand_EER2023_IRAmoderate.h5](/inputs/profiles_demand/demand_EER2023_IRAmoderate.h5)
+---
+
+  - [demand_EER2025_100by2050.h5](/inputs/profiles_demand/demand_EER2025_100by2050.h5)
+---
+
+  - [demand_EER2025_Baseline_AEO2023.h5](/inputs/profiles_demand/demand_EER2025_Baseline_AEO2023.h5)
+---
+
+  - [demand_EER2025_IRAlow.h5](/inputs/profiles_demand/demand_EER2025_IRAlow.h5)
+---
+
+  - [demand_EFS_Baseline.h5](/inputs/profiles_demand/demand_EFS_Baseline.h5)
+---
+
+  - [demand_EFS_Clean2035.h5](/inputs/profiles_demand/demand_EFS_Clean2035.h5)
+---
+
+  - [demand_EFS_Clean2035_LTS.h5](/inputs/profiles_demand/demand_EFS_Clean2035_LTS.h5)
+---
+
+  - [demand_EFS_Clean2035clip1pct.h5](/inputs/profiles_demand/demand_EFS_Clean2035clip1pct.h5)
+---
+
+  - [demand_EFS_HIGH.h5](/inputs/profiles_demand/demand_EFS_HIGH.h5)
+---
+
+  - [demand_EFS_MEDIUM.h5](/inputs/profiles_demand/demand_EFS_MEDIUM.h5)
+---
+
+  - [demand_EFS_MEDIUMStretch2040.h5](/inputs/profiles_demand/demand_EFS_MEDIUMStretch2040.h5)
+---
+
+  - [demand_EFS_MEDIUMStretch2046.h5](/inputs/profiles_demand/demand_EFS_MEDIUMStretch2046.h5)
+---
+
+  - [demand_EFS_REFERENCE.h5](/inputs/profiles_demand/demand_EFS_REFERENCE.h5)
+---
+
+  - [demand_historic.h5](/inputs/profiles_demand/demand_historic.h5)
+---
+
+
+<a id='inputs-remote'></a>
+#### inputs/remote
+
+  - [cf_distpv_county_18421977.h5](/inputs/remote/cf_distpv_county_18421977.h5)
+---
+
+  - [cf_upv_limited_ba_18407660.h5](/inputs/remote/cf_upv_limited_ba_18407660.h5)
+---
+
+  - [cf_upv_limited_county_18407660.h5](/inputs/remote/cf_upv_limited_county_18407660.h5)
+---
+
+  - [cf_upv_open_ba_18407660.h5](/inputs/remote/cf_upv_open_ba_18407660.h5)
+---
+
+  - [cf_upv_open_county_18407660.h5](/inputs/remote/cf_upv_open_county_18407660.h5)
+---
+
+  - [cf_upv_reference_ba_18407660.h5](/inputs/remote/cf_upv_reference_ba_18407660.h5)
+---
+
+  - [cf_upv_reference_county_18407660.h5](/inputs/remote/cf_upv_reference_county_18407660.h5)
+---
+
+  - [cf_wind-ofs_meshed_limited_ba_18423723.h5](/inputs/remote/cf_wind-ofs_meshed_limited_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_meshed_open_ba_18423723.h5](/inputs/remote/cf_wind-ofs_meshed_open_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_meshed_reference_ba_18423723.h5](/inputs/remote/cf_wind-ofs_meshed_reference_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_limited_ba_18423723.h5](/inputs/remote/cf_wind-ofs_radial_limited_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_limited_county_18423723.h5](/inputs/remote/cf_wind-ofs_radial_limited_county_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_open_ba_18423723.h5](/inputs/remote/cf_wind-ofs_radial_open_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_open_county_18423723.h5](/inputs/remote/cf_wind-ofs_radial_open_county_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_reference_ba_18423723.h5](/inputs/remote/cf_wind-ofs_radial_reference_ba_18423723.h5)
+---
+
+  - [cf_wind-ofs_radial_reference_county_18423723.h5](/inputs/remote/cf_wind-ofs_radial_reference_county_18423723.h5)
+---
+
+  - [cf_wind-ons_limited_ba_18422200.h5](/inputs/remote/cf_wind-ons_limited_ba_18422200.h5)
+---
+
+  - [cf_wind-ons_limited_county_18422200.h5](/inputs/remote/cf_wind-ons_limited_county_18422200.h5)
+---
+
+  - [cf_wind-ons_open_ba_18422200.h5](/inputs/remote/cf_wind-ons_open_ba_18422200.h5)
+---
+
+  - [cf_wind-ons_open_county_18422200.h5](/inputs/remote/cf_wind-ons_open_county_18422200.h5)
+---
+
+  - [cf_wind-ons_reference_ba_18422200.h5](/inputs/remote/cf_wind-ons_reference_ba_18422200.h5)
+---
+
+  - [cf_wind-ons_reference_county_18422200.h5](/inputs/remote/cf_wind-ons_reference_county_18422200.h5)
+---
+
+  - [demand_EER2023_100by2050_18423998.h5](/inputs/remote/demand_EER2023_100by2050_18423998.h5)
+---
+
+  - [demand_EER2023_Baseline_AEO2022_18423998.h5](/inputs/remote/demand_EER2023_Baseline_AEO2022_18423998.h5)
+---
+
+  - [demand_EER2023_IRAlow_18423998.h5](/inputs/remote/demand_EER2023_IRAlow_18423998.h5)
+---
+
+  - [demand_EER2023_IRAmoderate_18423998.h5](/inputs/remote/demand_EER2023_IRAmoderate_18423998.h5)
+---
+
+  - [demand_EER2025_100by2050_18435264.h5](/inputs/remote/demand_EER2025_100by2050_18435264.h5)
+---
+
+  - [demand_EER2025_Baseline_AEO2023_18435264.h5](/inputs/remote/demand_EER2025_Baseline_AEO2023_18435264.h5)
+---
+
+  - [demand_EER2025_IRAlow_18435264.h5](/inputs/remote/demand_EER2025_IRAlow_18435264.h5)
+---
+
+  - [demand_EFS_Baseline_18461543.h5](/inputs/remote/demand_EFS_Baseline_18461543.h5)
+---
+
+  - [demand_EFS_Clean2035_18461543.h5](/inputs/remote/demand_EFS_Clean2035_18461543.h5)
+---
+
+  - [demand_EFS_Clean2035_LTS_18461543.h5](/inputs/remote/demand_EFS_Clean2035_LTS_18461543.h5)
+---
+
+  - [demand_EFS_Clean2035clip1pct_18461543.h5](/inputs/remote/demand_EFS_Clean2035clip1pct_18461543.h5)
+---
+
+  - [demand_EFS_HIGH_18461543.h5](/inputs/remote/demand_EFS_HIGH_18461543.h5)
+---
+
+  - [demand_EFS_MEDIUM_18461543.h5](/inputs/remote/demand_EFS_MEDIUM_18461543.h5)
+---
+
+  - [demand_EFS_MEDIUMStretch2040_18461543.h5](/inputs/remote/demand_EFS_MEDIUMStretch2040_18461543.h5)
+---
+
+  - [demand_EFS_MEDIUMStretch2046_18461543.h5](/inputs/remote/demand_EFS_MEDIUMStretch2046_18461543.h5)
+---
+
+  - [demand_EFS_REFERENCE_18461543.h5](/inputs/remote/demand_EFS_REFERENCE_18461543.h5)
+---
+
+  - [demand_historic_18462671.h5](/inputs/remote/demand_historic_18462671.h5)
+---
+
+
 <a id='inputs-reserves'></a>
 #### inputs/reserves
+
+  - [ccseason_dates.csv](/inputs/reserves/ccseason_dates.csv)
+---
 
   - [opres_periods.csv](/inputs/reserves/opres_periods.csv)
 ---
@@ -2362,10 +2537,6 @@
   - [bioclass.csv](/inputs/sets/bioclass.csv)
     - **File Type:** GAMS set
     - **Description:** set of bio tech classes
----
-
-  - [ccseason.csv](/inputs/sets/ccseason.csv)
-    - **File Type:** GAMS set
 ---
 
   - [ccsflex_cat.csv](/inputs/sets/ccsflex_cat.csv)
@@ -2652,57 +2823,8 @@
 <a id='inputs-shapefiles'></a>
 #### inputs/shapefiles
 
-  - [ctus_cs_polygons_BVRE.csv](/inputs/shapefiles/ctus_cs_polygons_BVRE.csv)
----
-
-  - [ctus_r_cs_spurlines_200mi.csv](/inputs/shapefiles/ctus_r_cs_spurlines_200mi.csv)
----
-
-  - [r_rr_lines_to_25_nearest_neighbors.csv](/inputs/shapefiles/r_rr_lines_to_25_nearest_neighbors.csv)
----
-
   - [state_fips_codes.csv](/inputs/shapefiles/state_fips_codes.csv)
     - **Description:** Mapping of states to FIPS codes and postcal code abbreviations
----
-
-  - [US_CAN_MEX_PCA_polygons.csv](/inputs/shapefiles/US_CAN_MEX_PCA_polygons.csv)
----
-
-  - [US_transmission_endpoints_and_CAN_MEX_centroids.csv](/inputs/shapefiles/US_transmission_endpoints_and_CAN_MEX_centroids.csv)
----
-
-
-<a id='inputs-shapefiles-wkt-csvs'></a>
-##### inputs/shapefiles/WKT_csvs
-
-  - [cendiv_WKT.csv](/inputs/shapefiles/WKT_csvs/cendiv_WKT.csv)
----
-
-  - [country_WKT.csv](/inputs/shapefiles/WKT_csvs/country_WKT.csv)
----
-
-  - [customreg_WKT.csv](/inputs/shapefiles/WKT_csvs/customreg_WKT.csv)
----
-
-  - [interconnect_WKT.csv](/inputs/shapefiles/WKT_csvs/interconnect_WKT.csv)
----
-
-  - [nerc_new_WKT.csv](/inputs/shapefiles/WKT_csvs/nerc_new_WKT.csv)
----
-
-  - [nerc_WKT.csv](/inputs/shapefiles/WKT_csvs/nerc_WKT.csv)
----
-
-  - [rto_WKT.csv](/inputs/shapefiles/WKT_csvs/rto_WKT.csv)
----
-
-  - [st_WKT.csv](/inputs/shapefiles/WKT_csvs/st_WKT.csv)
----
-
-  - [transreg_WKT.csv](/inputs/shapefiles/WKT_csvs/transreg_WKT.csv)
----
-
-  - [usda_WKT.csv](/inputs/shapefiles/WKT_csvs/usda_WKT.csv)
 ---
 
 
@@ -2742,8 +2864,10 @@
 
   - [offshore_req_default.csv](/inputs/state_policies/offshore_req_default.csv)
     - **File Type:** Inputs
-    - **Description:** default state mandates of offshore wind capacity
+    - **Description:** default state mandates of offshore wind capacity, updated in November 2025
     - **Indices:** st,allt
+    - **Units:** MW
+
 ---
 
   - [oosfrac.csv](/inputs/state_policies/oosfrac.csv)
@@ -2789,13 +2913,12 @@
 <a id='inputs-storage'></a>
 #### inputs/storage
 
+  - [cap_existing_psh.csv](/inputs/storage/cap_existing_psh.csv)
+    - **Description:** County-wide PSH operational capacity, pump capacity, and max energy, based on plant-level data from https://www.hydropower.org/hydropower-pumped-storage-tool
+    - **Units:** MW/MWh
+---
+
   - [PSH_supply_curves_durations.csv](/inputs/storage/PSH_supply_curves_durations.csv)
----
-
-  - [storage_duration.csv](/inputs/storage/storage_duration.csv)
----
-
-  - [storage_duration_pshdata.csv](/inputs/storage/storage_duration_pshdata.csv)
 ---
 
   - [storinmaxfrac.csv](/inputs/storage/storinmaxfrac.csv)
@@ -2834,9 +2957,7 @@
   - [interconnection_offshore.h5](/inputs/supply_curve/interconnection_offshore.h5)
 ---
 
-  - [PSH_supply_curves_capacity_10hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 10 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_10hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_10hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_ref_mar2024.csv)
@@ -2844,9 +2965,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_capacity_10hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 10 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_10hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_10hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wEphemeral_mar2024.csv)
@@ -2854,9 +2973,15 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_capacity_10hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_capacity_10hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve capacity assuming 10 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_capacity_10hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_10hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_10hr_wExist_wEph_mar2024.csv)
@@ -2864,9 +2989,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_capacity_12hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 12 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_12hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_12hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_ref_mar2024.csv)
@@ -2874,9 +2997,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_capacity_12hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 12 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_12hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_12hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wEphemeral_mar2024.csv)
@@ -2884,9 +3005,15 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_capacity_12hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_capacity_12hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve capacity assuming 12 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_capacity_12hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_12hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_12hr_wExist_wEph_mar2024.csv)
@@ -2894,9 +3021,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_capacity_8hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 8 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_8hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_8hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_ref_mar2024.csv)
@@ -2904,9 +3029,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_capacity_8hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve capacity assuming 8 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_capacity_8hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_8hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wEphemeral_mar2024.csv)
@@ -2914,9 +3037,15 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_capacity_8hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_capacity_8hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve capacity assuming 8 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_capacity_8hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_capacity_8hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_capacity_8hr_wExist_wEph_mar2024.csv)
@@ -2924,10 +3053,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_10hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 10 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_10hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_10hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_ref_mar2024.csv)
@@ -2936,10 +3062,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_10hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 10 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_10hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_10hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wEphemeral_mar2024.csv)
@@ -2948,10 +3071,16 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_cost_10hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_cost_10hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve cost assuming 10 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Dollar year:** 2004
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_cost_10hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_10hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_10hr_wExist_wEph_mar2024.csv)
@@ -2960,10 +3089,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_12hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 12 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_12hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_12hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_ref_mar2024.csv)
@@ -2972,10 +3098,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_12hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 12 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_12hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_12hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wEphemeral_mar2024.csv)
@@ -2984,10 +3107,16 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_cost_12hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_cost_12hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve cost assuming 12 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Dollar year:** 2004
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_cost_12hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_12hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_12hr_wExist_wEph_mar2024.csv)
@@ -2996,10 +3125,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_8hr_ref_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_ref_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 8 hour duration and reference exclusions as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_8hr_ref_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_ref_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_8hr_ref_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_ref_mar2024.csv)
@@ -3008,10 +3134,7 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
-  - [PSH_supply_curves_cost_8hr_wEphemeral_dec2022.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wEphemeral_dec2022.csv)
-    - **Description:** PSH supply curve cost assuming 8 hour duration and allowing sites on ephemeral streams as used in 2023 Annual Technology Baseline
-    - **Dollar year:** 2004
-    - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+  - [PSH_supply_curves_cost_8hr_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_8hr_wEphemeral_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wEphemeral_mar2024.csv)
@@ -3020,10 +3143,16 @@
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
 ---
 
+  - [PSH_supply_curves_cost_8hr_wExist_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wExist_apr2025.csv)
+---
+
   - [PSH_supply_curves_cost_8hr_wExist_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wExist_mar2024.csv)
     - **Description:** PSH supply curve cost assuming 8 hour duration and allowing sites using existing reservoirs as used in 2024 Annual Technology Baseline
     - **Dollar year:** 2004
     - **Citation:** [https://www.nrel.gov/gis/psh-supply-curves.html](https://www.nrel.gov/gis/psh-supply-curves.html)
+---
+
+  - [PSH_supply_curves_cost_8hr_wExist_wEph_apr2025.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wExist_wEph_apr2025.csv)
 ---
 
   - [PSH_supply_curves_cost_8hr_wExist_wEph_mar2024.csv](/inputs/supply_curve/PSH_supply_curves_cost_8hr_wExist_wEph_mar2024.csv)
@@ -3041,43 +3170,67 @@
   - [sitemap.h5](/inputs/supply_curve/sitemap.h5)
 ---
 
-  - [spurline_cost.csv](/inputs/supply_curve/spurline_cost.csv)
----
-
-  - [supplycurve_csp-reference.csv](/inputs/supply_curve/supplycurve_csp-reference.csv)
----
-
   - [supplycurve_egs-reference.csv](/inputs/supply_curve/supplycurve_egs-reference.csv)
 ---
 
-  - [supplycurve_geohydro-reference.csv](/inputs/supply_curve/supplycurve_geohydro-reference.csv)
----
-
   - [supplycurve_upv-limited.csv](/inputs/supply_curve/supplycurve_upv-limited.csv)
+    - **Description:** UPV supply curve from reV for the limited siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
+    - **Units:** capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+
 ---
 
   - [supplycurve_upv-open.csv](/inputs/supply_curve/supplycurve_upv-open.csv)
+    - **Description:** UPV supply curve from reV for the open siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
+    - **Units:** capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+
 ---
 
   - [supplycurve_upv-reference.csv](/inputs/supply_curve/supplycurve_upv-reference.csv)
+    - **Description:** UPV supply curve from reV for the reference siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
+    - **Units:** capacity numbers are in MW_DC and cost numbers are in $/MW_AC
+
 ---
 
   - [supplycurve_wind-ofs-limited.csv](/inputs/supply_curve/supplycurve_wind-ofs-limited.csv)
+    - **Description:** Offshore sind supply curve from reV for the limited siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [supplycurve_wind-ofs-open.csv](/inputs/supply_curve/supplycurve_wind-ofs-open.csv)
+    - **Description:** Offshore wind supply curve from reV for the open siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [supplycurve_wind-ofs-reference.csv](/inputs/supply_curve/supplycurve_wind-ofs-reference.csv)
+    - **Description:** Offshore wind supply curve from reV for the reference siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [supplycurve_wind-ons-limited.csv](/inputs/supply_curve/supplycurve_wind-ons-limited.csv)
+    - **Description:** Land-based wind supply curve from reV for the limited siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [supplycurve_wind-ons-open.csv](/inputs/supply_curve/supplycurve_wind-ons-open.csv)
+    - **Description:** Land-based wind supply curve from reV for the open siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [supplycurve_wind-ons-reference.csv](/inputs/supply_curve/supplycurve_wind-ons-reference.csv)
+    - **Description:** Land-based wind supply curve from reV for the reference siting scenario
+    - **Dollar year:** specified in inputs/supply_curve/dollaryear.csv
+    - **Citation:** [https://docs.nrel.gov/docs/fy25osti/91900.pdf](https://docs.nrel.gov/docs/fy25osti/91900.pdf)
 ---
 
   - [trans_intra_cost_adder.csv](/inputs/supply_curve/trans_intra_cost_adder.csv)
@@ -3096,6 +3249,22 @@
 
   - [techs_subsetForTesting.csv](/inputs/techs/techs_subsetForTesting.csv)
     - **Description:** Short list of technologies for testin
+---
+
+
+<a id='inputs-temporal'></a>
+#### inputs/temporal
+
+  - [month2quarter.csv](/inputs/temporal/month2quarter.csv)
+---
+
+  - [period_szn_user.csv](/inputs/temporal/period_szn_user.csv)
+---
+
+  - [reeds_region_tz_map.csv](/inputs/temporal/reeds_region_tz_map.csv)
+---
+
+  - [stressperiods_user.csv](/inputs/temporal/stressperiods_user.csv)
 ---
 
 
@@ -3134,30 +3303,6 @@
   - [transmission_capacity_future_ba_LCC_all.csv](/inputs/transmission/transmission_capacity_future_ba_LCC_all.csv)
     - **File Type:** inputs
     - **Description:** Future transmission capacity additions for the LCC_all case at BA resolution
-    - **Indices:** r,rr
----
-
-  - [transmission_capacity_future_ba_LCC_SeamsD2b.csv](/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD2b.csv)
-    - **File Type:** inputs
-    - **Description:** Future transmission capacity additions for the LCC_SeamsD2B case at BA resolution
-    - **Indices:** r,rr
----
-
-  - [transmission_capacity_future_ba_LCC_SeamsD3_certain.csv](/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_certain.csv)
-    - **File Type:** inputs
-    - **Description:** Future transmission capacity additions for the LCC_SeamsD3_certain case at BA resolution
-    - **Indices:** r,rr
----
-
-  - [transmission_capacity_future_ba_LCC_SeamsD3_possible.csv](/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_possible.csv)
-    - **File Type:** inputs
-    - **Description:** Future transmission capacity additions for the LCC_SeamsD3_possible case at BA resolution
-    - **Indices:** r,rr
----
-
-  - [transmission_capacity_future_ba_LCC_SeamsD3_possible_unconstrained.csv](/inputs/transmission/transmission_capacity_future_ba_LCC_SeamsD3_possible_unconstrained.csv)
-    - **File Type:** inputs
-    - **Description:** Future transmission capacity additions for the LCC_SeamsD3_possible_unconstrained case at BA resolution
     - **Indices:** r,rr
 ---
 
@@ -3348,108 +3493,6 @@
 ---
 
 
-<a id='inputs-variability'></a>
-#### inputs/variability
-
-  - [ccseason_dates.csv](/inputs/variability/ccseason_dates.csv)
----
-
-  - [month2quarter.csv](/inputs/variability/month2quarter.csv)
----
-
-  - [period_szn_user.csv](/inputs/variability/period_szn_user.csv)
----
-
-  - [stressperiods_user.csv](/inputs/variability/stressperiods_user.csv)
----
-
-
-<a id='inputs-variability-multi-year'></a>
-##### inputs/variability/multi_year
-
-  - [csp-none_ba.h5](/inputs/variability/multi_year/csp-none_ba.h5)
-    - **Description:** Concentrated Solar Power resource supply curve. Data is a capacity factor i.e. a fraction.
----
-
-  - [distpv-reference_ba.h5](/inputs/variability/multi_year/distpv-reference_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Distributed photovoltaics resource supply curve. Data is a capacity factor i.e. a fraction.
-    - **Indices:** r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [temperature_celsius-ba.h5](/inputs/variability/multi_year/temperature_celsius-ba.h5)
----
-
-  - [upv-limited_ba.h5](/inputs/variability/multi_year/upv-limited_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Utility scale photovoltaics resource supply curve using Limited access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [upv-open_ba.h5](/inputs/variability/multi_year/upv-open_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Utility scale photovoltaics resource supply curve using Open access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [upv-reference_ba.h5](/inputs/variability/multi_year/upv-reference_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Utility scale photovoltaics resource supply curve using Reference access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [wind-ofs-limited_ba.h5](/inputs/variability/multi_year/wind-ofs-limited_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Offshore wind resource supply curve using Limited access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [wind-ofs-open_ba.h5](/inputs/variability/multi_year/wind-ofs-open_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Offshore wind resource supply curve using Open access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [wind-ofs-reference_ba.h5](/inputs/variability/multi_year/wind-ofs-reference_ba.h5)
----
-
-  - [wind-ons-limited_ba.h5](/inputs/variability/multi_year/wind-ons-limited_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Land-based wind resource supply curve using Limited access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [wind-ons-open_ba.h5](/inputs/variability/multi_year/wind-ons-open_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Land-based wind resource supply curve using Open access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-  - [wind-ons-reference_ba.h5](/inputs/variability/multi_year/wind-ons-reference_ba.h5)
-    - **File Type:** Resource supply curve
-    - **Description:** Land-based wind resource supply curve using Reference access assumptions. Data is a capacity factor i.e. a fraction.
-    - **Indices:** v,r,t
-    - **Dollar year:** N/A
-    - **Citation:** N/A
----
-
-
 <a id='inputs-waterclimate'></a>
 #### inputs/waterclimate
 
@@ -3627,71 +3670,6 @@
 ---
 
 
-<a id='postprocessing-bokehpivot-out'></a>
-##### postprocessing/bokehpivot/out
-
-  - [main vs PR diff.csv](/postprocessing/bokehpivot/out/main%20vs%20PR%20diff.csv)
----
-
-  - [main-view.csv](/postprocessing/bokehpivot/out/main-view.csv)
----
-
-  - [PR-view.csv](/postprocessing/bokehpivot/out/PR-view.csv)
----
-
-  - [view.csv](/postprocessing/bokehpivot/out/view.csv)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-03-21-13-05-27'></a>
-###### postprocessing/bokehpivot/out/report-2025-03-21-13-05-27
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-03-21-13-05-27/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-06-03-11-55-40'></a>
-###### postprocessing/bokehpivot/out/report-2025-06-03-11-55-40
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-06-03-11-55-40/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-06-03-11-59-51'></a>
-###### postprocessing/bokehpivot/out/report-2025-06-03-11-59-51
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-06-03-11-59-51/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-06-03-12-06-11'></a>
-###### postprocessing/bokehpivot/out/report-2025-06-03-12-06-11
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-06-03-12-06-11/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-06-03-12-06-21'></a>
-###### postprocessing/bokehpivot/out/report-2025-06-03-12-06-21
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-06-03-12-06-21/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-report-2025-06-05-12-38-18'></a>
-###### postprocessing/bokehpivot/out/report-2025-06-05-12-38-18
-
-  - [report.xlsx](/postprocessing/bokehpivot/out/report-2025-06-05-12-38-18/report.xlsx)
----
-
-
-<a id='postprocessing-bokehpivot-out-view'></a>
-###### postprocessing/bokehpivot/out/view
-
-  - [view.csv](/postprocessing/bokehpivot/out/view/view.csv)
----
-
-
 <a id='postprocessing-combine-runs'></a>
 #### postprocessing/combine_runs
 
@@ -3765,6 +3743,13 @@
 ---
 
 
+<a id='postprocessing-retail-rate-module-calc-historical-capex'></a>
+##### postprocessing/retail_rate_module/calc_historical_capex
+
+  - [existing_transmission_cost_bystate_USD2024.csv](/postprocessing/retail_rate_module/calc_historical_capex/existing_transmission_cost_bystate_USD2024.csv)
+---
+
+
 <a id='postprocessing-retail-rate-module-inputs'></a>
 ##### postprocessing/retail_rate_module/inputs
 
@@ -3781,11 +3766,6 @@
 ---
 
   - [overwrite-utility-energy_sales.csv](/postprocessing/retail_rate_module/inputs/overwrite-utility-energy_sales.csv)
----
-
-  - [rsmap.csv](/postprocessing/retail_rate_module/inputs/rsmap.csv)
-    - **Description:** Mapping for BAs to resource regions
-    - **Indices:** r,rs
 ---
 
   - [state-meanbiaserror_rate-aggregation.csv](/postprocessing/retail_rate_module/inputs/state-meanbiaserror_rate-aggregation.csv)
@@ -3862,131 +3842,82 @@
 ##### reeds2pras/test/reeds_cases
 
 
-<a id='reeds2pras-test-reeds-cases-pacific'></a>
-###### reeds2pras/test/reeds_cases/Pacific
+<a id='reeds2pras-test-reeds-cases-test'></a>
+###### reeds2pras/test/reeds_cases/test
 
-
-<a id='reeds2pras-test-reeds-cases-pacific-inputs-case'></a>
-###### reeds2pras/test/reeds_cases/Pacific/inputs_case
-
-  - [hydcf.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/hydcf.csv)
+  - [cases_reeds2pras.csv](/reeds2pras/test/reeds_cases/test/cases_reeds2pras.csv)
 ---
 
-  - [outage_forced_hourly.h5](/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_forced_hourly.h5)
----
-
-  - [outage_forced_static.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_forced_static.csv)
----
-
-  - [outage_scheduled_hourly.h5](/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_scheduled_hourly.h5)
----
-
-  - [outage_scheduled_static.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/outage_scheduled_static.csv)
----
-
-  - [resources.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/resources.csv)
----
-
-  - [tech-subset-table.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/tech-subset-table.csv)
----
-
-  - [unitdata.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/unitdata.csv)
----
-
-  - [unitsize.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/unitsize.csv)
----
-
-  - [upgrade_link.csv](/reeds2pras/test/reeds_cases/Pacific/inputs_case/upgrade_link.csv)
+  - [meta.csv](/reeds2pras/test/reeds_cases/test/meta.csv)
 ---
 
 
-<a id='reeds2pras-test-reeds-cases-pacific-reeds-augur'></a>
-###### reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur
+<a id='reeds2pras-test-reeds-cases-test-inputs-case'></a>
+###### reeds2pras/test/reeds_cases/test/inputs_case
 
-
-<a id='reeds2pras-test-reeds-cases-pacific-reeds-augur-augur-data'></a>
-###### reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data
-
-  - [cap_converter_2032.csv](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/cap_converter_2032.csv)
+  - [hydcapadj.csv](/reeds2pras/test/reeds_cases/test/inputs_case/hydcapadj.csv)
 ---
 
-  - [energy_cap_2032.csv](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/energy_cap_2032.csv)
+  - [hydcf.csv](/reeds2pras/test/reeds_cases/test/inputs_case/hydcf.csv)
 ---
 
-  - [max_cap_2032.csv](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/max_cap_2032.csv)
+  - [mttr.csv](/reeds2pras/test/reeds_cases/test/inputs_case/mttr.csv)
 ---
 
-  - [pras_load_2032.h5](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/pras_load_2032.h5)
+  - [outage_forced_hourly.h5](/reeds2pras/test/reeds_cases/test/inputs_case/outage_forced_hourly.h5)
 ---
 
-  - [pras_vre_gen_2032.h5](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/pras_vre_gen_2032.h5)
+  - [outage_forced_static.csv](/reeds2pras/test/reeds_cases/test/inputs_case/outage_forced_static.csv)
 ---
 
-  - [tran_cap_2032.csv](/reeds2pras/test/reeds_cases/Pacific/ReEDS_Augur/augur_data/tran_cap_2032.csv)
+  - [outage_scheduled_hourly.h5](/reeds2pras/test/reeds_cases/test/inputs_case/outage_scheduled_hourly.h5)
 ---
 
-
-<a id='reeds2pras-test-reeds-cases-usa-vsc-2035'></a>
-###### reeds2pras/test/reeds_cases/USA_VSC_2035
-
-  - [cases_USA_VSC_2035.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/cases_USA_VSC_2035.csv)
+  - [resources.csv](/reeds2pras/test/reeds_cases/test/inputs_case/resources.csv)
 ---
 
-  - [meta.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/meta.csv)
+  - [tech-subset-table.csv](/reeds2pras/test/reeds_cases/test/inputs_case/tech-subset-table.csv)
 ---
 
-
-<a id='reeds2pras-test-reeds-cases-usa-vsc-2035-inputs-case'></a>
-###### reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case
-
-  - [forcedoutage_hourly.h5](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/forcedoutage_hourly.h5)
+  - [unitdata.csv](/reeds2pras/test/reeds_cases/test/inputs_case/unitdata.csv)
 ---
 
-  - [hydcf.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/hydcf.csv)
----
-
-  - [outage_forced_static.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/outage_forced_static.csv)
----
-
-  - [resources.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/resources.csv)
----
-
-  - [tech-subset-table.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/tech-subset-table.csv)
----
-
-  - [unitdata.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/unitdata.csv)
----
-
-  - [unitsize.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/unitsize.csv)
----
-
-  - [upgrade_link.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/inputs_case/upgrade_link.csv)
+  - [unitsize.csv](/reeds2pras/test/reeds_cases/test/inputs_case/unitsize.csv)
 ---
 
 
-<a id='reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur'></a>
-###### reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur
+<a id='reeds2pras-test-reeds-cases-test-reeds-augur'></a>
+###### reeds2pras/test/reeds_cases/test/ReEDS_Augur
 
 
-<a id='reeds2pras-test-reeds-cases-usa-vsc-2035-reeds-augur-augur-data'></a>
-###### reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data
+<a id='reeds2pras-test-reeds-cases-test-reeds-augur-augur-data'></a>
+###### reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data
 
-  - [cap_converter_2035.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/cap_converter_2035.csv)
+  - [cap_converter_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/cap_converter_2035.csv)
 ---
 
-  - [energy_cap_2035.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/energy_cap_2035.csv)
+  - [charge_eff_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/charge_eff_2035.csv)
 ---
 
-  - [max_cap_2035.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/max_cap_2035.csv)
+  - [discharge_eff_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/discharge_eff_2035.csv)
 ---
 
-  - [pras_load_2035.h5](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/pras_load_2035.h5)
+  - [energy_cap_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/energy_cap_2035.csv)
 ---
 
-  - [pras_vre_gen_2035.h5](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/pras_vre_gen_2035.h5)
+  - [max_cap_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/max_cap_2035.csv)
 ---
 
-  - [tran_cap_2035.csv](/reeds2pras/test/reeds_cases/USA_VSC_2035/ReEDS_Augur/augur_data/tran_cap_2035.csv)
+  - [max_unitsize_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/max_unitsize_2035.csv)
+---
+
+  - [pras_load_2035.h5](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/pras_load_2035.h5)
+---
+
+  - [pras_vre_gen_2035.h5](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/pras_vre_gen_2035.h5)
+---
+
+  - [tran_cap_2035.csv](/reeds2pras/test/reeds_cases/test/ReEDS_Augur/augur_data/tran_cap_2035.csv)
 ---
 
 
@@ -4065,4 +3996,3 @@
 - [sources.csv](/sources.csv)
   - **Description:** CSV file containing a list of all input files (csv, h5, csv.gz)
 ---
-

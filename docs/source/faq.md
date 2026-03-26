@@ -70,8 +70,8 @@ The ReEDS model is capable of capturing several spatial resolutions. This aspect
 
 If you'd like to reduce the model solve time, consider making some of the following changes:
 
-- `yearset_suffix = 4yr` or `yearset_suffix = 5yr`
-  - Solve in 4- or 5-year steps
+- `yearset = 2010_2015_2020_2025_2030_2035_2040_2045_2050`
+  - Solve in 5-year steps
 - `GSw_OpRes = 0`
   - Turn off operating reserves
 - `GSw_MinLoading = 0`

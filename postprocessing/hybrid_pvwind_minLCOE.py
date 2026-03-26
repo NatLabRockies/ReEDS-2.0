@@ -274,14 +274,14 @@ scalars = reeds.io.get_scalars(inp['case'])
 #%% Load CF profiles from ReEDS/reV
 cfpv = pd.read_csv(
     os.path.join(
-        reeds_path,'inputs','variability','multi_year',
+        reeds_path, 'inputs', 'profiles_cf',
         f'upv-{switches["GSw_SitingUPV"]}.csv.gz'
     ),
     index_col=0,
 )
 cfwind = pd.read_csv(
     os.path.join(
-        reeds_path,'inputs','variability','multi_year',
+        reeds_path, 'inputs', 'profiles_cf',
         f'wind-ons-{switches["GSw_SitingWindOns"]}.csv.gz'
     ),
     index_col=0,

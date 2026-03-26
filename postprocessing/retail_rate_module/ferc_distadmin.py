@@ -292,38 +292,7 @@ def get_ferc_costs(
                 parent = excludecells[utility,year][child]
                 df_opex.loc[row,parent] -= df_opex.loc[row,child]
 
-    #%% Remove unnecessary columns and merge
-    df_opex.drop(
-        columns = df_opex.columns.difference([
-            'Year', 'Utility Name', 'State',
-            'Trn Total Operation Expenses $',
-            'Trn Total Maintenance Expenses $',
-            'Dis Total Maintenance Expenses $',
-            'Dis Total Operation Expenses $',
-            'Total Sales Expenses $',
-            'Total Customer Srv & Information Expenses $',
-            'CAE Total Customer Accounts Expenses $',
-            'Total Admin & General Expenses $',
-            'Total Regional Trans & Mark Operation Exps  $',
-            'A&G Total Operation Expenses $',
-            ]), inplace=True)
-
-    df_capex = df_capex[df_capex['Account Classification'] == 'Additions']
-    df_capex.drop(
-        columns = df_capex.columns.difference([
-            'Year', 'Utility Name', 'State',
-            'Trn - Total Transmission Plant',
-            'Dis - Total Distribution Plant',
-            'Gen - Total General Plant',
-            ]), inplace=True)
-
-    df_sales.drop(
-        columns = df_sales.columns.difference([
-            'Year', 'Utility Name', 'State',
-            'Total Retail Sales MWh',
-            'Total Electricity Customers'
-            ]), inplace=True)
-
+    #%% Merge (input CSVs are already pre-trimmed to only the needed columns/rows)
     dfall = df_capex.merge(df_opex, on=[ 'Year', 'Utility Name', 'State'], how='outer')
     dfall = dfall.merge(df_sales, on=[ 'Year', 'Utility Name', 'State'], how='outer')
 

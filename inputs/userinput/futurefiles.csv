@@ -2,8 +2,6 @@ filename,filetype,ignore,key,year_col,fix_cols,wide,header,forecast_fit,clip_min
 aclike.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 acp_disallowed.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 acp_prices.csv,.csv,0,None,wide,st,1,0,constant,None,None,done,constant
-adoption_trajectories_commercial.csv,.csv,0,None,year,None,1,0,linear_5,None,None,new,
-adoption_trajectories_residential.csv,.csv,0,None,year,None,1,0,linear_5,None,None,new,
 agglevels.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 aggreg2anchorreg.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 allout_RSC.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
@@ -25,6 +23,7 @@ cap_cost_mult_for_ratebase.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"or
 cap_cost_mult_noITC.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"originally at 2,5 year resolution, upsampled to 1 year",constant
 cap_cost_mult.csv,.csv,0,None,2,"0,1",0,None,constant,None,None,"originally at 2,5 year resolution, upsampled to 1 year",constant
 cap_cspns.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
+cap_existing_psh.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 cap_hyd_ccseason_adj.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 cap_limit.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 cap_penalty.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -175,8 +174,6 @@ geo_rsc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 geocapcostmult.csv,.csv,0,None,Unnamed: 0,None,1,0,constant,0,None,projection?,linear_5
 geoexist.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 geotech.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
-ghp_delta_commercial.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
-ghp_delta_residential.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 growth_bin_size_mult.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 growth_limit_absolute.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 growth_penalty.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -348,7 +345,7 @@ prescribed_nonRSC_energy.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new
 prescribed_nonRSC.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 prescribed_rsc.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 prescriptivelink0.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
-prm_annual.csv,.csv,0,None,t,*nercr,0,0,constant,None,None,done,constant
+prm_initial.csv,.csv,0,None,t,*r,0,0,constant,None,None,done,constant
 psh_sc_duration.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 psh_supply_curves_capacity.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 psh_supply_curves_cost.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
@@ -451,7 +448,10 @@ techs_banned_imports_rps.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new
 techs_banned_rps.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 techs_banned.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 techs.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
-temperature_celsius-ba.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
+temp_hydadjsea.csv,.csv,0,None,t,"r,month",0,0,constant,None,None,new,
+temp_UnappWaterMult.csv,.csv,0,None,t,"wst,r,month",0,0,constant,None,None,new,
+temp_UnappWaterSeaAnnDistr.csv,.csv,0,None,t,"wst,r,month",0,0,constant,None,None,new,
+temperature_celsius-st.h5,.h5,1,None,9999,None,9999,0,constant,None,None,new,
 tg_rsc_cspagg_tmp.csv,.csv,1,None,9999,None,9999,0,constant,None,None,done,constant
 tg_rsc_cspagg.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,
 tg_rsc_upvagg.csv,.csv,1,None,9999,None,9999,0,constant,None,None,new,

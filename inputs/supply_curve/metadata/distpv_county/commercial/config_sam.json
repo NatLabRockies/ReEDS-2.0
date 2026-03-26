@@ -1,0 +1,13 @@
+{
+    "azimuth": {},
+    "tilt": {},
+    "array_type": 1,
+    "module_type": 1,
+    "dc_ac_ratio": 1.21,
+    "en_snowloss": 0.0,
+    "gcr": 0.4,
+    "inv_eff": 98.0,
+    "losses": 10.4,
+    "clearsky": false,
+    "system_capacity": 1
+}

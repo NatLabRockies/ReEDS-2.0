@@ -225,6 +225,36 @@ def get_yearly_demand(sw, hmap_myr, hmap_allyrs, inputs_case, periodtype='rep'):
 
     return load_in, load_out
 
+def format_climate_inputs(filename, inputs_case, szn_month_weights):
+        """
+        This function converts climate data from monthly to repperiod resolution using the
+        szn_month_weights
+        """
+        climate_index = {
+            'temp_hydadjsea': ['r','season','t'],
+            'temp_UnappWaterMult': ['wst','r','season','t'],
+            'temp_UnappWaterSeaAnnDistr': ['wst','r','season','t']
+        }
+
+        df = pd.read_csv(os.path.join(inputs_case,filename+'.csv'))
+        df_out = szn_month_weights.merge(df, on='month', how='outer')
+        df_out['value'] = df_out['weight'] * df_out['Value']
+        df_out = (
+            df_out
+            .groupby(climate_index[filename]).agg({'value':'sum'})
+            .value
+            ## For rep periods, sum of season weights is 1, so the next line has no effect.
+            ## For full chronological year (GSw_HourlyType=year), we use four seasons,
+            ## so the sum of season weights is the number of months in that season and
+            ## we need to divide sum{cf*weight} by sum{weight}.
+            / szn_month_weights.groupby('season').weight.sum()        
+        ).rename('value').reset_index().rename(columns={'season':'szn'})
+        # Convert to GAMS-readable wide format
+        climate_index = [x if x != 'season' else 'szn' for x in climate_index[filename]]
+        climate_index = [x for x in climate_index if x != 't']
+        df_out = df_out.pivot_table(index=climate_index, columns='t', values='value')
+
+        return df_out
 
 def get_yearly_flexibility(
     sw,
@@ -385,6 +415,7 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
         sw["GSw_HourlyWeatherYears"] = [
             int(y) for y in sw["GSw_HourlyWeatherYears"].split("_")
         ]
+
     # Ensure the GSw_CSP_Types is a list, as hourly_writetimeseries is called in F_stress_periods.py as well
     if not isinstance(sw['GSw_CSP_Types'],list):
         sw['GSw_CSP_Types'] = [int(i) for i in sw['GSw_CSP_Types'].split('_')]
@@ -466,7 +497,6 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
             'evmc_storage_energy': ['*i','r','h','t'],
             'flex_frac_all': ['*flex_type','r','h','t'],
             'peak_h': ['*r','h','t','MW'],
-            'prm_stress': ['*r','t','prm'],
         }
         for f, columns in write.items():
             pd.DataFrame(columns=columns).to_csv(
@@ -1073,6 +1103,14 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
         .reset_index()
         .rename(columns={"season": "szn"})
     )
+    
+    ### Import and format monthly climate_{hydadjsea/UnappWaterMult/UnappWaterSeaAnnDistr}.csv
+    climate_files = {}   
+    if int(sw.GSw_ClimateHydro):
+        climate_files['temp_hydadjsea'] = format_climate_inputs('temp_hydadjsea', inputs_case, szn_month_weights)
+    if int(sw.GSw_ClimateWater):
+        for file in ['temp_UnappWaterMult', 'temp_UnappWaterSeaAnnDistr']:
+            climate_files[file] = format_climate_inputs(file, inputs_case, szn_month_weights)
 
     ### Calculate the peak demand timeslice of each ccseason.
     ## Used for hydro_nd PRM constraint.
@@ -1491,10 +1529,19 @@ def main(sw, reeds_path, inputs_case, periodtype='rep', make_plots=1, logging=Tr
             False,
         ],
         "peak_h": [pd.DataFrame(columns=["*r", "h", "t", "MW"]), True, False],
-        "prm_stress": [pd.DataFrame(columns=['*r','t','prm']), True, False],
     }
 
-    # %% Write output csv files
+    # Add climate inputs based on GSw_Climate* switch selection
+    if int(sw.GSw_ClimateHydro):
+        ## Climate-adjusted annual/seasonal nondispatchable hydropower availability
+        write['climate_hydadjsea'] = [climate_files['temp_hydadjsea'], True, True]
+    if int(sw.GSw_ClimateWater):
+        ## Climate-adjusted time-varying annual/seasonal water supply
+        write['climate_UnappWaterMult'] = [climate_files['temp_UnappWaterMult'], True, True]
+        ## Climate-adjusted time-varying fractional seasonal allocation of water
+        write['climate_UnappWaterSeaAnnDistr'] = [climate_files['temp_UnappWaterSeaAnnDistr'], True, True]
+
+    #%% Write output csv files
     for f in write:
         ### Rename first column so GAMS reads it as a comment
         if not write[f][1]:

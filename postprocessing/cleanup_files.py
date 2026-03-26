@@ -19,13 +19,11 @@ file_levels = {
         os.path.join('inputs_case', 'recf_upv.h5'),
         os.path.join('inputs_case', 'recf_wind-ofs.h5'),
         os.path.join('inputs_case', 'recf_wind-ons.h5'),
-        os.path.join('inputs_case', 'ghp_delta_residential.csv'),
-        os.path.join('inputs_case', 'ghp_delta_commercial.csv'),
     ],
     ## Intermediate input files plus more duplicates
     1: [
         os.path.join('inputs_case', 'csp.h5'),
-        os.path.join('inputs_case', 'temperature_celsius-ba.h5'),
+        os.path.join('inputs_case', 'temperature_celsius-st.h5'),
         ## The following regex matches the outputs/*.csv files
         ## except for neue*.csv, health*.csv, and h2_price_month.csv.
         ## All the other outputs/*.csv files are duplicates of data in outputs.h5.

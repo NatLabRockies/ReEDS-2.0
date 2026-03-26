@@ -484,7 +484,7 @@ Some of the most important switches related to temporal resolution are briefly o
 - `GSw_HourlyWeatherYears` (default `2012`): Weather years from which to select representative periods.
 Multiple years can be used by passing a `_`-delimited string; for example, to select representative periods from 2011 to 2013, set the value to `2011_2012_2013`.
 - `GSw_HourlyClusterAlgorithm` (default `optimized`): Algorithm used to select representative periods.
-Choices are `optimized` (for the method described above), `hierarchical` (for hierarchical clustering), `kmeans` (for *k*-means clustering), `kmedoids` (for *k*-medoids clustering), or `user{label}` (for user-defined periods and weights as specified by a file located at `inputs/variability/period_szn_user{label}`).
+Choices are `optimized` (for the method described above), `hierarchical` (for hierarchical clustering), `kmeans` (for *k*-means clustering), `kmedoids` (for *k*-medoids clustering), or `user{label}` (for user-defined periods and weights as specified by a file located at `inputs/temporal/period_szn_user{label}`).
 - `GSw_HourlyNumClusters` (default `33`): Maximum number of representative periods.
 The default value of 33 periods is chosen as a trade-off between runtime and accuracy (both of which increase with the number of representative periods modeled).
 When using `GSw_HourlyClusterAlgorithm = optimized`, fewer periods may be required.
@@ -1111,7 +1111,7 @@ Improved performance characteristics are captured through slightly enhanced batt
 ##### Distributed PV
 
 Rooftop PV includes commercial, industrial, and residential systems.
-These systems are assumed to have an inverter loading ratio (ILR) of 1.1.
+These systems are assumed to have an inverter loading ratio (ILR) of 1.21.
 Existing rooftop PV capacities are obtained from U.S. Energy Information Administration (EIA)-861 data spanning 2010 to 2022 {cite}`eiaAnnualElectricPower2024`.
 dGen, a consumer adoption model for the CONUS rooftop PV market, is used to develop future scenarios for rooftop PV capacity, including the capacity deployed by zone and the precurtailment energy production {cite}`sigrinDistributedGenerationMarket2016`.
 The default dGen trajectories used in this version of ReEDS are based on the residential and commercial PV cost projections described in the 2023 ATB {cite}`nrel2023AnnualTechnology2023`.
@@ -1127,7 +1127,7 @@ For example, the Tax Credit Extension scenario also includes an extension of the
 reV produces hourly generation profiles for all [weather years](#weather-years) using the NSRDB point closest to the centroid of each county in the CONUS.
 The profiles represent residential and commercial systems with a 16° tilt and 180° azimuth.
 The residential profiles assume an inverter efficiency of 96%, and the commercial profiles assume an inverter efficiency of 98%.
-To create a single profile for each region, we determine the NSRDB point(s) existing in or, if none exists, closest to the region and take the average of the corresponding profiles.
+To create a single profile for each county, we take the average of the residential and commercial profiles.
 
 ReEDS assumes distributed PV generation is not allowed to be curtailed.
 
@@ -1658,12 +1658,12 @@ EER builds hourly, state-level load profiles for each end-use sector, and we agg
 The profiles are defined for model years 2025, 2030, 2035, 2040, 2045, and 2050
 (values for intermediate years are interpolated linearly),
 each of which features 15 weather years of data (2007--2013 and 2016--2023).
-There are three sets of EER profiles, each reflecting different electrification assumptions: EER_Baseline_AEO2023, EER_IRAlow, and EER_100by2050.
-EER_Baseline_AEO2023 reflects business-as-usual electrification based on load estimates from AEO2023.
-EER_IRAlow reflects the impacts of the Inflation Reduction Act (IRA), which features tax credits and subsidies for electric end-use technologies such as electric vehicles and heat pumps.
-Specifically, EER_IRAlow "reflects relatively conservative assumptions about the impact of demand-side provisions in the Inflation Reduction Act (relative, compared to other scenarios developed by EER)" {cite}`gagnon2023StandardScenarios2024a`.
-EER_100by2050 reflects the electrification required to reach 100% economywide decarbonization by 2050.
-ReEDS defaults to EER_IRAlow.
+There are three sets of EER profiles, each reflecting different electrification assumptions: EER2025_Baseline_AEO2023, EER2025_IRAlow, and EER2025_100by2050.
+EER2025_Baseline_AEO2023 reflects business-as-usual electrification based on load estimates from AEO2023.
+EER2025_IRAlow reflects the impacts of the Inflation Reduction Act (IRA), which features tax credits and subsidies for electric end-use technologies such as electric vehicles and heat pumps.
+Specifically, EER2025_IRAlow "reflects relatively conservative assumptions about the impact of demand-side provisions in the Inflation Reduction Act (relative, compared to other scenarios developed by EER)" {cite}`gagnon2023StandardScenarios2024a`.
+EER2025_100by2050 reflects the electrification required to reach 100% economywide decarbonization by 2050.
+ReEDS defaults to EER2025_IRAlow.
 Compound annual growth rates (CAGRs) and 2050 CONUS-wide annual demand for each set of profiles are shown in {numref}`eer-growth-rates-and-2050-electric-load`.
 
 ```{table} Compound annual growth rates and 2050 electric load values for the EER load profiles available in ReEDS.
@@ -1671,9 +1671,9 @@ Compound annual growth rates (CAGRs) and 2050 CONUS-wide annual demand for each 
 
 |  | CAGR (2025 through 2050) | 2050 CONUS-wide Electric Load (TWh/year) |
 |----|----|----|
-| EER_Baseline_AEO2023 | 1.2% | 5,504
-| EER_IRAlow (default) | 1.8% | 6,402 |
-| EER_100by2050 | 2.7% | 7,975 |
+| EER2025_Baseline_AEO2023 | 1.2% | 5,504
+| EER2025_IRAlow (default) | 1.8% | 6,402 |
+| EER2025_100by2050 | 2.7% | 7,975 |
 ```
 
 ### Electrification Futures Study Load Profiles
@@ -1681,11 +1681,11 @@ ReEDS also contains detailed electrification load profiles developed as part of 
 The profiles use one weather year of data (2012).
 Because there is only a single weather year, the model duplicates these profiles to match the number of weather years specified by the user.
 Note that this results in loss of synchronicity between demand and other weather-based data when weather years beyond 2012 are selected.
-There are five sets of profiles, each reflecting different electrification assumptions: EPREFERENCE, EPMEDIUM, EPMEDIUMStretch2040, EPMEDIUMStretch2046, and EPHIGH.
-EPREFERENCE serves as a baseline of comparison to the other scenarios, featuring the least incremental change in electrification through 2050.
-EPMEDIUM features widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps, and select industrial applications.
-EPMEDIUMStretch2040 and EPMEDIUMStretch2046 are modified versions of EPMEDIUM that lower the aggressiveness of its electrification assumptions by “stretching” its load growth through 2040 and 2046 respectively out to 2050 such that total 2040 and 2046 load from EPMEDIUM are equivalent to 2050 load from EPMEDIUMStretch2040 and EPMEDIUMStretch2046 respectively.
-EPHIGH features a combination of technology advancements, policy support, and consumer enthusiasm that enables transformational change in electrification.
+There are five sets of profiles, each reflecting different electrification assumptions: EFS_REFERENCE, EFS_MEDIUM, EFS_MEDIUMStretch2040, EFS_MEDIUMStretch2046, and EFS_HIGH.
+EFS_REFERENCE serves as a baseline of comparison to the other scenarios, featuring the least incremental change in electrification through 2050.
+EFS_MEDIUM features widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps, and select industrial applications.
+EFS_MEDIUMStretch2040 and EFS_MEDIUMStretch2046 are modified versions of EFS_MEDIUM that lower the aggressiveness of its electrification assumptions by “stretching” its load growth through 2040 and 2046 respectively out to 2050 such that total 2040 and 2046 load from EFS_MEDIUM are equivalent to 2050 load from EFS_MEDIUMStretch2040 and EFS_MEDIUMStretch2046 respectively.
+EFS_HIGH features a combination of technology advancements, policy support, and consumer enthusiasm that enables transformational change in electrification.
 The 2050 CONUS-wide annual demand and overall peak CONUS-wide demand for each set of profiles are shown in {numref}`efs-2050-and-peak-electric-load`.
 
 ```{table} 2050 electric load and overall peak load values for the Electrification Futures Study load profiles available in ReEDS.
@@ -1693,11 +1693,11 @@ The 2050 CONUS-wide annual demand and overall peak CONUS-wide demand for each se
 
 |  | 2050 CONUS-wide Electric Load (TWh) | Peak CONUS-wide Electric Load (GW) |
 |----|----|----|
-| EPREFERENCE | 4,788 | 852
-| EPMEDIUMStretch2040 | 5,062 | 963
-| EPMEDIUMStretch2046 | 5,499 | 1,049
-| EPMEDIUM | 5,799 | 1,104
-| EPHIGH | 6,699 | 1,279
+| EFS_REFERENCE | 4,788 | 852
+| EFS_MEDIUMStretch2040 | 5,062 | 963
+| EFS_MEDIUMStretch2046 | 5,499 | 1,049
+| EFS_MEDIUM | 5,799 | 1,104
+| EFS_HIGH | 6,699 | 1,279
 ```
 
 ### Historical Load Data + AEO Growth Factor Profiles
@@ -2282,13 +2282,14 @@ Seed stress periods are included because [representative periods](#representativ
 A system planned only with representative periods would therefore almost certainly fail to meet resource adequacy targets when considering a broader collection of weather and demand conditions,
 and the inclusion of seed stress periods allows this initial failing iteration to be skipped, reducing runtime.
 
-By default, seed stress periods include peak demand days by planning subregion for each model year, in addition to minimum availability days for solar and wind by interconnection (shown in {numref}`figure-ra-seed_stressperiods` for an illustrative high-electrification scenario).
+By default, seed stress periods include peak demand days by planning subregion for each model year, in addition to minimum availability days for solar and wind by interconnection (shown in {numref}`figure-ra-seed_stressperiods` for an illustrative demand scenario).
 
+<!-- Settings for figure: GSw_LoadProfiles = EER2025_IRAlow, yearset = 2010_2015_2020..2050..3, GSw_PRM_StressSeedMinRElevel = interconnect, GSw_PRM_StressSeedLoadLevel = transgrp -->
 ```{figure} figs/docs/ra-seed_stressperiods.png
 :name: figure-ra-seed_stressperiods
 
-Example "seed" stress periods for a high-electrification scenario.
-In this scenario, many regions in the northern half of the country switch from summer peaking to winter peaking by midcentury.
+Example "seed" stress periods for an illustrative demand scenario.
+In this scenario, many regions switch from summer peaking to winter peaking by midcentury.
 ```
 
 
@@ -2540,9 +2541,9 @@ The method for deriving the dynamic increment to the reserve margin is described
 Updating the PRM may help with convergence between ReEDS and PRAS in certain scenarios with many ReEDS-PRAS iterations.
 
 ```{admonition} Updating the planning reserve margin
-Updating the planning reserve margin is controlled by the `GSw_PRM_StressUpdate` switch, which supports the following options:
+Updating the planning reserve margin is controlled by the `GSw_PRM_UpdateMethod` switch, which supports the following options:
 - (0) no update (default)
-- (1) static update set by `GSw_PRM_StressUpdateIncrement` (default = 0.02, i.e., update the PRM from 10 to 12%)
+- (1) static update set by `GSw_PRM_UpdateFraction` (default = 0.02, i.e., update the PRM from 10 to 12%)
 - (2) dynamic update informed by PRAS
 - (3) dynamic update but only after all new stress periods have been added
 ```
@@ -3119,6 +3120,7 @@ The mandates are required to be met with battery storage, and any duration of st
 | **State** | **2020** | **2030** | **2050** |
 |----|:--:|:--:|:--:|
 | CA | 1,325 | 2,325 | 2,325 |
+| IL |   | 1,038 | 3,000 |
 | MA | 50 | 50 | 50 |
 | MD |   | 2,102 | 3,000 |
 | MI |   | 2,500 | 2,500 |
@@ -3130,6 +3132,7 @@ The mandates are required to be met with battery storage, and any duration of st
 | VA | 42.7 | 1,350 | 3,100 |
 ```
 
+Note: The required capacity in Illinois increases to 3,000 MW in 2031. 
 
 ### Nuclear Power Plant Policies
 

@@ -4,7 +4,7 @@
 ### Shared settings are applied to all cases.
 ### Any settings not specified use the defaults from cases.csv.
 shared:
-  yearset_suffix: 5yr
+  yearset: 2010_2015_2020_2025_2030_2035_2040_2045_2050
 
 ##################
 ### Dimensions ###
@@ -24,19 +24,19 @@ dimensions:
       GSw_TCPhaseout_forceyear: 0
   demand:
     DemLo:
-      GSw_LoadProfiles: EER_Baseline_AEO2023
+      GSw_LoadProfiles: EER2025_Baseline_AEO2023
     DemMd:
-      GSw_LoadProfiles: EER_IRAlow
+      GSw_LoadProfiles: EER2025_IRAlow
     DemHi:
-      GSw_LoadProfiles: EER_100by2050
+      GSw_LoadProfiles: EER2025_100by2050
     Dem2023Lo:
-      GSw_LoadProfiles: EER_Baseline_AEO2022_v2023
+      GSw_LoadProfiles: EER2023_Baseline_AEO2022
     Dem2023MdLo:
-      GSw_LoadProfiles: EER_IRAlow_v2023
+      GSw_LoadProfiles: EER2023_IRAlow
     Dem2023Md:
-      GSw_LoadProfiles: EER_IRAmoderate_v2023
+      GSw_LoadProfiles: EER2023_IRAmoderate
     Dem2023Hi:
-      GSw_LoadProfiles: EER_100by2050_v2023
+      GSw_LoadProfiles: EER2023_100by2050
   sensitivity:
     core: {}
     100by2045:
