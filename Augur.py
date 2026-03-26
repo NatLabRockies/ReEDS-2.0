@@ -153,13 +153,13 @@ def main(t, tnext, casedir, iteration=0):
         1: True if t == max(solveyears) else False,
         2: True,
     }[int(sw['pras'])]
-    if pras_this_solve_year or (not int(sw.GSw_PRM_CapCredit)):
+    if pras_this_solve_year or int(sw.GSw_PRM_StressIterateMax):
         result = run_pras(
             casedir, t,
             iteration=iteration,
             write_flow=(True if t == max(solveyears) else False),
             write_energy=True,
-            write_shortfall_samples=(True if int(sw.GSw_PRM_StressUpdate) > 1 else False),
+            write_shortfall_samples=(True if int(sw.GSw_PRM_UpdateMethod) > 1 else False),
         )
         if result.returncode:
             raise Exception(
@@ -169,8 +169,11 @@ def main(t, tnext, casedir, iteration=0):
     #%% Identify stress periods
     print('identifying new stress periods...')
     tic = datetime.datetime.now()
-    if 'user' not in sw['GSw_PRM_StressModel'].lower():
-        _eue_sorted_periods = stress_periods.main(sw=sw, t=t, iteration=iteration)
+    if (
+        ('user' not in sw['GSw_PRM_StressModel'].lower())
+        or ((int(sw.GSw_PRM_StressIterateMax)) and int(sw['GSw_PRM_CapCredit']))
+    ):
+        stress_periods.main(sw=sw, t=t, iteration=iteration)
     reeds.log.toc(tic=tic, year=t, process='ReEDS_Augur/stress_periods.py')
 
     #%% Write gdx file explicitly to ensure that all entries

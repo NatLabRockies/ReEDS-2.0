@@ -755,7 +755,7 @@ def main(
         psh_cost = pd.melt(psh_cost, id_vars=["r"])
 
         # Convert dollar year
-        psh_cost[psh_cost.select_dtypes(include=["number"]).columns] *= deflate["PHScostn"]
+        psh_cost[psh_cost.select_dtypes(include=["number"]).columns] *= deflate["PSHcostn"]
 
         psh_cap["var"] = "cap"
         psh_cost["var"] = "cost"
@@ -772,6 +772,39 @@ def main(
             psh_dur_out.to_csv(
                 os.path.join(inputs_case, "psh_sc_duration.csv"), index=False, header=False
             )
+
+            write_storage_duration = int(sw["GSw_HydroPSHDurData"])
+            write_storinmaxfrac = sw["GSw_HydroStorInMaxFrac"] == "data"
+            if write_storage_duration or write_storinmaxfrac:
+                cap_existing_psh = pd.read_csv(
+                    os.path.join(inputs_case, 'cap_existing_psh.csv'),
+                    index_col=['*i', 'v', 'r']
+                )
+
+                if write_storage_duration:
+                    # Calculate capacity-weighted storage duration in
+                    # hours for each region with an existing psh fleet
+                    existing_psh_duration_data = cap_existing_psh.copy()
+                    existing_psh_duration_data['hours'] = (
+                        existing_psh_duration_data['max_energy_MWh'] /
+                        existing_psh_duration_data['operational_capacity_MW']
+                    )
+                    existing_psh_duration_data[['hours']].round(1).to_csv(
+                        os.path.join(inputs_case, 'storage_duration_pshdata.csv')
+                    )
+
+                if write_storinmaxfrac:
+                    # Calculate max storage_in as a fraction of psh
+                    # capacity for each region with an existing psh fleet
+                    existing_psh_stor_in_data = cap_existing_psh.copy()
+                    existing_psh_stor_in_data['frac'] = (
+                        existing_psh_stor_in_data['pump_capacity_MW'] /
+                        existing_psh_stor_in_data['operational_capacity_MW']
+                    )
+                    existing_psh_stor_in_data[['frac']].round(2).to_csv(
+                        os.path.join(inputs_case, 'storinmaxfrac.csv')
+                    )
+
 
     #######################################################
     #    -- Demand Response  --    #

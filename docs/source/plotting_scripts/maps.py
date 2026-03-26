@@ -34,9 +34,7 @@ os.makedirs(savepath, exist_ok=True)
 #%% Shared data
 dfmap = reeds.io.get_dfmap()
 
-dfcounty = gpd.read_file(
-    os.path.join(reeds_path, 'inputs', 'shapefiles', 'US_county_2022'),
-)
+dfcounty = reeds.io.get_countymap()
 dfcounty_full = dfcounty.copy()
 dfcounty.geometry = dfcounty.intersection(dfmap['country'].loc['USA','geometry']).simplify(1000)
 greatlakes = gpd.read_file(

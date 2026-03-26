@@ -119,9 +119,6 @@ GSw_HydroWithinSeasFrac,1
 GSw_Int_CC,0
 GSw_Int_Curt,0
 GSw_LfillGas,1
-GSw_LoadAdjust,0
-GSw_LoadAdjust_Adoption,commercial__residential
-GSw_LoadAdjust_Profiles,commercial__residential
 GSw_Loadpoint,0
 GSw_MaxCaptureCCSTechs,0
 GSw_Upstream,0

@@ -11,6 +11,11 @@ Outputs
 
 Notes
 -----
+This script copies over and preprocesses climate data from the climate inputs location to 
+the inputs_case folder of a given run. Preprocessing procedures include interpolating data
+for model years not included in the input data as well as formatting the files from long
+format to GAMS-readable multiindex tables (wide format).
+
 Copied from ReEDS-1.0:
 * PTS 04/25/14
     * POL37 is a warming scenario consistent with GHG stabilization at 3.7 W/m2.
@@ -63,11 +68,12 @@ NREL/TP-6A20-64297. https://www.nrel.gov/docs/fy15osti/64297.pdf
 ### --- IMPORTS ---
 ### ===========================================================================
 
-import pandas as pd
-import os
-import sys
 import argparse
 import datetime
+import os
+import sys
+import pandas as pd
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
 # Time the operation of this script
@@ -91,10 +97,8 @@ inputs_case = args.inputs_case
 ### FIXED INPUTS ###
 
 verbose = 2
-### Set rounding precision
+# Set rounding precision
 decimals = 5
-### Link between peak-timeslices and parent-timeslices (in case we add more peak-slices)
-slicetree = {'h17': 'h3'}
 
 #%% Set up logger
 log = reeds.log.makelog(
@@ -109,36 +113,18 @@ climatescen = sw.climatescen
 climateloc = sw.climateloc
 GSw_ClimateWater = int(sw.GSw_ClimateWater)
 GSw_ClimateHydro = int(sw.GSw_ClimateHydro)
-GSw_ClimateDemand = int(sw.GSw_ClimateDemand)
-GSw_LoadProfiles = sw.GSw_LoadProfiles
-startyear = int(sw.startyear)
 endyear = int(sw.endyear)
-GSw_ClimateStartYear = int(sw.GSw_ClimateStartYear)
 
 if climateloc.startswith('inputs'):
     climateloc = os.path.join(reeds_path, *(os.path.split(climateloc)))
 else:
     pass
 
-### Get the directory for climate inputs
+# Get the directory for climate inputs
 climatedir = os.path.join(climateloc, climatescen)
 
-### Get modeled years
-modelyears = pd.read_csv(os.path.join(inputs_case,'modeledyears.csv')).columns.astype(int).tolist()
-allyears = list(range(startyear, endyear+1))
-### Get reeds_data_year
-reeds_data_year = 2012
-
-### Get valid regions
-val_r_all = pd.read_csv(
-    os.path.join(inputs_case, 'val_r_all.csv'), header=None).squeeze(1).tolist()
-
-### Get some other fixed inputs
-scalars = reeds.io.get_scalars(inputs_case)
-distloss = scalars.distloss
-
 #%% ===========================================================================
-### --- FUNCTIONS ---
+### --- FUNCTION ---
 ### ===========================================================================
 
 #########################################
@@ -150,53 +136,66 @@ def readwrite(
     """
     Load modifiers, interpolate to all years, write GAMS-readable csv.
     """
-    ### Indicate which indices to use
+    # Indicate which indices to use when pivoting data below
     index = {
-        'UnappWaterMult': ['wst','r','szn'],
-        'UnappWaterSeaAnnDistr': ['wst','r','szn'],
+        'UnappWaterMult': ['wst','r','month'],
+        'UnappWaterSeaAnnDistr': ['wst','r','month'],
         'UnappWaterMultAnn': ['wst','r'],
         'hydadjann': ['r'],
-        'hydadjsea': ['r','szn'],
+        'hydadjsea': ['r','month'],
     }
-    ### Load the climate scenario data
+    # Load the climate scenario data
     dfin = pd.read_csv(os.path.join(inputs_case, infile+'.csv'))
-    
-    ### Put in GAMS-readable format
+
+    # Set to wide format for calculations
     dfout = pd.pivot_table(dfin, values='Value', index=index[infile], columns=['t'])
-    ### If data end before endyear, create a column for endyear so we can forward-fill to it
+    # If data end before endyear, create a column for endyear so we can forward-fill to it
     lastdatayear = max([int(y) for y in dfout.columns])
     if endyear > lastdatayear:
         dfout[endyear] = dfout.loc[:,lastdatayear]
-    ### If data start after 2010, add a column for 2010
+    # If data start after 2010, add a column for 2010
     if (2010 not in dfout.columns) and all(dfout.columns.values > 2010):
-        ### For UnappWaterSeaAnnDistr we give the new values directly rather than as a ratio,
-        ### so we backfill with the earliest available data
+        ## For UnappWaterSeaAnnDistr we give the new values directly rather than as a ratio,
+        ## so we backfill with the earliest available data
         if infile == 'UnappWaterSeaAnnDistr':
             dfout[2010] = dfout.iloc[:,0]
-        ### Otherwise we fill with 1 (i.e. no change). Note that since we interpolate to the
-        ### next value, the years between 2010 and the first year with data will not be 1.
+        ## Otherwise we fill with 1 (i.e. no change). Note that since we interpolate to the
+        ## next value, the years between 2010 and the first year with data will not be 1.
         else:
             dfout[2010] = 1.
-        ### Move 2010 column to the front of the dataframe
+        ## Move 2010 column to the front of the dataframe
         dfout.sort_index(axis=1, inplace=True)
-    ### Interpolate to missing years
+    # Interpolate to missing years
     dfinterp = (
         dfout
-        ### Switch column names from integer years to timestamps
+        ## Switch column names from integer years to timestamps
         .rename(columns={c: pd.Timestamp(str(c)) for c in dfout.columns})
-        ### Add empty columns at year-starts between existing data (mean doesn't do anything)
+        ## Add empty columns at year-starts between existing data (mean doesn't do anything)
         .resample('YS', axis=1).mean()
-        ### Interpolate linearly to fill the new columns
+        ## Interpolate linearly to fill the new columns
         .T.interpolate('linear').T
     )
     dfout = (
-        ### Switch back to integer year column names
+        ## Switch back to integer year column names
         dfinterp.rename(columns={c: c.year for c in dfinterp.columns})
-        ### Drop extra data after the model end year
+        ## Drop extra data after the model end year
         .loc[:,:endyear]
     )
-    ### Write it to output folder
-    dfout.round(decimals).to_csv(os.path.join(inputs_case, 'climate_'+infile+'.csv'))
+    
+    # Files indexed by month undergo additional processing in hourly_writetimeseries. Create
+    # intermediate filenames for these files and melt them back to long format
+    file_prefix = 'temp' if 'month' in dfout.index.names else 'climate'
+    keepindex = False if file_prefix == 'temp' else True
+    if file_prefix == 'temp': 
+        dfout = pd.melt(
+            dfout.reset_index(), id_vars=index[infile], value_vars=dfout.columns,
+            var_name='t', value_name='Value'
+        )
+        
+    # Write it to output folder
+    dfout.round(decimals).to_csv(os.path.join(inputs_case, f'{file_prefix}_{infile}.csv'),
+                                 index=keepindex)
+    
     return dfout
 
 
@@ -214,7 +213,7 @@ if GSw_ClimateHydro:
     for infile in ['hydadjann','hydadjsea']:
         readwrite(infile=infile)
 
-if not any([GSw_ClimateWater,GSw_ClimateHydro,GSw_ClimateDemand]):
+if not any([GSw_ClimateWater,GSw_ClimateHydro]):
     print("All climate switches are off.")
 
 reeds.log.toc(tic=tic, year=0, process='input_processing/climateprep.py',

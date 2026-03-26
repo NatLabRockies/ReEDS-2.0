@@ -1,5 +1,30 @@
 # User guide
 
+## Large input files
+
+Large input files,
+including hourly electricity demand projections and hourly capacity factor profiles for solar and wind,
+are hosted remotely.
+The URLs for the remote files are stored in `inputs/remote_files.csv`.
+At the start of a ReEDS run (or when running `reeds/remote.py`),
+if the required files are not already present,
+they are downloaded from the host to `inputs/remote`.
+The name of each file in `inputs/remote` ends with the `record_id` from `inputs/remote_files.csv`;
+multiple different versions of a single file can thus be kept in the `inputs/remote` folder to help avoid unnecessary downloads when switching between branches or commits that reference different versions of the file.
+During a ReEDS run, links to the versions used by the present commit are saved to `inputs/profiles_cf` and `inputs/profiles_demand`, without the `record_id`.
+Code within ReEDS should generally point to the links in `inputs/profiles_cf` and `inputs/profiles_demand` instead of to a specific version of a record.
+
+Here is partial list of remotely hosted files used by ReEDS:
+
+- [ReEDS: Utility-scale PV profiles](https://zenodo.org/records/18407659)
+- [ReEDS: Distributed PV profiles](https://zenodo.org/records/18421976)
+- [ReEDS: Land-based wind profiles](https://zenodo.org/records/18422199)
+- [ReEDS: Offshore wind profiles](https://zenodo.org/records/18423722)
+- [ReEDS: Electricity demand profiles 2025](https://zenodo.org/records/18435263)
+- [ReEDS: Electricity demand profiles 2023](https://zenodo.org/records/18423997)
+- [ReEDS: Electricity demand profiles 2022](https://zenodo.org/records/18461542)
+- [ReEDS: Historic electricity demand profiles](https://zenodo.org/records/18462670)
+
 ## Temporal resolution
 
 ### Temporal resolution switches
@@ -22,10 +47,10 @@
   ```
 
   - If set to 'optimized', then a two-step custom optimization is performed using the `hourly_repperiods.optimize_period_weights()` and `hourly_repperiods.assign_representative_days()` functions to minimize the deviation in regional load and PV/wind CF between the weighted representative periods and the full year.
-  - If set to a string containing the substring 'user', then instead of optimizing the choice of representative periods for this run, we read them from the inputs/variability/period_szn_user.csv file.
+  - If set to a string containing the substring 'user', then instead of optimizing the choice of representative periods for this run, we read them from the inputs/temporal/period_szn_user.csv file.
     - The scenario name is in the first column, labeled 'scenario'. ReEDS will use rows with the same label as `GSw_HourlyClusterAlgorithm`.
       - So if you want to use the example period:szn map, just set `GSw_HourlyClusterAlgorithm=user`.
-      - If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/variability/period_szn_user.csv with a unique scenario name in the 'scenario' column, and set `GSw_HourlyClusterAlgorithm` to your unique scenario name, *which must contain the substring 'user'*. (For example, I could use a mapping called 'user_myname_20230130' by adding my period:szn map to inputs/variability/period_szn_user.csv with 'user_myname_20230130' in the 'scenario' column and setting `GSw_HourlyClusterAlgorithm=user_myname_20230130`.)
+      - If you want to specify a different period:szn map, then add your mapping at the bottom of inputs/temporal/period_szn_user.csv with a unique scenario name in the 'scenario' column, and set `GSw_HourlyClusterAlgorithm` to your unique scenario name, *which must contain the substring 'user'*. (For example, I could use a mapping called 'user_myname_20230130' by adding my period:szn map to inputs/temporal/period_szn_user.csv with 'user_myname_20230130' in the 'scenario' column and setting `GSw_HourlyClusterAlgorithm=user_myname_20230130`.)
       - Make sure the settings for `GSw_HourlyType` and `GSw_HourlyWeatherYears` match your user-defined map. For example, if your 'user_myname_20230130' map includes 365 representative days for weather year 2012, then set `GSw_HourlyType=day` and `GSw_HourlyWeatherYears=2012`.
       - You can feed the period:szn mapping from a completed run into the inputs folder of your repo to force ReEDS to use the same representative or stress periods.
       More detail can be found in the <a href="postprocessing_tools.html#fix-representative-stress-periods-preprocessing-get-case-periods-py">postprocessing tools</a> guide.
@@ -66,7 +91,7 @@ The model can be run at hourly resolution using the following switch settings:
 
 To further reduce solve time, you can make the following changes:
 
-- `yearset_suffix = fiveyear`
+- `yearset = 2010_2015_2020_2025_2030_2035_2040_2045_2050`
   - Solve in 5-year steps
 - `GSw_OpRes = 0`
   - Turn off operating reserves
@@ -83,25 +108,26 @@ To further reduce solve time, you can make the following changes:
 
 ### Switch options for GSw_LoadProfiles
 
-These files are stored in `inputs/load/{switch_name}_load_hourly.h5`.
+The hourly load files are hosted remotely as described in [Large Input Files](#large-input-files).
+The `GSw_LoadProfiles` switch corresponds to a file saved to `inputs/remote/demand_{GSw_LoadProfiles}_{record_id}.h5` and its link at `inputs/profiles_demand/demand_{GSw_LoadProfiles}.h5`.
 
 | Switch Name    | Description of Profile | Origin | Weather year included |
 | ------------- | ------------- | ------------- | ------------- |
 | historic | Detrended historic demand from 2007-2013 and 2016-2023. This is multiplied by annual growth factors from AEO to forecast load growth. | Produced by the ReEDS team from a compilation of data sources. More detail can be found in the [hourlize readme](https://github.com/NatLabRockies/ReEDS-2.0/tree/main/hourlize). | 2007-2013 & 2016-2023 |
-| Clean2035_LTS | Net-zero emissions, economy wide, by 2050 based on the White House's Long Term Strategy as shown here: <https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf> | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
-| Clean2035    | Accelerated Demand Electrification (ADE) profile. This profile was custom made for the 100% Clean Electricity by 2035 study. More information about how it was formed can be found in <https://www.nrel.gov/docs/fy22osti/81644.pdf> Appendix C. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
-| Clean2035clip1pct | Same as Clean2035 but clips off the top 1% of load hours. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
-| EPHIGH | Features a combination of technology advancements, policy support and consumer enthusiasm that enables transformational change in electrification.   | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
-| EPMEDIUMStretch2046 | An average of the EPMEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA. | NLR researchers combined the EPMEDIUM profile and the AEO reference trajectory. |  2007-2013 |
-| EPMEDIUM | Features a future with widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps and select industrial applications, but one that does not result in transformational change. | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
-| EPREFERENCE | Features the least incremental change in electrification through 2050, which serves as a baseline of comparison to the other scenarios.| Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
-| EER_Baseline_AEO2022_v2023  | Business as usual load growth. Based on the service demand projections from AEO 2022. This does not include the impacts of the Inflation Reduction Act.   | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in [EER's 2022 Annual Decarbonization Report](https://www.evolved.energy/post/adp2022). This is the "Baseline" scenario in EER's 2022 ADP. | 2007-2013 |
-| EER_IRAlow_v2023  | Modeling load change under conservative assumptions about the Inflation Reduction Act | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER's 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 |
-| EER_IRAmoderate_v2023  |  Modeling load change under moderate assumptions about the Inflation Reduction Act | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER's 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 |
-| EER_100by2050_v2023  | 100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER_IRAlow.  | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in [EER's 2022 Annual Decarbonization Report](https://www.evolved.energy/post/adp2022). This is the "Central" scenario in EER's 2022 ADP. | 2007-2013 |
-| EER_Baseline_AEO2023  | Business as usual load growth. Based on the service demand projections from AEO 2023. This does not include the impacts of the Inflation Reduction Act.   | Purchased from Evolved Energy Research in 2024. More information can be found in [EER's 2024 Annual Decarbonization Report](https://www.evolved.energy/us-adp-2024). This is the "Baseline" scenario in EER's 2024 ADP. | 2007-2013 & 2016-2023 |
-| EER_IRAlow  | Modeling load change under conservative assumptions about the Inflation Reduction Act   | Purchased from Evolved Energy Research in 2024. This scenario is not described in EER's 2024 ADP. It is most similar to the "Current Policy" scenario; however, that scenario has "moderate assumptions about the Inflation Reduction Act" compared to this scenario which has "conservative assumptions about the Inflation Reduction Act". This scenario was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 & 2016-2023 |
-| EER_100by2050  | 100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER_IRAlow.  | Purchased from Evolved Energy Research in 2024. More information can be found in [EER's 2024 Annual Decarbonization Report](https://www.evolved.energy/us-adp-2024). This is the "Central" scenario in EER's 2024 ADP. | 2007-2013 & 2016-2023 |
+| EFS_Clean2035_LTS | Net-zero emissions, economy wide, by 2050 based on the White House's Long Term Strategy as shown here: <https://www.whitehouse.gov/wp-content/uploads/2021/10/US-Long-Term-Strategy.pdf> | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
+| EFS_Clean2035    | Accelerated Demand Electrification (ADE) profile. This profile was custom made for the 100% Clean Electricity by 2035 study. More information about how it was formed can be found in <https://www.nrel.gov/docs/fy22osti/81644.pdf> Appendix C. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
+| EFS_Clean2035clip1pct | Same as Clean2035 but clips off the top 1% of load hours. | Developed for the 100% Clean Electricity by 2035 study: <https://www.nrel.gov/docs/fy22osti/81644.pdf> |  2007-2013 |
+| EFS_HIGH | Features a combination of technology advancements, policy support and consumer enthusiasm that enables transformational change in electrification.   | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
+| EFS_MEDIUMStretch2046 | An average of the EFS_MEDIUM profile and the AEO reference trajectory. This was created to very roughly simulate the EV and broader electrification incentives in IRA, before we had better estimates of the actual effects of IRA. | NLR researchers combined the EFS_MEDIUM profile and the AEO reference trajectory. |  2007-2013 |
+| EFS_MEDIUM | Features a future with widespread electrification among the “low-hanging fruit” opportunities in electric vehicles, heat pumps and select industrial applications, but one that does not result in transformational change. | Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
+| EFS_REFERENCE | Features the least incremental change in electrification through 2050, which serves as a baseline of comparison to the other scenarios.| Developed for the Electrification Futures Study <https://www.nrel.gov/docs/fy18osti/71500.pdf>. | 2007-2013 |
+| EER2023_Baseline_AEO2022  | Business as usual load growth. Based on the service demand projections from AEO 2022. This does not include the impacts of the Inflation Reduction Act.   | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in [EER's 2022 Annual Decarbonization Report](https://www.evolved.energy/post/adp2022). This is the "Baseline" scenario in EER's 2022 ADP. | 2007-2013 |
+| EER2023_IRAlow  | Modeling load change under conservative assumptions about the Inflation Reduction Act | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER's 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 |
+| EER2023_IRAmoderate  |  Modeling load change under moderate assumptions about the Inflation Reduction Act | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. This scenario is unfortunately not described in EER's 2022 ADP. It was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 |
+| EER2023_100by2050  | 100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER2025_IRAlow.  | Purchased from Evolved Energy Research in June 2023 for the National Transmission Planning Study and to update our load profiles in general. More information can be found in [EER's 2022 Annual Decarbonization Report](https://www.evolved.energy/post/adp2022). This is the "Central" scenario in EER's 2022 ADP. | 2007-2013 |
+| EER2025_Baseline_AEO2023  | Business as usual load growth. Based on the service demand projections from AEO 2023. This does not include the impacts of the Inflation Reduction Act.   | Purchased from Evolved Energy Research in 2024. More information can be found in [EER's 2024 Annual Decarbonization Report](https://www.evolved.energy/us-adp-2024). This is the "Baseline" scenario in EER's 2024 ADP. | 2007-2013 & 2016-2023 |
+| EER2025_IRAlow  | Modeling load change under conservative assumptions about the Inflation Reduction Act   | Purchased from Evolved Energy Research in 2024. This scenario is not described in EER's 2024 ADP. It is most similar to the "Current Policy" scenario; however, that scenario has "moderate assumptions about the Inflation Reduction Act" compared to this scenario which has "conservative assumptions about the Inflation Reduction Act". This scenario was originally prepared for the Princeton REPEAT project. Please cite the [Princeton REPEAT project](https://repeatproject.org/) when using this profile. | 2007-2013 & 2016-2023 |
+| EER2025_100by2050  | 100% decarbonization by 2050 scenario. This does not explicitly include the impacts of the Inflation Reduction Act. However, due to its decarbonization, it is a more aggressive electrification profile than EER2025_IRAlow.  | Purchased from Evolved Energy Research in 2024. More information can be found in [EER's 2024 Annual Decarbonization Report](https://www.evolved.energy/us-adp-2024). This is the "Central" scenario in EER's 2024 ADP. | 2007-2013 & 2016-2023 |
 
 
 ### Resources for more info about ReEDS's load profiles
@@ -345,7 +371,7 @@ In addition, the `GSw_ReducedResource` switch allows for a uniform reduction of 
 
 ### Other notes
 
-- Supply curve files can be found in `inputs/supply_curve`, with the corresponding hourly profiles for wind and solar in `inputs/variability/multi_year`
+- Supply curve files can be found in `inputs/supply_curve`, with the corresponding hourly profiles for wind and solar in `inputs/profiles_cf`
 - The `rev_paths.csv` in `inputs/supply_curve`provides details on the available access case for each technology and the corresponding supply curve vintage.
 - Supply curves for wind, solar, and geothermal are generated by hourlize; for more details see [Using Hourlize](hourlize.md).
 
@@ -524,14 +550,14 @@ In this configuration all three technologies share the same Dirichlet draw
 ```yaml
 - name: load_st
   assignments_list:
-    - GSw_LoadProfiles: [EER_100by2050, EER_IRAlow]
+    - GSw_LoadProfiles: [EER2025_100by2050, EER2025_IRAlow]
   dist: dirichlet
   dist_params: [1, 1]
   weight_r: st
 ```
 
 Each state receives its own weighted combination of the two load scenarios.\
-`Sample_load = W1*(EER_100by2050) +  W2*(EER_IRAlow)` with `W1 + W2 = 1`.
+`Sample_load = W1*(EER2025_100by2050) +  W2*(EER2025_IRAlow)` with `W1 + W2 = 1`.
 
 #### Example 3. Discrete siting uncertainty for wind and solar
 

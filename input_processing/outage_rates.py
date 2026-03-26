@@ -147,10 +147,7 @@ def fill_empty_techs(df_prefill, inputs_case, fillvalues_tech=None, during_quart
 
     ### Case inputs
     techlist = reeds.techs.get_techlist_after_bans(inputs_case)
-    val_ba = (
-        pd.read_csv(os.path.join(inputs_case, 'val_ba.csv'), header=None)
-        .squeeze(1).values
-    )
+    hierarchy = reeds.io.get_hierarchy(reeds.io.standardize_case(inputs_case))
 
     ### Identify techs with nonzero values that are not yet included in dataframe
     keep_techs = [i for i in fillvalues_tech.index if i in techlist]
@@ -169,7 +166,7 @@ def fill_empty_techs(df_prefill, inputs_case, fillvalues_tech=None, during_quart
             dfout_filled = pd.concat(
                 {
                     (i,r): pd.Series(index=df_prefill.index, data=fillvalues_tech[i])
-                    for i in missing_techs for r in val_ba
+                    for i in missing_techs for r in hierarchy.index
                 },
                 axis=1, names=('i','r'),
             )
@@ -210,63 +207,6 @@ def fill_empty_techs(df_prefill, inputs_case, fillvalues_tech=None, during_quart
     return dfout
 
 
-def aggregate_regions(df, inputs_case):
-    """
-    Parameters
-    ----------
-    df: pd.DataFrame with (techcol, r) MultiIndex columns and timestamp rows
-    inputs_case: string path to ReEDS-2.0/runs/{casename}/inputs_case
-
-    Returns
-    -------
-    pd.DataFrame with regions dimension aggregated according to case settings
-    """
-    r2aggreg = pd.read_csv(
-        os.path.join(inputs_case, 'hierarchy_original.csv')
-    ).rename(columns={'ba':'r'}).set_index('r').aggreg
-    agglevel_variables = reeds.spatial.get_agglevel_variables(reeds_path, inputs_case)
-    county2zone = pd.read_csv(
-        os.path.join(inputs_case, 'county2zone.csv'),
-        dtype={'FIPS':str},
-    )
-    county2zone = (
-        county2zone
-        .assign(FIPS='p'+county2zone.FIPS)
-        .set_index('FIPS')
-        .ba.loc[agglevel_variables['county_regions']]
-    )
-    techcol = df.columns.names[0]
-
-    dfout = df.copy()
-    if 'aggreg' in agglevel_variables['agglevel']:
-        county2zone = county2zone.map(r2aggreg)
-        dfout.columns = dfout.columns.map(
-            lambda x: (x[0], r2aggreg[x[1]]))
-        dfout = dfout.groupby(axis=1, level=[techcol,'r']).mean()
-
-    if 'county' in agglevel_variables['agglevel']:
-        val_r = pd.read_csv(
-            os.path.join(inputs_case, 'val_r.csv'),
-            header=None,
-        ).squeeze(1)
-        dfout = pd.concat(
-            {
-                i: (
-                    dfout[i]
-                    ## Get the zone for each county, or if it's already a zone, keep the zone.
-                    ## Every county in a zone thus gets the same profile.
-                    [val_r.map(lambda x: county2zone.get(x,x))]
-                    ## Set the actual regions (could be mix of zones and counties) as index
-                    .set_axis(val_r.values, axis=1)
-                )
-                for i in dfout.columns.get_level_values(techcol).unique()
-            },
-            axis=1, names=(techcol,'r'),
-        )
-
-    return dfout
-
-
 def calc_outage_forced(
     reeds_path,
     inputs_case,
@@ -276,6 +216,7 @@ def calc_outage_forced(
     """
     ### Derived inputs
     sw = reeds.io.get_switches(inputs_case)
+    hierarchy = reeds.io.get_hierarchy(reeds.io.standardize_case(inputs_case))
     val_ba = (
         pd.read_csv(os.path.join(inputs_case, 'val_ba.csv'), header=None)
         .squeeze(1).values
@@ -293,8 +234,9 @@ def calc_outage_forced(
     )
 
     ### Load temperatures
-    print('Load temperatures')
-    temperatures = reeds.io.get_temperatures(inputs_case)
+    print('Load temperatures and broadcast from states to zones')
+    temperatures = reeds.io.get_temperatures(inputs_case)[hierarchy.st]
+    temperatures.columns = hierarchy.index
 
     ### Input data
     if sw.GSw_OutageScen.lower() == 'static':
@@ -335,10 +277,6 @@ def calc_outage_forced(
         inputs_case=inputs_case,
         fillvalues_tech=outage_forced_static,
     )
-
-    ### This file has a unique format so aggregate it now if necessary
-    forcedoutage_pm = aggregate_regions(forcedoutage_pm, inputs_case)
-    outage_forced_hourly = aggregate_regions(outage_forced_hourly, inputs_case)
 
     return {
         'fits_forcedoutage': fits_forcedoutage,
@@ -392,7 +330,7 @@ def plot_outage_forced(
     import matplotlib as mpl
     reeds.plots.plotparams()
     case = os.path.dirname(inputs_case.rstrip(os.sep))
-    figpath = os.path.join(case,'outputs','hourly')
+    figpath = os.path.join(case, 'outputs', 'figures')
     os.makedirs(figpath, exist_ok=True)
 
     ### Plot the fits
@@ -547,7 +485,7 @@ if __name__ == '__main__':
 
     # #%% Settings for testing
     # reeds_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # inputs_case = os.path.join(reeds_path, 'runs', 'v20250508_prasM0_Pacific', 'inputs_case')
+    # inputs_case = os.path.join(reeds_path, 'runs', 'v20260113_temperatureM1_Everything', 'inputs_case')
     # interactive = True
     # debug = 1
 

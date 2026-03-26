@@ -24,7 +24,6 @@ plots.plotparams()
 wscale_straight = 0.0004
 wscale_routes = 1.5
 wscale_h2 = 10
-routes = False
 ## Note that if you change the CRS you'll probably need to change
 ## the position of the annotations
 crs = 'ESRI:102008'
@@ -55,8 +54,6 @@ parser.add_argument('case_positional', type=str, help='path to ReEDS run folder'
 parser.add_argument('--case', '-c', type=str, help='path to ReEDS run folder')
 parser.add_argument('--year', '-y', type=int, default=0,
                     help='year to plot, or 0 for last year')
-parser.add_argument('--routes', '-r', action='store_true',
-                    help='if True, show actual transmission routes')
 
 args = parser.parse_args()
 if args.case_positional and args.case:
@@ -72,12 +69,10 @@ elif args.case:
 else:
     raise ValueError('Provide case path either as positional argument or as --case/-c')
 year = args.year
-routes = args.routes
 
 # #%% Inputs for testing
 # case = os.path.join(reeds_path,'runs','v20251111_15M0_Pacific')
 # year = 0
-# routes = False
 # interactive = True
 # write = False
 # import importlib
@@ -123,8 +118,8 @@ for subtract_baseyear in [None, 2020]:
         plt.close()
         f, ax, _ = reedsplots.plot_trans_onecase(
             case=case, pcalabel=False,
-            routes=routes, simpletypes=None,
-            wscale=(wscale_routes if routes else wscale_straight),
+            simpletypes=None,
+            wscale=wscale_straight,
             yearlabel=False, year=year, alpha=1.0,
             subtract_baseyear=subtract_baseyear,
             label_line_capacity=1,
@@ -297,7 +292,7 @@ try:
     plt.close()
     f,ax = reedsplots.plot_vresites_transmission(
         case, year, crs=crs, cm=gen_cmap,
-        routes=False, wscale=wscale_straight, show_overlap=False,
+        wscale=wscale_straight, show_overlap=False,
         subtract_baseyear=None, show_transmission=False,
         alpha=transalpha, colors=transcolor,
     )
@@ -318,7 +313,7 @@ try:
     plt.close()
     f,ax = reedsplots.plot_vresites_transmission(
         case, year, crs=crs, cm=gen_cmap,
-        routes=routes, show_overlap=False,
+        show_overlap=False,
         wscale=wscale_routes,
         subtract_baseyear=None, show_transmission=True,
         alpha=transalpha, colors=transcolor,
@@ -796,6 +791,22 @@ if not int(sw.GSw_PRM_CapCredit):
         except Exception:
             print(f'plot_stress_mix failed for {metric}:')
             print(traceback.format_exc())
+
+
+#%% PRM if iterating
+if int(sw.GSw_PRM_StressIterateMax) and int(sw.GSw_PRM_UpdateMethod):
+    try:
+        f, ax, prm_final = reedsplots.map_prm(case)
+        savename = 'map_prm.png'
+        if write:
+            plt.savefig(os.path.join(savepath, savename))
+        if interactive:
+            plt.show()
+        plt.close()
+        print(savename)
+    except Exception:
+        print('map_prm failed:')
+        print(traceback.format_exc())
 
 
 #%% Capacity markers

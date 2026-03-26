@@ -101,6 +101,42 @@ def csp_dispatch(cfcsp, sm=2.4, storage_duration=10):
     return total_dispatch
 
 
+def calculate_regional_distpv_cf(inputs_case):
+    # Read county-level distpv capacity factors
+    county_distpv_cf = reeds.io.read_file(
+        os.path.join(inputs_case, 'recf_distpv.h5'),
+        parse_timestamps=True
+    )
+    # Read county- and model region-level distpv capacities to use
+    # in capacity-weighted averages
+    sw = reeds.io.get_switches(inputs_case)
+    county_distpv_cap = reeds.io.get_distpv_capacities(distpvscen=sw.distpvscen)
+    regional_distpv_cap = reeds.io.get_distpv_capacities(inputs_case)
+    # Increment hourly cluster year if there is no data for the provided year
+    GSw_HourlyClusterYear = sw.GSw_HourlyClusterYear
+    if GSw_HourlyClusterYear not in county_distpv_cap:
+        GSw_HourlyClusterYear = str(int(GSw_HourlyClusterYear) + 1)
+    # Downselect to relevant counties and hourly cluster year values
+    county_distpv_cap = (
+        county_distpv_cap.loc[county_distpv_cf.columns, GSw_HourlyClusterYear]
+    )
+    regional_distpv_cap = regional_distpv_cap[GSw_HourlyClusterYear]
+    # Get county-to-region mapping
+    county2zone = reeds.io.get_county2zone(os.path.dirname(inputs_case))
+    county2zone.index = 'p' + county2zone.index
+    # Calculate capacity-weighted average capacity factors by calculating
+    # regional distpv generation and dividing by each region's distpv capacity
+    regional_distpv_cf = (
+        county_distpv_cf.mul(county_distpv_cap)
+        .rename(columns=county2zone)
+        .groupby(axis=1, level=0)
+        .sum()
+        .div(regional_distpv_cap)
+    )
+
+    return regional_distpv_cf
+
+
 #%% ===========================================================================
 ### --- MAIN FUNCTION ---
 ### ===========================================================================
@@ -201,12 +237,8 @@ def main(reeds_path, inputs_case):
     if int(sw['GSw_distpv']) == 0: 
         df_distpv = pd.DataFrame(index=df_upv.index)
     else:
-        df_distpv = reeds.io.read_file(
-            os.path.join(inputs_case, 'recf_distpv.h5'),
-            parse_timestamps=True,
-        )
-        rename = {c: 'distpv|' + c for c in df_distpv if not c.startswith('distpv|')}
-        df_distpv = df_distpv.rename(columns=rename)
+        df_distpv = calculate_regional_distpv_cf(inputs_case)
+        df_distpv.columns = [f"distpv|{col}" for col in df_distpv.columns]
 
     ### CSP
     # If CSP is turned off, create an empty dataframe with the same index as df_upv to concat

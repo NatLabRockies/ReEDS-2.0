@@ -4,7 +4,6 @@ import sys
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import geopandas as gpd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import reeds
 
@@ -66,9 +65,7 @@ old2new = pd.read_csv(
 #%%### Shared data from ReEDS
 dfmap = reeds.io.get_dfmap()
 
-dfcounties = gpd.read_file(
-    os.path.join(reeds.io.reeds_path, 'inputs', 'shapefiles', 'US_COUNTY_2022')
-).to_crs(crs)[['FIPS','STATE','geometry']]
+dfcounties = reeds.io.get_countymap().to_crs(crs)[['FIPS','STATE','geometry']]
 
 inflatable = reeds.io.get_inflatable()
 

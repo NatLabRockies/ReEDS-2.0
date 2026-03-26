@@ -11,4 +11,3 @@ wind-ons,GSw_SitingWindOns,limited,ONSHORE/2025_08_31_NewSites,wind_limited,wind
 csp,none,none,CSP/2019_Existing_NewFormat_CST,CSP/2019_Existing_NewFormat_CST,,,
 egs,none,reference,EGS/2025_StScen_NewSites_update,results,results/egs-reference_supply-curve.csv,/kfs2/projects/rev/projects/gto/fy25/standard_scenarios/rev/deliverables/moderate_supply_curves,
 geohydro,none,reference,GeoHydro/2024_Update,results,results/combined_supply-curve.csv,,
-distpv,none,reference,DistPV/2025_01_23_H5Fix_CST,results,,,

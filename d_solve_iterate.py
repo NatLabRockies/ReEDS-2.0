@@ -102,11 +102,9 @@ def main(casepath, t, overwrite=False):
             ## Check if the output of hourly_writetimeseries.py for this year/iteration
             ## exists, indicating stress period calcluations finished (or that we're not
             ## using stress periods)
-            and (
-                os.path.isfile(
-                    os.path.join(
-                        sw.casedir, 'inputs_case', f'stress{t}i{iteration+1}', 'cf_vre.csv'))
-                if not int(sw.GSw_PRM_CapCredit) else True)
+            and os.path.isfile(
+                os.path.join(
+                    sw.casedir, 'inputs_case', f'stress{t}i{iteration+1}', 'cf_vre.csv'))
             ## Check if Augur finished
             and os.path.isfile(
                 os.path.join(

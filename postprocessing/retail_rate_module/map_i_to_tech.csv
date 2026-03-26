@@ -160,7 +160,7 @@ Gas-CT,gas-ct,#C2A1DB
 battery_li,battery,#FF4A88
 gas-CT,gas-ct,#C2A1DB
 gas-CC,gas-cc,#52216B
-pumped-hydro,phs,#FF4A88
+pumped-hydro,psh,#FF4A88
 nuclear,nuclear,#820000
 wind-ons,wind-ons,#00B6EF
 DUPV,dupv,#FFC903

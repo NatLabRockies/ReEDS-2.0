@@ -60,7 +60,7 @@
     "original_sc_file": "/Volumes/ReEDS/Supply_Curve_Data/ONSHORE/2025_08_31_NewSites/reV/wind_open/wind_open_supply-curve.csv",
     "outpath": "/Users/pbrown/github3/ReEDS-2.0/hourlize/out/wind-ons_open_ba",
     "output_timezone": "Etc/GMT+6",
-    "process_profiles": false,
+    "process_profiles": true,
     "profile_dir": "",
     "profile_dset": "rep_profiles_0",
     "profile_file_format": "",

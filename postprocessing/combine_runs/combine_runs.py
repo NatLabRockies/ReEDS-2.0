@@ -289,7 +289,7 @@ def run_combine_case(scen, reeds_path, output_path):
         plt.close()
         try:
             f,ax = reedsplots.plot_vresites_transmission(case=case, year=yearend, crs='ESRI:102008', cm=gen_cmap,
-                                                         routes=False, wscale=wscale_straight, show_overlap=True,
+                                                         wscale=wscale_straight, show_overlap=True,
                                                          subtract_baseyear=None, show_transmission=show_transmission,
                                                          alpha=transalpha, colors=transcolor, ms=ms)
             

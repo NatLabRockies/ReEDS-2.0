@@ -46,8 +46,6 @@ tic = datetime.datetime.now()
 decimals = 3
 ### Whether to show plots interactively [default False]
 interactive = False
-### Full possible collection of weather years
-all_weatheryears = list(range(2007,2014)) + list(range(2016,2024))
 ### VRE techs considered for GSw_PRM_StressSeedMinRElevel and GSw_HourlyMinRElevel
 techs_min_vre = ['upv', 'wind-ons']
 
@@ -403,32 +401,33 @@ def make_timestamps(sw):
     ### Get some useful constants
     hoursperperiod = {'day':24, 'wek':120, 'year':24}
     periodsperyear = {'day':365, 'wek':73, 'year':365}
+    weather_years = sw.resource_adequacy_years_list
 
     ### Get map from yperiod, hour, and h_of_period to timestamp
     timestamps = pd.DataFrame({
-        'year': np.ravel([[y]*8760 for y in all_weatheryears]),
-        'h_of_year': np.ravel([list(range(1,8761)) * len(all_weatheryears)]),
+        'year': np.ravel([[y]*8760 for y in weather_years]),
+        'h_of_year': np.ravel([list(range(1,8761)) * len(weather_years)]),
         'h_of_period': np.ravel(
             [f'{h+1:>03}' for h in range(hoursperperiod[sw['GSw_HourlyType']])]
-            * periodsperyear[sw['GSw_HourlyType']] * len(all_weatheryears)),
+            * periodsperyear[sw['GSw_HourlyType']] * len(weather_years)),
         'yperiod': np.ravel(
             [p+1 for p in range(periodsperyear[sw['GSw_HourlyType']])
              for h in range(hoursperperiod[sw['GSw_HourlyType']])]
-            * len(all_weatheryears)),
+            * len(weather_years)),
         'h_of_day': np.ravel(
             [f'{h+1:>03}' for h in range(hoursperperiod['day'])]
-            * periodsperyear['day'] * len(all_weatheryears)),
+            * periodsperyear['day'] * len(weather_years)),
         'yday': np.ravel(
             [p+1 for p in range(periodsperyear['day'])
              for h in range(hoursperperiod['day'])]
-            * len(all_weatheryears)),
+            * len(weather_years)),
         'h_of_wek': np.ravel(
             [f'{h+1:>03}' for h in range(hoursperperiod['wek'])]
-            * periodsperyear['wek'] * len(all_weatheryears)),
+            * periodsperyear['wek'] * len(weather_years)),
         'ywek': np.ravel(
             [p+1 for p in range(periodsperyear['wek'])
              for h in range(hoursperperiod['wek'])]
-            * len(all_weatheryears)),
+            * len(weather_years)),
     })
     timestamps['timestamp'] = (
         'y' + timestamps.year.astype(str)
@@ -451,7 +450,7 @@ def make_timestamps(sw):
             f'{y}-01-01', f'{y+1}-01-01',
             freq='H', inclusive='left', tz='Etc/GMT+6',
         )[:8760]
-        for y in all_weatheryears
+        for y in weather_years
     ])
 
     return timestamps
@@ -544,14 +543,15 @@ def main(
 
     #%%### Load RE CF data, then take available-capacity-weighted average by (tech,region)
     print("Collecting 8760 capacity factor data")
-    recf = reeds.io.read_file(os.path.join(inputs_case, 'recf.h5'), parse_timestamps=True)
+    recf_ra = reeds.io.read_file(os.path.join(inputs_case, 'recf.h5'), parse_timestamps=True)
     ### Downselect to techs used for rep-period selection
-    recf = recf[[c for c in recf if any([c.startswith(p) for p in techs_vre])]].copy()
+    recf_ra = recf_ra[[c for c in recf_ra if any([c.startswith(p) for p in techs_vre])]].copy()
     ### Multiply by available capacity for weighted average
-    recf *= sc.set_index('resource')['capacity']
+    recf_ra *= sc.set_index('resource')['capacity']
     ### Downselect to modeled years, add descriptive time index
-    recf = recf.loc[recf.index.year.isin(sw['GSw_HourlyWeatherYears'])]
+    recf = recf_ra.loc[recf_ra.index.year.isin(sw['GSw_HourlyWeatherYears'])]
     recf.index = timestamps_myr.set_index(['year','yperiod','h_of_period']).index
+    recf_ra.index = timestamps.set_index(['year','yperiod','h_of_period']).index
 
     # rmap1 is used in conjuntion with rmap2 (created in identify_min_periods) 
     # to map regional data from BA/county (depending on desired spatial aggregation) 
@@ -739,7 +739,12 @@ def main(
     ):
         stressperiods_minre = {
             tech: identify_min_periods(
-                df=recf, hierarchy=hierarchy, rmap1 = rmap1, level=sw['GSw_PRM_StressSeedMinRElevel'], prefix=tech)
+                df=recf_ra,
+                hierarchy=hierarchy,
+                rmap1=rmap1,
+                level=sw['GSw_PRM_StressSeedMinRElevel'],
+                prefix=tech,
+            )
             for tech in techs_min_vre}
     else:
         stressperiods_minre = {tech: set() for tech in techs_min_vre}
