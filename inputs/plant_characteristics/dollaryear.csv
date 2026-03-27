@@ -9,6 +9,9 @@ tes_ATB_2024_advanced,2022
 tes_ATB_2024_conservative,2022
 tes_ATB_2024_moderate,2022
 tes_ATB_2024_dirtcheap,2022
+tes_threshold_75pct,2022
+tes_threshold_50pct,2022
+tes_threshold_25pct,2022
 beccs_BVRE_2021_high,2019
 beccs_BVRE_2021_low,2019
 beccs_BVRE_2021_mid,2019
