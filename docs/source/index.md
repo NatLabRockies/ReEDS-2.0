@@ -15,6 +15,7 @@
 setup
 developer_best_practices
 model_documentation
+hydrogen
 user_guide
 sources
 postprocessing_tools
