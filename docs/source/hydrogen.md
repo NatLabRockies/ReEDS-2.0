@@ -208,7 +208,7 @@ When using regional balancing (`GSw_H2=2`), national exogenous demand is allocat
 
 In `d1_temporal_params.gms`, the national demand is distributed to regions and hours:
 
-$$D^{\text{exog}}_{r,h,t} = \text{h2\_share}(r,t) \times \frac{D^{\text{exog}}_t}{8760}$$
+$$D^{\text{exog}}_{r,h,t} = \text{h2}_{\text{share}}(r,t) \times \frac{D^{\text{exog}}_t}{8760}$$
 
 Demand is distributed uniformly across all hours of the year (i.e., demand is inflexible within the model). Power-sector hydrogen demand from H<sub>2</sub>-CTs and H<sub>2</sub>-CCs is determined endogenously based on their dispatch.
 
