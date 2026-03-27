@@ -30,13 +30,12 @@ Hydrogen modeling draws on a set of CSV input files that are either provided as 
 
 These files ship with the repository under `inputs/` and are read directly by GAMS or by preprocessing scripts.
 
-```{table} Static hydrogen input files.
-:name: h2-static-input-files-table
+**Static hydrogen input files.**
 
 | File | Contents | Format | Consumed By |
 |:-----|:---------|:-------|:------------|
 | `inputs/consume/h2_exogenous_demand.csv` | National annual H<sub>2</sub> demand (million metric tons/yr) for each scenario (`none`, `BAU`, `Aggressive`, `Decarb`, `Decarb_with_BAU`, `LTS`) from 2010–2050. | Columns: `p`, `t`, and one column per scenario. | `input_processing/writecapdat.py` selects the column matching `GSw_H2_Demand_Case`; the result is loaded into GAMS via `b_inputs.gms` as `h2_exogenous_demand(p,allt)` (converted from million tons to tons). |
-| `inputs/consume/h2_demand_county_share.csv` | County-level (FIPS) fractions of national H<sub>2</sub> demand for 2021 and 2050, derived from the H<sub>2</sub>@Scale study {cite}`ruthH2ScaleHydrogenEconomic2020`. | Columns: `*r` (FIPS), `t`, `fraction`. | `input_processing/writecapdat.py` aggregates county shares to model zones, interpolates between 2021 and 2050, and writes `h2_ba_share.csv`. |
+| `inputs/consume/h2_demand_county_share.csv` | County-level (FIPS) fractions of national H<sub>2</sub> demand for 2021 and 2050, derived from the H<sub>2</sub>@Scale study Ruth et al. (2020). | Columns: `*r` (FIPS), `t`, `fraction`. | `input_processing/writecapdat.py` aggregates county shares to model zones, interpolates between 2021 and 2050, and writes `h2_ba_share.csv`. |
 | `inputs/consume/h2_transport_and_storage_costs.csv` | Year-indexed cost and performance data for all H<sub>2</sub> network components (pipelines, compressors, and three storage types) through 2050. Parameters include `cost_cap` (overnight capital), `cost_fom` (fixed O&M), and `electric_load` (MWh per metric ton for compressor electricity). Costs are in \$2004 from the [SERA model](https://www.nrel.gov/hydrogen/sera-model.html). | Columns: `*h2_stor_trans`, `t`, `parameter`, `value`. The first row is a comment line (prefix `*`). | `b_inputs.gms` loads this as `h2_cost_inputs(h2_st,allt,*)`, then computes `cost_h2_transport_cap`, `cost_h2_transport_fom`, `cost_h2_storage_cap`, `cost_h2_storage_fom`, and `h2_network_load` by combining with pipeline distances and financial cost multipliers. |
 | `inputs/consume/consume_char_{ref,low}.csv` | Cost and performance characteristics for electrolyzers, SMR, and SMR-CCS: `cost_cap` (\$/kW), `fom`, `vom`, `ele_efficiency` (kWh/kg), `gas_efficiency` (MMBtu/kg), and `stortran_adder`. The file suffix (`ref` or `low`) is selected by `GSw_H2_Inputs`. | Columns: `*i`, `t`, `parameter`, `value`. | `input_processing/plantcostprep.py` applies the electrolyzer stack replacement cost adjustment, then writes the result into the GAMS-ready `consume_char.csv` in `inputs_case/`. |
 | `inputs/plant_characteristics/h2-combustion_ATB_2024.csv` | Cost and performance for H<sub>2</sub>-CT and H<sub>2</sub>-CC generators: `capcost` (\$/kW), `fom`, `vom`, `heatrate` (MMBtu/MWh), from 2010–2050. An alternative `h2-combustion_ATB_2023.csv` is also available. | Columns: `i`, `t`, `capcost`, `fom`, `vom`, `heatrate`. | `input_processing/plantcostprep.py` concatenates this with other generator types and writes to `inputs_case/`. Selected via `plantchar_h2combustion`. |
@@ -48,10 +47,8 @@ These files ship with the repository under `inputs/` and are read directly by GA
 | `inputs/sets/i_h2_ptc_gen.csv` | Generation technologies eligible to supply credited electricity for the 45V H<sub>2</sub> PTC: wind, solar, nuclear, geothermal, hydropower, gas-CCS, and electrolyzer variants. | One technology per line. | `b_inputs.gms` defines GAMS set used to populate `valgen_h2ptc`. |
 | `inputs/hierarchy.csv` | Regional hierarchy mapping that includes the `h2ptcreg` column, which defines the geographic regions within which 45V deliverability matching is enforced. | CSV with columns: `ba`, `nercr`, ..., `h2ptcreg`, .... | `b_inputs.gms` uses the `h2ptcreg` column to define the H<sub>2</sub> PTC deliverability regions. |
 | `inputs/scalars.csv` | Contains ~16 hydrogen-related scalar parameters (see table below). | Columns: `name`, `value`, `desc`. | `b_inputs.gms` loads all scalars; scalar values propagate into GAMS equations and are also read by Python preprocessing scripts. |
-```
 
-```{admonition} Key hydrogen scalars from `inputs/scalars.csv`
-:class: dropdown
+<details><summary><strong>Key hydrogen scalars from `inputs/scalars.csv`</strong></summary>
 
 | Scalar | Value | Description |
 |:-------|:------|:------------|
@@ -71,25 +68,24 @@ These files ship with the repository under `inputs/` and are read directly by GA
 | `forced_outage_rate_h2_smr` | 0.10 | SMR forced outage rate (fraction) |
 | `cost_upgrade_gasct2h2ct` | 0.33 | Retrofit cost fraction for Gas-CT → H<sub>2</sub>-CT |
 | `cost_upgrade_gascc2h2cc` | 0.28 | Retrofit cost fraction for Gas-CC → H<sub>2</sub>-CC |
-```
+
+</details>
 
 ### Generated Files (Preprocessing)
 
 Several hydrogen input files are created by Python preprocessing scripts at the start of each model run and written to the run-specific `inputs_case/` directory. These files do not exist in the repository source tree.
 
-```{table} Generated hydrogen files.
-:name: h2-generated-files-table
+**Generated hydrogen files.**
 
 | Generated File | Producing Script | What It Does | GAMS Parameter |
 |:---------------|:-----------------|:-------------|:---------------|
 | `h2_ba_share.csv` | `input_processing/writecapdat.py` | Aggregates county-level demand shares from `h2_demand_county_share.csv` to model zones, interpolates linearly between the 2021 and 2050 anchor years, and writes yearly regional fractions. | `h2_share(r,allt)` |
-| `h2_storage_rb.csv` | `input_processing/h2_storage.py` | Performs a geospatial intersection of salt cavern and hard rock reservoir polygons {cite}`lordGeologicStorageHydrogen2014a` with model region boundaries. For each region, selects the cheapest storage type whose land-area overlap exceeds `h2_storage_area_threshold`; regions without geological options receive underground pipe. | `h2_stor_r(h2_stor,r)` — restricts which storage types can be built in each region. |
+| `h2_storage_rb.csv` | `input_processing/h2_storage.py` | Performs a geospatial intersection of salt cavern and hard rock reservoir polygons Lord et al. (2014) with model region boundaries. For each region, selects the cheapest storage type whose land-area overlap exceeds `h2_storage_area_threshold`; regions without geological options receive underground pipe. | `h2_stor_r(h2_stor,r)` — restricts which storage types can be built in each region. |
 | `h2_pipeline_cap_cost_mult.csv` | `input_processing/calc_financial_inputs.py` | Computes year-indexed financial cost multipliers for pipeline capital using the `h2_crp_pipeline` (40-year) capital recovery period and system discount rates. | `h2_cap_cost_mult_pipeline(allt)` |
 | `h2_compressor_cap_cost_mult.csv` | `input_processing/calc_financial_inputs.py` | Same as above for compressors, using `h2_crp_compressor` (15-year). | `h2_cap_cost_mult_compressor(allt)` |
 | `h2_storage_cap_cost_mult.csv` | `input_processing/calc_financial_inputs.py` | Same as above for storage, using `h2_crp_storage` (30-year). | `h2_cap_cost_mult_storage(allt)` |
 | `h2_ptc.csv` | `input_processing/calc_financial_inputs.py` | Computes the monetized 45V tax credit value (\$/kg) by technology, vintage, and year. Expands each vintage's credit over its 10-year eligibility window and adjusts for the tax equity monetization rate. | `h2_ptc_in(i,v,allt)` → expanded to `h2_ptc(i,v,r,allt)` in `b_inputs.gms`. |
 | `consume_char.csv` | `input_processing/plantcostprep.py` | Reads `consume_char_{ref,low}.csv`, adjusts electrolyzer capital costs to include the present-value cost of stack replacement (60% of future capital cost, discounted at the system real discount rate over 10 years), and writes the GAMS-ready file. | `cost_prod`, `prod_conversion_rate`, and other production parameters in `b_inputs.gms`. |
-```
 
 ### Data Flow
 
@@ -122,30 +118,30 @@ gwp.csv ────────────────────────
 
 ## Hydrogen Combustion Technologies
 
-Hydrogen can be consumed in the power sector by two generator types: hydrogen combustion turbines (H<sub>2</sub>-CTs) and hydrogen combined cycles (H<sub>2</sub>-CCs). These are comparable to commercial natural gas plants but are designed to combust hydrogen fuel {cite:p}`mitsubishiIntermountainPowerAgency2020, ruthTechnicalEconomicPotential2020`.
+Hydrogen can be consumed in the power sector by two generator types: hydrogen combustion turbines (H<sub>2</sub>-CTs) and hydrogen combined cycles (H<sub>2</sub>-CCs). These are comparable to commercial natural gas plants but are designed to combust hydrogen fuel (Mitsubishi (2020); Ruth et al. (2020)).
 
-**Cost and performance assumptions.** H<sub>2</sub>-CTs and H<sub>2</sub>-CCs are assumed to have the same heat rate and operation and maintenance (O&M) costs as their natural gas counterparts (see the [Fossil and Nuclear Technologies](model_documentation.md#fossil-and-nuclear-technologies) section of the main documentation) but with a 10% higher overnight capital cost to allow the turbine to function as a synchronous generator {cite}`ruthTechnicalEconomicPotential2020`. Cost and performance trajectories are specified in `inputs/plant_characteristics/h2-combustion_ATB_2024.csv` (selected via `plantchar_h2combustion`), which provides `capcost`, `fom`, `vom`, and `heatrate` for each technology and year. This file is processed by `input_processing/plantcostprep.py` and merged with other generator types for GAMS.
+**Cost and performance assumptions.** H<sub>2</sub>-CTs and H<sub>2</sub>-CCs are assumed to have the same heat rate and operation and maintenance (O&M) costs as their natural gas counterparts (see the [Fossil and Nuclear Technologies](model_documentation.md#fossil-and-nuclear-technologies) section of the main documentation) but with a 10% higher overnight capital cost to allow the turbine to function as a synchronous generator Ruth et al. (2020). Cost and performance trajectories are specified in `inputs/plant_characteristics/h2-combustion_ATB_2024.csv` (selected via `plantchar_h2combustion`), which provides `capcost`, `fom`, `vom`, and `heatrate` for each technology and year. This file is processed by `input_processing/plantcostprep.py` and merged with other generator types for GAMS.
 
-**Heat rate adjustment for low capacity factors.** H<sub>2</sub>-CCs are expected to operate at lower capacity factors than baseload gas combined cycles. Using monthly plant-level data from EIA Forms 860 and 923 {cite:p}`eiaMonthlyElectricGenerator2024,u.s.energyinformationadministrationeiaFormEIA923Detailed2024`, an empirical relationship between capacity factor and heat rate was developed for the existing NG-CC fleet. The analysis shows that shifting from a mean fleet capacity factor of 51% to the 6% minimum-CF constraint in ReEDS results in an 11.5% higher heat rate. This penalty is applied as a heat rate modifier for H<sub>2</sub>-CCs.
+**Heat rate adjustment for low capacity factors.** H<sub>2</sub>-CCs are expected to operate at lower capacity factors than baseload gas combined cycles. Using monthly plant-level data from EIA Forms 860 and 923 (EIA (2024); EIA (2024)), an empirical relationship between capacity factor and heat rate was developed for the existing NG-CC fleet. The analysis shows that shifting from a mean fleet capacity factor of 51% to the 6% minimum-CF constraint in ReEDS results in an 11.5% higher heat rate. This penalty is applied as a heat rate modifier for H<sub>2</sub>-CCs.
 
 **Retrofit pathways.** Existing natural gas plants can be upgraded to hydrogen combustion:
 
 - **Gas-CT → H<sub>2</sub>-CT**: Pays 33% of the difference in capital cost between the two technologies. This fraction is derived from the combustion turbine "mechanical—major equipment" cost share (\$54M of \$166M total, per EIA capital cost estimates for F-class turbines).
 - **Gas-CC → H<sub>2</sub>-CC**: Pays 28% of the cost difference, derived similarly for an H-class 2×2×1 combined cycle (\$294M of \$1,038M total).
 
-```{admonition} Hydrogen combustion switches
-- `GSw_H2Combustion` (default `1`): Enable (`1`) or disable (`0`) H<sub>2</sub>-CT and H<sub>2</sub>-CC technologies.
-- `GSw_H2CombinedCycle` (default `1`): Enable (`1`) or disable (`0`) H<sub>2</sub>-CC specifically.
-- `GSw_H2Combustionupgrade` (default `1`): Allow (`1`) or prevent (`0`) upgrades of existing gas-CT and gas-CC to H<sub>2</sub> combustion.
-- `plantchar_h2combustion` (default `h2-combustion_ATB_2024`): Selects the cost and performance input file.
-```
+> **Hydrogen combustion switches**
+>
+> - `GSw_H2Combustion` (default `1`): Enable (`1`) or disable (`0`) H<sub>2</sub>-CT and H<sub>2</sub>-CC technologies.
+> - `GSw_H2CombinedCycle` (default `1`): Enable (`1`) or disable (`0`) H<sub>2</sub>-CC specifically.
+> - `GSw_H2Combustionupgrade` (default `1`): Allow (`1`) or prevent (`0`) upgrades of existing gas-CT and gas-CC to H<sub>2</sub> combustion.
+> - `plantchar_h2combustion` (default `h2-combustion_ATB_2024`): Selects the cost and performance input file.
 
 
 ## Hydrogen Production
 
 ### Drop-In Renewable Fuel (`GSw_H2=0`)
 
-The simplest representation models hydrogen as a drop-in renewable fuel available in unlimited quantity at a fixed price. The default fuel cost is \$20/MMBtu, consistent with estimates of hydrogen produced via electrolysis powered by dedicated wind or solar {cite}`mahoneHydrogenOpportunitiesLowCarbon2020`, and within the range of current ethanol (\$12/MMBtu) and biodiesel (\$30/MMBtu) prices {cite}`doeAlternativeFuelPrice2020`. This all-in cost includes production, delivery, and storage. Users can select alternative price trajectories via the `h2combustionfuelscen` switch (options: `10`, `reference` [\$20/MMBtu], `30`), which selects the corresponding file from `inputs/fuelprices/h2-combustion_{scenario}.csv`. Each file contains a simple `year,cost` time series.
+The simplest representation models hydrogen as a drop-in renewable fuel available in unlimited quantity at a fixed price. The default fuel cost is \$20/MMBtu, consistent with estimates of hydrogen produced via electrolysis powered by dedicated wind or solar Mahone et al. (2020), and within the range of current ethanol (\$12/MMBtu) and biodiesel (\$30/MMBtu) prices DOE (2020). This all-in cost includes production, delivery, and storage. Users can select alternative price trajectories via the `h2combustionfuelscen` switch (options: `10`, `reference` [\$20/MMBtu], `30`), which selects the corresponding file from `inputs/fuelprices/h2-combustion_{scenario}.csv`. Each file contains a simple `year,cost` time series.
 
 Under this approach, the use of curtailed renewable energy for hydrogen production is not explicitly captured. To model that dynamic, endogenous production must be enabled (`GSw_H2=1` or `GSw_H2=2`).
 
@@ -169,8 +165,7 @@ Steam methane reforming converts natural gas to hydrogen. ReEDS can represent SM
 
 SMR is controlled by the `GSw_H2_SMR` switch (default `0`, off).
 
-```{table} Cost [$2022] and performance assumptions for hydrogen production technologies.
-:name: hydrogen-production-cost-table
+**Cost [$2022] and performance assumptions for hydrogen production technologies.**
 
 | Technology | Year | Capital Cost ($/kW) | Variable O&M ($/kWh) | Fixed O&M ($/kW-yr) | Electricity Use (kWh/kg) | Natural Gas Use (MMBtu/kg) |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
@@ -183,7 +178,6 @@ SMR is controlled by the `GSw_H2_SMR` switch (default `0`, off).
 | SMR with CCS | 2020 | 1,408 | 0.089 | 45.3 | 1.9 | 0.192 |
 | SMR with CCS | 2035 | 1,239 | 0.089 | 39.8 | 1.9 | 0.192 |
 | SMR with CCS | 2050 | 1,239 | 0.089 | 39.8 | 1.9 | 0.192 |
-```
 
 
 ## Hydrogen Demand
@@ -205,7 +199,7 @@ Data source: `inputs/consume/h2_exogenous_demand.csv`. This file contains one ro
 
 ### Regional Allocation
 
-When using regional balancing (`GSw_H2=2`), national exogenous demand is allocated to individual model zones using regional demand fractions. The source data is `inputs/consume/h2_demand_county_share.csv`, which contains county-level (FIPS code) demand fractions for two anchor years (2021 and 2050), derived from the H<sub>2</sub>@Scale hydrogen economic potential study {cite}`ruthH2ScaleHydrogenEconomic2020`:
+When using regional balancing (`GSw_H2=2`), national exogenous demand is allocated to individual model zones using regional demand fractions. The source data is `inputs/consume/h2_demand_county_share.csv`, which contains county-level (FIPS code) demand fractions for two anchor years (2021 and 2050), derived from the H<sub>2</sub>@Scale hydrogen economic potential study Ruth et al. (2020):
 
 - **Near-term fractions** (2021): Based on the reference scenario, excluding demands for light-duty vehicles, biofuels, and methanol.
 - **Long-term fractions** (2050): Based on the low-cost electrolysis scenario including all demand categories.
@@ -311,13 +305,13 @@ When `GSw_H2_CompressorLoad=1` (default `0`), the electricity consumed by pipeli
 | Compressor | 0.589 |
 | Storage (all types) | 0.008 |
 
-```{admonition} Hydrogen transport switches
-- `GSw_H2_Transport` (default `0`): Enable (`1`) or disable (`0`) inter-regional hydrogen pipelines.
-- `GSw_H2_TransportLevel` (default `cendiv`): Hierarchy level within which to allow pipelines.
-- `GSw_H2_IntraReg_Transport` (default `0.32`): Flat intra-regional transport cost (\$/kg H<sub>2</sub>).
-- `GSw_H2_CompressorLoad` (default `0`): Include (`1`) or exclude (`0`) compressor electricity demand in the load balance.
-- `GSw_H2_TransportUniform` (default `0`): If nonzero, overrides all H<sub>2</sub> transport/storage costs with a uniform \$/metric ton value.
-```
+> **Hydrogen transport switches**
+>
+> - `GSw_H2_Transport` (default `0`): Enable (`1`) or disable (`0`) inter-regional hydrogen pipelines.
+> - `GSw_H2_TransportLevel` (default `cendiv`): Hierarchy level within which to allow pipelines.
+> - `GSw_H2_IntraReg_Transport` (default `0.32`): Flat intra-regional transport cost (\$/kg H<sub>2</sub>).
+> - `GSw_H2_CompressorLoad` (default `0`): Include (`1`) or exclude (`0`) compressor electricity demand in the load balance.
+> - `GSw_H2_TransportUniform` (default `0`): If nonzero, overrides all H<sub>2</sub> transport/storage costs with a uniform \$/metric ton value.
 
 
 ## Hydrogen Storage
@@ -332,18 +326,15 @@ ReEDS represents three forms of hydrogen storage:
 | Hard rock | `h2_storage_hardrock` | 41,008 | 764 | Geological storage in hard rock formations; more widely available |
 | Underground pipe | `h2_storage_undergroundpipe` | 381,265 | 853 | Engineered storage that can be constructed anywhere; highest cost |
 
-Costs are in \$2004 and sourced from {cite}`papadiasBulkStorageHydrogen2021`, specified as year-indexed trajectories in `inputs/consume/h2_transport_and_storage_costs.csv` (rows where `h2_stor_trans` matches one of the three storage set elements). In `b_inputs.gms`, storage capital costs are multiplied by the financial cost multiplier from `h2_storage_cap_cost_mult.csv` (generated by `input_processing/calc_financial_inputs.py` using a 30-year capital recovery period). The three storage types are enumerated in `inputs/sets/h2_stor.csv`, and the parent set of all H<sub>2</sub> network components (adding pipelines and compressors) is `inputs/sets/h2_st.csv`. To reduce model complexity, each zone can build only the cheapest storage option available to it.
+Costs are in \$2004 and sourced from Papadias & Ahluwalia (2021), specified as year-indexed trajectories in `inputs/consume/h2_transport_and_storage_costs.csv` (rows where `h2_stor_trans` matches one of the three storage set elements). In `b_inputs.gms`, storage capital costs are multiplied by the financial cost multiplier from `h2_storage_cap_cost_mult.csv` (generated by `input_processing/calc_financial_inputs.py` using a 30-year capital recovery period). The three storage types are enumerated in `inputs/sets/h2_stor.csv`, and the parent set of all H<sub>2</sub> network components (adding pipelines and compressors) is `inputs/sets/h2_st.csv`. To reduce model complexity, each zone can build only the cheapest storage option available to it.
 
 ### Geographic Availability
 
-The availability of geological storage is determined by a geospatial analysis implemented in `input_processing/h2_storage.py`, which runs during preprocessing for each model run. The script loads model region boundaries and intersects them with salt cavern and hard rock reservoir polygons from {cite}`lordGeologicStorageHydrogen2014a`. A storage type is considered available in a model region if at least 1% of the region's land area overlaps with the mapped reservoir extent (controlled by the scalar `h2_storage_area_threshold`). The script then assigns each region its single cheapest available storage type (salt cavern < hard rock < underground pipe) and writes the result to `inputs_case/h2_storage_rb.csv`, which defines the GAMS set `h2_stor_r(h2_stor,r)`. Underground pipe storage is available in all regions as a backstop option.
+The availability of geological storage is determined by a geospatial analysis implemented in `input_processing/h2_storage.py`, which runs during preprocessing for each model run. The script loads model region boundaries and intersects them with salt cavern and hard rock reservoir polygons from Lord et al. (2014). A storage type is considered available in a model region if at least 1% of the region's land area overlaps with the mapped reservoir extent (controlled by the scalar `h2_storage_area_threshold`). The script then assigns each region its single cheapest available storage type (salt cavern < hard rock < underground pipe) and writes the result to `inputs_case/h2_storage_rb.csv`, which defines the GAMS set `h2_stor_r(h2_stor,r)`. Underground pipe storage is available in all regions as a backstop option.
 
-```{figure} figs/docs/hydrogen-storage-availability.png
-:name: figure-h2-storage-availability
+![Assumed availability of geological hydrogen storage reservoirs. Data are from Lord et al. (2014).](figs/docs/hydrogen-storage-availability.png)
 
-Assumed availability of geological hydrogen storage reservoirs.
-Data are from {cite}`lordGeologicStorageHydrogen2014a`.
-```
+*Assumed availability of geological hydrogen storage reservoirs. Data are from Lord et al. (2014).*
 
 ### Storage Variables
 
@@ -392,10 +383,10 @@ $$\sum_{\text{stor}} \text{StorCap}_{\text{stor},r} \geq \sum_{i,v} \text{CAP}_{
 
 where $H_{\min}$ is the minimum storage duration (default 24 hours, controlled by `GSw_H2_MinStorHours`). This ensures that hydrogen-fueled generators have sufficient local fuel reserves. Implemented as `eq_h2_min_storage_cap`.
 
-```{admonition} Hydrogen storage switches
-- `GSw_H2_StorTimestep` (default `1`): Resolution for tracking storage level: `1` = seasonal, `2` = hourly.
-- `GSw_H2_MinStorHours` (default `24`): Minimum hours of H<sub>2</sub> storage required per zone relative to local H<sub>2</sub> combustion capacity.
-```
+> **Hydrogen storage switches**
+>
+> - `GSw_H2_StorTimestep` (default `1`): Resolution for tracking storage level: `1` = seasonal, `2` = hourly.
+> - `GSw_H2_MinStorHours` (default `24`): Minimum hours of H<sub>2</sub> storage required per zone relative to local H<sub>2</sub> combustion capacity.
 
 
 ## Hydrogen Emissions
@@ -406,8 +397,7 @@ ReEDS tracks several categories of emissions associated with the hydrogen supply
 
 Hydrogen leaked to the atmosphere has an indirect global warming effect via its impact on the hydroxyl radical (OH), methane lifetime, and tropospheric ozone. The model assigns technology-specific leakage rates based on one of five published studies, selected via `GSw_H2LeakageScen` (default: `Fan_et_al_2022/Med`):
 
-```{table} Hydrogen leakage rates (fraction of production) by technology and study.
-:name: h2-leakage-rates-table
+**Hydrogen leakage rates (fraction of production) by technology and study.**
 
 | Technology | Fan et al. 2022 (Med) | Cooper et al. 2022 (Med) | Frazer-Nash 2022 (Med) | Arrigoni & Diaz 2022 (Med) | Van Ruijven et al. 2011 (Med) |
 |:-----------|:---------------------:|:------------------------:|:----------------------:|:--------------------------:|:-----------------------------:|
@@ -416,7 +406,6 @@ Hydrogen leaked to the atmosphere has an indirect global warming effect via its 
 | Electrolyzer | 4.50% | 2.59% | 11.11% | 1.22% | 2.55% |
 | H<sub>2</sub>-CT | 2.25% | 0% | 0.34% | 0% | 0% |
 | H<sub>2</sub>-CC | 2.25% | 0% | 0.34% | 0% | 0% |
-```
 
 Each study provides Low, Medium, and High estimates. Data source: `inputs/emission_constraints/h2_leakage_rate.csv`, which has one row per technology (`smr`, `smr_ccs`, `electrolyzer`, `h2-ct`, `h2-cc`) and one column per study/tier combination (15 columns). The column matching `GSw_H2LeakageScen` is selected in `b_inputs.gms` and loaded as the parameter `h2_leakage_rate(i)`.
 
@@ -449,7 +438,7 @@ where $\text{HR}$ is the generator heat rate, $\kappa$ is the hydrogen combustio
 
 ### Global Warming Potential
 
-Hydrogen's global warming potential (GWP) is set to **11.6** kg CO<sub>2</sub>-equivalent per kg H<sub>2</sub> (scalar `h2_gwp`), based on {cite}`sandMultimodelAssessmentGlobal2023`. This value is appended to the GWP table loaded from `inputs/emission_constraints/gwp.csv` (which covers CO<sub>2</sub>, CH<sub>4</sub>, and N<sub>2</sub>O from IPCC assessment reports). The combined GWP vector enters the conversion from H<sub>2</sub> leakage to CO<sub>2</sub>-equivalent emissions via `gwp_emit_rate` and `gwp_emit_rate_all` in `b_inputs.gms`.
+Hydrogen's global warming potential (GWP) is set to **11.6** kg CO<sub>2</sub>-equivalent per kg H<sub>2</sub> (scalar `h2_gwp`), based on Sand et al. (2023). This value is appended to the GWP table loaded from `inputs/emission_constraints/gwp.csv` (which covers CO<sub>2</sub>, CH<sub>4</sub>, and N<sub>2</sub>O from IPCC assessment reports). The combined GWP vector enters the conversion from H<sub>2</sub> leakage to CO<sub>2</sub>-equivalent emissions via `gwp_emit_rate` and `gwp_emit_rate_all` in `b_inputs.gms`.
 
 ### CO<sub>2</sub>-Equivalent Emission Cap Integration
 
@@ -464,8 +453,7 @@ The `GSw_AnnualCap` switch determines which pollutants are included in the annua
 
 When `GSw_AnnualCap=3`, H<sub>2</sub> leakage emissions (multiplied by GWP = 11.6) count toward the model's annual emission cap, creating an endogenous incentive to minimize leakage across the hydrogen supply chain.
 
-```{table} Summary of hydrogen-related emission categories by technology.
-:name: h2-emissions-summary-table
+**Summary of hydrogen-related emission categories by technology.**
 
 | Technology | Process CO<sub>2</sub> | Process H<sub>2</sub> leakage | Upstream CH<sub>4</sub> | Notes |
 |:-----------|:----------------------:|:-----------------------------:|:-----------------------:|:------|
@@ -474,7 +462,6 @@ When `GSw_AnnualCap=3`, H<sub>2</sub> leakage emissions (multiplied by GWP = 11.
 | SMR-CCS | 0.98 tCO<sub>2</sub>/tH<sub>2</sub> | ✓ | ✓ | 90% capture; residual CO<sub>2</sub> + upstream |
 | H<sub>2</sub>-CT | — | ✓ | — | Fuel-side leakage during combustion |
 | H<sub>2</sub>-CC | — | ✓ | — | Fuel-side leakage during combustion |
-```
 
 
 ## Hydrogen Production Tax Credit (Section 45V)
@@ -485,8 +472,7 @@ ReEDS represents the Clean Hydrogen Production Tax Credit established under Sect
 
 The 45V credit is structured in tiers based on the lifecycle greenhouse gas emissions of the hydrogen production pathway (well-to-gate):
 
-```{table} Section 45V hydrogen production tax credit tiers.
-:name: h2-45v-tiers-table
+**Section 45V hydrogen production tax credit tiers.**
 
 | Lifecycle Emissions (kg CO<sub>2</sub>e / kg H<sub>2</sub>) | Credit ($/kg, $2022) | Credit ($/kg, $2004) |
 |:------------------------------------------------------------:|:--------------------:|:--------------------:|
@@ -494,7 +480,6 @@ The 45V credit is structured in tiers based on the lifecycle greenhouse gas emis
 | 0.45 – 1.5 | 1.00 | ~0.60 |
 | 1.5 – 2.5 | 0.75 | ~0.45 |
 | 2.5 – 4.0 | 0.60 | ~0.36 |
-```
 
 ### Eligibility and Qualification
 
@@ -520,9 +505,9 @@ where $p^{\text{45V}}_{v,r}$ (`h2_ptc`) is the per-kg credit value (in \$/kg, $2
 
 An additional constraint (`eq_h2_ptc_creditgen`) ensures that the total generation from any qualifying plant is at least as large as the generation credited toward the hydrogen PTC, preventing over-attribution.
 
-```{admonition} 45V switches
-- `GSw_H2_PTC` (default `1`): Enable (`1`) or disable (`0`) the hydrogen production tax credit.
-```
+> **45V switches**
+>
+> - `GSw_H2_PTC` (default `1`): Enable (`1`) or disable (`0`) the hydrogen production tax credit.
 
 
 ## Hydrogen Costs in the Objective Function
@@ -552,8 +537,7 @@ All capital costs are annualized using the system capital recovery factor (`pvf_
 
 The following table consolidates all hydrogen-related switches available in `cases.csv`.
 
-```{admonition} Complete hydrogen switch reference
-:class: dropdown
+<details><summary><strong>Complete hydrogen switch reference</strong></summary>
 
 | Switch | Default | Description |
 |:-------|:--------|:------------|
@@ -575,7 +559,8 @@ The following table consolidates all hydrogen-related switches available in `cas
 | `GSw_H2LeakageScen` | `Fan_et_al_2022/Med` | H<sub>2</sub> leakage rate scenario (study/tier) |
 | `h2combustionfuelscen` | `reference` | H<sub>2</sub> fuel price scenario when `GSw_H2=0` (10, reference, 30) |
 | `plantchar_h2combustion` | `h2-combustion_ATB_2024` | Cost and performance file for H<sub>2</sub> combustion technologies |
-```
+
+</details>
 
 Related switches that interact with hydrogen modeling:
 
