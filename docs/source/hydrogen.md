@@ -165,9 +165,9 @@ Steam methane reforming converts natural gas to hydrogen. ReEDS can represent SM
 
 SMR is controlled by the `GSw_H2_SMR` switch (default `0`, off).
 
-**Cost [$2022] and performance assumptions for hydrogen production technologies.**
+**Cost [\$2022] and performance assumptions for hydrogen production technologies.**
 
-| Technology | Year | Capital Cost ($/kW) | Variable O&M ($/kWh) | Fixed O&M ($/kW-yr) | Electricity Use (kWh/kg) | Natural Gas Use (MMBtu/kg) |
+| Technology | Year | Capital Cost (\$/kW) | Variable O&M (\$/kWh) | Fixed O&M (\$/kW-yr) | Electricity Use (kWh/kg) | Natural Gas Use (MMBtu/kg) |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | Electrolyzer | 2020 | 1,750 | 0 | 101.9 | 56.1 | -- |
 | Electrolyzer | 2035 | 550 | 0 | 32.0 | 53.8 | -- |
@@ -320,7 +320,7 @@ When `GSw_H2_CompressorLoad=1` (default `0`), the electricity consumed by pipeli
 
 ReEDS represents three forms of hydrogen storage:
 
-| Storage Type | GAMS Set Element | Capital Cost ($/metric ton) | FOM ($/metric ton/yr) | Description |
+| Storage Type | GAMS Set Element | Capital Cost (\$/metric ton) | FOM (\$/metric ton/yr) | Description |
 |:-------------|:-----------------|:---------------------------:|:---------------------:|:------------|
 | Salt cavern | `h2_storage_saltcavern` | 26,304 | 764 | Geological storage in salt formations; lowest cost but geographically limited |
 | Hard rock | `h2_storage_hardrock` | 41,008 | 764 | Geological storage in hard rock formations; more widely available |
@@ -474,7 +474,7 @@ The 45V credit is structured in tiers based on the lifecycle greenhouse gas emis
 
 **Section 45V hydrogen production tax credit tiers.**
 
-| Lifecycle Emissions (kg CO<sub>2</sub>e / kg H<sub>2</sub>) | Credit ($/kg, $2022) | Credit ($/kg, $2004) |
+| Lifecycle Emissions (kg CO<sub>2</sub>e / kg H<sub>2</sub>) | Credit (\$/kg, \$2022) | Credit (\$/kg, \$2004) |
 |:------------------------------------------------------------:|:--------------------:|:--------------------:|
 | 0 – 0.45 | 3.00 | ~1.80 |
 | 0.45 – 1.5 | 1.00 | ~0.60 |
@@ -501,7 +501,7 @@ The credit enters the objective function as a **cost reduction** on hydrogen pro
 
 $$\text{PTC}_{\text{H}_2} = -\sum_{v,r,h} \text{hours}_h \cdot \text{Prod}^{\text{elec}}_{v,r,h} \cdot \frac{\text{CRF}(t)}{\text{CRF}_{\text{H}_2}} \cdot p^{\text{45V}}_{v,r} \cdot 1000$$
 
-where $p^{\text{45V}}_{v,r}$ (`h2_ptc`) is the per-kg credit value (in \$/kg, $2004), $\text{CRF}_{\text{H}_2}$ (`crf_h2_incentive`) is the capital recovery factor corresponding to the 10-year credit period, and the factor of 1000 converts from \$/kg to \$/metric ton. The credit values are computed by `input_processing/calc_financial_inputs.py`, which monetizes the statutory credit through the tax equity rate and expands each vintage over its 10-year eligibility window, writing the result to `inputs_case/h2_ptc.csv`. That file is loaded in `b_inputs.gms` as `h2_ptc_in(i,v,allt)` and then broadcast to all regions as `h2_ptc(i,v,r,allt)`. This term is active only when `GSw_H2_PTC=1` and during eligible years (`h2_ptc_years`).
+where $p^{\text{45V}}_{v,r}$ (`h2_ptc`) is the per-kg credit value (in \$/kg, \$2004), $\text{CRF}_{\text{H}_2}$ (`crf_h2_incentive`) is the capital recovery factor corresponding to the 10-year credit period, and the factor of 1000 converts from \$/kg to \$/metric ton. The credit values are computed by `input_processing/calc_financial_inputs.py`, which monetizes the statutory credit through the tax equity rate and expands each vintage over its 10-year eligibility window, writing the result to `inputs_case/h2_ptc.csv`. That file is loaded in `b_inputs.gms` as `h2_ptc_in(i,v,allt)` and then broadcast to all regions as `h2_ptc(i,v,r,allt)`. This term is active only when `GSw_H2_PTC=1` and during eligible years (`h2_ptc_years`).
 
 An additional constraint (`eq_h2_ptc_creditgen`) ensures that the total generation from any qualifying plant is at least as large as the generation credited toward the hydrogen PTC, preventing over-attribution.
 
@@ -545,14 +545,14 @@ The following table consolidates all hydrogen-related switches available in `cas
 | `GSw_H2_CompressorLoad` | `0` | Include pipeline/storage compressor electricity in load balance |
 | `GSw_H2_Demand_Case` | `none` | Exogenous H<sub>2</sub> demand scenario (none, BAU, Aggressive, Decarb, Decarb_with_BAU, LTS) |
 | `GSw_H2_Inputs` | `ref` | Input file suffix for H<sub>2</sub> cost inputs (ref, low) |
-| `GSw_H2_IntraReg_Transport` | `0.32` | Flat intra-regional H<sub>2</sub> transport cost ($/kg) |
+| `GSw_H2_IntraReg_Transport` | `0.32` | Flat intra-regional H<sub>2</sub> transport cost (\$/kg) |
 | `GSw_H2_MinStorHours` | `24` | Minimum hours of H<sub>2</sub> storage required per zone |
 | `GSw_H2_PTC` | `1` | Enable (1) or disable (0) 45V hydrogen production tax credit |
 | `GSw_H2_SMR` | `0` | Enable (1) or disable (0) steam methane reforming |
 | `GSw_H2_StorTimestep` | `1` | H<sub>2</sub> storage level resolution: 1=seasonal, 2=hourly |
 | `GSw_H2_Transport` | `0` | Enable (1) or disable (0) inter-regional H<sub>2</sub> pipelines |
 | `GSw_H2_TransportLevel` | `cendiv` | Hierarchy level within which to allow H<sub>2</sub> pipelines |
-| `GSw_H2_TransportUniform` | `0` | Override H<sub>2</sub> transport/storage costs with uniform $/metric ton (0=use defaults) |
+| `GSw_H2_TransportUniform` | `0` | Override H<sub>2</sub> transport/storage costs with uniform \$/metric ton (0=use defaults) |
 | `GSw_H2Combustion` | `1` | Enable (1) or disable (0) H<sub>2</sub>-CT and H<sub>2</sub>-CC |
 | `GSw_H2CombinedCycle` | `1` | Enable (1) or disable (0) H<sub>2</sub>-CC specifically |
 | `GSw_H2Combustionupgrade` | `1` | Allow (1) or prevent (0) gas→H<sub>2</sub> turbine upgrades |
@@ -569,4 +569,4 @@ Related switches that interact with hydrogen modeling:
 | `GSw_AnnualCap` | `0` | Emission cap mode; value `3` includes H<sub>2</sub> leakage in CO<sub>2</sub>e cap |
 | `GSw_MethaneLeakageScen` | `Alvarez2018_30by2030` | Upstream methane leakage rate scenario |
 | `GSw_Upstream` | `0` | Include upstream emissions in tracking (1) or exclude (0) |
-| `GSw_RetailAdder` | `0` | $/MWh adder to electricity consumed by H<sub>2</sub> production and DAC |
+| `GSw_RetailAdder` | `0` | \$/MWh adder to electricity consumed by H<sub>2</sub> production and DAC |
