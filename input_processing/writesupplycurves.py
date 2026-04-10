@@ -38,14 +38,16 @@ spur_cutoff = 1e7
 def wm(df):
     """Make a function to take the capacity-weighted average in a .groupby() call"""
     def _wm(x):
-        return np.average(
-            x,
-            weights=(
-                df.loc[x.index, 'capacity']
-                if df.loc[x.index, 'capacity'].sum() > 0
-                else 0
+        weights = df.loc[x.index, 'capacity']
+        if (weights < 0).any():
+            raise ValueError(
+                "Negative capacity encountered during supply curve aggregation. "
+                "Check input supply curve data for invalid capacity values."
             )
-        )
+        # Fall back to an unweighted average if the group has no positive capacity.
+        if weights.sum() <= 0:
+            return x.mean()
+        return np.average(x, weights=weights)
     return _wm
 
 
