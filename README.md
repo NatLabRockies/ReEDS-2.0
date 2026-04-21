@@ -1,7 +1,7 @@
 > [!WARNING]
 > **This repository has been archived.** All development has moved to [https://github.com/ReEDS-Model/ReEDS](https://github.com/ReEDS-Model/ReEDS). 
 >
-> Please open new issues and pull requests there.
+> Please open new issues, discussions, and pull requests there.
 
 ## ReEDS 2.0
 **Regional Energy Deployment System (ReEDS) Model**
