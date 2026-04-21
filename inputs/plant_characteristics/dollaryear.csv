@@ -12,6 +12,12 @@ tes_ATB_2024_dirtcheap,2022
 tes_threshold_75pct,2022
 tes_threshold_50pct,2022
 tes_threshold_25pct,2022
+tes_threshold_modrte_95pct,2022
+tes_threshold_modrte_90pct,2022
+tes_threshold_modrte_85pct,2022
+tes_threshold_modrte_80pct,2022
+tes_threshold_modrte_75pct,2022
+tes_threshold_modrte_70pct,2022
 beccs_BVRE_2021_high,2019
 beccs_BVRE_2021_low,2019
 beccs_BVRE_2021_mid,2019

@@ -5,7 +5,7 @@ GSw_NewValCapShrink,switch to shrink valcap and related conditioning sets post-s
 GSw_PRM_StressIterateMax,Max number of times to iterate on a given solve year to achieve GSw_PRM_StressThreshold when using stress periods (0 means don't iterate; 1 means 1 extra ReEDS run; etc),3,,,
 GSw_RegionResolution,,aggreg,,,
 GSw_HierarchyFile,,agg54,,,
-GSw_EFS1_AllYearLoad,Switch to choose electricity profiles,EER_IRAlow,,,
+GSw_LoadProfiles,Switch to choose electricity profiles,EER_IRAlow,,,
 plantchar_geo,Geothermal cost setting (inputs\plant_characteristics\{plantchar_geo}.csv).The options for plantchar_geo start with 'geo_' and the switch should be set to the entire file name (ex: geo_ATB_2023_conservative),geo_ATB_2024_moderate,,,
 GSw_NuclearStor,Turn on [1] / off [0] Nuclear-Stor,0,,,
 GSw_GenMandate,Turn on/off national Gen Requirement. 2 turns on and applies constraint at busbar.,0,1,1,
